@@ -1,0 +1,33 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: venti
+  labels:
+    app: venti
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: venti
+  template:
+    metadata:
+      labels:
+        app: venti
+    spec:
+      containers:
+        - image: lufia/venti:latest
+          name: venti
+          env:
+            - name: VENTI_SIZE
+              value: 190GB
+          ports:
+            - containerPort: 17034
+              name: venti
+          volumeMounts:
+            - name: venti-persistent-storage
+              mountPath: /mnt/venti
+      volumes:
+        - name: venti-persistent-storage
+          gcePersistentDisk:
+            pdName: venti-disk
+            fsType: ext4
