@@ -1,0 +1,64 @@
+.PS
+#
+# chan 1
+#
+A0: move down
+A1: box "/ [fid=1]"
+arrow "clone &" ljust "walk adm" ljust right down
+A2: box "adm [fid=2]"
+arrow "clone &" ljust "walk users" ljust down
+A3: box "users [fid=3]"
+arrow "clone &" rjust "walk adm/keys" rjust at A1.s down 2.5
+A4: box "keys [fid=4]"
+
+minx = A1.w.x - .25
+miny = A4.s.y - .25
+maxx = A2.e.x + .25
+maxy = A0.n.y + .25
+w = maxx-minx
+h = maxy-miny
+A: box dotted at (minx,maxy) with .nw wid w ht h
+"chan 1" at last box.n above
+
+# fid1
+arrow "wpath" above from A1.e right 1.5
+box "<nil>" fill
+
+# fid2
+arrow "wpath" above from A2.e right 1.5-movewid
+B1: box "/"
+arrow "up" above
+box "<nil>" fill
+
+"(refs 2)" at 2nd last box.s above
+
+# fid3
+arrow "wpath" above from A3.e right 1.5-movewid
+box "adm"
+arrow "up" ljust from last box.n to B1.s
+
+"(refs 1)" at last box.s above
+
+# fid4
+arrow "wpath" above from A4.e right 1.5
+box "adm"
+arrow "up" above
+box "/"
+arrow "up" above
+box "<nil>" fill
+
+"(refs 1)" at 3rd last box.s above
+"(refs 1)" at 2nd last box.s above
+
+#
+# chan 2
+#
+move down at A.s
+box dotted wid w ht boxht + .25*2
+"chan 2" at last box.n above
+A5: box "/ [fid=1]" at (last box.nw.x+.25, last box.nw.y-.25) with .nw
+
+# fid1
+arrow "wpath" above from A5.e right 1.5
+box "<nil>" fill
+.PE

@@ -1,0 +1,39 @@
+.begin dformat
+style recspread .5
+noname
+		0-1-2 empty
+		2--1 Cache
+	A1:	3-7-5 Map
+	A2:	8--50 Data
+noname
+	B1:	3--11.6 Block
+	B2:	4--11.6 Block
+		5--11.6 Block
+		6--11.6 Block
+	B3:	7--11.6 Block
+noname
+	C1:	0--5.8 Bucket
+		1--5.8 Bucket
+		2--5.8 Bucket
+	C2:	3--5.8 Bucket
+		4--5.8 Bucket
+		5--5.8 Bucket
+		6--5.8 Bucket
+		7--5.8 Bucket
+		8--5.8 Bucket
+	C3:	9--5.8 Bucket
+noname
+	D1:	0--11.6 Centries
+		10--11.6 Centries
+	D2:	20--1.16 Centry
+		21--10.44 Centries
+		30--11.6 Centries
+	D3:	40--11.6 Centries
+pic line dotted from A1.sw to B1.nw
+pic line dotted from A1.se to B3.ne
+pic line dotted from B2.sw to C1.nw
+pic line dotted from B2.se to C3.ne
+pic line dotted from C2.sw to D1.nw
+pic line dotted from C2.se to D3.ne
+pic arc <-> from D2.c to (A2.c.x - A2.c.x/2, A2.c.y) rad 3
+.end

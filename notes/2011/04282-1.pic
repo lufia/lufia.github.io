@@ -1,0 +1,61 @@
+.PS
+define block {[
+	if $3 == 1 then {
+		box $2 fill
+	} else {
+		box $2
+	}
+	sprintf("%.0f ", $1) at last box.w with .e rjust
+]}
+define dir {[	# slot, name
+	boxht = boxht/2
+	box invis ht boxht/2
+	$2 at last box.w ljust
+	sprintf("[slot=%.0f]", $1) at last box.e rjust
+	if $2 == "" then {
+		box at last box.sw with .nw fill
+	} else {
+		right
+		boxwid = boxwid/3
+		box "[0]" at last box.sw with .nw
+		box "[1]"
+		box "[2]"
+	}
+]}
+define dirblock {[	# name, s1, s2, s3, s4
+	h = boxht/2
+	box $1 wid boxwid*4 ht h invis
+	right
+	dir(0, $2) at last box.sw with .nw
+	dir(1, $3); dir(2, $4); dir(3, $5)
+]}
+
+down
+B0: block(0, "", 1)
+block(1, "", 1)
+B2: block(2, "superb", 0)
+B3: block(3, "cw root", 0)
+B4: block(4, "ro root", 0)
+B5: block(5, "", 1)
+
+move to B0.n right 3
+h = boxht / 2
+box "\f(HBsuperblock\fP@2" wid boxwid*4 ht h invis
+C1: box "last" ht h at last box.sw with .nw
+box "cwraddr" ht h
+box "roraddr" ht h
+box "next" ht h
+arrow dotted from 4th last box.s to B2.e
+arrow dotted from 3th last box.s to B3.e
+arrow dotted from 2th last box.s to B4.e
+arrow dotted from 1th last box.s to B5.e
+
+moveht = .1
+move down at C1.sw
+D3: dirblock("\f(HBcw root\fP@3", "/", "", "", "") with .nw
+dx = (D3.e.x - D3.w.x)/12
+
+move down at D3.sw
+D4: dirblock("\f(HBro root\fP@4", "/", "", "", "") with .nw
+
+.PE

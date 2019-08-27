@@ -1,0 +1,124 @@
+.PS
+define block {[	# addr, name, isempty
+	if $3 == 1 then {
+		box $2 fill
+	} else {
+		box $2
+	}
+	sprintf("%.0f ", $1) at last box.w with .e rjust
+]}
+define dir {[	# slot, name
+	boxht = boxht/2
+	box invis ht boxht/2
+	$2 at last box.w ljust
+	sprintf("[slot=%.0f]", $1) at last box.e rjust
+	if $2 == "" then {
+		box at last box.sw with .nw fill
+	} else {
+		right
+		boxwid = boxwid/3
+		box "[0]" at last box.sw with .nw
+		box "[1]"
+		box "[2]"
+	}
+]}
+define dirblock {[	# name, s1, s2, s3, s4
+	h = boxht/2
+	box $1 wid boxwid*4 ht h invis
+	right
+	dir(0, $2) at last box.sw with .nw
+	dir(1, $3); dir(2, $4); dir(3, $5)
+]}
+
+down
+B0: block(0, "", 1)
+block(1, "", 1)
+B2: block(2, "superb", 0)
+B3: block(3, "cw root", 0)
+B4: block(4, "ro root", 0)
+B5: block(5, "superb", 0)
+B6: block(6, "/", 0)
+B7: block(7, "adm", 0)
+B8: block(8, "/(ro)", 0)
+B9: block(9, "2011", 0)
+box "." "." "." at B9.se with .ne fill
+B106: block(106, "cw root(v2)", 0)
+B107: block(107, "ro root(v2)", 0)
+B108: block(108, "", 1)
+
+#
+# superblock ver1
+#
+move to B0.n right 3
+h = boxht / 2
+box "\f(HBsuperblock\fP@2" wid boxwid*4 ht h invis
+C1: box "last" ht h at last box.sw with .nw
+box "cwraddr" ht h
+box "roraddr" ht h
+box "next" ht h
+arrow dotted from 4th last box.s to B2.e
+arrow dotted from 3th last box.s to B3.e
+arrow dotted from 2th last box.s to B4.e
+arrow dotted from 1th last box.s to B5.e
+
+moveht = .1
+
+#
+# cw root ver1
+#
+move down at C1.sw
+D3: dirblock("\f(HBcw root\fP@3", "/", "", "", "") with .nw
+dx = (D3.e.x - D3.w.x)/12
+#spline -> from (D3.sw.x+dx/2, D3.sw.y) then left down to B6.e
+
+move down at D3.sw
+D4: dirblock("\f(HBro root\fP@4", "/", "", "", "") with .nw
+#spline -> from (D4.sw.x+dx/2, D4.sw.y) then left down to B
+
+#
+# superblock ver2
+#
+move down at D4.sw
+h = boxht / 2
+box "\f(HBsuperblock\fP@5" wid boxwid*4 ht h with .nw invis
+right
+C2: box "last" ht h at last box.sw with .nw
+box "cwraddr" ht h
+box "roraddr" ht h
+box "next" ht h
+arrow dotted from 4th last box.s to B2.e
+arrow dotted from 3th last box.s to B106.e
+arrow dotted from 2th last box.s to B107.e
+arrow dotted from 1th last box.s to B108.e
+
+#
+# / ver2
+#
+move down at C2.sw
+D6: dirblock("\f(HB/\fP@6", "adm", "", "", "") with .nw
+
+#
+# adm ver2
+#
+move at D6.sw
+D7: dirblock("\f(HBadm\fP@7", "users", "", "", "") with .nw
+
+move at D7.sw
+D8: dirblock("\f(HB/(ro)\fP@8", "2011", "", "", "") with .nw
+
+move at D8.sw
+D9: dirblock("\f(HB2011\fP@9", "0401", "", "", "") with .nw
+
+move at D9.sw
+D106: dirblock("\f(HBcw root(v2)\fP@106", "/", "", "", "") with .nw
+
+move at D106.sw
+D107: dirblock("\f(HBro root(v2)\fP@107", "/", "", "", "") with .nw
+
+arrow dotted from (D6.sw.x+dx/2, D6.sw.y) to B7.e
+arrow dotted from (D106.sw.x+dx/2, D106.sw.y) to B6.e
+arrow dotted from (D107.sw.x+dx/2, D107.sw.y) to B8.e
+arrow dotted from (D9.sw.x+dx/2, D9.sw.y) to B6.e
+arrow dotted from (D8.sw.x+dx/2, D8.sw.y) to B9.e
+#arrow dotted from (D7.sw.x+dx/2, D7.sw.y) down .25 left .25
+.PE

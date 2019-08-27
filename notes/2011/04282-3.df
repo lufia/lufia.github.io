@@ -1,0 +1,52 @@
+.begin dformat
+style recspread .5
+noname
+		2--10 Superb
+	A1:	3--10 Block
+	A2:	4--10 Block
+		5--10 Block
+	A3:	6--10 Block
+	A4:	7--10 Block
+noname
+	B0:	0--6 Dentry
+		1--6 Dentry
+	B1:	2--6 Dentry
+		3--6 Dentry
+	B2:	4--6 Dentry
+		--30-invis
+noname
+	C0:	0--4 dblock
+		1--4 dblock
+	C1:	2--4 dblock
+		3--4 dblock
+		--2-invis +
+	C2:	0--4 iblock
+		1--4 iblock
+	C3:	2--4 iblock
+noname
+		--30-invis
+	V0:	6--30 Block
+noname
+		--30-invis
+	D0:	0--3 addr
+		1--3 addr
+		2--3 addr
+		3--3 addr
+		4--3 addr
+		5--3 addr
+		6--3 addr
+		7--3 addr
+		8--3 addr
+	D2:	9--3 addr
+pic line dotted from A1.sw to B0.nw
+pic line dotted from A1.se to B2.ne
+pic line dotted from B1.sw to C0.nw
+pic line dotted from B1.se to C3.ne
+pic spline -> from C1.s then right down to A2.s
+pic spline -> from C2.s then right .25 down .25 to A3.s
+pic line dotted from A3.sw to V0.nw
+pic line dotted from A3.se to V0.ne
+pic line dotted from V0.sw to D0.nw
+pic line dotted from V0.se to D2.ne
+pic spline -> from D0.s then right down to A4.s
+.end
