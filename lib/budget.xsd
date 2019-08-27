@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<xsd:schema
+	targetNamespace="http://lufia.org/namespace/budget"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns="http://lufia.org/namespace/budget">
+	<xsd:element name="budget">
+		<xsd:complexType>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">
+				<xsd:element ref="expense"/>
+				<xsd:element ref="income"/>
+			</xsd:choice>
+		</xsd:complexType>
+		<xsd:unique name="uniqueID">
+			<xsd:selector xpath="*"/>
+			<xsd:field xpath="@id"/>
+		</xsd:unique>
+	</xsd:element>
+
+	<xsd:element name="expense">
+		<xsd:complexType>
+			<xsd:all>
+				<xsd:element ref="category"/>
+				<xsd:element ref="item"/>
+				<xsd:element ref="price"/>
+				<xsd:element ref="date"/>
+				<xsd:element ref="comment" minOccurs="0"/>
+			</xsd:all>
+			<xsd:attribute name="id" type="xsd:string" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="income">
+		<xsd:complexType>
+			<xsd:all>
+				<xsd:element ref="category"/>
+				<xsd:element ref="item"/>
+				<xsd:element ref="price"/>
+				<xsd:element ref="date"/>
+				<xsd:element ref="comment" minOccurs="0"/>
+			</xsd:all>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="category" type="xsd:string"/>
+	<xsd:element name="item" type="xsd:string"/>
+	<xsd:element name="price" type="xsd:nonNegativeInteger"/>
+	<xsd:element name="date" type="xsd:date"/>
+	<xsd:element name="comment" type="xsd:string"/>
+</xsd:schema>

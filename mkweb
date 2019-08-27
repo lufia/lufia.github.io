@@ -1,0 +1,65 @@
+TARG=\
+	${PAGE:%.w=$LIB/%.html}\
+	${PAGE:%.map=$LIB/%.png}\
+	${PAGE:%.df=$LIB/%.png}\
+	${PAGE:%.pic=$LIB/%.png}\
+	${PAGE:%.js=$LIB/%.js}\
+	${PAGE:%.css=$LIB/%.css}\
+	${PAGE:%.jpg=$LIB/%.jpg}\
+	${PAGE:%.png=$LIB/%.png}\
+	${PAGE:%.xml=$LIB/%.xml}\
+	${PAGE:%.xsd=$LIB/%.xsd}\
+	${PAGE:%.ics=$LIB/%.ics}\
+
+FILES=${IFILES:%=$IDIR/%}
+
+all:V: $TARG
+
+$LIB/%.html:D: %.w $FILES
+	include -a $IDIR $stem.w | wf $WFFLAGS >$target
+
+$LIB/%.png:D: %.map
+	games/map $MAPFLAGS $prereq |
+	lp -dstdout |
+	gs -q -dSAFER -dBATCH -dNOPAUSE -r100 -s'DEVICE=ppm' -s'OutputFile=-' - |
+	ppm -tc |
+	crop -c 255 255 255 |
+	topng >$target
+
+$LIB/%.js: %.js
+	cp $prereq $target
+
+$LIB/%.css: %.css
+	cp $prereq $target
+
+$LIB/%.jpg: %.jpg
+	cp $prereq $target
+
+$LIB/%.png: %.png
+	cp $prereq $target
+
+$LIB/%.png: %.df
+	dformat $prereq |
+	pic | eqn | troff -ms |
+	lp -dstdout |
+	gs -q -dSAFER -dBATCH -dNOPAUSE -r100 -s'DEVICE=ppm' -s'OutputFile=-' - |
+	ppm -tc |
+	crop -c 255 255 255 |
+	topng >$target
+
+$LIB/%.png: %.pic
+	pic $prereq | troff |
+	lp -dstdout |
+	gs -q -dSAFER -dBATCH -dNOPAUSE -r100 -s'DEVICE=ppm' -s'OutputFile=-' - |
+	ppm -tc |
+	crop -c 255 255 255 |
+	topng >$target
+
+$LIB/%.xml: %.xml
+	cp $prereq $target
+
+$LIB/%.xsd: %.xsd
+	cp $prereq $target
+
+$LIB/%.ics: %.ics
+	cp $prereq $target
