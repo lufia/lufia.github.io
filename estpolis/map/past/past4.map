@@ -1,0 +1,20 @@
+floor 7 6 "Past B1-2"
+line 2 1 6 1 top
+line 2 1 left
+line 6 1 right
+line 1 2 top
+line 1 2 1 4 left
+line 7 2 top
+line 7 2 7 4 right
+line 1 4 3 4 bot
+line 7 4 5 4 bot
+line 4 5 left right
+line 4 6 left right
+
+# treasure
+mark 3 1 A
+mark 4 1 B
+mark 5 1 C
+
+# way
+mark 4 6 3

@@ -1,0 +1,36 @@
+floor 13 5 "Wiz 3F-7"
+mark 7 4 20
+
+mark 2 2 K
+mark 12 2 L
+
+line 2 3 top
+line 2 2 left
+line 2 2 top
+line 3 2 left
+line 3 3 top
+line 4 3 top
+line 5 3 top
+line 6 3 top
+line 7 3 left
+line 7 4 left
+line 7 5 top
+line 8 4 left
+line 8 3 left
+line 7 2 top
+line 6 2 top
+line 5 2 top
+line 4 2 top
+line 3 2 top
+line 8 3 top
+line 9 3 top
+line 10 3 top
+line 11 3 top
+line 12 2 left
+line 11 2 top
+line 10 2 top
+line 9 2 top
+line 8 2 top
+line 12 3 top
+line 13 2 left
+line 12 2 top

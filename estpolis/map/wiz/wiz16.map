@@ -1,0 +1,25 @@
+floor 8 7 "Wiz 2F-7"
+mark 3 6 17
+mark 7 3 18
+
+line 2 3 top
+line 3 3 top
+line 4 3 top
+line 5 2 left
+line 6 2 left
+line 6 3 top
+line 7 3 top
+line 8 3 left
+line 8 4 left
+line 7 5 top
+line 6 5 top
+line 3 5 left
+line 3 6 left
+line 3 7 top
+line 4 6 left
+line 4 5 left
+line 4 5 top
+line 5 5 top
+line 2 5 top
+line 2 4 left
+line 2 3 left

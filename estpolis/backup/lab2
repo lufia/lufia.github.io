@@ -1,0 +1,10 @@
+@include begin.i
+@include lab2.i
+@include map.i
+
+=シャイア第2研究所全体マップ(予定)
+:右下のロッカー
+-パワードラッグ
+-インテリドラッグ
+
+@include	end.i

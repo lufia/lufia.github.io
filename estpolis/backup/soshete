@@ -1,0 +1,14 @@
+@include begin.i
+@include soshete.i
+@include map.i
+
+=ソシエテ全体マップ(予定)
+:教会神父の左右
+-デルデル
+-せいすい
+:教会左下の洞窟
+-ミラクロース
+-デスアロー
+-わらにんぎょう
+
+@include	end.i

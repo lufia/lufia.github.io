@@ -1,0 +1,37 @@
+floor 8 8 "Old Cave B3-3"
+mark 5 7 3
+
+mark 5 4 H
+mark 7 6 I
+
+line 4 2 top
+line 5 2 top
+line 6 2 left
+line 5 3 top
+line 5 3 left
+line 5 4 top
+line 6 4 top
+line 7 4 top
+line 5 4 left
+line 5 5 top
+line 6 4 left
+line 8 4 left
+line 8 5 left
+line 8 6 left
+line 7 6 top
+line 7 6 left
+line 7 7 top
+line 6 7 top
+line 6 7 left
+line 5 8 top
+line 5 7 left
+line 4 7 top
+line 3 7 top
+line 3 6 left
+line 3 5 left
+line 2 5 top
+line 2 4 left
+line 2 4 top
+line 3 3 left
+line 3 3 top
+line 4 2 left

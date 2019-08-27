@@ -1,0 +1,7 @@
+<../mk.def
+
+NOMK=cave|tower|old
+TARG=`{ls *.m | sed 's/.$/html/'}
+
+<$home/web/mkdirs
+<../mk.proc

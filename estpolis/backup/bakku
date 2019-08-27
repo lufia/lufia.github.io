@@ -1,0 +1,11 @@
+@include begin.i
+@include bakku.i
+@include map.i
+
+=バクウ全体マップ(予定)
+:入り口すぐ上の家
+-エクスポーション
+-エクスマジック
+-デルデル
+
+@include	end.i

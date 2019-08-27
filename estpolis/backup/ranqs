@@ -1,0 +1,9 @@
+@include begin.i
+@include ranqs.i
+@include map.i
+
+=ランクス全体マップ(予定)
+:老婆が住む北西の家から北の黄色い花
+-いのちのみなもと
+
+@include end.i

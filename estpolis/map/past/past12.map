@@ -1,0 +1,31 @@
+floor 9 7 "Past 2F-6"
+line 2 2 top
+line 3 2 top
+line 2 2 left
+line 4 1 left
+line 4 1 top
+line 5 1 top
+line 6 1 top
+line 7 1 left
+line 7 2 top
+line 8 2 top
+line 9 2 left
+line 9 3 left
+line 2 3 left
+line 2 4 top
+line 3 4 top
+line 7 4 top
+line 8 4 top
+line 4 4 left
+line 4 5 top
+line 6 5 top
+line 7 4 left
+line 5 5 left
+line 5 6 left
+line 5 7 top
+line 6 6 left
+line 6 5 left
+
+# way
+mark 5 1 12
+mark 5 6 13

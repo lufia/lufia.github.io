@@ -1,0 +1,11 @@
+.aside
+{
+	=データベース
+	*[キャラクターリスト|/estpolis/char/]
+	*[アイテムリスト|/estpolis/item/]
+	*[魔法リスト|/estpolis/magic/]
+	*[装備品リスト|/estpolis/stuff/]
+	*[マップリスト|/estpolis/map/]
+	*[モンスターリスト|/estpolis/monster/]
+	*[ボスリスト|/estpolis/boss/]
+}

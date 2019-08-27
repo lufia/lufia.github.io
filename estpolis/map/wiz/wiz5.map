@@ -1,0 +1,21 @@
+floor 5 6 "Wiz 1F-5"
+mark 3 5 5
+mark 3 2 C
+
+line 2 2 top
+line 3 2 top
+line 4 2 top
+line 4 2 left
+line 3 3 top
+line 3 2 left
+line 2 2 left
+line 2 3 left
+line 2 4 top
+line 3 4 left
+line 3 5 left
+line 3 6 top
+line 4 5 left
+line 4 4 left
+line 4 4 top
+line 5 3 left
+line 5 2 left

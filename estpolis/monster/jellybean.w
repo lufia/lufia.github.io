@@ -1,0 +1,33 @@
+@include u.i
+%title ジェリービーン
+
+=ジェリービーン
+.revision
+2009年11月15日作成
+
+	=モンスターデータ
+	:HP
+	-100
+	:EXP
+	-70
+	:GOLD
+	-36GOLD
+
+	=特殊攻撃
+	*リ・ア
+
+	=属性
+
+	=落とすアイテム
+
+	=出現場所
+	*[青の塔|../map/blue.w]
+
+.aside
+{
+	=関連情報
+	*[モンスター一覧|index.w]
+}
+
+@include db.i
+@include nav.i

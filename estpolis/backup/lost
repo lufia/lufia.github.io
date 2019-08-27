@@ -1,0 +1,14 @@
+@include begin.i
+@include lost.i
+@include map.i
+
+=迷いの森全体マップ(予定)
++東
++南
++西
++南
+
+=ヒント
+エルフの案内人が居ないと通れないみたいです。
+
+@include end.i

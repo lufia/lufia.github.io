@@ -1,0 +1,161 @@
+#!/bin/rc
+
+rfork e
+
+fn contract {
+	sed '
+	s/^H:$/クリス:/
+	s/^L:$/ルフィア:/
+	s/^A:$/アグロス:/
+	s/^J:$/ジュリナ:/
+	s/^b:$/男の子:/
+	s/^g:$/女の子:/
+	s/^k:$/騎士団員:/
+	s/^l:$/侍女:/
+	s/^m:$/男性:/
+	s/^o:$/おじいさん:/
+	s/^w:$/女性:/
+	' $*
+}
+fn standby {
+	sed '
+	s/-/－/g
+	s/\?/？/g
+	s/!/！/g
+	s/\.\.\./…/g
+	s/ /　/g
+	' $*
+}
+fn compile {
+	awk '
+	BEGIN { unknown = 1 }
+	/^\.telop$/ {
+		tstop()
+		mstop()
+		sstop()
+		while (getline > 0 && $0 != ".")
+			if ($0 ~ /^[ \t]*$/)
+				n = puttelop(a, n)
+			else
+				a[++n] = $0
+		n = puttelop(a, n)
+		next
+	}
+	/^=+.*=+$/ {
+		sub(/^=+[ \t]*/, "")
+		sub(/[ \t]*=+$/, "")
+		putsect($0)
+		next
+	}
+	/^\[.*\]$/ {
+		puth(substr($0, 2, length($0)-2))
+		next
+	}
+	/^:$/ || /^[^ \t].*:$/ {
+		putname(substr($0, 1, length($0)-1))
+		next
+	}
+	/^[ \t]+[^ \t]/ {
+		sub(/^[ \t]+/, "")
+		puttext($0)
+		next
+	}
+	/^[ \t]*$/ {
+		tstop()
+		next
+	}
+	{	printf("%s:%d illegal line", FILENAME, FNR) >"/fd/2"
+		exit(1)
+	}
+	END {
+		tstop()
+		mstop()
+		sstop()
+	}
+
+	function puttelop(a, n,	i) {
+		if (n > 0) {
+			print "<p class=\"telop\">"
+			for (i = 1; i <= n; i++)
+				printf("%s<br />\n", a[i])
+			print "</p>\n"
+		}
+		return 0
+	}
+	function putsect(h) {
+		tstop()
+		mstop()
+		sstop()
+		printf("<h2>%s</h2>\n\n", h)
+	}
+	function puth(h) {
+		tstop()
+		mstop()
+		sstop()
+		sstart()
+		if (h ~ /./)
+			printf("<div class=\"h\">%s</div>\n", h)
+	}
+	function putname(name) {
+		tstop()
+		sstart()
+		mstart()
+		unknown = (name=="")
+		if (unknown)
+			print "\t<dt class=\"unknown\">?</dt>"
+		else
+			printf("\t<dt>%s</dt>\n", name)
+	}
+	function puttext(s) {
+		sstart()
+		mstart()
+		if (!inmsg) {
+			inmsg = 1
+			if (unknown)
+				print "\t<dd class=\"unknown\">"
+			else
+				print "\t<dd>"
+		}
+		printf("\t%s<br />\n", s)
+	}
+	function sstart() {
+		if (!inscene)
+			print "<div class=\"scene\">"
+		inscene = 1
+	}
+	function sstop() {
+		if (inscene)
+			print "</div>\n"
+		inscene = 0
+	}
+	function mstart() {
+		if (nmsg == 0)
+			print "\t<dl>"
+		nmsg++
+	}
+	function mstop() {
+		if (nmsg > 0)
+			print "\t</dl>"
+		nmsg = 0
+	}
+	function tstop() {
+		if (inmsg)
+			print "\t</dd>"
+		inmsg = 0
+	}
+	' $*
+}
+
+cat <<!
+@include begin.i
+
+<h1>%{title}</h1>
+
+!
+
+contract $* | standby | compile
+
+cat <<!
+
+@include end.i
+!

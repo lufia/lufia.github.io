@@ -1,0 +1,93 @@
+floor 30 20 "Past B1-1"
+
+line 1 2 2 2 top
+line 3 1 left
+line 3 1 5 1 top
+line 5 1 right
+line 6 2 7 2 top
+line 7 2 7 3 right
+line 7 3 bot
+line 6 4 right
+line 6 4 5 4 bot
+line 3 4 2 4 bot
+line 1 4 right top
+line 1 3 1 2 left
+
+line 4 5 4 7 left right
+line 3 8 2 8 top
+line 2 8 2 9 left
+line 2 9 3 9 bot
+line 5 8 6 8 top
+line 6 8 6 9 right
+line 6 9 5 9 bot
+
+line 4 10 4 12 left right
+line 3 13 top
+line 3 13 3 15 left
+line 3 16 top right
+line 4 16 11 16 bot
+line 5 13 top
+line 5 13 5 14 right
+line 6 15 10 15 top
+
+line 11 14 left
+line 11 14 13 14 top
+line 14 13 left top
+line 16 13 top right
+line 17 14 19 14 top
+line 19 14 right
+
+line 12 17 left
+line 12 17 13 17 bot
+line 14 18 left
+line 14 18 16 18 bot
+line 16 18 right
+line 17 17 18 17 bot
+line 18 17 right
+
+line 15 12 15 10 left right
+line 14 9 bot
+line 14 9 14 7 left
+line 14 7 top
+line 16 9 bot
+line 16 9 16 7 right
+line 16 7 top
+line 15 6 top left right
+
+line 20 15 24 15 top
+line 25 14 25 13 left
+line 25 13 top
+line 19 16 26 16 bot
+line 27 16 left top
+line 27 15 27 13 right
+line 27 13 top
+line 26 12 26 10 left right
+
+line 25 9 24 9 bot
+line 24 9 24 8 left
+line 24 8 25 8 top
+line 27 9 28 9 bot
+line 28 9 28 8 right
+line 28 8 27 8 top
+line 26 7 26 5 left right
+
+line 25 4 24 4 bot
+line 23 4 right top
+line 23 3 23 2 left
+line 23 2 24 2 top
+line 25 1 left
+line 25 1 27 1 top
+line 27 1 right
+line 28 2 29 2 top
+line 29 2 29 3 right
+line 29 4 top left
+line 28 4 27 4 bot
+
+# pole
+line 13 16 top bot left right
+line 17 16 top bot left right
+
+# way
+mark 4 2 2
+mark 15 6 3
+mark 26 2 4

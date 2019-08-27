@@ -1,0 +1,4 @@
+guide/town/jenoba.sk
+	droping item[Miracle]
+intro.sk
+	ref guide/town/jenoba.sk

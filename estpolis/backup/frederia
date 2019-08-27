@@ -1,0 +1,14 @@
+@include begin.i
+@include frederia.i
+@include map.i
+
+=フレデリア全体マップ(予定)
+:入り口左の花壇中央
+-イモリのくろやき
+:入り口左の花壇中央
+-ミラクロース
+:地下ドッグのロッカー
+-いしのきもち
+-デルデル
+
+@include	end.i

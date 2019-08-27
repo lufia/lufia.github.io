@@ -1,0 +1,22 @@
+floor 7 5 "Past 1F-3"
+
+line 1 2 2 2 top
+line 3 1 left
+line 3 1 5 1 top
+line 5 1 right
+line 6 2 7 2 top
+line 7 2 7 3 right
+line 7 3 bot
+line 6 4 right
+line 6 4 5 4 bot
+line 4 5 right left
+line 3 4 2 4 bot
+line 1 4 right top
+line 1 3 1 2 left
+
+# item
+mark 1 2 E
+
+# way
+mark 6 2 4
+mark 4 5 5

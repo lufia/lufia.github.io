@@ -1,0 +1,26 @@
+floor 6 7 "Old Cave B2-2"
+mark 4 6 2
+mark 3 2 J
+mark 4 2 K
+
+line 2 3 left
+line 2 3 top
+line 3 2 left
+line 3 3 top
+line 4 3 top
+line 5 2 left
+line 5 3 top
+line 6 3 left
+line 6 4 left
+line 6 5 left
+line 5 6 top
+line 2 6 top
+line 2 5 left
+line 2 4 left
+line 3 2 top
+line 4 2 top
+line 4 2 left
+line 3 6 top
+line 4 6 left
+line 4 7 top
+line 5 6 left

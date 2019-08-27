@@ -1,0 +1,15 @@
+@include begin.i
+@include forfeit.i
+@include map.i
+
+=質流れ島全体マップ(予定)
+:道具屋の棚
+-ハイマジック
+-ハイポーション
+:道具屋の宝箱
+-インテリリング
+:よろずやの棚
+-バニーのみみ
+-バニーのふく
+
+@include	end.i

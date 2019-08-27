@@ -1,0 +1,33 @@
+@include u.i
+%title ジルコンアックス
+
+=ジルコンアックス
+.revision
+2009年11月15日作成
+
+	=武器データ
+	:価格
+	-48000GOLD
+	:ATP
+	-288
+	:重さ
+	-85
+
+	=装備可能
+	*[アグロス|../char/aguro.w]
+
+	=購入場所
+	*[アルバス|../map/arubus.w]
+
+	=拾える場所
+
+	=落とすモンスター
+
+.aside
+{
+	=関連情報
+	*[装備品一覧|index.w]
+}
+
+@include db.i
+@include nav.i

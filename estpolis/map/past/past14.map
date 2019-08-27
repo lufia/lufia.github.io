@@ -1,0 +1,35 @@
+floor 11 7 "Past 4F-1"
+line 2 3 top
+line 3 3 top
+line 4 2 left
+line 4 2 top
+line 5 2 top
+line 6 1 left
+line 6 1 top
+line 7 1 left
+line 7 2 top
+line 8 2 top
+line 9 2 left
+line 9 3 top
+line 10 3 top
+line 11 3 left
+line 11 4 left
+line 11 5 left
+line 10 6 top
+line 9 6 top
+line 9 6 left
+line 2 3 left
+line 2 4 left
+line 2 5 left
+line 2 6 top
+line 3 6 top
+line 4 6 left
+line 4 7 top
+line 5 7 top
+line 6 7 top
+line 7 7 top
+line 8 7 top
+
+# way
+mark 6 4 14
+mark 6 1 15

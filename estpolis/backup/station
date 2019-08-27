@@ -1,0 +1,12 @@
+@include begin.i
+@include station.i
+@include map.i
+
+=迷いの森の案内所全体マップ(予定)
+:入り口近くのタンス
+-デルデル
+:老人上の本棚
+-せいすい
+-スイングウイング
+
+@include end.i

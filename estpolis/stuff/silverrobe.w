@@ -1,0 +1,37 @@
+@include u.i
+%title シルバーローブ
+
+=シルバーローブ
+.revision
+2009年11月15日作成
+
+	=体装備データ
+	:価格
+	-8400GOLD
+	:DFP
+	-34
+	:重さ
+	-50
+
+	=装備可能
+	*[ルフィア|../char/lufia.w]
+	*[ジュリナ|../char/jerin.w]
+
+	=購入場所
+	*[マース|../map/marse.w]
+	*[エプロ|../map/epro.w]
+
+	=拾える場所
+	*[ヘラート|../map/herat.w]
+	*[光の塔|../map/light.w]
+
+	=落とすモンスター
+
+.aside
+{
+	=関連情報
+	*[装備品一覧|index.w]
+}
+
+@include db.i
+@include nav.i

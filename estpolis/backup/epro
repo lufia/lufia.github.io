@@ -1,0 +1,13 @@
+@include begin.i
+@include epro.i
+@include map.i
+
+=エプロ全体マップ(予定)
+:宿屋から右の家
+-エクスボム
+:道具屋左上の花
+-いのちのみなもと
+:道具屋右上の家
+-エクスマジック
+
+@include	end.i

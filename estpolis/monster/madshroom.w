@@ -1,0 +1,36 @@
+@include u.i
+%title マッシュル
+
+=マッシュル
+.revision
+2009年11月15日作成
+
+	=モンスターデータ
+	:HP
+	-13
+	:EXP
+	-3
+	:GOLD
+	-2GOLD
+
+	=特殊攻撃
+
+	=属性
+
+	=落とすアイテム
+	*[ポーション|../item/potion.w]
+
+	=出現場所
+	*[アレキア|../map/alekia/index.w]周辺
+	*[チャタム|../map/chatam/index.w]周辺
+	*[シェラン|../map/sheran/index.w]周辺
+	*[チャタム北の洞窟|../map/spider/index.w]
+
+.aside
+{
+	=関連情報
+	*[モンスター一覧|index.w]
+}
+
+@include db.i
+@include nav.i

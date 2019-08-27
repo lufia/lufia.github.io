@@ -1,0 +1,11 @@
+@include begin.i
+@include arus.i
+@include map.i
+
+=アルスの村全体マップ(予定)
+:村の入口から左の家
+-ハイマジック
+:中央の家の右裏
+-ちしきのみなもと
+
+@include end.i

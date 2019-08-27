@@ -1,0 +1,12 @@
+@include begin.i
+@include lab1.i
+@include map.i
+
+=シャイア第1研究所全体マップ(予定)
+:2階の、それぞれのロッカー
+-エクスアローズ
+-ハイマジック
+-ハイボム
+-デスアロー
+
+@include end.i

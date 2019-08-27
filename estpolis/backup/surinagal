@@ -1,0 +1,12 @@
+@include begin.i
+@include surinagal.i
+@include map.i
+
+=スリナガル全体マップ(予定)
+:武器屋にある宝箱
+-ハイポーション
+:防具屋右の家
+-ミラクロース
+-ハイマジック
+
+@include end.i

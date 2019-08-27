@@ -1,0 +1,10 @@
+@include begin.i
+@include ghost.i
+@include boss.i
+
+=キーロフ北の洞窟ボス攻略
+	=デビルゴースト
+	この洞窟の宝箱に入っているゴーストリングを、
+	主人公かアグロスに装備させておくと楽になります。
+
+@include end.i

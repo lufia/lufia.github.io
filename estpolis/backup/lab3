@@ -1,0 +1,9 @@
+@include begin.i
+@include lab3.i
+@include map.i
+
+=シャイア第3研究所全体マップ(予定)
+:1階のロッカー
+-ちしきのみなもと
+
+@include	end.i

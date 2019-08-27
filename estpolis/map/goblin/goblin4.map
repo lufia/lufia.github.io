@@ -1,0 +1,27 @@
+floor 9 6 "Goblin B2-3"
+mark 4 2 MP
+mark 6 2 HP
+mark 5 5 4
+
+line 3 2 left
+line 2 3 top
+line 2 3 left
+line 3 2 top
+line 2 4 top
+line 3 4 left
+line 3 5 top
+line 4 5 top
+line 5 5 left
+line 6 5 left
+line 5 6 top
+line 6 5 top
+line 7 5 top
+line 8 4 left
+line 8 4 top
+line 9 3 left
+line 8 3 top
+line 8 2 left
+line 7 2 top
+line 6 2 top
+line 5 2 top
+line 4 2 top
