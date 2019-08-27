@@ -1,0 +1,11 @@
+LIB=/usr/web/plan9
+IDIR=include
+IFILES=\
+	u.i\
+	nav.i\
+
+WFFLAGS=-lja -x w html
+
+PAGE=`{ls *.w */*.w doc/*/*.w lib/*}
+
+<../mkweb
