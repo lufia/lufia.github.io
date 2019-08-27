@@ -1,0 +1,9 @@
+LIB=/usr/web/pkg
+IDIR=include
+IFILES=
+
+WFFLAGS=-lja -x w html
+
+PAGE=`{ls */*.w */*/*.w}
+
+<../mkweb
