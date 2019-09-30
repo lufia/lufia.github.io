@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<script>
+document.createElement('article')
+document.createElement('aside')
+document.createElement('footer')
+document.createElement('header')
+document.createElement('nav')
+document.createElement('section')
+</script>
+<style>
+article, aside, footer, header, nav, section { display: block }
+</style>
+<title>Plan 9: メールサーバの設定</title>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/decor.js"></script>
+<script src="/plan9/lib/complex.js"></script>
+<link rel="stylesheet" type="text/css" href="/plan9/lib/u.css">
+<meta name="author" content="http://www.hatena.ne.jp/lufiabb/">
+</head>
+<body>
+<header>
+		<h1><a href="/plan9/">Plan 9</a></h1>
+</header>
+<nav>
+	<section>
+		<h1>メニュー</h1>
+		<ul>
+		<li><a href="/plan9/doc/inst/">インストール</a></li>
+		<li><a href="/plan9/doc/guide/">システムの使い方</a></li>
+		<li><a href="/plan9/doc/devel/">プログラミング</a></li>
+		<li><a href="/plan9/doc/adm/">システム管理</a></li>
+		<li><a href="/plan9/man/">自作ツール集</a></li>
+		</ul>
+	</section>
+</nav>
+<article>
+	<section>
+		<h1>メールサーバの設定</h1>
+		<p class="revision">2009年10月20日更新</p>
+		<section>
+			<h2>各種ファイルの設定</h2>
+			<p>/mail/lib以下のファイルを書き換えます。</p>
+			<p class="note">これらはuid=upas gid=upasなので、
+			upasグループに所属させておく。</p>
+		</section>
+		<section>
+			<h2>smtpd.conf</h2>
+			<p>smtpdの基本的な設定を書きます。
+			このうち、verifysenderdomは使われてないような。。</p>
+			<pre>defaultdomain lufia.org
+norelay on
+verifysenderdom off
+saveblockedmsg off
+ournets xxx.xxx.xxx.xxx/xx
+ourdomains wisp.lufia.org, lufia.org</pre>
+		</section>
+		<section>
+			<h2>rewrite(rewrite.directからコピーしたものを編集)</h2>
+			<p>初期状態ではrewriteが存在しないので、
+			同じ場所にあるrewrite.directをコピーしてそれを書き換えます。
+			通常であれば、以下の部分だけ書き換えればいいと思います。</p>
+			<pre># your local names
+\l!(.*)   alias   \1
+\l\.lufia.org!(.*)  alias  \1
+lufia.org!(.*)  alias  \1</pre>
+			<p class="note">上記の、\l\.lufia.org!(.*)は、\lがホスト名に置き換えられます。</p>
+		</section>
+		<section>
+			<h2>names.local</h2>
+			<p>これはエイリアスファイルです。
+			最初のカラムに別名を書き、次のカラムに転送するユーザ名を書きます。
+			無ければとくに変更は不要です。</p>
+			<pre>postmaster	glenda
+webmaster	glenda</pre>
+		</section>
+		<section>
+			<h2>remotemail</h2>
+			<pre>fd=lufia.org</pre>
+		</section>
+		<section>
+			<h2>/cron/upas/cron</h2>
+			<p>mailserverとなっている部分を実際のサーバ名で置き換えます。
+			cronの書式はUnixとほとんど同じみたい。
+			cron.dailyみたいなものはありません。</p>
+			<pre># kick mail retries (replace mailserver with your system)
+0,10,20,30,40,50 * * * *	wisp		/bin/upas/runq -a /mail/queue /mail/lib/remotemail
+
+# clean up after grey list
+47 4 * * *	wisp	rm -rf /mail/grey/tmp/*/*</pre>
+			<p>テストして正しく送れていれば正解。</p>
+			<ul>
+			<li>user→外部</li>
+			<li>外部→user</li>
+			<li>外部→webmaster</li>
+			</ul>
+		</section>
+		<section>
+			<h2>メールの転送</h2>
+			<p>転送したいアドレスを/mail/box/$user/forwardに書きます。
+			1行目だけ有効で、複数に転送する場合は空白で区切って書き、
+			また、メールボックスにも残しておく場合は、local!$userを加えます。</p>
+			<pre>glenda@anonymous.com local!glenda</pre>
+		</section>
+		<section>
+			<h2>スパム対策</h2>
+			<p>Plan 9のsmtpdでは、グレーリスト法が使えます。
+			listen監視下のtcp25に、-gオプションを加えるだけです。
+			whitelistなど必要なファイルはインストール時において
+			すでに作られているので、特に気にしなくても問題ありません。</p>
+			<pre>#!/bin/rc
+#smtp serv net incalldir user
+
+user=`{cat /dev/user}
+exec upas/smtpd -g -n $3</pre>
+			<p>あとは、適当なフリーメールなどから送信テストして、
+			/mail/grey/x.x.x.x/y.y.y.y/$userが作成されていれば完了。
+			詳しくは<a href="http://plan9.aichi-u.ac.jp/spam/">スパム対策</a>を参考に。</p>
+		</section>
+		<section>
+			<h2>Outbound Port 25 Blocking</h2>
+			<p>tcp!*!25とtcp!*!587でupas/smtpdが動いている状態を作ります。
+			また、SMTP Authが必要なので、smtpdに-aオプションを与えます。</p>
+			<pre>% cat /cfg/$sysname/service/tcp587
+#!/bin/rc
+user=`{cat /dev/user}
+exec upas/smtpd -a -g -n $3</pre>
+			<p>serviceに実行権を付けたファイルを追加すれば、自動的に反映されます。
+			Plan 9サーバの再起動は必要ありませんし、起動コマンドも必要ありません。</p>
+		</section>
+		<section>
+			<h2>送信者確認の流れ(メモ)</h2>
+			<ol>
+			<li>upas/smtpdが/mail/lib/validatesenderをfork&amp;exec</li>
+			<li>validatesenderは、データを送らないモードでupas/smtpを実行</li>
+			<li>送信者メールアドレスが無効の場合、upas/smtpがエラーを返す</li>
+			</ol>
+			<p>upas/smtpの中はだいたいこんな感じ</p>
+			<ol>
+			<li>ndb/dnsquery $domain mx   =&gt; $hosts</li>
+			<li>ndb/dnsquery ^ ($hosts) ^ ip =&gt; 見つからなければ$hostsから削除</li>
+			<li>dial /net/tcp! ^ ($hosts) ^ !smtp</li>
+			</ol>
+		</section>
+		<section>
+			<h2>トラブルシューティング</h2>
+			<section>
+				<h3>外部から受信したメールがconnection timed outする</h3>
+				<p>/sys/log以下のsmtpd, smtp.fail, smtpd.mxあたりに
+				connection timed outが記録されている場合。</p>
+				<p>cpurcなどでndb/dns実行より前にlistenしてしまうと、
+				smtpdから見える名前空間に/net/dnsが存在しないため、
+				このようなエラーになることがあります。</p>
+				<p>この場合、/cfg/$sysname/cpurcで、
+				listenより先にndb/dnsを動かせばいいです。</p>
+				<div class="note">
+					<p>当時、困ってた時のメモ。</p>
+					<p>デバッグのために、/mail/lib/validatesenderから呼ばれている
+					upas/smtpに-dオプションを与えたかったが、
+					配布ファイルのためになるべく書き換えたくなかった。
+					これはbindすればごまかせる。</p>
+					<p>デバッグオプションを加えると、ログ(/sys/log/smtpd.mx)に</p>
+					<pre>mxlookup returns nothing</pre>
+					<p>というログが出る。</p>
+					<p>/proc/$smtpd/nsをみると、
+					/lib/namespaceから実行しているはずの
+					mount -a /srv/dns /netが見当たらない。
+					でもbootesからは/srv/dnsが見える。
+					パーミッションは666なので問題ない。</p>
+				</div>
+			</section>
+			<section>
+				<h3>IPアドレスで送受信できない</h3>
+				<p>テストのとき、メールの開通確認が終わらないうちに
+				DNSが新サーバを参照してしまうと困るので、
+				MXレコードには現行のサーバのIPのままにしておいて
+				user@xx.xx.xx.xxのようにIPアドレスで直接テストしていたのですが、
+				smtpd.confのourdomainsにIPが登録されていなかったために
+				/sys/log/smtpdにBad Forwardエラーが吐かれていました。
+				この場合、たぶんforwardにもIP直打ち規則を登録しないといけない。</p>
+			</section>
+			<section>
+				<h3>/sys/log/cronに、upasの転送エラーが記録される</h3>
+				<pre>upas:  can't call mailserver: cs: can't translate service</pre>
+				<p>/cron/upas/cronから、
+				mailserverとなっている部分をメールサーバ名に置き換えます。</p>
+				<p>smtpdを動かすつもりがないなら、runqの行を消すか、無効にする。
+				bootesからbind upascron /cron/upas/cronでも大丈夫。</p>
+			</section>
+			<section>
+				<h3>whitelist.starterに追加しても反映されない</h3>
+				<p>ソースを読んでも使われていないようなので、
+				直接whitelistに追加するといいかもしれません。
+				tip9ugメーリングリストはFreeMLを使っています。
+				その場合はこのように。</p>
+				<pre>% cat &gt;&gt;/mail/grey/whitelist
+210.157.23.0/24 *.gmo-media.jp
+211.125.95.0/24 *.gmo-media.jp
+^D</pre>
+			</section>
+		</section>
+	</section>
+</article>
+<aside>
+	<section>
+		<h1>関連情報</h1>
+		<ul>
+		<li><a href="listen.html">listenについて</a></li>
+		<li><a href="securemail.html">メール環境の暗号化</a></li>
+		</ul>
+	</section>
+	<section>
+		<h1>参考ページ</h1>
+		<ul>
+		<li><a href="http://c.p9c.info/plan9/root.html">Plan9 System Management</a></li>
+		<li><a href="http://plan9.aichi-u.ac.jp/admin/mail/config.html">メールに関するファイルの設定</a></li>
+		<li><a href="http://plan9.aichi-u.ac.jp/spam/">スパム対策</a></li>
+		<li><a href="http://www.drk7.jp/MT/archives/001326.html">迷惑メール対策OP25Bについてお勉強</a></li>
+		<li><a href="http://suzuki.tdiary.net/20080305.html#p01">OP25Bは迷惑メール行為を防げるのか?</a></li>
+		</ul>
+	</section>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="mailto:webmaster@lufia.org">webmaster@lufia.org</a>まで連絡ください。</p>
+</footer>
+</body>
+</html>

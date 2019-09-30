@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<script>
+document.createElement('article')
+document.createElement('aside')
+document.createElement('footer')
+document.createElement('header')
+document.createElement('nav')
+document.createElement('section')
+</script>
+<style>
+article, aside, footer, header, nav, section { display: block }
+</style>
+<title>Plan 9: patchを送る</title>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/decor.js"></script>
+<script src="/plan9/lib/complex.js"></script>
+<link rel="stylesheet" type="text/css" href="/plan9/lib/u.css">
+<meta name="author" content="http://www.hatena.ne.jp/lufiabb/">
+</head>
+<body>
+<header>
+		<h1><a href="/plan9/">Plan 9</a></h1>
+</header>
+<nav>
+	<section>
+		<h1>メニュー</h1>
+		<ul>
+		<li><a href="/plan9/doc/inst/">インストール</a></li>
+		<li><a href="/plan9/doc/guide/">システムの使い方</a></li>
+		<li><a href="/plan9/doc/devel/">プログラミング</a></li>
+		<li><a href="/plan9/doc/adm/">システム管理</a></li>
+		<li><a href="/plan9/man/">自作ツール集</a></li>
+		</ul>
+	</section>
+</nav>
+<article>
+	<section>
+		<h1>patchを送る</h1>
+		<p class="revision">2008年6月12日更新</p>
+		<p>Plan 9には、配布物へのパッチを
+		sourcesへ送るコマンドが用意されています。</p>
+		<section>
+			<h2>使い方</h2>
+			<pre>patch/create subject email paths [&lt;description]</pre>
+			<dl>
+			<dt>subject</dt>
+			<dd>/n/sources/patchに作成されるディレクトリ名</dd>
+			<dt>email</dt>
+			<dd>作成者の連絡先</dd>
+			<dd>無い場合は'-'とする</dd>
+			<dt>paths</dt>
+			<dd>パッチ適用済みのファイル。</dd>
+			<dd>通常、/sys/src以下のファイルになる。相対パスでも可。</dd>
+			</dl>
+		</section>
+		<section>
+			<h2>例</h2>
+			<p>この例ではオリジナルを書き換えないように
+			コピーをbindしてますが、直接書き換えてしまっても大丈夫です。
+			patch/createは、pathsの各ファイルと/n/sources以下の
+			同じファイルを比較してアップロードします。</p>
+			<pre>% cd /tmp
+% cp $original $new
+(edit $new)
+% 9fs sources	# patch/createがマウントするので無くてもいい
+% bind $new $original
+% patch/create error-subject - $original
+(パッチの説明...)
+^D</pre>
+		</section>
+	</section>
+</article>
+<aside>
+	<section>
+		<h1>マニュアル</h1>
+		<ul>
+		<li><a href="http://plan9.bell-labs.com/magic/man2html/1/patch">patch(1)</a></li>
+		</ul>
+	</section>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="mailto:webmaster@lufia.org">webmaster@lufia.org</a>まで連絡ください。</p>
+</footer>
+</body>
+</html>

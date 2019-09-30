@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<script>
+document.createElement('article')
+document.createElement('aside')
+document.createElement('footer')
+document.createElement('header')
+document.createElement('nav')
+document.createElement('section')
+</script>
+<style>
+article, aside, footer, header, nav, section { display: block }
+</style>
+<title>Plan 9: 自作ツール集</title>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/decor.js"></script>
+<script src="/plan9/lib/complex.js"></script>
+<link rel="stylesheet" type="text/css" href="/plan9/lib/u.css">
+<meta name="author" content="http://www.hatena.ne.jp/lufiabb/">
+</head>
+<body>
+<header>
+		<h1><a href="/plan9/">Plan 9</a></h1>
+</header>
+<nav>
+	<section>
+		<h1>メニュー</h1>
+		<ul>
+		<li><a href="/plan9/doc/inst/">インストール</a></li>
+		<li><a href="/plan9/doc/guide/">システムの使い方</a></li>
+		<li><a href="/plan9/doc/devel/">プログラミング</a></li>
+		<li><a href="/plan9/doc/adm/">システム管理</a></li>
+		<li><a href="/plan9/man/">自作ツール集</a></li>
+		</ul>
+	</section>
+</nav>
+<article>
+	<section>
+		<h1>自作ツール集</h1>
+		<p class="revision">2011年7月23日</p>
+		<section>
+			<h2>更新情報</h2>
+			<dl>
+			<dt>2012/10/07</dt>
+			<dd>AMD Vlanceドライバ追加</dd>
+			<dt>2011/07/23</dt>
+			<dd>E1000ドライバ追加</dd>
+			<dt>2011/07/01</dt>
+			<dd>IL/IPv6追加</dd>
+			<dt>2010/01/18</dt>
+			<dd>map言語を追加</dd>
+			<dt>2009/09/11</dt>
+			<dd>WebSlice削除</dd>
+			</dl>
+		</section>
+		<section>
+			<h2>プログラム</h2>
+			<dl>
+			<dt><a href="/plan9/src/notefs.c">notefs</a></dt>
+			<dd>メモを書き溜めるだけのファイルサーバ</dd>
+			<dd>newに書けば、書いた日の$year/$mon/$day/$idに保存する</dd>
+			<dt><a href="/plan9/src/monafs.tgz">monafs</a></dt>
+			<dd>2ちゃんねるを読むためのファイルサーバ</dd>
+			<dd><a href="monafs.html">マニュアル</a></dd>
+			<dt><a href="/plan9/src/wf.tgz">wf</a></dt>
+			<dd>wikiのような文法の、HTML5ジェネレータ</dd>
+			<dd><a href="wf.html">マニュアル</a></dd>
+			<dt><a href="/plan9/src/tc.tgz">tc</a></dt>
+			<dd>t-code入力用プログラム</dd>
+			<dt><a href="/plan9/src/msnfs.tgz">msnfs</a></dt>
+			<dd>MSN Messenger file serer</dd>
+			<dt><a href="/plan9/src/dryad.awk">dryad</a></dt>
+			<dd>簡易ユニットテストツール</dd>
+			<dd><a href="dryad.html">マニュアル</a></dd>
+			<dt>map言語</dt>
+			<dd>マップを描画する言語とそのジェネレータ</dd>
+			<dd>使用例は<a href="../../estpolis/map/index.html">エストポリスのページ</a>あたりに</dd>
+			<dd><a href="map.html">マニュアル</a></dd>
+			</dl>
+		</section>
+		<section>
+			<h2>一般カーネル用パッチ</h2>
+			<dl>
+			<dt><a href="../src/il.c">IL/IPv6</a></dt>
+			<dd>ilにIPv6パッチを当てたもの</dd>
+			<dd>詳しくは<a href="../doc/inst/il.html">カーネルにilを組み込む</a>を参照</dd>
+			</dl>
+		</section>
+		<section>
+			<h2>ファイルサーバカーネル用パッチ</h2>
+			<dl>
+			<dt><a href="../src/ether79c970.c">AMD Vlance</a></dt>
+			<dd>VMware ESXiのデバイスに対応させた</dd>
+			<dd>詳しくは<a href="../../notes/2012/1006.html">VMware ESXiにPlan 9を移行したときのトラブルまとめ</a>を参照</dd>
+			<dt><a href="../src/etherigbe.c">E1000</a></dt>
+			<dd>ファイルサーバカーネルのE1000ドライバ</dd>
+			<dd>VMware Playerのデバイスに対応させた</dd>
+			<dd>詳しくは<a href="../../notes/2011/0723.html">VMware Playerにファイルサーバをインストール</a>を参照</dd>
+			</dl>
+		</section>
+		<section>
+			<h2>失敗作</h2>
+			<dl>
+			<dt><a href="/plan9/src/win9p.zip">win9p</a></dt>
+			<dd>Pythonで書いた、9P用Windowsシェル名前空間拡張</dd>
+			<dd>ドライブレター割り当てが不可能のため機能の実装が不可能と分かり、廃棄</dd>
+			</dl>
+		</section>
+	</section>
+</article>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="mailto:webmaster@lufia.org">webmaster@lufia.org</a>まで連絡ください。</p>
+</footer>
+</body>
+</html>

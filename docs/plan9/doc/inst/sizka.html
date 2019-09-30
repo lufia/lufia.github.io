@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<script>
+document.createElement('article')
+document.createElement('aside')
+document.createElement('footer')
+document.createElement('header')
+document.createElement('nav')
+document.createElement('section')
+</script>
+<style>
+article, aside, footer, header, nav, section { display: block }
+</style>
+<title>Plan 9: Sizka BASICへのインストール</title>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/decor.js"></script>
+<script src="/plan9/lib/complex.js"></script>
+<link rel="stylesheet" type="text/css" href="/plan9/lib/u.css">
+<meta name="author" content="http://www.hatena.ne.jp/lufiabb/">
+</head>
+<body>
+<header>
+		<h1><a href="/plan9/">Plan 9</a></h1>
+</header>
+<nav>
+	<section>
+		<h1>メニュー</h1>
+		<ul>
+		<li><a href="/plan9/doc/inst/">インストール</a></li>
+		<li><a href="/plan9/doc/guide/">システムの使い方</a></li>
+		<li><a href="/plan9/doc/devel/">プログラミング</a></li>
+		<li><a href="/plan9/doc/adm/">システム管理</a></li>
+		<li><a href="/plan9/man/">自作ツール集</a></li>
+		</ul>
+	</section>
+</nav>
+<article>
+	<section>
+		<h1>Sizka BASICへのインストール</h1>
+		<p class="revision">2006年9月23日更新</p>
+		<p>若干の非力さは否めませんが、小型で無音の<a href="http://www.pinon-pc.co.jp/pc/products/barebone/sizka-basic/index.html">Sizka BASIC</a>にPlan 9をインストールしてみるページです。</p>
+		<p>結論からいえば、rioが立ち上がらないので、
+		端末として使うのはお勧めしません。
+		認証サーバにしてdrawtermするのがいいです。</p>
+		<section>
+			<h2>準備</h2>
+			<p>まず<a href="http://www.pinon-pc.co.jp/download/pc/index.htm">BIOS 1.5</a>へ
+			アップデートしておきます。</p>
+			<p>FDDもCDドライブも無いので、2.5 HDD変換アダプタなどを使って
+			別のPCからインストールし、それをSizkaへ組み込む作業が必要です。
+			以前、USB FDDやUSB CDドライブで試してみたことがありますが、
+			うまくロードできませんでした。</p>
+		</section>
+		<section>
+			<h2>別PCでインストール</h2>
+			<p>ふつうに進めていけば完了します。
+			fossilとfossil+ventiは、ファイルサーバとして使うなら
+			fossil+ventiのほうがいい気がします。</p>
+			<p>fossil+ventiの場合、インストール直後に
+			以下のようなエラーが発生して、比較的困りやすいのですが。</p>
+			<pre>can't read my ip address
+venti: Err 2 ...</pre>
+			<p>これは、<a href="http://www.plan9.bell-labs.com/wiki/plan9/Network_configuration/index.html">ベル研のWiki</a>によると、
+			IP割り当て前に/net/ipifc/0が127.1として存在するからなので、
+			termrcなどから、ifの行をコメントアウトすればいいです。
+			ip/ipconfigとndb/dnsの2箇所。</p>
+			<pre>if(!test -e /net/ipifc/0/ctl)		# これを消す
+	ip/ipconfig</pre>
+		</section>
+		<section>
+			<h2>HDDをSizkaに移してブート</h2>
+			<p>通常はglendaでログインするところですが、
+			SizkaはVGAが対応していないのか、画面が真っ暗のまま固まります。
+			そこで、まずnoneでログインしVGAまわりを無効化、
+			その後glendaでログインとなります。</p>
+			<p>noneでログインした後は、以下のようにplan9.iniからVGA周りを無効化。</p>
+			<pre>% 9fat:
+% ramfs
+% ed /n/9fat/plan9.ini</pre>
+			<p>だいたい、次の3行をコメントにしておけば大丈夫です。</p>
+			<pre>#mouseport=ps2
+#monitor=xga
+#vgasize=640x480x8</pre>
+			<p>で、ファイルシステムの停止。</p>
+			<pre>% fshalt</pre>
+			<p>初回のみ、fshaltの後にしばらくHDDへアクセスがあります。
+			それが落ち着いたらリブート。</p>
+			<p>これで、glendaでログインしても固まらなくなりますが、
+			samもacmeも使えませんので、非常に不便です。。。
+			認証サーバ化してdrawtermから扱うことをおすすめします。</p>
+		</section>
+		<section>
+			<h2>トラブルシューティング</h2>
+			<section>
+				<h3>ventiがErr 2 ...というエラーを吐いている</h3>
+				<p>時間をローカルに合わせると治まるかもしれません。
+				termrcまたはcpurcのどこかに記述してみてください。</p>
+				<pre>aux/timesync -rL</pre>
+			</section>
+		</section>
+	</section>
+	<section>
+		<h1>Sizka BASICの認証サーバ化ヒント</h1>
+		<p>認証サーバのコンフィグレーションは、
+		他のカーネルと比べてドライバ周りがすっきりしているので、
+		そのままではSizkaのネットワークカードが認識されません。
+		/sys/src/9/pc/pcauthに以下の行を追加します。</p>
+		<pre>link
+	...
+	ether8139 pci
+	...</pre>
+	</section>
+</article>
+<aside>
+	<section>
+		<h1>関連情報</h1>
+		<ul>
+		<li><a href="../adm/timezone.html">時計合わせ</a></li>
+		<li><a href="../adm/ndb.html">ネットワークの設定</a></li>
+		<li><a href="auth.html">認証サーバのインストール</a></li>
+		</ul>
+	</section>
+	<section>
+		<h1>参考ページ</h1>
+		<ul>
+		<li><a href="http://www.plan9.bell-labs.com/wiki/plan9/Installation_instructions/index.html">Installation instructions</a></li>
+		</ul>
+	</section>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="mailto:webmaster@lufia.org">webmaster@lufia.org</a>まで連絡ください。</p>
+</footer>
+</body>
+</html>

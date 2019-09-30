@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<script>
+document.createElement('article')
+document.createElement('aside')
+document.createElement('footer')
+document.createElement('header')
+document.createElement('nav')
+document.createElement('section')
+</script>
+<style>
+article, aside, footer, header, nav, section { display: block }
+</style>
+<title>Plan 9: ファイルサーバの管理</title>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/decor.js"></script>
+<script src="/plan9/lib/complex.js"></script>
+<link rel="stylesheet" type="text/css" href="/plan9/lib/u.css">
+<meta name="author" content="http://www.hatena.ne.jp/lufiabb/">
+</head>
+<body>
+<header>
+		<h1><a href="/plan9/">Plan 9</a></h1>
+</header>
+<nav>
+	<section>
+		<h1>メニュー</h1>
+		<ul>
+		<li><a href="/plan9/doc/inst/">インストール</a></li>
+		<li><a href="/plan9/doc/guide/">システムの使い方</a></li>
+		<li><a href="/plan9/doc/devel/">プログラミング</a></li>
+		<li><a href="/plan9/doc/adm/">システム管理</a></li>
+		<li><a href="/plan9/man/">自作ツール集</a></li>
+		</ul>
+	</section>
+</nav>
+<article>
+	<section>
+		<h1>ファイルサーバの管理</h1>
+		<p class="revision">2010年11月12日更新</p>
+		<p>調べながら書いてます。
+		未整理のものは<a href="/notes/fs.html">日記のほう</a>にもありますよ。</p>
+		<section>
+			<h2>filesコマンド</h2>
+			<pre>N out of M files used
+  A:     B
+O out of M files used</pre>
+			<dl>
+			<dt>N</dt>
+			<dd>開いているファイル数</dd>
+			<dt>M</dt>
+			<dd>conf.nfile</dd>
+			<dt>A</dt>
+			<dd>コネクションのチャネルナンバー</dd>
+			<dd>whoのものと同じ</dd>
+			<dt>B</dt>
+			<dd>Aが開いているファイル数</dd>
+			<dt>O</dt>
+			<dd>Bの合計</dd>
+			</dl>
+		</section>
+		<section>
+			<h2>checkコマンド</h2>
+			<dl>
+			<dt>nfiles</dt>
+			<dd>総ファイル数</dd>
+			<dt>fsize</dt>
+			<dd>sb-&gt;fsize</dd>
+			<dt>nused</dt>
+			<dd>有効ブロック総数</dd>
+			<dt>ndup</dt>
+			<dd>重複したブロック数(amark)..有効ブロック</dd>
+			<dt>nfree</dt>
+			<dd>フリーリスト中の総ブロック数</dd>
+			<dt>tfree</dt>
+			<dd>たぶん、排他ロックなファイルを開いている数</dd>
+			<dt>nfdup</dt>
+			<dd>重複したブロック数(fmark)..フリーリスト</dd>
+			<dt>nmiss</dt>
+			<dd>fsize-fstart-nused-nfree</dd>
+			<dt>nbad</dt>
+			<dd>fstart..fsizeに収まらないブロックアドレス数</dd>
+			<dt>nqbad</dt>
+			<dd>0..sizqbitsに収まらないqid.pathの数</dd>
+			<dt>maxq</dt>
+			<dd>最大のqid.path</dd>
+			</dl>
+		</section>
+		<section>
+			<h2>statw</h2>
+			<pre>cwstats main
+	filesys main
+	nio   =      1      1      2
+		maddr  =        3
+		msize  =   267049
+		caddr  =    26708
+		csize  = 17892283
+		sbaddr =   423710
+		craddr =   423938   423938
+		roaddr =   423941   423941
+		fsize  =   423943   423943  0+ 1%
+		slast  =            423409
+		snext  =            423942
+		wmax   =   423941           0+ 1%
+		wsize  = 30524356           1+ 0%
+		17804952 none
+		    60 dirty
+		     0 dump
+		 86888 read
+		   383 write
+		     0 dump1
+		cache  1% full</pre>
+		</section>
+		<section>
+			<h2>statd</h2>
+			<pre>	0.0 work =      1      1      1 xfrs
+	    rate =   7334   9050   8725 tBps
+	1.14 work =      0      0      0 xfrs
+	    rate =      0      0     88 tBps
+	1.15 work =      0      0      0 xfrs
+	    rate =      0      0     48 tBps</pre>
+		</section>
+		<section>
+			<h2>コンソールのログを取る方法</h2>
+			<p>9fansより。</p>
+			<blockquote>You have to set up console logging yourself on a cpu server, like this:</blockquote>
+			<pre>aux/clog /mnt/consoles/fileserver /sys/log/fileserver &amp;</pre>
+			<blockquote>where &quot;fileserver&quot; is the name of your file server.
+			This assumes you've already got <a href="http://plan9.bell-labs.com/magic/man2html/4/consolefs">consolefs(4)</a>configured,
+			running and mounted, and that
+			you've got the file server's serial console configured
+			and wired up to a serial port on the cpu server doing the logging.
+			Add this to your file server's plan9.ini:</blockquote>
+			<pre>console=0 baud=9600</pre>
+			<blockquote>It's a bit of work to set up, but very handy.
+			Not only do you get a console log,
+			but you can access the console from any of your Plan 9 machines with:</blockquote>
+			<pre>C fileserver</pre>
+			<section>
+				<h3>ファイルサーバ側の設定</h3>
+				<p>ファイルサーバのplan9.iniに、consoleの設定を追加します。
+				このconsoleは0または1を設定でき、ポート0またはポート1から
+				データを流す、という意味になります。
+				baudはデフォルトで9600なので省略してもいいです。</p>
+				<pre>console=0</pre>
+				<p>ログの受け皿も用意しておきます。</p>
+				<pre>fs: create /sys/log/fileserver sys sys 666 a</pre>
+			</section>
+			<section>
+				<h3>ログを受け取る側の設定</h3>
+				<p>まず、/lib/ndb/consoledbを編集します。</p>
+				<pre># see consolefs(4)
+group=sys
+	uid=bootes
+console=fileserver dev=/dev/eia0 openondemand=1
+	gid=sys</pre>
+				<p>次に/cfg/$sysname/namespace。
+				シリアルポートを/devにbindします。
+				このファイルはシェルスクリプトのように見えますが、
+				限られたコマンドしか受け付けません。
+				詳細は<a href="http://plan9.bell-labs.com/magic/man2html/6/namespace">namespace(6)</a>。</p>
+				<pre>bind -a #t /dev</pre>
+				<p>最後に、/cfg/$sysname/cpustartあたりに以下を追加。</p>
+				<pre>aux/consolefs
+aux/clog /mnt/consoles/fileserver /sys/log/fileserver &amp;</pre>
+			</section>
+			<section>
+				<h3>トラブルシューティング</h3>
+				<section>
+					<h4>/dev/eia0等が無い</h4>
+					<p>カーネルデバイス#tから見えますので、
+					/cfg/$sysname/namespaceあたりからbindします。</p>
+				</section>
+				<section>
+					<h4>/cfg/$sysname/namespaceが実行されない</h4>
+					<p>/cfg/$sysname/namespaceにbindを書いているのに
+					/dev/eia0が見つからない場合。
+					環境変数sysnameが設定されていないかもしれません。</p>
+					<p>受信側のplan9.iniに、sysnameを追加します。</p>
+					<pre>sysname=wisp</pre>
+					<p>または、consolefsを実行する直前にbindするとか。</p>
+					<div class="note">
+						<p>おそらく、namespaceの後にcpurcとなるので、
+						/lib/namespaceの最後にある$sysnameを使った行は
+						plan9.iniで設定しない限り実行されないのでしょう。。
+						手で設定したものとndb/csの結果が
+						違ったらどうするのだろうというのは置いておいて。</p>
+						<p>と思ってたら、起動順について<a href="http://9fans.net/archive/2010/09/346">9fansで話題に上がりました</a>。</p>
+						<ol>
+						<li>init</li>
+						<li>newns</li>
+						<li>/lib/namespace</li>
+						<li>/cfg/$sysname/namespace(あれば)</li>
+						<li>/rc/bin/cpurc</li>
+						</ol>
+						<p>ここで、$sysnameは設定されていないので読みません。
+						では何のためにあるのかというと、ブート後、
+						名前空間を変更する場合に使うらしいです。
+						auth/noneとか、listen(8)の/rc/bin/serviceとか。
+						service.authのほうは、呼び出し元と同じ名前空間みたい。</p>
+					</div>
+				</section>
+				<section>
+					<h4>データを受信しない</h4>
+					<p>デバッグなどのため、ふつうのユーザで動かしている場合は、
+					bootesで試してみてください。
+					bootes以外ではなぜかうまくいかなかった記憶がやんわりと。</p>
+				</section>
+			</section>
+		</section>
+	</section>
+</article>
+<aside>
+	<section>
+		<h1>関連情報</h1>
+		<ul>
+		<li><a href="http://plan9.bell-labs.com/magic/man2html/8/fs">fs(8)</a></li>
+		<li><a href="listen.html">listenについて</a></li>
+		</ul>
+	</section>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="mailto:webmaster@lufia.org">webmaster@lufia.org</a>まで連絡ください。</p>
+</footer>
+</body>
+</html>

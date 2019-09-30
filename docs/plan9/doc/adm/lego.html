@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<script>
+document.createElement('article')
+document.createElement('aside')
+document.createElement('footer')
+document.createElement('header')
+document.createElement('nav')
+document.createElement('section')
+</script>
+<style>
+article, aside, footer, header, nav, section { display: block }
+</style>
+<title>Plan 9: legoを使った証明書更新</title>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/decor.js"></script>
+<script src="/plan9/lib/complex.js"></script>
+<link rel="stylesheet" type="text/css" href="/plan9/lib/u.css">
+<meta name="author" content="http://www.hatena.ne.jp/lufiabb/">
+</head>
+<body>
+<header>
+		<h1><a href="/plan9/">Plan 9</a></h1>
+</header>
+<nav>
+	<section>
+		<h1>メニュー</h1>
+		<ul>
+		<li><a href="/plan9/doc/inst/">インストール</a></li>
+		<li><a href="/plan9/doc/guide/">システムの使い方</a></li>
+		<li><a href="/plan9/doc/devel/">プログラミング</a></li>
+		<li><a href="/plan9/doc/adm/">システム管理</a></li>
+		<li><a href="/plan9/man/">自作ツール集</a></li>
+		</ul>
+	</section>
+</nav>
+<article>
+	<section>
+		<h1>legoを使った証明書更新</h1>
+		<p class="revision">2019年6月24日更新</p>
+		<p><a href="https://go-acme.github.io/lego/">lego</a>はGoで書かれたLet's encryptクライアントです。
+		バイナリさえ用意すればPlan 9で動作します。</p>
+		<section>
+			<h2>legoコマンドをインストール</h2>
+			<p>前提として<strong>/sys/lib/tls/ca.pem</strong>が必要です。
+			準備できていない場合は、9legacyなどからインストールしましょう。</p>
+			<p>次に、legoコマンドをインストールします。
+			Plan 9にGo開発環境を構築済みの場合は、次のコマンドで行えます。</p>
+			<pre>$ go get github.com/xenolf/lego/cmd/lego</pre>
+			<p>または、GOOSをplan9にセットするとPlan 9で動作するコマンドがビルドできます。</p>
+			<pre>$ git clone https://github.com/xenolf/lego
+$ cd lego/cmd/lego
+$ GOOS=plan9 GOARCH=386 go build</pre>
+		</section>
+		<section>
+			<h2>新規発行の場合</h2>
+			<p>初めてLet's encryptで証明書を発行する場合は、lego runコマンドを使います。</p>
+			<pre>% lego -a -m info@example.com -d example.com -k rsa2048 run</pre>
+			<p>Plan 9で使う証明書を発行するために必須のオプションは上記の通りです。
+			legoには他にもオプションがあり、--path &lt;dir&gt;とすると証明書や鍵ファイルを
+			&lt;dir&gt;以下で管理します。また、ip/httpd/httpdが既に動作している場合、
+			--webroot /usr/webのようにするとhttpdを経由してドメインの確認を行います。</p>
+			<pre>% lego -a -m info@example.com -d example.com -k rsa2048 --webroot /usr/web run
+% rm /usr/web/.well-known/acme-challenge
+% rm /usr/web/.well-known</pre>
+		</section>
+		<section>
+			<h2>更新の場合</h2>
+			<p>新規発行の時に使ったコマンドから、runをrenewに変更するだけです。
+			--pathオプションを使って管理ディレクトリを変更していた場合は、
+			同じディレクトリを与えてあげる必要があります。</p>
+		</section>
+		<section>
+			<h2>httpdに反映</h2>
+			<p>Let's encryptで発行した証明書とペアの鍵ファイルを、
+			factotumで扱えるように変換します。</p>
+			<pre>% cd .lego/certificates
+% auth/pemdecode 'RSA PRIVATE KEY' example.com.key |
+&gt; auth/asn12rsa -t 'service=tls role=client owner=*' &gt;key</pre>
+			<p>終わったら、bootesのfactotumに設定しましょう。</p>
+			<pre>% auth/secstore -g factotum
+% cp key factotum (古い秘密鍵を新しい鍵で置き換え)
+% auth/secstore -p factotum
+% rm factotum</pre>
+			<p>最後に、対応するサーバ証明書を更新します。</p>
+			<pre>% sed '/^$/,$d' example.com.crt &gt;/sys/lib/tls/cert.pem
+% sed '1,/^$/d' example.com.crt &gt;/sys/lib/tls/chain.pem
+% ip/httpd/httpd -c /sys/lib/tls/cert.pem -C /sys/lib/tls/chain.pem</pre>
+		</section>
+	</section>
+</article>
+<aside>
+	<section>
+		<h1>参考ページ</h1>
+		<ul>
+		<li><a href="certs.html">正当な証明書を扱う</a></li>
+		</ul>
+	</section>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="mailto:webmaster@lufia.org">webmaster@lufia.org</a>まで連絡ください。</p>
+</footer>
+</body>
+</html>

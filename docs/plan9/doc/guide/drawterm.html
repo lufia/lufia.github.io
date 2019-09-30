@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<script>
+document.createElement('article')
+document.createElement('aside')
+document.createElement('footer')
+document.createElement('header')
+document.createElement('nav')
+document.createElement('section')
+</script>
+<style>
+article, aside, footer, header, nav, section { display: block }
+</style>
+<title>Plan 9: drawterm</title>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/decor.js"></script>
+<script src="/plan9/lib/complex.js"></script>
+<link rel="stylesheet" type="text/css" href="/plan9/lib/u.css">
+<meta name="author" content="http://www.hatena.ne.jp/lufiabb/">
+</head>
+<body>
+<header>
+		<h1><a href="/plan9/">Plan 9</a></h1>
+</header>
+<nav>
+	<section>
+		<h1>メニュー</h1>
+		<ul>
+		<li><a href="/plan9/doc/inst/">インストール</a></li>
+		<li><a href="/plan9/doc/guide/">システムの使い方</a></li>
+		<li><a href="/plan9/doc/devel/">プログラミング</a></li>
+		<li><a href="/plan9/doc/adm/">システム管理</a></li>
+		<li><a href="/plan9/man/">自作ツール集</a></li>
+		</ul>
+	</section>
+</nav>
+<article>
+	<section>
+		<h1>drawterm</h1>
+		<p class="revision">2009年11月4日更新</p>
+		<section>
+			<h2>使い方</h2>
+			<pre>drawterm -a authsrv -c cpusrv</pre>
+			<p>その他のオプションは<a href="http://plan9.bell-labs.com/magic/man2html/8/drawterm">drawterm(8)</a>。</p>
+		</section>
+		<section>
+			<h2>ポート</h2>
+			<p>drawtermで使うポートは、古いバージョンと
+			drawterm2000以降では異なります。
+			従来のバージョンでは、tcp567とtcp17013を使っていましたが、
+			現在はtcp567とtcp17010を利用します。</p>
+		</section>
+		<section>
+			<h2>日本語入力</h2>
+			<p>Windows版のdrawterm2000は、
+			IMEから入力すると文字化けを起こしていましたが、
+			2009年9月現在の最新版では、特に問題なく入力可能です。</p>
+			<p>Mac版では、Carbon/X11共に使えていません。
+			そのため、Plan 9からktransやskkを使うしかありません。</p>
+		</section>
+		<section>
+			<h2>ローカルファイルの参照</h2>
+			<p>drawtermは、ベースとなっているcpuと同じように、
+			ローカルファイルを/mnt/termから参照できます。
+			ただし、Windows版drawtermの最新版では、
+			ファイルのリストが取れません。読み書きはできるので、
+			ローカルからファイルサーバにコピーなんてことはできます。</p>
+			<p>不思議なことに、前バージョンのdrawterm2000では
+			ファイルのリストが取れます。何か問題があったのでしょうか。</p>
+		</section>
+		<section>
+			<h2>DrawtermのApp化</h2>
+			<p>MacでDockに登録するために、<a href="http://d.hatena.ne.jp/oraccha/20080209/1202565776">Drawterm.app</a>を
+			参考にしたのですが、なぜかこのままでは動きませんでした。
+			具体的に言えば、Carbon/X11共に、パスワードを入力した直後、
+			mountとbindがエラーになってしまいます。</p>
+			<pre>secstore password:
+usage: mount [-a|-b] [-cnq] [-k keypattern] /srv/service dir [spec]
+usage: bind [-b|-a|-c|-bc|-ac] new old
+usage: bind [-b|-a|-c|-bc|-ac] new old
+usage: bind [-b|-a|-c|-bc|-ac] new old
+mount: can't open /srv/net: '/srv/net' file does not exist
+/lib/namespace.local: rc: .: can't open: '/lib/namespace.local' does not exist</pre>
+			<p>ターミナルからcore.shを実行させた場合は問題ありませんが、
+			Drawterm.appをダブルクリックした場合に限り、このエラーになります。
+			環境の問題なのでしょうか。Leopard, Snow Leopard共にだめでした。</p>
+			<p>そこで、core.shを以下のように書き換えました。</p>
+			<pre>#!/bin/sh
+
+cd ~ &amp;&amp; /Applications/Drawterm.app/Contents/MacOS/drawterm -a auth -c cpu &amp;
+exit 0</pre>
+		</section>
+	</section>
+</article>
+<aside>
+	<section>
+		<h1>参考ページ</h1>
+		<ul>
+		<li><a href="http://swtch.com/drawterm/">Drawterm</a></li>
+		<li><a href="http://d.hatena.ne.jp/oraccha/20090211/1234354600">Plan 9初心者ガイド - Plan9日記</a></li>
+		</ul>
+	</section>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="mailto:webmaster@lufia.org">webmaster@lufia.org</a>まで連絡ください。</p>
+</footer>
+</body>
+</html>

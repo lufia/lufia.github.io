@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<script>
+document.createElement('article')
+document.createElement('aside')
+document.createElement('footer')
+document.createElement('header')
+document.createElement('nav')
+document.createElement('section')
+</script>
+<style>
+article, aside, footer, header, nav, section { display: block }
+</style>
+<title>Plan 9: Infernoメモ</title>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/decor.js"></script>
+<script src="/plan9/lib/complex.js"></script>
+<link rel="stylesheet" type="text/css" href="/plan9/lib/u.css">
+<meta name="author" content="http://www.hatena.ne.jp/lufiabb/">
+</head>
+<body>
+<header>
+		<h1><a href="/plan9/">Plan 9</a></h1>
+</header>
+<nav>
+	<section>
+		<h1>メニュー</h1>
+		<ul>
+		<li><a href="/plan9/doc/inst/">インストール</a></li>
+		<li><a href="/plan9/doc/guide/">システムの使い方</a></li>
+		<li><a href="/plan9/doc/devel/">プログラミング</a></li>
+		<li><a href="/plan9/doc/adm/">システム管理</a></li>
+		<li><a href="/plan9/man/">自作ツール集</a></li>
+		</ul>
+	</section>
+</nav>
+<article>
+	<section>
+		<h1>Infernoメモ</h1>
+		<p class="revision">2011年2月14日更新</p>
+		<section>
+			<h2>ユーザ名を指定してログイン</h2>
+			<pre>emu -g 1024x768 wm/wm wm/logon -u username</pre>
+		</section>
+		<section>
+			<h2>ユーザの作成</h2>
+			<p>/usr/infernoをコピー。</p>
+			<pre>% cd /usr
+% cp -r inferno username</pre>
+		</section>
+		<section>
+			<h2>起動スクリプト</h2>
+			<p>/sh/lib/profileに書く。</p>
+		</section>
+		<section>
+			<h2>初期設定</h2>
+			<p>$home/lib/wmsetupに書く。</p>
+			<pre>#plumber
+ndb/cs
+ndb/dns -r
+auth/factutum
+auth/feedkey</pre>
+		</section>
+		<section>
+			<h2>ホストOSとのクリップボード共有</h2>
+			<pre>% bind -b '#^' /chan</pre>
+			<p>wmsetupあたりに記述しておくといいかもしれない。</p>
+		</section>
+		<section>
+			<h2>DNSが引けない</h2>
+			<p>dnsが起動していない。$home/lib/wmsetupに以下を追加する。</p>
+			<pre>ndb/dns -r</pre>
+		</section>
+		<section>
+			<h2>drawtermっぽいこと</h2>
+			<p>inferno-listにあった<a href="http://permalink.gmane.org/gmane.os.inferno.general/1416">drawterm equivalent in inferno</a>より。</p>
+			<pre>% mount {wmexport} /mnt/wm
+% cpu tcp!board
+; wmimport -w /n/client/mnt/wm wm/wm&amp;</pre>
+		</section>
+		<section>
+			<h2>Mounting Plan 9 fs on Inferno</h2>
+			<ul>
+			<li><a href="http://groups.google.com/group/comp.os.plan9/browse_thread/thread/f5b23e0fa87119de#">9fans</a></li>
+			</ul>
+		</section>
+		<section>
+			<h2>acmeのフォント</h2>
+			<p>どうやら<a href="http://d.hatena.ne.jp/kayn_koen/20110202">Plan9他からコピーすればいい</a>みたい。
+			WindowsのInfernoを使っていますが、コピーしただけでは
+			なぜかSegmentation Violationだったのですが、
+			/fonts/lucidasans/euro.8.fontの最後から
+			以下の行を削除したところ動きました。</p>
+			<pre>0xFFFD 0xFFFD 0x80 lsr.14</pre>
+			<p>原因は調べてないけどまあいいか。</p>
+		</section>
+		<section>
+			<h2>日記から</h2>
+			<ul>
+			<li><a href="../../../notes/2006/1015.html">InfernoからホストOSをマウントする</a></li>
+			<li><a href="../../../notes/2007/1216.html">Limboでお題</a></li>
+			<li><a href="../../../notes/2008/0801.html">Plan 9 to Inferno translation</a></li>
+			<li><a href="../../../notes/2010/0420.html">Inferno httpdとマルチバイト</a></li>
+			<li><a href="../../../notes/2010/0512.html">Inferno Wiki</a></li>
+			</ul>
+		</section>
+	</section>
+</article>
+<aside>
+	<section>
+		<h1>参考ページ</h1>
+		<ul>
+		<li><a href="http://c.p9c.info/inferno/ilog.html">Inferno log</a></li>
+		</ul>
+	</section>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="mailto:webmaster@lufia.org">webmaster@lufia.org</a>まで連絡ください。</p>
+</footer>
+</body>
+</html>

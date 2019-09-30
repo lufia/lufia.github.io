@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<script>
+document.createElement('article')
+document.createElement('aside')
+document.createElement('footer')
+document.createElement('header')
+document.createElement('nav')
+document.createElement('section')
+</script>
+<style>
+article, aside, footer, header, nav, section { display: block }
+</style>
+<title>Plan 9: ネットワークの設定</title>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/decor.js"></script>
+<script src="/plan9/lib/complex.js"></script>
+<link rel="stylesheet" type="text/css" href="/plan9/lib/u.css">
+<meta name="author" content="http://www.hatena.ne.jp/lufiabb/">
+</head>
+<body>
+<header>
+		<h1><a href="/plan9/">Plan 9</a></h1>
+</header>
+<nav>
+	<section>
+		<h1>メニュー</h1>
+		<ul>
+		<li><a href="/plan9/doc/inst/">インストール</a></li>
+		<li><a href="/plan9/doc/guide/">システムの使い方</a></li>
+		<li><a href="/plan9/doc/devel/">プログラミング</a></li>
+		<li><a href="/plan9/doc/adm/">システム管理</a></li>
+		<li><a href="/plan9/man/">自作ツール集</a></li>
+		</ul>
+	</section>
+</nav>
+<article>
+	<section>
+		<h1>ネットワークの設定</h1>
+		<p class="revision">2009年9月5日更新</p>
+		<p>Plan 9のネットワーク設定ファイルは、/lib/ndb/localです。
+		これはUnixで言うところの、hostsとnamed.confを
+		まとめたようなもので、そこそこ厄介です。</p>
+		<p>以下は、現在使っている設定から
+		DNSまわりの記述を除いたものです。
+		ipnetに共通項を書いておいて、他のエントリから
+		参照するようにしています。</p>
+		<pre>
+#
+#  files comprising the database, use as many as you like, see ndb(6)
+#
+database=
+	file=/lib/ndb/local
+	file=/lib/ndb/common
+
+auth=sources.cs.bell-labs.com authdom=outside.plan9.bell-labs.com
+
+#
+#  because the public demands the name localsource
+#
+ip=127.0.0.1 sys=localhost dom=localhost
+
+ipnet=home ip=192.168.1.0 ipmask=255.255.255.0
+	fs=dryad.lufia.org
+	ipgw=192.168.1.1
+	dns=xxx.xxx.xxx.xxx		# プロバイダのDNS
+	dnsdomain=lufia.org
+	auth=wisp.lufia.org
+	authdom=mana.lufia.org
+	cpu=wisp.lufia.org
+
+sys=flammie dom=flammie.lufia.org
+	ip=192.168.1.1
+
+sys=dryad dom=dryad.lufia.org
+	ip=192.168.1.23
+	proto=il
+
+sys=wisp dom=wisp.lufia.org
+	ip=192.168.1.7
+	proto=il
+	ether=0006a54200a1
+
+ip=192.168.1.7 dom=lufia.org</pre>
+		<p>上記では、sysの値とdomの値を揃えていますが、
+		異なっていてもかまいません。</p>
+		<p>ipgwの値をflammie.lufia.orgとしても動きそうなものですが、
+		そうすると値が化けてしまって、うまく参照できませんでした。
+		なので直接IPアドレスを書いています。</p>
+		<p>etherの値は該当カードのMACアドレスで、
+		/net/ether0/addrを読むと調べられます。
+		たぶん無くても動きます。</p>
+		<p>最後のエントリはwisp.lufia.orgの別名になります。
+		cnameとどちらにするか迷った結果、こうした記憶がありますが、
+		いろいろなところが定かではありません。
+		目的はhttp://lufia.org/として参照できるように。</p>
+	</section>
+</article>
+<aside>
+	<section>
+		<h1>関連情報</h1>
+		<ul>
+		<li><a href="http://plan9.bell-labs.com/magic/man2html/6/ndb">ndb(6)</a></li>
+		<li><a href="../inst/auth.html">認証サーバのインストール</a></li>
+		<li><a href="../inst/il.html">カーネルにilを組み込む</a></li>
+		<li><a href="dns.html">DNSの設定</a></li>
+		</ul>
+	</section>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="mailto:webmaster@lufia.org">webmaster@lufia.org</a>まで連絡ください。</p>
+</footer>
+</body>
+</html>

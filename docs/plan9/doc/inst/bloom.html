@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<script>
+document.createElement('article')
+document.createElement('aside')
+document.createElement('footer')
+document.createElement('header')
+document.createElement('nav')
+document.createElement('section')
+</script>
+<style>
+article, aside, footer, header, nav, section { display: block }
+</style>
+<title>Plan 9: bloomフィルタ付きventiを作る</title>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/decor.js"></script>
+<script src="/plan9/lib/complex.js"></script>
+<link rel="stylesheet" type="text/css" href="/plan9/lib/u.css">
+<meta name="author" content="http://www.hatena.ne.jp/lufiabb/">
+</head>
+<body>
+<header>
+		<h1><a href="/plan9/">Plan 9</a></h1>
+</header>
+<nav>
+	<section>
+		<h1>メニュー</h1>
+		<ul>
+		<li><a href="/plan9/doc/inst/">インストール</a></li>
+		<li><a href="/plan9/doc/guide/">システムの使い方</a></li>
+		<li><a href="/plan9/doc/devel/">プログラミング</a></li>
+		<li><a href="/plan9/doc/adm/">システム管理</a></li>
+		<li><a href="/plan9/man/">自作ツール集</a></li>
+		</ul>
+	</section>
+</nav>
+<article>
+	<section>
+		<h1>bloomフィルタ付きventiを作る</h1>
+		<p class="revision">2015年5月4日更新</p>
+		<p>現在の(ベル研が配布している)インストールCDは、
+		ventiのbloomフィルタを作成しません。
+		インストールが終わってからbloomフィルタを追加するのは
+		ディスクを追加したりと面倒なので、インストール時に作っておきます。</p>
+		<section>
+			<h2>インストール中で</h2>
+			<p>CDイメージからブートしたら、prepdiskまではそのまま進めます。
+			prepdiskまで進んだら、別のwindowを開いてprepdiskを手動実行します。</p>
+			<pre>% disk/prep -a 9fat -a nvram -a arenas -a isect -a bloom -a fossil -a swap /dev/sdC0/plan9
+% disk/prep -p /dev/sdC0/plan9 &gt;/dev/sdC0/ctl</pre>
+			<p>終わったらwindowを閉じて、prepdiskを実行しますが、
+			prepdiskは終わっているので、そのままqでprepdiskを抜けて次へ進めます。</p>
+		</section>
+		<section>
+			<h2>初回ブートのあと</h2>
+			<p>/dev/swapの値を以下に設定して、bloomsizeを計算します。</p>
+			<pre>#!/usr/bin/awk -f
+
+BEGIN {
+	# cat /dev/swap
+	pgsize = 4096 # /dev/swapのpagesize
+	userused = 1424 # /dev/swapのuser左側
+	userpgs = 458749 # /dev/swapのuser右側
+
+	userfree = (userpgs-userused)*pgsize
+	bloomsize = 2 ^ int(log(userfree/1024/1024*20/100*1/3) / log(2))
+	print bloomsize
+}</pre>
+			<p>上記結果をfmtbloomの-sオプションに与えてフォーマットします。</p>
+			<pre>% venti/fmtbloom -s 64m /dev/sdC0/bloom</pre>
+			<p>あとはventi.confにbloomを設定します。</p>
+			<pre>% venti/conf /dev/sdC0/arenas &gt;/tmp/venti.conf
+(isectとarenasの間あたりに追加)
+bloom /dev/sdC0/bloom
+% venti/conf -w /dev/sdC0/arenas /venti.conf</pre>
+		</section>
+	</section>
+</article>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="mailto:webmaster@lufia.org">webmaster@lufia.org</a>まで連絡ください。</p>
+</footer>
+</body>
+</html>

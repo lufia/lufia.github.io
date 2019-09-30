@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<script>
+document.createElement('article')
+document.createElement('aside')
+document.createElement('footer')
+document.createElement('header')
+document.createElement('nav')
+document.createElement('section')
+</script>
+<style>
+article, aside, footer, header, nav, section { display: block }
+</style>
+<title>Plan 9: DNSの設定</title>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/decor.js"></script>
+<script src="/plan9/lib/complex.js"></script>
+<link rel="stylesheet" type="text/css" href="/plan9/lib/u.css">
+<meta name="author" content="http://www.hatena.ne.jp/lufiabb/">
+</head>
+<body>
+<header>
+		<h1><a href="/plan9/">Plan 9</a></h1>
+</header>
+<nav>
+	<section>
+		<h1>メニュー</h1>
+		<ul>
+		<li><a href="/plan9/doc/inst/">インストール</a></li>
+		<li><a href="/plan9/doc/guide/">システムの使い方</a></li>
+		<li><a href="/plan9/doc/devel/">プログラミング</a></li>
+		<li><a href="/plan9/doc/adm/">システム管理</a></li>
+		<li><a href="/plan9/man/">自作ツール集</a></li>
+		</ul>
+	</section>
+</nav>
+<article>
+	<section>
+		<h1>DNSの設定</h1>
+		<p class="revision">2010年9月4日更新</p>
+		<p>だいたいは<a href="ndb.html">ネットワークの設定</a>と同じなので省略して。。</p>
+		<pre>#
+#  files comprising the database, use as many as you like, see ndb(6)
+#
+database=
+	file=/lib/ndb/local
+	file=/lib/ndb/common
+
+auth=sources.cs.bell-labs.com authdom=outside.plan9.bell-labs.com
+
+#
+#  because the public demands the name localsource
+#
+ip=127.0.0.1 sys=localhost dom=localhost
+
+dom=lufia.org soa=
+	refresh=3600 ttl=3600
+	ns=wisp.lufia.org
+	mb=lufia@lufia.org
+	mx=wisp.lufia.org pref=10
+
+dom=1.168.192.in-addr.arpa soa=
+	refresh=3600 ttl=3600
+	ns=wisp.lufia.org
+
+ipnet=home ip=192.168.1.0 ipmask=255.255.255.0
+	fs=dryad.lufia.org
+	ipgw=192.168.1.1
+	dns=wisp.lufia.org
+	dnsdomain=lufia.org
+	auth=wisp.lufia.org
+	authdom=mana.lufia.org
+	cpu=wisp.lufia.org
+
+sys=flammie dom=flammie.lufia.org
+	ip=192.168.1.1
+	ether=0021a075d28a
+
+sys=dryad dom=dryad.lufia.org
+	ip=192.168.1.23
+	proto=il
+	ether=00609580c28e
+
+sys=wisp dom=wisp.lufia.org
+	ip=192.168.1.7
+	proto=il
+	ether=00a0b0a501ff
+	dns=xxx.xxx.xxx.xxx			# プロバイダのDNS
+
+sys=jinn dom=jinn.lufia.org
+	ip=192.168.1.100
+	ether=041e6499c70a
+
+sys=luna dom=luna.lufia.org
+	ip=192.168.1.101
+	ether=002436eafb31
+
+sys=fairy dom=fairy.lufia.org
+	ip=192.168.1.102
+	ether=0023df18de16
+
+ip=192.168.1.7 dom=lufia.org</pre>
+		<p>基本的にはipnetの設定でdnsを与えていますが、
+		DNSサーバだけは、個別のエントリでdnsを設定しています。</p>
+		<p>次に、dom=1.168.192.in-addr.arpaのエントリは、
+		逆引きを使わないのであれば無くても問題ありません。</p>
+		<p>また、各ホストにetherの値を設定していますが、
+		これがあると<a href="http://plan9.bell-labs.com/magic/man2html/8/dhcpd">dhcpd(8)</a>がIPアドレスを固定して割り当てます。</p>
+		<p>設定が終わったら、cpurcのndb/dns呼び出しを以下のように変更。</p>
+		<pre>ndb/dns -sr</pre>
+	</section>
+</article>
+<aside>
+	<section>
+		<h1>関連情報</h1>
+		<ul>
+		<li><a href="http://plan9.bell-labs.com/magic/man2html/6/ndb">ndb(6)</a></li>
+		<li><a href="http://plan9.bell-labs.com/magic/man2html/8/ndb">ndb(8)</a></li>
+		<li><a href="ndb.html">ネットワークの設定</a></li>
+		</ul>
+	</section>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="mailto:webmaster@lufia.org">webmaster@lufia.org</a>まで連絡ください。</p>
+</footer>
+</body>
+</html>

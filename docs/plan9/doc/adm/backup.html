@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<script>
+document.createElement('article')
+document.createElement('aside')
+document.createElement('footer')
+document.createElement('header')
+document.createElement('nav')
+document.createElement('section')
+</script>
+<style>
+article, aside, footer, header, nav, section { display: block }
+</style>
+<title>Plan 9: バックアップ</title>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/decor.js"></script>
+<script src="/plan9/lib/complex.js"></script>
+<link rel="stylesheet" type="text/css" href="/plan9/lib/u.css">
+<meta name="author" content="http://www.hatena.ne.jp/lufiabb/">
+</head>
+<body>
+<header>
+		<h1><a href="/plan9/">Plan 9</a></h1>
+</header>
+<nav>
+	<section>
+		<h1>メニュー</h1>
+		<ul>
+		<li><a href="/plan9/doc/inst/">インストール</a></li>
+		<li><a href="/plan9/doc/guide/">システムの使い方</a></li>
+		<li><a href="/plan9/doc/devel/">プログラミング</a></li>
+		<li><a href="/plan9/doc/adm/">システム管理</a></li>
+		<li><a href="/plan9/man/">自作ツール集</a></li>
+		</ul>
+	</section>
+</nav>
+<article>
+	<section>
+		<h1>バックアップ</h1>
+		<p class="revision">2009年9月5日更新</p>
+		<p>Plan 9には、fsにしてもfossil+ventiにしても、
+		日々のバックアップは自動で残すようになっています。
+		なので、それほど必要ではありませんが、たとえば災害に備えて
+		外部メディアに予備を残しておくというのは悪いことではありません。</p>
+		<p>以下いくつかサンプルを書いていますが、どれも</p>
+		<ol>
+		<li>生のファイルを見えるようにする。</li>
+		<li>mkfsを使って、バックアップを取る。</li>
+		<li>後片付け</li>
+		</ol>
+		<p>という手順になっています。</p>
+		<section>
+			<h2>fsを/にマウントしている場合</h2>
+			<pre>% mount /srv/boot /n/fs
+fs: allow
+% disk/mkfs -a -u /n/fs/adm/users -s /n/fs \
+	/sys/lib/sysconfig/proto/allproto &gt;plan9.20090905
+fs: disallow
+% unmount /n/fs</pre>
+			<p>この場合、バックアップは1つのファイルになります。
+			もしCDなどに焼いて、他のシステムからもそのまま閲覧したい場合は、
+			上記のdisk/mkfs行を以下と差し替えます。</p>
+			<pre>% disk/mk9660 -9cj -s /n/fs \
+	-p /sys/lib/sysconfig/proto/allproto plan9.iso</pre>
+			<p>これでCDイメージを直接作成できますので、あとは焼くだけです。</p>
+		</section>
+		<section>
+			<h2>kfsの場合</h2>
+			<p>この例では、直接CD-Rに書き込みしています。</p>
+			<pre>% mount /srv/kfs /n/kfs
+% disk/kfscmd allow
+% disk/mkfs -a -u files/adm.users -s /n/kfs \
+	/sys/lib/sysconfig/proto/allproto &gt;/mnt/cd/wd/plan9.20090905
+% disk/kfscmd disallow
+% unmount /n/kfs</pre>
+		</section>
+	</section>
+	<section>
+		<h1>リストア</h1>
+		<p>disk/mkfsで作成したバックアップを展開する場合です。</p>
+		<section>
+			<h2>fsに展開する場合</h2>
+			<p>展開先のホスト名をfsとして、
+			さらにfsはまっさらな状態(ream直後)とします。</p>
+			<pre>% srv fs
+% mount /srv/fs /n/fs
+fs: allow
+fs: users default
+% disk/mkext -u -d /n/fs /adm/users &lt;plan9.20090905
+fs: users
+% disk/mkext -u -d /n/fs &lt;plan9.20090905</pre>
+			<p>disk/mkextを2度使っているのは、
+			fsにユーザ情報を読み込ませないと標準以外の所有者・グループ等を
+			うまく復元してくれないためです。</p>
+		</section>
+	</section>
+</article>
+<aside>
+	<section>
+		<h1>関連情報</h1>
+		<ul>
+		<li><a href="../guide/disc.html">CDの取り扱い</a></li>
+		</ul>
+	</section>
+	<section>
+		<h1>参考ページ</h1>
+		<ul>
+		<li><a href="http://plan9.bell-labs.com/magic/man2html/8/mkfs">mkfs(8)</a></li>
+		<li><a href="http://plan9.bell-labs.com/magic/man2html/8/mk9660">mk9660(8)</a></li>
+		</ul>
+	</section>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="mailto:webmaster@lufia.org">webmaster@lufia.org</a>まで連絡ください。</p>
+</footer>
+</body>
+</html>

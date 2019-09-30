@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<script>
+document.createElement('article')
+document.createElement('aside')
+document.createElement('footer')
+document.createElement('header')
+document.createElement('nav')
+document.createElement('section')
+</script>
+<style>
+article, aside, footer, header, nav, section { display: block }
+</style>
+<title>Plan 9: 2chファイルサーバ</title>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/decor.js"></script>
+<script src="/plan9/lib/complex.js"></script>
+<link rel="stylesheet" type="text/css" href="/plan9/lib/u.css">
+<meta name="author" content="http://www.hatena.ne.jp/lufiabb/">
+</head>
+<body>
+<header>
+		<h1><a href="/plan9/">Plan 9</a></h1>
+</header>
+<nav>
+	<section>
+		<h1>メニュー</h1>
+		<ul>
+		<li><a href="/plan9/doc/inst/">インストール</a></li>
+		<li><a href="/plan9/doc/guide/">システムの使い方</a></li>
+		<li><a href="/plan9/doc/devel/">プログラミング</a></li>
+		<li><a href="/plan9/doc/adm/">システム管理</a></li>
+		<li><a href="/plan9/man/">自作ツール集</a></li>
+		</ul>
+	</section>
+</nav>
+<article>
+	<section>
+		<h1>monafs</h1>
+		<section>
+			<h2>SYNOPSIS</h2>
+			<pre>monafs [-dv] [-m mtpt] [-s srv]</pre>
+		</section>
+		<section>
+			<h2>OPTIONS</h2>
+			<dl>
+			<dt>d</dt>
+			<dd>デバッグ文を有効にします。</dd>
+			<dt>m mtpt</dt>
+			<dd>mtptをマウントポイントとして使用します。</dd>
+			<dd>指定がなければ/n/2chを使います。</dd>
+			<dt>s srv</dt>
+			<dd>/srv以下にサービスファイルを作成します。</dd>
+			<dt>v</dt>
+			<dd>進行状況をstderrに書き出します。</dd>
+			<dd>デバッグ文とはまた違う出力になります。</dd>
+			</dl>
+		</section>
+		<section>
+			<h2>INSTALL</h2>
+			<p><a href="http://lufia.org/plan9/src/libkanji.tgz">libkanji</a>が必要です。
+			あらかじめインストールしておいてください。
+			または、monafsに付属する以下の関数をいじれば、libtcsでも大丈夫です。</p>
+			<ul>
+			<li>util.c:sjistostring</li>
+			<li>util.c:Ufmt</li>
+			</ul>
+			<p>libtcs (半角カナ対応版)
+			<a href="http://c.p9c.info/plan9/">http://c.p9c.info/plan9/</a></p>
+			<p>また、書き込み機能が必要な場合には、
+			<a href="http://plan9.bell-labs.com/magic/man2html/4/webfs">webfs(4)</a>をreferer送信に対応させることが必須です。
+			同封のwebfs.diffを当てたものを作成しておいてください。</p>
+			<p class="note">これは古いです。おそらくパッチも当たらないでしょうし、
+			当てたとしても2chの仕様も変わってしまったため、
+			書き込みはできないと思われます。</p>
+			<p>準備ができたら、</p>
+			<pre>% mk
+% mk install</pre>
+			<p>これで、$home/bin/$objtype以下にインストールされます。
+			マウントポイントに/n/2chを使うので、
+			なければそれも作っておいてください。</p>
+			<pre># 実際に作成する場合
+% mkdir /n/2ch
+% chgrp -u sys /n/2ch
+
+# 動的に生成する場合(こちらがおすすめ)
+% mntgen</pre>
+		</section>
+		<section>
+			<h2>FILES</h2>
+			<p>マウント後のファイル構造は以下のようになっています。</p>
+			<pre>category/ (1からn)
+	subject
+	board/ (例えばunix)
+		ctl
+		post
+		subject
+		thread/ (1029374722)
+			ctl
+			post
+			subject
+			article/ (1から1000)
+				from
+				mail
+				date (YYYY/MM/DD HH:MM:SS)
+				id
+				be
+				message</pre>
+			<p>これらは必ず作成されます。
+			内容が無い場合は、空ファイルになっています。</p>
+			<p>全てのsubjectと、from、articleの内容は、
+			実体参照(例えば&amp;lt;&amp;gt;)や文字符号(&amp;#1234;)が、
+			通常の文字(例えば&lt;&gt;)へと変換されています。
+			またmailの内容は、%HH形式の16進コードを
+			それが対応する文字へと変換します。</p>
+			<p>dateはタイムゾーンの設定によって変わってきますが、
+			その値はどれも同じ時間を表します。
+			例えばタイムゾーンをJSTに設定すれば、
+			2ちゃんねるに表示される時間と同じ値になります。
+			また、あぼーんや[ここ壊れています]の場合には、
+			1970/01/01 09:00(time=0の時刻)となります。</p>
+			<p class="note">皇暦など、通常ではない時間の場合には不具合が出るかもしれません。</p>
+			<p>ctlへrefreshと書くと、板またはスレッドを読みなおします。
+			また、ctlを読むと、スレッドや板の詳細が入っています。
+			共通して、文字の区切りはスペース(0x20)1つです。</p>
+			<section>
+				<h3>board/ctl</h3>
+				<pre>host server.domain.dom</pre>
+				<p>その板のあるホスト名が入ります。</p>
+			</section>
+			<section>
+				<h3>thread/ctl</h3>
+				<pre>rank XXXX
+article XXXX</pre>
+				<p>rankはスレッド一覧の表示順位を持ちます。
+				1が最新(上)で、順に下がっていきます。
+				articleは、そのスレッドに書き込みされたレス数です。</p>
+			</section>
+			<section>
+				<h3>thread/post</h3>
+				<p>ここへ書くと、それを書き込みとして処理します。</p>
+				<pre>from:no name
+mail:mail address
+raw text...</pre>
+				<p>fromは書き込みした人の名前で、mailはメールアドレスです。
+				from:またはmail:が先頭の行のみ、属性と認識されます。
+				それ以外が現れた行以降は、ただのテキストと判断します。
+				from,mailを省略すると、空文字列が補われます。</p>
+			</section>
+			<section>
+				<h3>thread/post</h3>
+				<p>書き込みできる属性が見れます。
+				acmeなどで開いて、そのまま使えます。</p>
+				<pre>from:
+mail:</pre>
+			</section>
+			<section>
+				<h3>board/post</h3>
+				<p>ほとんどthread/postと同じですが、
+				属性にsubject:thread subjectが追加されています。</p>
+				<p>日本語文字はUTF-8で書いてください。monafsが変換します。
+				書き込みされた掲示板は、自動的にecho refresh &gt;ctlされます。</p>
+			</section>
+		</section>
+		<section>
+			<h2>EXTRA</h2>
+			<p>rc/以下に、おまけのプログラムを用意してみました。
+			詳しくはrc/READMEを読んでください。</p>
+		</section>
+		<section>
+			<h2>BUGS</h2>
+			<p>まちBBSには対応してません。</p>
+			<p>monafsのリリース以降、2chに仕様変更が起こったため
+			現在おそらく書き込みできません。時間のあるときに修正します。</p>
+			<p>バグなどはこちらまで &lt;lufia@lufia.org&gt;</p>
+		</section>
+		<section>
+			<h2>TODO</h2>
+			<p>思いついたものを列挙してみました。</p>
+			<section>
+				<h3>サーバに優しく</h3>
+				<ul>
+				<li>gzip圧縮に対応</li>
+				<li>If-Modified-Sinceで更新を調べる</li>
+				<li>差分だけ読み込む</li>
+				</ul>
+			</section>
+			<section>
+				<h3>仕様へ追いつく。</h3>
+				<ul>
+				<li>ID:xxxx BE:xxxx</li>
+				<li>subbbs.cgiの廃止</li>
+				</ul>
+			</section>
+			<section>
+				<h3>埋め込み設定を別ファイルにする。</h3>
+				<ul>
+				<li>実体参照テーブル</li>
+				<li>書き込み判定文字</li>
+				</ul>
+			</section>
+			<section>
+				<h3>外部板に対応</h3>
+				<ul>
+				<li>まちBBS</li>
+				<li>したらば、JBBS</li>
+				</ul>
+			</section>
+			<section>
+				<h3>ほか</h3>
+				<ul>
+				<li>●(有料)IDに対応</li>
+				<li>BEに対応。</li>
+				</ul>
+			</section>
+		</section>
+	</section>
+</article>
+<aside>
+	<section>
+		<h1>関連リンク</h1>
+		<ul>
+		<li><a href="http://c.p9c.info/plan9/">9ch(acme用2chブラウザ)</a></li>
+		</ul>
+	</section>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="mailto:webmaster@lufia.org">webmaster@lufia.org</a>まで連絡ください。</p>
+</footer>
+</body>
+</html>
