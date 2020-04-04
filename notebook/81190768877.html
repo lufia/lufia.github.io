@@ -1,0 +1,55 @@
+        <!DOCTYPE HTML>
+        <html>
+            <head>
+                <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+                <link rel="stylesheet" type="text/css" href="../style.css"/>
+            </head>
+            <body>
+                
+                
+                                    <h1>Macから9Pをマウントする</h1>
+                    <p>9fansで話題に上がってたのでメモ。</p>
+
+<p>9Pをマウントする<a href="https://code.google.com/p/mac9p/">mac9p</a>というカーネル拡張があって、
+これを使うと、たとえば9p://sources.cs.bell-labs.comのようなURLで
+マウントすることができるようになる。</p>
+
+<p>試してみたけれど、ファイルリストを取得したあとすぐにサーバとの接続が切れてしまうので要調査かなあ。
+sourcesをマウントしたときは切れないのに、自宅Plan 9をマウントするとすぐ切れる。</p>
+
+<h2>インストール</h2>
+
+<p>上記公式サイトからディスクイメージをダウンロードしてきてマウントすると、中にパッケージがあるので実行する。
+このとき、セキュリティ設定で「App Storeと署名付きアプリケーションのみ実行許可」になっているとエラーになるけれど、
+Ctlキーを押しながら実行すれば、それだけ許可できるので設定を落とすよりはいいかも。</p>
+
+<p>あとは次々と進めていくだけでインストールが終わる。</p>
+
+<h2>動作確認</h2>
+
+<p>Finderで、メニューから「サーバへ接続」を選んで9p://serverへ接続する。
+サーバ側はtcp564でListenしておく必要があるみたい。
+例えばこのように:</p>
+
+<pre><code>% aux/listen1 tcp!*!9fs /bin/exportfs -r .
+</code></pre>
+
+<h2>アンインストール</h2>
+
+<p>公式に書いてあるように、ディスクイメージの中にUninstall.toolというシェルスクリプトがあるので実行するといいらしい。
+まだ試した事は無い。</p>
+                
+                
+                
+                
+                
+                
+                                <div id="footer">
+                <span id="timestamp"> March 31st, 2014 1:09am </span>
+                                                      <span class="tag">mac</span>
+                                      <span class="tag">plan9</span>
+                                              </div>
+            </body>
+        </html>
+
+        

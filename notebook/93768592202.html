@@ -1,0 +1,68 @@
+        <!DOCTYPE HTML>
+        <html>
+            <head>
+                <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+                <link rel="stylesheet" type="text/css" href="../style.css"/>
+            </head>
+            <body>
+                
+                
+                                    <h1>Drawtermでキーボードを叩くとNSPortCoderな警告が出力される</h1>
+                    <p>Drawtermを使ったとき、キーボードでキーを叩くと以下のような警告が出力され続ける場合があります。</p>
+
+<pre><code>Warning - conversion from 64 bit to 32 bit integral value requested within NSPortCoder, but the 64 bit value 00000000000 cannot be represented by a 32 bit value
+# 00000のところは叩くキーによって変わる大きな整数です。
+</code></pre>
+
+<p>これは、OSが64bitで実行バイナリが32bitのときに発生します。
+たとえばfileコマンドでdrawtermを調べると以下のように32bitです。</p>
+
+<pre><code>$ file drawterm
+drawterm: Mach-O executable i386
+</code></pre>
+
+<p>よって、drawtermを64bitでコンパイルすれば解決します。</p>
+
+<pre><code>$ hg clone <a href="https://bitbucket.org/jas/drawterm-cocoa">https://bitbucket.org/jas/drawterm-cocoa</a>
+$ cd drawterm-cocoa
+$ cp Make.osx-cocoa Make.osx-cocoa64
+</code></pre>
+
+<p>Make.osx-cocoa64を編集します。
+直接Make.osx-cocoaを変更してもさしたる影響はありません。</p>
+
+<pre><code>$ diff -u Make.osx-cocoa Make.osx-cocoa64
+--- Make.osx-cocoa  2014-08-04 19:33:16.000000000 +0900
++++ Make.osx-cocoa64    2014-08-04 19:35:02.000000000 +0900
+@@ -14,8 +14,8 @@
+ # The SDK can be left blank to use the default SDK for your platform, e.g.,
+ # on a 10.9 machine with the latest Xcode that you don't need to run on
+ # any prior versions, just keep the SDK as defined.
+-ASFLAGS=$(ASFLAGS32)
+-ARCHFLAGS=$(ARCHFLAGS32)
++ASFLAGS=$(ASFLAGS64)
++ARCHFLAGS=$(ARCHFLAGS64)
+ SDK=
+
+ PTHREAD=-lpthread  # for Mac
+</code></pre>
+
+<p>あとはmakeして終わりです。</p>
+
+<pre><code>$ make 'CONF=osx-cocoa64'
+$ mv drawterm $HOME/bin
+</code></pre>
+                
+                
+                
+                
+                
+                
+                                <div id="footer">
+                <span id="timestamp"> August 4th, 2014 7:48pm </span>
+                                                      <span class="tag">plan9</span>
+                                              </div>
+            </body>
+        </html>
+
+        

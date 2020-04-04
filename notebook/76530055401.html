@@ -1,0 +1,145 @@
+        <!DOCTYPE HTML>
+        <html>
+            <head>
+                <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+                <link rel="stylesheet" type="text/css" href="../style.css"/>
+            </head>
+            <body>
+                
+                
+                                    <h1>Goワークスペース</h1>
+                    <p>Go言語には、ワークスペースという構造があります。
+最初はとても取っ付きづらいのですが難しいものではないので、軽く書き流します。</p>
+
+<h2>ルール</h2>
+
+<h3>GOROOT環境変数</h3>
+
+<p>GOROOT環境変数は、Go言語本体のファイルツリーを示します。
+~/go以下にインストールしたなら、GOROOTは~/goです。
+デフォルトは<code>go</code>コマンドの親ディレクトリが<code>GOROOT</code>と仮定されます。</p>
+
+<p><code>go install</code>や<code>go get</code>コマンドは、$GOROOT/binまたは$GOROOT/pkgに、
+Go本体には含まれないコマンドやパッケージをインストールします。
+(パッケージとは、だいたいライブラリのことですね)</p>
+
+<h3>GOPATH環境変数</h3>
+
+<p>GOPATH環境変数が設定されている場合、<code>go install</code>や<code>go get</code>は、
+$GOPATH/binまたは$GOPATH/pkg以下を対象に
+コマンドやパッケージをインストールします。</p>
+
+<p>GOPATHが未設定ならGOROOTと同じ場所だと仮定されます。</p>
+
+<p>$GOPATH以下は、次のような階層(ワークスペース)です。</p>
+
+<pre><code>$GOPATH/
+    bin/ (コマンドがインストールされる場所)
+    pkg/ (コンパイルしたパッケージがインストールされる場所)
+    src/ (ソースコードがインストールされる場所)
+</code></pre>
+
+<p>実際は、bin, pkgなどのディレクトリは必要に応じて作られますので、
+自分でディレクトリを作成する必要はありません。</p>
+
+<h2>Goコードの書き方</h2>
+
+<p>$GOPATH/src以下にプログラムを書いていくのですが、
+まずはリポジトリのURLを決めましょう。
+とりあえずgit@github.com:example/gointro.gitを使うとしました。</p>
+
+<p>まずはcloneします。</p>
+
+<pre><code>$ export GOPATH=~/my
+$ cd $GOPATH
+$ mkdir -p src/github.com/example
+$ cd src/github.com/example
+$ git clone git@github.com:example/intro.git
+</code></pre>
+
+<p>適当にコードを書きます。</p>
+
+<pre><code>$ ed $GOPATH/src/github.com/example/intro/intro.go
+a
+package intro
+
+import "fmt"
+
+func Print() {
+    fmt.Printf("test\n")
+}
+.
+</code></pre>
+
+<p>ひとつのpackageを構成するファイルを複数に分けることは自由ですし、
+サブディレクトリを作って、1つのリポジトリに複数パッケージを入れても構いません。</p>
+
+<p>このパッケージを他プロジェクトから参照する場合は、
+$GOPATHからのパス表記をします。</p>
+
+<pre><code>package other
+
+import "github.com/example/intro"
+
+...
+</code></pre>
+
+<p>ビルド時には、<code>go get</code>コマンドがimport宣言をみて、
+必要なパッケージを自動で取得してくれます。
+取得したパッケージは$GOPATHへインストールされます。</p>
+
+<p>リポジトリにソースコードを置かない場合でも、
+$GOPATH/src直下にソースコードを書くのではなく、
+なんらかのディレクトリ以下へ入れて、なるべく不変にしたほうがいいです。
+というのも、import文は書き方的に$GOPATHからの表記なので、
+後から変えるのが非常に大変です。(2,3回やってしまいましたが、、、)</p>
+
+<h2>ワークスペースの運用</h2>
+
+<p>個人の感想ですが、GOROOTとGOPATHは分けた方が良いと思います。
+そうしないとGo本体とその他のファイルが混ざってわかりづらくなります。</p>
+
+<p>そのうえで、GOPATHは基本ひとつで運用したほうが楽なんじゃないかなあと思っています。
+理由は2つあって、</p>
+
+<ul><li>$GOPATH/binにコマンドがインストールされるので、PATH追加が面倒</li>
+<li>成果物はバイナリ1つで動作するため、混ざってもそれほど困らない</li>
+</ul><p>特に2つ目について、Goはネイティブコードにコンパイルする言語ですし、
+パッケージもバイナリにスタティックリンクするポリシー<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>なので
+ワークスペースのパッケージをアップデートしたからといって、
+動いている環境に影響を与えることがありません<sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup>。</p>
+
+<p>なので、今の運用方法は基本的に以下です。</p>
+
+<pre><code>export GOROOT=~/go
+export GOPATH=~/my
+</code></pre>
+
+<p>今のところ、これだけで困っていませんが、
+どうしても分けたい場合はGOPATHを違う場所へ置き換えるつもりです。</p>
+
+<div class="footnotes" role="doc-endnotes">
+<hr><ol><li id="fn:1" role="doc-endnote">
+<p>このポリシーはPlan 9 Cコンパイラから変わっていないので、今後も変わらないでしょう。 <a href="#fnref:1" class="footnote-backref" role="doc-backlink">↩︎</a></p>
+</li>
+
+<li id="fn:2" role="doc-endnote">
+<p>他の言語だと、いわゆるDLL HELLが起こる可能性がありますね。 <a href="#fnref:2" class="footnote-backref" role="doc-backlink">↩︎</a></p>
+</li>
+
+</ol></div>
+                
+                
+                
+                
+                
+                
+                                <div id="footer">
+                <span id="timestamp"> February 14th, 2014 12:21am </span>
+                                                      <span class="tag">gointro</span>
+                                      <span class="tag">golang</span>
+                                              </div>
+            </body>
+        </html>
+
+        

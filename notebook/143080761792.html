@@ -1,0 +1,137 @@
+        <!DOCTYPE HTML>
+        <html>
+            <head>
+                <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+                <link rel="stylesheet" type="text/css" href="../style.css"/>
+            </head>
+            <body>
+                
+                
+                                    <h1>Plan 9とATS</h1>
+                    <p>これは2016年4月の記事です。現在9legacyのパッチは修正されています。</p>
+
+<h2>うまくいかないメモ</h2>
+
+<p>とても混乱しているので記録する。</p>
+
+<h3>MacとiOSのMailアプリは、どちらもTLS 1.0までしか対応していない</h3>
+
+<p>具体的にはこのようなメッセージがConsole.appに記録される。</p>
+
+<pre><code>2016/04/19 22:56:52.960 Mail[483]: CFNetwork SSLHandshake failed (-9824)
+</code></pre>
+
+<p>tlssrv -D -limap4d&hellip;と実行したら、ClientHelloに乗ってくるversionが301だった。301はTLS 1.0。
+なのでfinishedメッセージのハッシュ関数はmd5+sha1が使われる。
+(sha2_256に変わるのはTLS 1.2から)</p>
+
+<h3>RSA 4096bit鍵とSHA256withRSAの証明書を使うとTLS 1.2以外がエラー</h3>
+
+<p>おそらくPlan 9側の問題だと思う。
+curl $url &ndash;tlsv1.2の場合はHTTPアクセスが通るけれど、
+&ndash;tlsv1.1以下に強制すると証明書検証エラーになる。</p>
+
+<p>サーバのログをみると、</p>
+
+<pre><code>tls reports recv HFinished
+xxxxxxxxxxxxxxxxxxx
+tls reports tlsError: finished verification failed
+tls reports failed: incorrect .pem file format: bad header or trailer
+</code></pre>
+
+<p>と記録されるが、pemファイルのフォーマットは間違っていないはず。</p>
+
+<p>&ndash;tlsv1.2の場合は、クライアントからFinishedを受け取って、
+サーバの検証も正常に終了して、Finishedをクライアントへ返せている。</p>
+
+<pre><code>tls reports recv HFinished
+xxxxxxxxxxxxxxxxxxx
+tls reports send HFinished
+yyyyyyyyyyyyyyyyyyy
+tls reports tls finished
+tls reports open
+</code></pre>
+
+<h3>RSA 4096bit鍵とSHA256withRSAの証明書でもSTARTTLSは通過する</h3>
+
+<p>同じ証明書で、imap4sとhttpsではエラーになったものが、
+smtpのSTARTTLSを使った場合は接続ができる。これはMail.appで確認した。
+Plan 9の実装はtlsServer()が呼ばれるだけなので、同じ気がするけど。</p>
+
+<h2>そもそも</h2>
+
+<h3>何が関係しているのか</h3>
+
+<ul><li>カーネルのdevtls</li>
+<li>libsec.a</li>
+<li>factotum</li>
+</ul><h3>devtls</h3>
+
+<p><code>#a/tls/$id/hand</code>でハンドシェイクを実施して、
+終わったら<code>#a/tls/$id/data</code>経由で暗号化したデータをやりとりする。
+<code>#a/tls/$id/ctl</code>あたりに鍵情報や暗号化アルゴリズムをwriteする。</p>
+
+<h3>libsecライブラリ</h3>
+
+<p>暗号化の関数と、ハンドシェイクを行うライブラリ。
+tlsServer()はハンドシェイクを行い、
+最終的にはdevtlsの<code>#a/tls/$id/data</code>を返す。</p>
+
+<h3>factotum</h3>
+
+<p>HClientKeyExchangeメッセージでクライアントと交換した鍵を取り扱う。
+factotumはprotoとroleの値によってプロトコルが変わる。
+proto=rsa role=clientの場合は、RSAで暗号化された値をwriteして、
+そのままreadすると暗号解除された値が読める。</p>
+
+<ol><li>証明書のmoduloに一致するものがfactotumに入っているか探す</li>
+<li>1のエントリと交換した鍵を使って、マスターsecretを生成する</li>
+</ol><h2>テスト方法メモ</h2>
+
+<h3>証明書の確認</h3>
+
+<pre><code>$ openssl verify -CAfile ./ca.pem cert.pem
+</code></pre>
+
+<p>root.pemはCAのルート証明書と中間証明書をcatしたもの。</p>
+
+<h3>サーバの確認</h3>
+
+<p>OS Xから実行してもエラーになる。Linuxなら正常に動作する。
+opensslのバージョン差だろうか。</p>
+
+<pre><code>$ openssl s_client -verify 6 -state -msg -connect example.com:443 -CAfile ./root.pem
+</code></pre>
+
+<h3>IMAPsの確認</h3>
+
+<pre><code>$ curl imaps://example.com:993 -v -u user:pass
+</code></pre>
+
+<p>特にオプションを付けなければTLS 1.2で動作する。
+バージョンを強制したい場合は&ndash;tlsv1.1等のオプションを加える。</p>
+
+<h3>ATSの確認</h3>
+
+<pre><code>$ nscurl --ats-diagnostics <a href="https://example.com/">https://example.com/</a>
+</code></pre>
+
+<h2>参考情報</h2>
+
+<ul><li><a href="http://tkengo.github.io/blog/2015/12/01/https-details/">http://tkengo.github.io/blog/2015/12/01/https-details/</a></li>
+<li><a href="http://www.atmarkit.co.jp/ait/series/2349/">http://www.atmarkit.co.jp/ait/series/2349/</a></li>
+</ul>
+                
+                
+                
+                
+                
+                
+                                <div id="footer">
+                <span id="timestamp"> April 20th, 2016 7:16am </span>
+                                                      <span class="tag">plan9</span>
+                                              </div>
+            </body>
+        </html>
+
+        

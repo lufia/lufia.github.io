@@ -1,0 +1,41 @@
+        <!DOCTYPE HTML>
+        <html>
+            <head>
+                <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+                <link rel="stylesheet" type="text/css" href="../style.css"/>
+            </head>
+            <body>
+                
+                
+                                    <h1>plan9portがHomebrew入りしました</h1>
+                    <p>こないだ、Homebrewにplan9portが入ったみたいなので インストールしてみました。</p>
+<h3>インストール</h3>
+<pre>    $ brew update
+    $ brew install plan9port
+</pre>
+<p>これで完了です。特に依存するCellarはありません。 /Applicationsに9term.appとPlumb.appを入れておきたい場合は 以下も実行します。</p>
+<pre>    $ brew linkapps plan9port
+</pre>
+<h3>環境変数の設定</h3>
+<p>このままだと、9コマンドしか/usr/local/binに入りません。 それで困らないならいいですが、個人的には面倒なので PATHを通すようにしました。ついでにPLAN9環境変数も設定します。</p>
+<h4>~/.profile (.bash_profile)に追加</h4>
+<pre>    export PLAN9=/usr/local/opt/plan9port/libexec
+    export PATH=$PATH:$PLAN9/bin
+</pre>
+<h3>9term.appを使う</h3>
+<p>なんかうまくいかないので試行錯誤しています。 まず、9term.appから読み込むため、 ~/.bashrcは空でもいいので作っておく必要があります。 9term.appの中でdevdrawコマンドを使っているようですが、 これが$PLAN9/bin以下にあるので、9term.appをlaunchpad等から 起動した場合はPATHが通っていなくて起動しません。 ~/.bashrcにPATHを書けばいいのかな。</p>
+                
+                
+                
+                
+                
+                
+                                <div id="footer">
+                <span id="timestamp"> February 4th, 2014 9:45pm </span>
+                                                      <span class="tag">plan9</span>
+                                      <span class="tag">mac</span>
+                                              </div>
+            </body>
+        </html>
+
+        

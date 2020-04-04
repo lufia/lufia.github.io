@@ -1,0 +1,40 @@
+        <!DOCTYPE HTML>
+        <html>
+            <head>
+                <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+                <link rel="stylesheet" type="text/css" href="../style.css"/>
+            </head>
+            <body>
+                
+                
+                                    <h1>Command Line Toolsだけをインストールする</h1>
+                    <p>Xcodeといっしょにインストールすることが多いCommand Line Toolsですが、
+単体でもインストール可能だということを最近知りました。</p>
+
+<p>特に難しい方法ではなく、最初にgit等のコマンドを実行したとき、
+Xcodeを入手するかインストールするか選択するダイアログが表示されるので、
+そこでInstallを選べばいいだけです。</p>
+
+<p>そうすると、以下2つのパッケージが導入されます(Mavericksの場合)。</p>
+
+<ul><li>com.apple.pkg.CLTools_Executables</li>
+<li>com.apple.pkg.MacOSX10_9_SDK</li>
+</ul><p>また、この状態でxcode-selectは以下の通り。</p>
+
+<pre><code>$ xcode-select -p
+/Library/Developer/CommandLineTools
+</code></pre>
+                
+                
+                
+                
+                
+                
+                                <div id="footer">
+                <span id="timestamp"> March 30th, 2014 11:50pm </span>
+                                                      <span class="tag">mac</span>
+                                              </div>
+            </body>
+        </html>
+
+        
