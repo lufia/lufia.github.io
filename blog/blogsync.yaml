@@ -1,0 +1,3 @@
+lufia.hateblo.jp:
+  local_root: .
+  omit_domain: true
