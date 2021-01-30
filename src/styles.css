@@ -1,1 +1,4 @@
 @import "~highlight.js/styles/github.css";
+
+@media screen and (max-width: 480px) {
+}
