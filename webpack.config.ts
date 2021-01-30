@@ -1,10 +1,11 @@
 import * as path from "path";
 
 export default {
-	mode: "development",
+	mode: "production",
 	entry: "./src/index.ts",
 	output: {
-		path: path.resolve(process.cwd(), "lib"),
+		path: path.resolve(process.cwd(), "docs", "lib"),
+		publicPath: "/lib/",
 		filename: "bundle.js"
 	},
 	module: {
@@ -25,5 +26,11 @@ export default {
 	},
 	resolve: {
 		extensions: [".ts", ".js"]
+	},
+	devServer: {
+		inline: true,
+		contentBase: path.join(__dirname, "docs"),
+		compress: true,
+		port: 9000
 	}
 }
