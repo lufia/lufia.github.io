@@ -1,4 +1,127 @@
+@charset "utf-8";
 @import "~highlight.js/styles/github.css";
 
+:root {
+	--default-margin: 24px;
+	--header-color: #ddd;
+	--header-highlight-color: #fff;
+	--header-background-color: #333;
+	--link-color: #1a0dab;
+	--link-visited-color: #639;
+}
+
+body {
+	margin: 0;
+}
+a {
+	text-decoration: none;
+}
+a:link {
+	color: var(--link-color);
+}
+a:visited {
+	color: var(--link-visited-color);
+}
+a:hover {
+	text-decoration: underline;
+}
+
+body > nav {
+	font-family: "SF Pro JP", "SF Pro Text", "Apple TP", "Myriad Set Pro", "SF Pro Icons", "Hiragino Kaku Gothic Pro", "ヒラギノ角ゴ Pro W3", "メイリオ", "Meiryo", "ＭＳ Ｐゴシック", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+	background-color: var(--header-background-color);
+	& h1 {
+		display: none;
+	}
+	& ul {
+		display: flex;
+		margin: 0;
+		padding: 0;
+		justify-content: space-around;
+		list-style-type: none;
+		& > li {
+			& > a {
+				display: block;
+				border-radius: 4px;
+				padding: 11px 22px;
+				text-decoration: none;
+			}
+			& > a:link {
+				color: var(--header-color);
+			}
+			& > a:hover {
+				color: var(--header-highlight-color);
+				text-decoration: none;
+			}
+		}
+	}
+}
+body > article {
+	margin: 0 var(--default-margin);
+	& h1 + p.revision {
+		color: #999;
+		text-align: right;
+	}
+	& dl.main-cards {
+		display: flex;
+		flex-wrap: wrap;
+		padding: 0 50px;
+		& > div {
+			flex-basis: 25%;
+			margin: 0 12px 24px 12px;
+			padding: var(--default-margin);
+			border: 1px solid #dadce0;
+			border-radius: 4px;
+			line-height: 26px;
+			& > dt > a {
+				display: block;
+				width: 100%;
+			}
+			& > dd {
+				margin-left: 0
+			}
+		}
+		& > div:hover
+		{
+			box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3),0 1px 3px 1px rgba(60,64,67,0.15);
+		}
+	}
+	& ul.main-cards {
+		display: flex;
+		flex-wrap: wrap;
+		padding: 0 50px;
+		& > li {
+			list-style-type: none;
+			flex-basis: 25%;
+			margin: 0 12px 24px 12px;
+			padding: var(--default-margin);
+			border: 1px solid #dadce0;
+			border-radius: 4px;
+			line-height: 26px;
+			& > a {
+				display: block;
+				width: 100%;
+			}
+		}
+		& > li:hover
+		{
+			box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3),0 1px 3px 1px rgba(60,64,67,0.15);
+		}
+	}
+}
+body > aside {
+	margin: 0 var(--default-margin);
+}
+body > footer {
+	margin: 0 var(--default-margin);
+}
+
 @media screen and (max-width: 480px) {
+	body > nav ul {
+		flex-wrap: wrap;
+	}
+	body > article dl.main-cards,
+	body > article ul.main-cards {
+		display: block;
+		padding: 0;
+	}
 }
