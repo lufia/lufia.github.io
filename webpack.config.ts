@@ -1,4 +1,6 @@
 import path from "path";
+import autoprefixer from "autoprefixer";
+import nested from "postcss-nested";
 
 export default {
 	mode: "production",
@@ -19,7 +21,17 @@ export default {
 				use: [
 					"style-loader",
 					"css-loader",
-					"postcss-loader"
+					{
+						loader: "postcss-loader",
+						options: {
+							postcssOptions: {
+								plugins: [
+									autoprefixer,
+									nested
+								]
+							}
+						}
+					}
 				]
 			}
 		]
