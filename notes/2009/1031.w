@@ -1,9 +1,9 @@
 @include u.i
 %title AmaTunesツール
 
-=AmaTunesツール
 .revision
 2009年10月31日作成
+=AmaTunesツール
 
 	1行に1つISBNを記述したファイルから、[AmaTunes|
 	http://blogger.splhack.org/2007/10/amatunes.html]に
@@ -139,6 +139,7 @@
 		ライブラリをロードしようとして落ちていました。
 		そこで、faacをコンパイルして、そちらを使いました。
 
+		.console
 		!$ ./configure --disable-shared
 		!$ make
 		!$ mv frontend/faac $dir

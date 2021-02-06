@@ -1,9 +1,9 @@
 @include u.i
 %title VMware Playerにファイルサーバをインストール
 
-=VMware Playerにファイルサーバをインストール
 .revision
 2011年7月23日作成
+=VMware Playerにファイルサーバをインストール
 
 紆余曲折ありまして、だいぶ苦労しましたが、
 とりあえず動くまではできました。
@@ -15,6 +15,7 @@ qemuを使ってvmdkを作らなくてもよくなっています。
 inst/textonlyで進める必要があります。
 インストールが終わればふつうに使えるのにね。
 
+.ini
 !vgasize=1024x768x24
 !monitor=xga
 
@@ -25,6 +26,7 @@ fsカーネルのE1000ドライバはVMwareのデバイスを認識しません�
 変更したところは、定数i82545emの定義と、
 各switch文にそれを含めただけですね。
 
+.c
 !i82545em = (0x100F<<16)|0x8086,
 
 .note
@@ -43,6 +45,7 @@ fsカーネルのE1000ドライバはVMwareのデバイスを認識しません�
 ファイルが見つからないというエラーになって動かないところと、
 plan9.iniのbootfileエントリだけは、新しい書き方を取るところ。
 
+.ini
 !ether0=type=igbe
 !scsi0=type=buslogic
 !bootfile=fd0!dos!9fsfs64
@@ -52,6 +55,7 @@ plan9.iniのbootfileエントリだけは、新しい書き方を取るところ
 最後にNICのチップセットを変更しておきます。
 具体的にはvmxファイルに以下を追加。
 
+.ini
 !ethernet0.virtualDev = "e1000"
 
 これで、仮想マシン間でip/pingも通りましたし、

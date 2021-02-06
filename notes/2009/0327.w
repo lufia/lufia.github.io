@@ -1,9 +1,9 @@
 @include u.i
 %title イクラクン
 
-=イクラクン
 .revision
 2009年3月27日作成
+=イクラクン
 
 \[公式裏CM|http://www.nicovideo.jp/watch/1238052738]ｗ
 意味が分からないｗｗ

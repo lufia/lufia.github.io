@@ -1,9 +1,9 @@
 @include u.i
 %title IPv6の実装を読むよ(途中)
 
-=IPv6の実装を読むよ(途中)
 .revision
 2011年8月8日作成
+=IPv6の実装を読むよ(途中)
 
 	:Ipselftab
 	:Ipself

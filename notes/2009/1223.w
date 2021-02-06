@@ -1,9 +1,9 @@
 @include u.i
 %title Mac移行まとめ
 
-=Mac移行まとめ
 .revision
 2009年12月23日作成
+=Mac移行まとめ
 
 Macbook Airを買ってからおよそ1年経ったので、
 とりあえずまとめを書いておこうかなあ、と。
@@ -95,6 +95,7 @@ Macbook Airを買ってからおよそ1年経ったので、
 		SW-KVM4LPを使っているので、マニュアルの通りに調べて、
 		以下の内容をHHKPS2USBDriverのInfo.plistに追加。
 
+		.xml
 		!<key>HHK via SANWA SW-KVM4LP</key>
 		!<dict>
 		!	<key>CFBundleIdentifier</key>

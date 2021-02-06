@@ -1,9 +1,9 @@
 @include u.i
 %title トリフィルファンタジア1
 
-=トリフィルファンタジア1
 .revision
 2009年1月11日作成
+=トリフィルファンタジア1
 
 \[トリフィル|http://yaplog.jp/miyuki333/archive/310]買いました。
 

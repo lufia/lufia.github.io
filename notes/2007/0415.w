@@ -1,9 +1,9 @@
 @include u.i
 %title ファイルサーバの再構築
 
-=ファイルサーバの再構築
 .revision
 2007年4月15日作成
+=ファイルサーバの再構築
 
 現時点では、マザーボードのIDEコントローラは、スレーブの存在を忘れたほうがいいのかも。
 
@@ -24,14 +24,13 @@ http://www.biostar-usa.com/mbdetails.asp?model=m7vig+pro]
 ファイルサーバを再起動するとtagが違うとかのエラーでpanicするおまけつき。
 最初にdumpするまではふつうに動くのに。
 
-!dump直後などに
+dump直後などに
 !mirrwrite $dev error at block $addr
-!
-!ブート時に
-!手でusersコマンドを発行すると読める
+
+ブート時に(この場合、手動でusersコマンドを発行すると読める)
 !cannot open /adm/users
-!
-!不定期に
+
+不定期に
 !cwio: write induced dump error - r cache
 
 さすがに使い物にならないので。
@@ -40,7 +39,7 @@ dump中にcacheへアクセスがいくと/adm/usersが読めないようでし�
 そこで、別のIDEコントローラにすればいいのかなあと考え、[玄人志向のSATARAID5-LPPCI|http://www.kuroutoshikou.com/products/serialata/sataraid5-lppcifset.html]を買って(ついでにIDE to SATA変換アダプタも)つなげてみました。
 パッケージにはJBODとあるのにメニューには無かったので驚きましたが、
 代わりにConcatenationがあったのでそれを使って構成。
-ファイルサーバは、*filsys main ch4f{h0h2}*
+ファイルサーバのコンフィグは、*filsys main ch4f{h0h2}*
 
 まず気づいたのが立ち上がり時のfwormへのアクセスですが。
 今までと違い、dumpが終わるまでプロンプトが表示されなくなってました。

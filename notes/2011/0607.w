@@ -1,9 +1,9 @@
 @include u.i
 %title ASP.NETページ構文とHTMLヘルパ
 
-=ASP.NETページ構文とHTMLヘルパ
 .revision
 2011年6月7日作成
+=ASP.NETページ構文とHTMLヘルパ
 
 	=ページ構文
 
@@ -19,6 +19,7 @@
 		何か文字を書き出したい場合はResponse.Write(string)を使うらしいですが、
 		次の<<%= ... %>>をよく使うので、あまり。
 
+		.xml
 		!<% for(var i = 0; i < 10; i++) Response.Write(i+"\n") %>
 
 		=<<%= ... %>>
@@ -27,6 +28,7 @@
 		その代わり、Response.Write(string)を使わなくても
 		演算結果を書きだしてくれます。
 
+		.xml
 		!<% for(var i = 0; i < 10; i++) { %>
 		!	<%= i %>
 		!<% } %>
@@ -42,6 +44,7 @@
 		これを使っても式の結果がオブジェクトなら特に何も起こらないので、
 		詳しいところはいまいち分かりません。
 
+		.xml
 		!<%-- エスケープしない --%>
 		!<%= Html.ActionLink("Index", "Home", new{ id=3 }) %>
 		!
@@ -83,6 +86,7 @@
 	:select[[multiple=multiple]]
 	-ListBox
 
+	.xml
 	!<%	var options = new List<SelectListItem> {
 	!		new SelectListItem { Text = "item1", Value = "1" },
 	!		new SelectListItem { Text = "item2", Value = "2" },

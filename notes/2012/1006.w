@@ -1,12 +1,13 @@
 @include u.i
 %title VMware ESXiにPlan 9を移行したときのトラブルまとめ
 
-=VMware ESXiにPlan 9を移行したときのトラブルまとめ
 .revision
 2012年10月6日作成
+=VMware ESXiにPlan 9を移行したときのトラブルまとめ
 
 	=cpuサーバからfsをマウントできない
 
+	.console
 	!% 9fs il!fs.ip.ad.dr!9fs
 
 	こうすると、マウントできず切断されます。
@@ -18,6 +19,7 @@
 
 	この場合、マウントするには以下のようにポートを数値にすればいいです。
 
+	.console
 	!% 9fs il!fs.ip.ad.dr!17008
 
 	=mkextでバックアップを展開すると、not foundが出力される
@@ -37,7 +39,8 @@
 
 	gbeというのは、ドライバのことではなくて、ipconfigの引数で
 
-	!ip/ipconfig -g xxx gbe /net/ether0 ...
+	.console
+	!% ip/ipconfig -g xxx gbe /net/ether0 ...
 
 	とした場合のことです。このとき、replica/pullすると
 	hungup io connectionとエラーを吐いてシステムごと落ちます。

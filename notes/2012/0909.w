@@ -1,9 +1,9 @@
 @include u.i
 %title VMware ESXiの導入
 
-=VMware ESXiの導入
 .revision
 2012年9月9日作成
+=VMware ESXiの導入
 
 	だいぶ前に、ESXi 5.0を導入したので、
 	その上でPlan 9サーバ群を動かすまでのメモをまとめました。
@@ -37,7 +37,8 @@
 	ダウンロードしてきて展開、vibファイルだけをsshでESXiホストへ送ります。
 	で、以下のコマンド実行。
 
-	!esxcli software vib install -v /vmware-esx-provider-LSIProvider.vib
+	.console
+	!$ esxcli software vib install -v /vmware-esx-provider-LSIProvider.vib
 
 	.note
 	esxcliに渡すvibファイルは、ルートからのフルパスでないとエラーになります。
@@ -121,6 +122,7 @@
 	なのであきらめて、virt-p2vでエラーがでた画面から
 	Fnキ(たしかF2)を押してシェルを実行。そのままシェルを使ってddしました。
 
+	.console
 	!# fdisk -l
 	!(エラーが出るけど無視、容量だけ確認してターゲットを選ぶ)
 	!# dd if=/dev/sdb | gzip -9 -c | ssh $user@$host "gzip -dc | dd bs=8192 of=/path/vmdisk/fworm.img"
@@ -146,6 +148,7 @@
 	gzipして転送したほうが早い気がするので、ddのときに使ったコマンドを
 	そのまま使いました。
 
+	.console
 	!$ gzip -9 -c fworm-flat.vmdk | ssh $user@$esxihost "gzip -dc >/vmfs/volumes/disk1/plan9fs/fworm-flat.vmdk"
 
 	必要なら、flatじゃないほうのvmdkファイルを修正して完成です。

@@ -1,9 +1,9 @@
 @include u.i
 %title Alefコンパイラの中で出てくる型
 
-=Alefコンパイラの中で出てくる型
 .revision
 2009年4月21日作成
+=Alefコンパイラの中で出てくる型
 
 	いろんなところに出てくる以下の型についてのメモ。
 
@@ -25,6 +25,7 @@
 	Alef言語のプログラムを、主にtype, left, rightというメンバー変数で扱います。
 	たとえば、1+1という式の場合、およそ下記のイメージ。
 
+	.c
 	!Node = {
 	!	.type = OADD
 	!	.left = {
@@ -46,6 +47,7 @@
 
 	int**の場合。
 
+	.c
 	!Type = {
 	!	.type = TIND
 	!	.next = {
@@ -66,6 +68,7 @@
 	http://sites.google.com/site/alefcompiler/alef/port/parlh/tinfo]を
 	うまく扱うことで実現しています。
 
+	.c
 	!{
 	!	int i, j;
 	!

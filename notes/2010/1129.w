@@ -1,9 +1,9 @@
 @include u.i
 %title WCF Data Servicesメモ
 
-=WCF Data Servicesメモ
 .revision
 2011年6月28日更新
+=WCF Data Servicesメモ
 
 	=WCF Data ServicesとWCF RIA Servicesの使い分け
 
@@ -26,6 +26,7 @@
 	リクエストのAcceptヘッダをapplication/jsonにしておくと、
 	JSONで返してくれます。
 
+	.console
 	!% telnet svr 80
 	!GET /Service.svc/List?$top=2 HTTP/1.1
 	!Host: svr
@@ -36,6 +37,7 @@
 	Acceptヘッダが無視されてXML形式になるので注意です。
 	また、POSTやPUTの時は、これに加えてContent-Typeも指定しておきます。
 
+	.http
 	!Content-Type: application/json
 
 	=サービス操作
@@ -66,6 +68,7 @@
 	Silverlightなどで、非同期読み込みする場合、
 	比較的便利な書き方があったのでメモ。
 
+	.cs
 	!var uri = new Uri("DataService.svc", UriKind.RelativeOrAbsolute);
 	!var ctxt = new DataEntities(uri);
 	!var binding = new DataServiceCollection<Item>();
@@ -149,6 +152,7 @@
 		JSON形式でPOSTまたはPUTすると、文法エラーが返ってきます。
 		具体的なコードは以下。
 
+		.js
 		!var data = {d: "\\/Date(1291005669546)\\/"}
 		!post(url, data)		// エラー
 

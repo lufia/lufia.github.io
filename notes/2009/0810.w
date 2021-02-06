@@ -1,9 +1,9 @@
 @include u.i
 %title Chrome OS
 
-=Chrome OS
 .revision
 2009年8月10日作成
+=Chrome OS
 
 2つの意味で注目はしています。
 どちらも権利がらみの興味。

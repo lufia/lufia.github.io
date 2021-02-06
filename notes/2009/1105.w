@@ -1,9 +1,9 @@
 @include u.i
 %title MobileMeでブックマークが同期しない
 
-=MobileMeでブックマークが同期しない
 .revision
 2009年11月5日作成
+=MobileMeでブックマークが同期しない
 
 iPhoneでMobileMeを使って同期しているのですが、
 どうにもブックマークの同期がうまくいかなくて困る。

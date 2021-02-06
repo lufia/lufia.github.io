@@ -1,14 +1,15 @@
 @include u.i
 %title 自動リンク
 
-=自動リンク
 .revision
 2009年8月13日作成
+=自動リンク
 
 2chの書き込みでリンクの張られていないURLらしき文字に
 自動でリンクを張るブックマークレットを作りました。
 Safariでしかテストしていません。
 
+.js
 !javascript:(function(){
 !
 !var a = document.getElementsByTagName('dd')

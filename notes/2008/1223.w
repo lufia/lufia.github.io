@@ -1,9 +1,9 @@
 @include u.i
 %title iPhone交換
 
-=iPhone交換
 .revision
 2008年12月23日作成
+=iPhone交換
 
 	=マナーモードスイッチが折れた
 	折れたままでも使えなくはないのですが、

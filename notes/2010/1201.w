@@ -1,9 +1,9 @@
 @include u.i
 %title SproutCore開発環境構築
 
-=SproutCore開発環境構築
 .revision
 2011年1月28日更新
+=SproutCore開発環境構築
 
 	JavaScriptフレームワークの[SproutCore|
 	http://www.sproutcore.com/]を使ってみました。
@@ -52,15 +52,18 @@
 
 		=SproutCoreのインストール
 
-		!gem install sproutcore
+		.console
+		!$ gem install sproutcore
 
 		依存するパッケージも含めて全部インストールしてくれます。便利。
 
-		!gem update
+		.console
+		!$ gem update
 
 		アップデートがあるものを全部まとめて処理してくれます。
 
-		!gem cleanup
+		.console
+		!$ gem cleanup
 
 		最新のパッケージを除いて、古いものを削除します。
 

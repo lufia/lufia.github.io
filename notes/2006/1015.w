@@ -1,6 +1,8 @@
 @include u.i
 %title InfernoからホストOSをマウントする
 
+.revision
+2006年10月15日作成
 =InfernoからホストOSをマウントする
 
 ローカルファイルを見るには、#Uをみる。

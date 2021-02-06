@@ -1,9 +1,9 @@
 @include u.i
 %title Googleも最近じゅうぶんに強引だと思う
 
-=Googleも最近じゅうぶんに強引だと思う
 .revision
 2009年9月30日作成
+=Googleも最近じゅうぶんに強引だと思う
 
 	Microsoftが嫌われる理由と、
 	Googleが好まれる理由が分からないなあ。

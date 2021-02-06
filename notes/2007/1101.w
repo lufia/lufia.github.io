@@ -1,9 +1,9 @@
 @include u.i
 %title Windows Vista User Access Controlメモ
 
-=Windows Vista User Access Controlメモ
 .revision
 2007年11月1日作成
+=Windows Vista User Access Controlメモ
 
 	=UAC管理者権限パスワード要求時に、Ctl+Alt+Delを要求する
 	ITproの記事、[UACによる権限の制限がユーザーを守る|

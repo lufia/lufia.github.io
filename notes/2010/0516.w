@@ -1,9 +1,9 @@
 @include u.i
 %title Alef compilerを移動
 
-=Alef compilerを移動
 .revision
 2010年5月16日作成
+=Alef compilerを移動
 
 Alef compilerを読むサイトを、Google sitesからMobileMeに移動しました。
 そのときのメモなどを少し。
@@ -15,6 +15,7 @@ http://blog.bitmeister.jp/?p=1256]を参考に。
 コピーが終われば、次に、文字コードの指定を書き加えます。
 charsetというファイル名で以下のプログラムを保存。
 
+.sh
 !#!/bin/sh
 !
 !for f
@@ -25,6 +26,7 @@ charsetというファイル名で以下のプログラムを保存。
 
 あとは、次のように使います。
 
+.console
 !$ cd alefcompiler
 !$ du -a | awk '/¥.html$/ { print $2 }' | xargs sh charset
 

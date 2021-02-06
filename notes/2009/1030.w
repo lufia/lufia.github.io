@@ -1,9 +1,9 @@
 @include u.i
 %title Disqus解除
 
-=Disqus解除
 .revision
 2009年10月30日作成
+=Disqus解除
 
 Disqusというサービスを一時的に使っていましたが、
 好みのレイアウトにするのが意外と大変ということと、
@@ -15,10 +15,12 @@ HTMLには一切手を入れず、JavaScriptだけで
 
 以下jQueryに依存していますので、HTMLのヘッダで取り込んでおいて。
 
+.html
 !<script src="jquery.js"></script>
 
 まず中心となる関数から。
 
+.js
 !function disqus(sname)
 !{
 !	var name = encodeURIComponent(sname)
@@ -36,6 +38,7 @@ HTMLには一切手を入れず、JavaScriptだけで
 
 使うときは、少々手間ですが4行ほど書きます。
 
+.js
 !disqus_url = location.href
 !if(disqus_url.search(/\/$/) >= 0)
 !	disqus_url += 'index.html'

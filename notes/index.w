@@ -2,6 +2,7 @@
 
 =orange/note
 
+	.main-cards
 	:[PC関連|pc.w]
 	-Win, Mac, Plan 9, Inferno等
 	:[web製作|web.w]

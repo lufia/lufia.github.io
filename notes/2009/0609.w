@@ -1,9 +1,9 @@
 @include u.i
 %title Xbox LIVEに繋がらない
 
-=Xbox LIVEに繋がらない
 .revision
 2009年6月9日作成
+=Xbox LIVEに繋がらない
 
 	LIVEへ繋げようと思ったら、いつの間にか、
 	MTUが小さすぎるというエラーで繋がらなくなっていて少し困る。

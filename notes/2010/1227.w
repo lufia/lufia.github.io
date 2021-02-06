@@ -1,9 +1,9 @@
 @include u.i
 %title SproutCoreとWCF Data Servicesの連携
 
-=SproutCoreとWCF Data Servicesの連携
 .revision
 2011年2月26日更新
+=SproutCoreとWCF Data Servicesの連携
 
 	=SQL Serverとdecimal型
 
@@ -12,6 +12,7 @@
 	Number型では変換するときにエラーが起こります。
 	このため、postUrlまたはputUrlする前に型変換をしておく必要があります。
 
+	.js
 	!var h = store.readDataHash(storeKey)
 	!h = SC.copy(h, YES)
 	!h.decimalValue = h.decimalValue.toString()
@@ -57,6 +58,7 @@
 	ローカル時間と仮定する場合(ほとんどがこちらだと思う)は、
 	読み込み時に少し調整が必要です。
 
+	.js
 	!function dateFrom(s, format)
 	!{
 	!	var tzoff = new Date().getTimezoneOffset()*60000

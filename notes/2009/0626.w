@@ -1,9 +1,9 @@
 @include u.i
 %title ウイルス対策
 
-=ウイルス対策
 .revision
 2009年10月1日更新
+=ウイルス対策
 
 すこし前のニュースで[OneCareが販売中止|
 http://www.computerworld.jp/news/sec/127569.html]

@@ -1,9 +1,9 @@
 @include u.i
 %title fsオープンファイルの管理
 
-=fsオープンファイルの管理
 .revision
 2011年5月16日作成
+=fsオープンファイルの管理
 
 ファイルサーバは、いま開いているファイルについて、
 チャネル(chan)とFIDにもとづいたリストを持っています。
@@ -42,6 +42,7 @@ dumpのときに変更のあったブロックアドレスが変わります。
 off**DIRPERBUF+slotのように、ひとつにまとめているわけですね。
 これにより、
 
+.c
 !p = getbuf(target->parent->addr)
 !d = getdir(p, target->parent->slot%DIRPERBUF)
 !p1 = dnodebuf(p, d, target->slot/DIRPERBUF)

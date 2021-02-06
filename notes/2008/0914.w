@@ -1,9 +1,9 @@
 @include u.i
 %title target="_blank"
 
-=target="_blank"
 .revision
 2008年9月14日作成
+=target="_blank"
 
 JavaScriptの調べ物をしていたらたまたま引っかかったので、
 書いておこうかなあと。

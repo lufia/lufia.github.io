@@ -1,9 +1,9 @@
 @include u.i
 %title エンタープライズに根付くSerial Attached SCSI
 
-=エンタープライズに根付くSerial Attached SCSI
 .revision
 2008年7月28日作成
+=エンタープライズに根付くSerial Attached SCSI
 
 まとめて読むのがめんどくさかったのでリンクしてみました。あとで読む。
 

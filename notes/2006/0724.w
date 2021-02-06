@@ -1,9 +1,9 @@
 @include u.i
 %title geekとnerd
 
-=geekとnerd
 .revision
 2006年7月24日作成
+=geekとnerd
 
 	調べるサイトごとに、geekとnerdの意味がちがうんですよね。
 

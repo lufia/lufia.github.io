@@ -1,9 +1,9 @@
 @include u.i
 %title Geode NX
 
-=Geode NX
 .revision
 2006年12月5日作成
+=Geode NX
 
 Plan 9ファイルサーバのCPUを、
 Athlon 1600+からGeode NX 1750に交換しました。

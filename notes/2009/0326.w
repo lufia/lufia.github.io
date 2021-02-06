@@ -1,9 +1,9 @@
 @include u.i
 %title ZWEI IIクリア
 
-=ZWEI IIクリア
 .revision
 2009年3月26日作成
+=ZWEI IIクリア
 
 去年の年末くらいですかね。なんとなく買って、未開封のまま
 しばらく放っておいた[ZWEI II|http://www.falcom.co.jp/zwei2/]をクリア。

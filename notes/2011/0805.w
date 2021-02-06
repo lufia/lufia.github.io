@@ -1,9 +1,9 @@
 @include u.i
 %title SQL Serverのメモ
 
-=SQL Serverのメモ
 .revision
 2011年8月5日作成
+=SQL Serverのメモ
 
 	記憶に残っているもの。
 

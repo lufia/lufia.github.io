@@ -1,9 +1,9 @@
 @include u.i
 %title Accessメモ
 
-=Accessメモ
 .revision
 2010年5月12日更新
+=Accessメモ
 
 	=イベントの発生順序
 	+BeforeInsert

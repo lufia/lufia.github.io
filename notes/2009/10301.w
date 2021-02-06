@@ -1,9 +1,9 @@
 @include u.i
 %title document.writeのリダイレクト
 
-=document.writeのリダイレクト
 .revision
 2009年10月30日作成
+=document.writeのリダイレクト
 
 リダイレクトといってもHTTPのそれではなくて。
 
@@ -16,6 +16,7 @@
 
 そこで、document.writeの結果を文字列で返せれば便利かなあと考えました。
 
+.js
 !function wrap(write)
 !{
 !	var orig = document.write

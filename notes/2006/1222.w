@@ -1,9 +1,9 @@
 @include u.i
 %title CSSをJavaScriptから扱う場合のメモ
 
-=CSSをJavaScriptから扱う場合のメモ
 .revision
 2006年12月22日作成
+=CSSをJavaScriptから扱う場合のメモ
 
 JavaScriptでもう1つのサイトのほうを新しくしているのですが、
 テスト環境ではうまくいくのに、実際のサイトに適用させると

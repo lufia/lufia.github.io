@@ -1,9 +1,9 @@
 @include u.i
 %title 相変わらず、まあ
 
-=相変わらず、まあ
 .revision
 2007年5月27日作成
+=相変わらず、まあ
 
 GIGAZINEより。
 

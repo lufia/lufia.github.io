@@ -1,9 +1,5 @@
 %author	http://www.hatena.ne.jp/lufiabb/
-%style	/notes/lib/u.css
-%script	/lib/jquery.js
-%script	/lib/decor.js
-%script	http://www.square-enix.com/jp/members/blogparts/members/parts.js
-%script	/notes/lib/complex.js
+%script	/lib/bundle.js
 %title	orange/note
-%url s|^([a-z0-9]+)\(([1-9])\)$|http://plan9.bell-labs.com/magic/man2html/\2/\1|
-%url s|^(contrib/[^ 	]+)$|http://plan9.bell-labs.com/sources/\1|
+%url s|^([a-z0-9]+)\(([1-9])\)$|https://9p.io/magic/man2html/\2/\1|
+%url s|^(contrib/[^ 	]+)$|https://9p.io/sources/\1|

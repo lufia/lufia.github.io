@@ -1,9 +1,9 @@
 @include u.i
 %title Tales of Vesperiaクリア
 
-=Tales of Vesperiaクリア
 .revision
 2009年11月10日作成
+=Tales of Vesperiaクリア
 
 ラストダンジョンで積んでいたXBox 360版の
 テイルズオブヴェスペリアをクリアしました。

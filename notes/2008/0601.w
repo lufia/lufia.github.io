@@ -1,9 +1,9 @@
 @include u.i
 %title week of month
 
-=week of month
 .revision
 2009年6月28日更新
+=week of month
 
 	いま作ってるプログラムで週計算する機能が必要になったため、
 	英語でweek of monthと検索。

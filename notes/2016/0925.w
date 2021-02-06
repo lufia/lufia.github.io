@@ -1,9 +1,9 @@
 @include u.i
 %title RSSリーダー
 
-=RSSリーダー
 .revision
 2016年9月25日作成
+=RSSリーダー
 
 現在はTwitterなどで更新通知がされるため、
 RSSフィードの人気は下火なのかもしれませんが、

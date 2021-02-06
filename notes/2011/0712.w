@@ -1,9 +1,9 @@
 @include u.i
 %title 無線LANのセキュリティ2
 
-=無線LANのセキュリティ2
 .revision
 2011年7月12日作成
+=無線LANのセキュリティ2
 
 Pyritにより、[WPA2-PSKの攻撃が現実的になってきた|
 http://blog.hidekiy.com/2011/07/crypto-pyritlan.html]ようです。
@@ -12,6 +12,7 @@ http://blog.hidekiy.com/2011/07/crypto-pyritlan.html]ようです。
 openssl rand -base64と(おそらく)似たプログラムを書きました。
 ふつうに/dev/randomから読んでbase64エンコードしているだけですね。
 
+.c
 !#include <u.h>
 !#include <libc.h>
 !

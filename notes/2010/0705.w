@@ -1,9 +1,9 @@
 @include u.i
 %title fsバックアップメモ
 
-=fsバックアップメモ
 .revision
 2010年7月5日作成
+=fsバックアップメモ
 
 ふと気になったので調べてみました。
 今までよく無事だったなあ。。
@@ -60,6 +60,7 @@
 
 		=arginit
 
+		.c
 		!fs->flags |= FRECOVER
 
 		後の処理で使うためのフラグ立て。
@@ -67,12 +68,14 @@
 
 		=sysinit
 
+		.c
 		!fs->dev = iconfig(fs->config)
 		!if(fs->flags&FRECOVER)
 		!	devrecover(fs->dev)
 
 		=devrecover(dev)
 
+		.c
 		!cwrecover(dev)
 
 		どんどん深くなる。。
@@ -90,6 +93,7 @@
 		で、最新のSuperblock(言い換えると最終dump)が定まると、
 		続けて各種ブロックアドレスをCacheに設定。
 
+		.c
 		!p = getbuf(wdev, baddr, Bread)
 		!s = (Superb*)p->iobuf
 		!cb = cacheinit(dev)		# 初期化するだけ

@@ -1,9 +1,9 @@
 @include u.i
 %title il.cを読む
 
-=il.cを読む
 .revision
 2011年6月18日作成
+=il.cを読む
 
 	.note
 	{

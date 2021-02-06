@@ -1,9 +1,9 @@
 @include u.i
 %title Macbook AirでWindows7
 
-=Macbook AirでWindows7
 .revision
 2009年12月6日作成
+=Macbook AirでWindows7
 
 	Macbook Air(OSX10.6)にWindows 7をインストールしてみました。
 

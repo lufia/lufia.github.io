@@ -1,9 +1,9 @@
 @include u.i
 %title 聖剣伝説DS Children of Manaクリア
 
-=聖剣伝説DS Children of Manaクリア
 .revision
 2009年8月5日作成
+=聖剣伝説DS Children of Manaクリア
 
 ラストダンジョンでずいぶん中断していましたがクリア。
 最初はあまり面白くありませんでしたが、

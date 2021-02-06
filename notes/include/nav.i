@@ -1,11 +1,7 @@
-.header
-{
-	=[orange/note|/notes/]
-}
-
 .nav
 {
 	=メニュー
+	*[orange/note|/notes/]
 	*[PC関連|/notes/pc.w]
 	*[web製作|/notes/web.w]
 	*[セキュリティ|/notes/sec.w]
@@ -15,11 +11,6 @@
 
 .aside
 {
-	=書いた人
-	*マイナーモノ好き
-	*車輪の再発明なんて恐れない
-	*Plan 9で生活できたらいいなと思っている
-
 	=やっていること
 	*[Plan 9|/plan9/]
 	*[Alefコンパイラを読む|http://web.me.com/lufia/alefcompiler/alef/]

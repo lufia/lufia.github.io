@@ -1,9 +1,9 @@
 @include u.i
 %title Win9p
 
-=Win9p
 .revision
 2009年3月19日作成
+=Win9p
 
 shell namespace extensionとして9P拡張を作っていたのですが、
 だんだんめんどくさくなってきたのであきらめます。

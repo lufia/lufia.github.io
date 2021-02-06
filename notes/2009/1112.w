@@ -1,9 +1,9 @@
 @include u.i
 %title JavaScript regexp
 
-=JavaScript regexp
 .revision
 2009年11月12日作成
+=JavaScript regexp
 
 とりあえずリンクだけ。
 

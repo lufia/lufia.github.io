@@ -1,9 +1,9 @@
 @include u.i
 %title ドメイン移管とSPF
 
-=ドメイン移管とSPF
 .revision
 2009年2月10日作成
+=ドメイン移管とSPF
 
 	=ドメイン移管
 	lufia.orgでは、今まで固定IPで[MyDNS|http://www.mydns.jp/]を

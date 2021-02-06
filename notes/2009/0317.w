@@ -1,9 +1,9 @@
 @include u.i
 %title 7th Dragon
 
-=7th Dragon
 .revision
 2009年3月17日作成
+=7th Dragon
 
 南国の町あたりから、このパーティで進めてます。
 サブイベント回収中。

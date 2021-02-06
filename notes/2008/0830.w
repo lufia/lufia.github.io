@@ -1,9 +1,9 @@
 @include u.i
 %title IE8をオススメします
 
-=IE8をオススメします
 .revision
 2008年8月30日作成
+=IE8をオススメします
 
 8月28日、[IE8 beta2が公開されました|
 http://trendy.nikkeibp.co.jp/article/pickup/20080828/1018083/]。

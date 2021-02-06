@@ -1,9 +1,9 @@
 @include u.i
 %title うまくない
 
-=うまくない
 .revision
 2007年4月17日作成
+=うまくない
 
 昨日の様子見で1日置いてみましたが、dumpがはじまると、
 昨日までと同様に*mirrwrite $dev error at block $addr*になりました。

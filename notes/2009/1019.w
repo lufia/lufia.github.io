@@ -1,9 +1,9 @@
 @include u.i
 %title 無線LANのセキュリティ
 
-=無線LANのセキュリティ
 .revision
 2009年10月19日作成
+=無線LANのセキュリティ
 
 	.note
 	この記事は書きかけです。

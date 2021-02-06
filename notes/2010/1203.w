@@ -1,13 +1,14 @@
 @include u.i
 %title SproutCoreモデル定義
 
-=SproutCoreモデル定義
 .revision
 2011年2月14日更新
+=SproutCoreモデル定義
 
 	=モデルの作成
 
-	!sc-gen model Blog.Article
+	.console
+	!$ sc-gen model Blog.Article
 
 	これで、model/article.jsが生成されます。
 	もうひとつテスト用のファイルも作られますが、
@@ -29,6 +30,7 @@
 
 	たとえばブログ的なものの記事を定義する場合、
 
+	.js
 	!Blog.Article = SC.Record.extend({
 	!	subject: SC.Record.attr(String, {
 	!		key: 'Subject'
@@ -42,6 +44,7 @@
 	下のほうでも詳しく書きますが、SC.DateTime型のデータハッシュは
 	文字列になりますので注意です。
 
+	.js
 	!Blog.Article.FIXTURES = [
 	!{	guid: 0,
 	!	Subject: 'article1',
@@ -98,6 +101,7 @@
 
 	=実験
 
+	.js
 	!data.set('createdDate', SC.DateTime.create({
 	!	year: 2010, month: 12, day: 14, hour: 0
 	!})
@@ -148,6 +152,7 @@
 	この例では、データハッシュをDateにさせています。
 	個人的にmain.jsの先頭が定位置。
 
+	.js
 	!SC.RecordAttribute.registerTransform(SC.DateTime, {
 	!	to: function(d, attr){
 	!		if(SC.none(d))
@@ -170,6 +175,7 @@
 	setはtoを使わないでvalueをそのまま返しますので、
 	動作テストするときには注意です。
 
+	.js
 	!// set('key', value)の時(だいたいこんな感じ)
 	!hash[key] = from(value)
 	!return value
@@ -181,6 +187,7 @@
 
 	英語でcomputed propertyですが、うまい訳を思いつかなかったので。
 
+	.js
 	!createdYear: function(){
 	!	return this.getPath('createdDate.year')
 	!}.property('createdDate').cacheable()
@@ -214,6 +221,7 @@
 
 	で、モデル定義。
 
+	.js
 	!Blog.Article = SC.Record.extend({
 	!	primaryKey: 'ID',
 	!	subject: SC.Record.attr(String, {key: 'Subject'}),
@@ -239,6 +247,7 @@
 	これは、リレーションの変更があった場合に
 	どちらのデータを更新するかを指示するものです。
 
+	.js
 	!var article = getArticle()
 	!var comment = SC.store.createRecord(Blog.Comment, {
 	!	Message: '...',
@@ -278,6 +287,7 @@
 
 		=SC.DateTimeをTextFieldViewにバインドして編集するとエラー
 
+		.js
 		!valueBinding: SC.Binding
 		!	.from('Blog.articleController.createdDate')
 		!	.dateTime('%Y/%m/%d')
@@ -296,6 +306,7 @@
 		String#toFormattedStringを呼び出そうとしてエラーになります。
 		なので、この2点に修正が必要です。
 
+		.js
 		!function getFormat(attr)
 		!{
 		!	return attr.get('format') || SC.DateTime.recordFormat
@@ -360,6 +371,7 @@
 		やりとりするという方法もあります。
 		個数が少ないなら、こちらのほうが楽かもしれません。
 
+		.js
 		!targetDate: function(key, value){
 		!	var fmt = '%Y-%m-%d'.loc()
 		!	if(!SC.none(value)){
@@ -390,6 +402,7 @@
 		バインドした値が更新されなかったりします。
 		いろいろ端折るとこんな感じ。
 
+		.js
 		!var A = SC.Object.create({ name: 'aaa' })
 		!var B = SC.Object.create({ nameBinding: 'A.name' })
 		!A.set('name', 'test')

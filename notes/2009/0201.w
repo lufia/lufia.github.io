@@ -1,9 +1,9 @@
 @include u.i
 %title 2001年宇宙の旅(2001: A Space Odyssey)
 
-=2001年宇宙の旅(2001: A Space Odyssey)
 .revision
 2009年2月1日作成
+=2001年宇宙の旅(2001: A Space Odyssey)
 
 LIVE A LIVE - SF偏の元ネタだと聞いたので観てみました。
 ホラーだと勘違いしていましたが、決してそんなことはなく。

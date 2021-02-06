@@ -1,9 +1,9 @@
 @include u.i
 %title XMLをXSLT変換してHTML化する
 
-=XMLをXSLT変換してHTML化する
 .revision
 2006年12月11日作成
+=XMLをXSLT変換してHTML化する
 
 XSLTを使って、XMLをHTMLに変換しようとしてます。が。
 

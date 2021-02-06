@@ -1,9 +1,9 @@
 @include u.i
 %title Excelメモ
 
-=Excelメモ
 .revision
 2011年7月8日作成
+=Excelメモ
 
 セルをコピーするとアドレスをずらしてくれるのは、
 だいたいの場合にとても便利ですが、

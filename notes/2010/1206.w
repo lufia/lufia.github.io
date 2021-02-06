@@ -1,14 +1,15 @@
 @include u.i
 %title SproutCoreのGUIデザイン
 
-=SproutCoreのGUIデザイン
 .revision
 2011年2月26日更新
+=SproutCoreのGUIデザイン
 
 	=アプリケーションタイトルの変更
 
 	main.jsなどから、document.titleに設定します。
 
+	.js
 	!document.title = 'blog'.loc()
 
 	=ビューの作成
@@ -16,7 +17,8 @@
 	プロジェクトディレクトリに移動して、以下を実行すると、
 	views/以下にそのファイルが作成されます。
 
-	!sc-gen view Blog.CategoryView
+	.console
+	!$ sc-gen view Blog.CategoryView
 
 	でもだいたいmain_page.jsで事足りますので、
 	あまり使う機会はないかも。
@@ -28,6 +30,7 @@
 
 	=ボタン
 
+	.js
 	!postView: SC.ButtonView.design({
 	!	title: 'post',
 	!	isEnabled: YES,
@@ -48,6 +51,7 @@
 
 	\<SourceListViewとListViewの違い|1206.jpg>
 
+	.js
 	!categoriesView: SC.ScrollView.design({
 	!	contentView: SC.SourceListView.design({
 	!		exampleView: Blog.CategoryView
@@ -71,6 +75,7 @@
 
 	=ドロップダウンメニュー
 
+	.js
 	!selectionView: SC.SelectButtonView.design({
 	!	title: 'title',
 	!	objects: [
@@ -105,6 +110,7 @@
 
 	nowShowingをnullにすると、どのタブも選択されていない状態になります。
 
+	.js
 	!middle: SC.View.design({
 	!	layout: { top: 75, bottom: 115, left: 0, right: 0 },
 	!	childViews: 'tab'.w(),
@@ -127,13 +133,15 @@
 	ここで、valueのパスはSC.Pageの名前で、
 	それはふつうに書いてもいいですし、sc-genを使ってもいいです。
 
-	!sc-gen design Blog.publicPage
+	.console
+	!$ sc-gen design Blog.publicPage
 
 	=並び替え
 
 	まずはSC.Query等のクエリで対応するのが正解かなあと思いますが、
 	使えない場合は、SC.ArrayController#orderByが便利かもしれません。
 
+	.js
 	!Blog.articlesController = SC.ArrayController.create({
 	!	orderBy: 'createdDate DESC, ...'
 	!})
@@ -142,6 +150,7 @@
 
 		使う前に、Buildfileへsproutcore/tableを追加しておきます。
 
+		.js
 		!required => [:sproutcore, 'sproutcore/table']
 
 		.note
@@ -155,6 +164,7 @@
 		これが関数なら、その戻り値をテーブルデータに表示します。
 		以下はSC.DateTimeを表示する場合。一部抜粋。
 
+		.js
 		!tableView: SC.TableView.design({
 		!	columns: [
 		!		SC.TableColumn.create({
@@ -177,12 +187,14 @@
 	ビューとはちょっと違うかもしれませんが、まあ見た目なので。
 	まず言語ファイルを作成するには、以下のようにします。
 
-	!sc-gen language Blog Japanese
+	.console
+	!$ sc-gen language Blog Japanese
 
 	sc-genのヘルプでは、
 
+	.console
 	!# エラーが出るよ
-	!sc-gen language Language
+	!$ sc-gen language Language
 
 	となっていますが、実際は違うので注意です。いちおう[Wiki|
 	http://wiki.sproutcore.com/w/page/12413070/Todos%2008-Localizing]
@@ -191,15 +203,18 @@
 	あとは生成した言語ファイルを修正して、String#locを呼び出すだけです。
 	個人的によく使うのは、
 
+	.js
 	!'%Y-%m-%d': '%Y/%m/%d'
 
 	と定義しておいて、'%Y-%m-%d'.loc()とか。
 	置換パラメータを持っている場合は、
 
+	.js
 	!'post failed[code=%@]': '書き込みに失敗しました[コード=%@]'
 
 	で、locに引数を渡します。
 
+	.js
 	!throw 'post failed[code=%@]'.loc(statusCode)
 
 	こうしておくと、未対応の言語でも最低限の表示ができますので。
@@ -209,6 +224,7 @@
 	コントローラと連携して対応するっぽいです。
 	まず、コントローラをSC.CollectionViewDelegateで拡張します。
 
+	.js
 	!Blog.articlesController = SC.ArrayController.create(
 	!	SC.CollectionViewDelegate, {
 	!	...
@@ -217,6 +233,7 @@
 	次に、View側でcanReorderContentとisEditableをYESに設定します。
 	一部抜粋。
 
+	.js
 	!articlesView: SC.ScrollView.design({
 	!	contentView: SC.ListView.design({
 	!		contentBinding: 'Blog.articlesController.arrangedObjects',
@@ -248,12 +265,14 @@
 
 		=ドラッグ対象側のリスト
 
+		.js
 		!contentView: SC.ListView.design({
 		!	dragDataTypes: [Blog.Article]
 		!})
 
 		=ドロップされる側のリスト
 
+		.js
 		!contentView: SC.ListView.design({
 		!	isDropTarget: YES,
 		!	computeDragOperation: function(drag, e){
@@ -276,6 +295,7 @@
 	これはあってもなくてもいいです。
 	また、performDragOperationでは、thisはドロップ先のアイテムです。
 
+	.js
 	!Blog.CategoryView = SC.ListItemView.extend({
 	!	isDropTarget: YES,
 	!	computeDragOperations: function(drag, e){
@@ -298,6 +318,7 @@
 	最後に、上記で作成したビューを
 	ドロップ先のSC.ListView#exampleViewに設定します。
 
+	.js
 	!categoriesView: SC.ScrollView.design({
 	!	contentView: SC.SourceListView.design({
 	!		exampleView: Blog.CategoryView
@@ -311,6 +332,7 @@
 	sc-genを使えないので、自分で作らなければいけません。
 	とりあえず、main_page.jsの先頭に書くようにしています。
 
+	.js
 	!Blog.dateTimeValidator = SC.Validator.extend({
 	!	...
 	!})
@@ -328,6 +350,7 @@
 
 	ビューへ適用するには、validatorに設定します。
 
+	.js
 	!createdDateView: SC.LabelView.design({
 	!	validator: Blog.dateTimeValidator.create({...})
 	!})
@@ -358,6 +381,7 @@
 
 	こんなのも書けるっぽい。
 
+	.js
 	!function(){}.observes('this')
 
 	=トラブルシューティング
@@ -367,6 +391,7 @@
 		SC.ArrayController#selectObjectの直後、
 		関連するSC.Bindingが更新されるわけではないようです。
 
+		.js
 		!Blog.articleController = SC.ObjectController.create({
 		!	contentBinding: SC.Binding
 		!		.single('Blog.articlesController.selection')
@@ -374,6 +399,7 @@
 
 		ここで、
 
+		.js
 		!Blog.articlesController.selectObject(article)
 		!var p = Blog.articleController.get('content')
 
@@ -381,6 +407,7 @@
 		選んでいなければnullが設定されます。
 		正しく動かすには、invoke系関数を使います。
 
+		.js
 		!Blog.articlesController.selectObject(article)
 		!Blog.articlesController.invokeLater(function(){
 		!	var p = Blog.articleController.get('content')
@@ -396,6 +423,7 @@
 		それをリストにバインドしていると、
 		ビューの更新がされません。具体的に書くと、
 
+		.js
 		!contentBinding: SC.Binding
 		!	.single('Blog.categoriesController.selection')
 		!	.transform(function(value, binding){
@@ -409,6 +437,7 @@
 
 		次に、
 
+		.js
 		!contentBinding: SC.Binding
 		!	.single('Blog.categoriesController.selection')
 		!	.transform(function(value, binding){
@@ -423,6 +452,7 @@
 
 		=変更していないけど変更したことにしたい
 
+		.js
 		!obj.propertyDidChange('name')
 
 		enumerableContentDidChangeも気になります。
@@ -445,6 +475,7 @@
 		SC.SelectButtonViewの比較は===演算子なので、
 		オブジェクトのアドレスが異なれば違うものとして扱われます。
 
+		.js
 		!SC.SelectButtonView.design({
 		!	objectsBinding: 'Blog.categoriesController.arrangedObjects',
 		!	valueBinding: 'Blog.articleController.category',
@@ -460,6 +491,7 @@
 		なので、割と適当な回避策として、objectsのほうもNestedStoreから
 		再取得したものでバインドしてあげると期待通りに動きます。一部抜粋。
 
+		.js
 		!SC.SelectButtonView.design({
 		!	objectsBinding: 'Blog.altCategoriesController.arrangedObjects'
 		!	valueBinding: 'Blog.articleController.category'
@@ -467,6 +499,7 @@
 
 		呼び出す場所では以下のように。
 
+		.js
 		!var nstore = Blog.store.chain()
 		!var q = SC.Query.local('Blog.Category')
 		!Blog.altCategoriesController.set('content', nstore.find(q))
@@ -481,6 +514,7 @@
 		ですが、2011年2月時点でバグがあり、文字が一切入力できません。
 		仕方がないのでバグの部分だけを置き換えたものを作ります。
 
+		.js
 		!Vacations.DaysValidator = SC.Validator.Number.extend({
 		!
 		!	places: 1,

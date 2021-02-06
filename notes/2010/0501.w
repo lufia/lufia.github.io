@@ -1,9 +1,9 @@
 @include u.i
 %title 家計簿作成メモ
 
-=家計簿作成メモ
 .revision
 2010年5月9日更新
+=家計簿作成メモ
 
 webアプリ家計簿を作ったときに調べたことをメモ。
 
@@ -33,6 +33,7 @@ webアプリ家計簿を作ったときに調べたことをメモ。
 		Plan 9でいちばん手軽なhttps+basic認証を使います。
 		参考までに/cfg/wisp/cpustartの一部。
 
+		.sh
 		!ip/httpd/httpd
 		!ip/httpd/httpd -c cert \
 		!	-n /cfg/wisp/namespace.https -w /usr/sweb
@@ -77,6 +78,7 @@ webアプリ家計簿を作ったときに調べたことをメモ。
 		=パーミッションは間違っていないのに、createがエラーになる
 		\[create(2)]は、OWRITEでディレクトリを作るとエラーになります。
 
+		.c
 		!//fd = create(file, OWRITE, 0777|DMDIR);
 		!fd = create(file, OREAD, 0777|DMDIR);
 		!close(fd)
@@ -103,6 +105,7 @@ webアプリ家計簿を作ったときに調べたことをメモ。
 		=jQuery.ajaxエラー時のHTTPエラーコードが見たい
 		第1引数のstatusを見ます。
 
+		.js
 		!$.ajax({
 		!	error: function(req){
 		!		alert(req.status)
@@ -115,6 +118,7 @@ webアプリ家計簿を作ったときに調べたことをメモ。
 		=jQuery UI datepickerの書式をyyyy/mm/ddにしたい
 		dateFormatオプションに書式を与えます。
 
+		.js
 		!$('input.date').datepicker({
 		!	dateFormat: 'yy/mm/dd'
 		!})
@@ -122,6 +126,7 @@ webアプリ家計簿を作ったときに調べたことをメモ。
 		=html5.jpのグラフを再度drawすると、前のグラフが残る
 		不具合なのか仕様なのか分かりませんが、とりあえず回避。
 
+		.html
 		!<section id="graph">
 		!	<div>
 		!	<canvas width="200" height="200" id="canvas1"></canvas>

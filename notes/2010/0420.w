@@ -1,9 +1,9 @@
 @include u.i
 %title Inferno httpdとマルチバイト
 
-=Inferno httpdとマルチバイト
 .revision
 2011年5月14日更新
+=Inferno httpdとマルチバイト
 
 .note
 2011年5月14日現在、公式に対応されましたので、
@@ -16,6 +16,7 @@ httpdを2点ほど修正しました。
 まずは、parse.b:urlunesc。
 終わりのほうにちょっと追加しただけですね。
 
+.c
 !urlunesc(s : string): string
 !{
 !	c, n : int;
@@ -60,6 +61,7 @@ httpdを2点ほど修正しました。
 
 続けてparse.b:urlconv。
 
+.c
 !urlesc(c : int): string
 !{
 !	s, t : string;
@@ -89,7 +91,8 @@ httpdを2点ほど修正しました。
 
 あとはふつうに。
 
-!mk && mk install
+.console
+!% mk && mk install
 
 .note
 svc/httpdに-Dオプションを与えると、/services/httpd以下に

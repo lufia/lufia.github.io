@@ -1,9 +1,9 @@
 @include u.i
 %title DISQUS導入テスト
 
-=DISQUS導入テスト
 .revision
 2009年10月2日作成
+=DISQUS導入テスト
 
 更新ミスなどがあったとき、すぐ直せる場合はいいのですが、
 そうでないとき、忘れてしまうことが多いので、
@@ -19,6 +19,7 @@ jQueryを使って省略してみたり、divまで動的生成してみたり�
 
 以下ソース。
 
+.js
 !function disqus(shortname)
 !{
 !	var name = encodeURIComponent(shortname)
@@ -36,6 +37,7 @@ jQueryを使って省略してみたり、divまで動的生成してみたり�
 
 これを、onloadイベントなどで呼び出せば、footer要素の後に追加されます。
 
+.js
 !$(function(){
 !	disqus('shortname')
 !})

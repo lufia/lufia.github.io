@@ -1,9 +1,9 @@
 @include u.i
 %title WindowsインストーラWiX
 
-=WindowsインストーラWiX
 .revision
 2010年11月30日作成
+=WindowsインストーラWiX
 
 	昨日、今日とマイクロソフト系のネタが続くなあ。。
 
@@ -75,6 +75,7 @@
 
 	=サンプル
 
+	.xml
 	!<?xml version="1.0" encoding="utf-8"?>
 	!<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
 	!	<Product Id="B6A98E5F-D6A7-46FB-9E9D-1F7BF443491C" Name="ディスク容量ログビューア"

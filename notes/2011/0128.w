@@ -1,9 +1,9 @@
 @include u.i
 %title SproutCoreのいろいろ
 
-=SproutCoreのいろいろ
 .revision
 2011年1月28日作成
+=SproutCoreのいろいろ
 
 	=HTTP Proxy
 
@@ -11,6 +11,7 @@
 	そのアクセスがあった場合に:toで指したホストへ切り替えてくれます。
 	テストをするときにとても便利。
 
+	.js
 	!proxy '/services/Service1.svc', :to => 'www.local'
 
 	sc-serverを再起動するまでは反映しません。
@@ -19,7 +20,8 @@
 
 	プロジェクトの場所に移動して、
 
-	!sc-build -r [-c] [--languages=ja]
+	.console
+	!$ sc-build -r [-c] [--languages=ja]
 
 	これで、tmp/build以下にファイルがビルドされてます。
 	cオプションは事前にクリーン。
@@ -49,7 +51,8 @@
 
 	=アプリケーションの追加
 
-	!sc-gen app AppName
+	.console
+	!$ sc-gen app AppName
 
 	\$project/apps以下に、新しいアプリケーションが作られます。
 

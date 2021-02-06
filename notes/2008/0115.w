@@ -1,9 +1,9 @@
 @include u.i
 %title 和風香
 
-=和風香
 .revision
 2008年1月15日作成
+=和風香
 
 いつのまにか[和風香|
 http://www.kobayashi.co.jp/corporate/news/0213/index.html]が、

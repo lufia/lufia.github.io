@@ -1,13 +1,14 @@
 @include u.i
 %title AtomとXSLTと名前空間
 
-=AtomとXSLTと名前空間
 .revision
 2007年12月2日作成
+=AtomとXSLTと名前空間
 
 AtomをXSLTでHTMLに変換しようとして詰まった。
 以下のように書くとだめ。ルートノードにしかマッチしない。
 
+.xml
 !<xsl:stylesheet version="1.0"
 !	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 !	xmlns="http://www.w3.org/1999/xhtml">
@@ -28,6 +29,7 @@ AtomをXSLTでHTMLに変換しようとして詰まった。
 
 こっちが正解。
 
+.xml
 !<xsl:stylesheet version="1.0"
 !	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 !	xmlns:atom="http://www.w3.org/2005/Atom"

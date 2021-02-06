@@ -1,9 +1,9 @@
 @include u.i
 %title Plan 9 to Inferno translation
 
-=Plan 9 to Inferno translation
 .revision
 2010年5月12日更新
+=Plan 9 to Inferno translation
 
 	=腰痛い
 	起き上がれずに、寝たきりです。

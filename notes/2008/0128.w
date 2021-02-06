@@ -1,26 +1,29 @@
 @include u.i
 %title Alef言語
 
-=Alef言語
 .revision
 2008年1月28日作成
+=Alef言語
 
 	最初は自分で移植してたけど、/n/sources/contrib/lucio以下に
 	ソースがあったので、ありがたく使わせてもらうことにします。
 
 	=展開
+	.console
 	!% cd /n/sources/contrib/lucio
 	!% gunzip -c alef.tgz | @{cd /sys/src && tar x}
 	!% cd sys/include
 	!% tar c alef | @{cd /sys/include && tar x}
 
 	=コンパイル
+	.console
 	!% cd /sys/src/alef/8
 	!% mk install		# 8alコマンドが作られる
 	!% cd ../lib
 	!% mk install		# libA.a等のライブラリ作成
 
 	=プログラム作成
+	.c
 	!#include <alef.h>
 	!
 	!void
@@ -35,6 +38,7 @@
 	!}
 
 	=テスト
+	.console
 	!% 8al a.l
 	!% 8l a.8
 	!% 8.out

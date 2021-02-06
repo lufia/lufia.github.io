@@ -1,9 +1,9 @@
 @include u.i
 %title Alefコンパイラのソースを読む(1)
 
-=Alefコンパイラのソースを読む(1)
 .revision
 2009年1月11日作成
+=Alefコンパイラのソースを読む(1)
 
 Google sitesを使って、[Alefコンパイラのソースを読み始めました|
 http://sites.google.com/site/alefcompiler/]。

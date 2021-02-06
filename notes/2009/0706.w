@@ -1,9 +1,9 @@
 @include u.i
 %title AJAXSLTを使ってみた
 
-=AJAXSLTを使ってみた
 .revision
 2009年7月6日作成
+=AJAXSLTを使ってみた
 
 	\[AJAXSLT|http://goog-ajaxslt.sourceforge.net/]は、
 	全部JavaScriptで書かれたXSLTライブラリです。
@@ -21,11 +21,13 @@
 	データはAtomを使うことにするので、
 	名前空間とルートノードは次のようになる。
 
+	.js
 	!atom = '<feed xmlns="http://www.w3.org/2005/Atom">' +
 	!	'</feed>'
 
 	次に、XSLTの中で、Atom名前空間をatomとする。
 
+	.js
 	!xslt = '<xsl:stylesheet version="1.0"' +
 	!	'	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"'
 	!	'	xmlns:atom="http://www.w3.org/2005/Atom"'
@@ -33,6 +35,7 @@
 	この条件で、Atomのfeed要素にマッチさせるには、
 	IEやFirefoxのXSLTプロセッサでは以下のように書く。
 
+	.xml
 	!<xsl:template match="atom:feed">
 
 	ここの名前空間は省略できない。XSLTで使うXPathは、
@@ -42,18 +45,21 @@
 	AJAXSLTでは、上記の書き方ではマッチしない。
 	次の書き方になる。
 
+	.xml
 	!<xsl:template match="feed">
 
 	=外部ファイルから読み込む場合
 	上記のデータをそのまま使い、atom.xmlを作成する。
 	サーバから返すcontent-typeはapplication/xml。
 
+	.xml
 	!<feed xmlns="http://www.w3.org/2005/Atom">
 	!</feed>
 
 	次にindex.xslt。これもapplication/xml。
 	もちろんmatchで使うXPathには、名前空間を書いてはいけない。
 
+	.xml
 	!<xsl:stylesheet version="1.0"
 	!	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	!	xmlns:atom="http://www.w3.org/2005/Atom"

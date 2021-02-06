@@ -1,9 +1,9 @@
 @include u.i
 %title Windowsファイルシステム開発
 
-=Windowsファイルシステム開発
 .revision
 2009年6月26日作成
+=Windowsファイルシステム開発
 
 \[Dokan|http://dokan-dev.net/]という、
 Windows版FUSEのようなものがあるらしいですね。

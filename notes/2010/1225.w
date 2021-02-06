@@ -1,13 +1,14 @@
 @include u.i
 %title SproutCoreでデータベースと接続
 
-=SproutCoreでデータベースと接続
 .revision
 2011年2月26日更新
+=SproutCoreでデータベースと接続
 
 	=データソースの作成
 
-	!sc-gen data-source Blog.articleDataSource
+	.console
+	!$ sc-gen data-source Blog.articleDataSource
 
 	data_sourcesにファイルが生成されます。
 	以下のうち必要な関数を書き換えるといいです。
@@ -25,7 +26,8 @@
 
 	自動更新しない場合は、
 
-	SC.Store.create({ commitRecordsAutomatically: NO }).find(...)
+	.js
+	!SC.Store.create({ commitRecordsAutomatically: NO }).find(...)
 
 	=ストアキー
 
@@ -34,6 +36,7 @@
 	SC.Record#primaryKeyはモデル別に一意なのですが、
 	こちらはモデルが違っても競合することはありません。
 
+	.js
 	!var a = Blog.store.find(Blog.Article, 1)
 	!var c = Blog.store.find(Blog.Comment, 1)
 	!a.get('id')			// 1
@@ -71,10 +74,12 @@
 
 		並び替え
 
+		.js
 		!SC.Query.local(Blog.Article, { orderBy: 'createdDate DESC' })
 
 		または、パラメータ(SCQL)を使う場合
 
+		.js
 		!SC.Query.local(Blog.Comment, 'article = {article}', {
 		!	article: this
 		!})
@@ -82,6 +87,7 @@
 		いわゆるwhereとorderbyを同時に設定するクエリを書くには、
 		SC.Query#localは使えません。以下のようにします。
 
+		.js
 		!SC.Query.create({
 		!	recordType: Blog.Article,
 		!	conditions: 'category={target}',
@@ -99,6 +105,7 @@
 		型を参照する前にsc_requireを使うと、
 		回避できるかもしれません。
 
+		.js
 		!sc_require('models/article')
 		!Blog.ARTICLE_QUERY = SC.Query.local('Blog.Article', {
 		!	orderBy: 'createdDate DESC'
@@ -112,6 +119,7 @@
 		とりあえず以下のコードで回避できます。
 		ちょっと強引ですけどね。
 
+		.js
 		!didUpdateRecord: function(r, store, storeKey){
 		!	if(SC.ok(r) || (SC.browser.msie && r.get('status') == 1223)
 		!		// success

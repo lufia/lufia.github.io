@@ -1,9 +1,9 @@
 @include u.i
 %title FFCC EoTクリア
 
-=FFCC EoTクリア
 .revision
 2010年1月5日作成
+=FFCC EoTクリア
 
 この正月にクリアしました。
 いまはHardモードの塔に突入したあたりで60時間ほどですね。

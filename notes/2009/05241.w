@@ -1,9 +1,9 @@
 @include u.i
 %title iDiskをWindowsエクスプローラから使う
 
-=iDiskをWindowsエクスプローラから使う
 .revision
 2009年5月24日作成
+=iDiskをWindowsエクスプローラから使う
 
 \[iDisk|http://www.apple.com/jp/mobileme/features/idisk.html]を
 ネットワークドライブとして使う場合のURIは、

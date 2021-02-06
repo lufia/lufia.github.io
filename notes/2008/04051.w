@@ -1,9 +1,9 @@
 @include u.i
 %title 使ってないサービスの停止
 
-=使ってないサービスの停止
 .revision
 2008年4月5日作成
+=使ってないサービスの停止
 
 	CPUサーバの使ってないサービスを止めました。
 	もともと外部には公開してなかったので、結局何も変わらない感じ。
@@ -52,7 +52,7 @@
 	:tcp565
 	-i am $x sysname $x you are $x port $x
 
-	/sys/src/cmd/aux/listen.cを読んだので、あとでまとめ書く。
+	\*/sys/src/cmd/aux/listen.c*を読んだので、あとでまとめ書く。
 
 	=参考
 	*[サバカン 技術情報|http://www.sabakan.info/techinfo/echoping1.html]

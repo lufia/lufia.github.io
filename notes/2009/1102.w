@@ -1,9 +1,9 @@
 @include u.i
 %title xpathコマンド
 
-=xpathコマンド
 .revision
 2009年11月2日作成
+=xpathコマンド
 
 Plan 9に[移植されたPython|/plan9/doc/devel/python.w]で、
 XPath検索するコマンドを作りました。
@@ -67,6 +67,7 @@ http://lab.hde.co.jp/2008/08/pythonunicodeencodeerror.html]が
 
 最後にxpathを呼び出すシェルスクリプト。
 
+.sh
 !#!/bin/rc
 !
 !if(~ $#* 0){

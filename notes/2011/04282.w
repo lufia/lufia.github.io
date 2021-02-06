@@ -1,9 +1,9 @@
 @include u.i
 %title ファイルサーバのディスクレイアウト
 
-=ファイルサーバのディスクレイアウト
 .revision
 2011年5月13日更新
+=ファイルサーバのディスクレイアウト
 
 	=キャッシュディスク
 
@@ -28,6 +28,7 @@
 
 	Limbo風に書くと、ざっくりこんな雰囲気。
 
+	.c
 	!CacheDisk: dt
 	!{
 	!	h: Cache;
@@ -43,6 +44,7 @@
 	Centryが定まれば、対応するデータ領域のアドレスは
 	単純な式で計算できます。いろいろ省略してこんな感じ。
 
+	.c
 	!h = (Cache*)getbuf(cw->cdev, CACHE_ADDR);
 	!bn = addr % h->msize;			// Bucketインデックス
 	!a1 = h->maddr + bn/BKPERBLK;		// Bucketが格納されているアドレス
@@ -86,6 +88,7 @@
 
 		以下はream後のWORMレイアウト。
 
+		.c
 		!0:
 		!1:
 		!2: super addr(tag:Tsuper, state=Cdump)
@@ -118,6 +121,7 @@
 
 		これは朝5:00の定期dumpではなく、ream直後に起こります。
 
+		.c
 		!0:
 		!1:
 		!2: super addr(tag:Tsuper, state=Cread)
@@ -169,6 +173,7 @@
 		ファイルが作られます。空きがなければgrowが起こります。
 		以下はgrowした後、/adm/usersを作り終わった場合。
 
+		.c
 		!0:
 		!1:
 		!2: super addr(tag:Tsuper, state=Cwrite)
@@ -207,10 +212,12 @@
 
 		.note
 		{
+			.console
 			!create /adm adm adm 755 d
 
 			このときのコールフロー。
 
+			.c
 			!con_create(FID2, "adm", -1, -1, PDIR&0755, 0)
 			!call9p1[Tcreate](message)
 			!f_create()
@@ -229,6 +236,7 @@
 		ここで、前回のdump時に書き込まれたブロックは
 		変更されていない点に注意です。
 
+		.c
 		!0:
 		!1:
 		!2: super addr(tag:Tsuper, state=Cread)
@@ -308,6 +316,7 @@
 		変更のあったブロックだけ切り替わります。
 		以下は疑似コードですが、だいたいこんな感じ。
 
+		.c
 		!na = cwrecur(addr)
 		!if(na){
 		!	block[i] = na;

@@ -1,9 +1,9 @@
 @include u.i
 %title DRM嫌い
 
-=DRM嫌い
 .revision
 2008年8月2日作成
+=DRM嫌い
 
 	=寝たきりで暇だったので
 	電子書籍を買いました。

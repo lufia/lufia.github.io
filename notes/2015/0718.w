@@ -1,9 +1,9 @@
 @include u.i
 %title HHKBを快適に使う
 
-=HHKBを快適に使う
 .revision
 2015年7月18日作成
+=HHKBを快適に使う
 
 	自宅と職場で、Windows(BootCamp)とMacを交互に使っていると、
 	ちょっとした違いが気になるようになったのでいろいろ変更しました。
@@ -88,6 +88,7 @@
 	の通りに実施すればOSはキーを正しく認識してくれるようになります。
 	レジストリファイルは以下の通り。
 
+	.ini
 	!Windows Registry Editor Version 5.00
 	!
 	![HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\i8042prt\Parameters]

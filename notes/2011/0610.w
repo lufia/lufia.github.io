@@ -1,9 +1,9 @@
 @include u.i
 %title incall queue full
 
-=incall queue full
 .revision
 2011年6月10日作成
+=incall queue full
 
 コンソールに警告が出ていた。
 

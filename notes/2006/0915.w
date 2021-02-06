@@ -1,9 +1,9 @@
 @include u.i
 %title Syleraの設定ファイルを移行する
 
-=Syleraの設定ファイルを移行する
 .revision
 2006年9月15日作成
+=Syleraの設定ファイルを移行する
 
 アップグレードではなく、別のPC(ユーザ)に設定ファイルをコピーする場合。
 C:\Documents and Settings\ユーザ名\Application Data\sylera(以下$syroot)を

@@ -1,9 +1,9 @@
 @include u.i
 %title Windows 8.1以降でWi-Fiが「制限あり」になる
 
-=Windows 8.1以降でWi-Fiが「制限あり」になる
 .revision
 2016年9月26日作成
+=Windows 8.1以降でWi-Fiが「制限あり」になる
 
 MacBook AirのBootcampでWindowsを使っていますが、
 確かWindows 8.1にした頃から無線ネットワークが頻繁に「制限あり」となってしまって

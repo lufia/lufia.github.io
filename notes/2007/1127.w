@@ -1,9 +1,9 @@
 @include u.i
 %title IEプラグイン開発
 
-=IEプラグイン開発
 .revision
 2007年11月27日作成
+=IEプラグイン開発
 
 *COM(Component Object Model)オブシェクトで作る
 *BHO(Browser Helper Object)と呼ぶ

@@ -1,9 +1,9 @@
 @include u.i
 %title ASP.NET Ajaxのメモ
 
-=ASP.NET Ajaxのメモ
 .revision
 2007年11月8日作成
+=ASP.NET Ajaxのメモ
 
 	2007年2月頃、機会があったので遊んでみました。
 	一部、Ajaxに限定しないものも含みます。

@@ -1,9 +1,9 @@
 @include u.i
 %title AtomとXSLTと名前空間(2)
 
-=AtomとXSLTと名前空間(2)
 .revision
 2008年1月15日作成
+=AtomとXSLTと名前空間(2)
 
 	=環境を選びますが
 	\[orange/note|/notes/]では、JavaScript+XSLTを使い、
@@ -20,6 +20,7 @@
 	fami-note:[atom:contentをXSLTを使って表示する時|
 	http://d.hatena.ne.jp/faminote/20070206/1170714329]
 
+	.xml
 	!<xsl:stylesheet version="1.0"
 	!	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	!	xmlns:atom="http://www.w3.org/2005/Atom"
@@ -37,6 +38,7 @@
 	省略した場合はうまく動かないです。なぜ?
 	名前空間は同じに見えるんですが。。
 
+	.xml
 	!<!-- うまく動かないバージョン -->
 	!<xsl:stylesheet version="1.0"
 	!	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -58,6 +60,7 @@
 	xsl:value-ofではタグが無視されてしまうので、xsl:copy-ofを使う。
 	ソートする必要があるなら、xsl:sortが使えるみたい。
 
+	.xml
 	!<xsl:template match="atom:content">
 	!	<xsl:variable name="n">
 	!		<xsl:number level="any"/>

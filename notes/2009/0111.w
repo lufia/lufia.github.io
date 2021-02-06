@@ -1,9 +1,9 @@
 @include u.i
 %title うみねこ ep4読了
 
-=うみねこ ep4読了
 .revision
 2009年1月11日作成
+=うみねこ ep4読了
 
 縁寿ええええええ
 

@@ -1,9 +1,9 @@
 @include u.i
 %title ルフィアノート再構築と/env
 
-=ルフィアノート再構築と/env
 .revision
 2009年11月17日作成
+=ルフィアノート再構築と/env
 
 	久しぶりに、[ルフィアノート|/estpolis/]を更新しました。
 	今までの作りでは、明らかな問題が2つと気になる点が1つ、
@@ -82,6 +82,7 @@
 	ちょうど[9fansでも話題にあがりました|
 	http://groups.google.com/group/comp.os.plan9/browse_thread/thread/cdf5eb70b20c9354/693130a1eabf43e9]ね。
 
+	.makefile
 	!PAGE=`{ls */*.w}
 	!TARG=${PAGE:%.w=%.html}
 	!
@@ -91,6 +92,7 @@
 
 	このルールでmkすると。
 
+	.console
 	!% mk
 	!/env/TARG: read or write too large
 	!/env/TARG: read or write too large
@@ -101,6 +103,7 @@
 	PAGEには全部のファイル名が含まれますが、
 	TARGは.wで終わるものを.htmlに変換したファイル名のみになっています。
 
+	.makefile
 	!PAGE=`{lspart $LSFLAGS $DB}
 	!TARG=${PAGE:%.w=%.html}
 	!
@@ -115,6 +118,7 @@
 
 	mkfileで使っているlspartは以下のように。
 
+	.sh
 	!#!/bin/rc
 	!# support tool for mk
 	!

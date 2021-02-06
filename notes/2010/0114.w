@@ -1,9 +1,9 @@
 @include u.i
 %title Ciscoメモ
 
-=Ciscoメモ
 .revision
 2010年1月14日作成
+=Ciscoメモ
 
 	まず接続できなくて詰まった。
 	最初はipが割り当てられていないので、付属のケーブルをAuxポートに接続。

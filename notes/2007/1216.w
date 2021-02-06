@@ -1,9 +1,9 @@
 @include u.i
 %title バンドデータ処理プログラム
 
-=バンドデータ処理プログラム
 .revision
 2009年9月30日更新
+=バンドデータ処理プログラム
 
 	\[Nizah Blogのお題|
 	http://blog.nizah.net/nb/2007/12/13/band-code.html]を
@@ -16,6 +16,7 @@
 	分からなかったので、ソートの比較はいっぱい無理してます。
 	単純にYear: con 0;とかでもよかったけどね。
 
+	.c
 	!implement Band;
 	!
 	!include "sys.m";
@@ -162,6 +163,7 @@
 	=2009年9月30日追記
 	関数ポインタは、ref fn()のように書くと渡せる。
 
+	.c
 	!implement Fn;
 	!
 	!include "sys.m";

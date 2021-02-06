@@ -1,9 +1,9 @@
 @include u.i
 %title ファイルサーバを読む
 
-=ファイルサーバを読む
 .revision
 2011年5月17日更新
+=ファイルサーバを読む
 
 	=ブロック
 
@@ -315,6 +315,7 @@
 		ファイルサーバは、ディスクのブロックにアクセスする場合、
 		getbufとputbufを使って、必ずバッファを通して扱います。
 
+		.c
 		!getbuf(dev, addr)
 
 		単純にするため引数を一部省略していますが、getbufは、
@@ -322,6 +323,7 @@
 		必要ならWORMからバッファへ読み込んだりもします。
 		次のはあくまで疑似コード。実際は全然違うけど雰囲気だけ。
 
+		.c
 		!mem: array of list of ref Iobuf
 		!
 		!getbuf(dev: ref Device, addr: Off): ref Iobuf
@@ -341,6 +343,7 @@
 		実際にブロックへ読み書きをします。
 		Cache-WORMデバイスの場合は以下のように呼び出しします。
 
+		.c
 		!getbuf(cw->dev, up->addr, Bread|Bmod)
 		!devread(cw->dev, up->addr, buf)	# 0なら正常終了
 		!cwread(cw->dev, up->addr, buf)
@@ -358,6 +361,7 @@
 		必要に応じてWORMの容量を増加させます。
 		増加したブロックは、フリーブロックリストに移ります。
 
+		.c
 		!cwgrow: fn(dev: ref Device, sb: ref Superb, uid: int): int
 		!{
 		!	h: ref Cache;
@@ -407,6 +411,7 @@
 		これはフリーブロックを使いません。
 		WORMディスクの容量(fsize)を増やしながら割り当てます。
 
+		.c
 		!na = cw->fsize++
 		!cwio(cw->dev, na, 0, Ogrow)
 		!cwio(cw->dev, na, p->iobuf, Owrite)

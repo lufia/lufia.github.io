@@ -1,9 +1,9 @@
 @include u.i
 %title GENOウイルス
 
-=GENOウイルス
 .revision
 2009年5月19日作成
+=GENOウイルス
 
 	=怖いね
 	Adobe製品の脆弱性により、
@@ -35,6 +35,7 @@
 
 		mms.cfgファイルの内容は以下の通り。UTF-8で保存します。
 
+		.ini
 		!AutoUpdateDisable=0
 		!AutoUpdateInterval=0
 

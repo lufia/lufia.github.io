@@ -1,9 +1,9 @@
 @include u.i
 %title XPathすごいね
 
-=XPathすごいね
 .revision
 2008年2月14日作成
+=XPathすごいね
 
 	データを扱うものなのに検索ができないのはおかしいと思って
 	調べてみると、XSLTそのものではなく、
@@ -13,6 +13,7 @@
 	これは[AtomとXSLTと名前空間(2)|0203.w]
 	と同じですね。1点バグがあったので修正したものを再掲。
 
+	.xml
 	!<xsl:template match="atom:feed">
 	!	<div id="main">
 	!	<xsl:apply-templates select="atom:entry/atom:content"/>
@@ -32,6 +33,7 @@
 	=XPathを使って、最新10件抽出
 	XPathは、"atom:entry[[ ... ]]"のところですね。
 
+	.xml
 	!<xsl:template match="atom:feed">
 	!	<div id="main">
 	!	<xsl:apply-templates

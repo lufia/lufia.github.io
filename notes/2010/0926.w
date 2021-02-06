@@ -1,9 +1,9 @@
 @include u.i
 %title 体術最強伝説
 
-=体術最強伝説
 .revision
 2010年9月26日作成
+=体術最強伝説
 
 このあいだ、[ロマサガ3一人旅 〜体術最強伝説〜|
 http://www.nicovideo.jp/mylist/15801801]を見ました。

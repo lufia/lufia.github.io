@@ -1,9 +1,9 @@
 @include u.i
 %title ASP.NET関連のいろいろまとめ
 
-=ASP.NET関連のいろいろまとめ
 .revision
 2011年7月14日更新
+=ASP.NET関連のいろいろまとめ
 
 	=WCF Data Services
 
@@ -23,6 +23,7 @@
 		戻り値の型をJsonResultに変えて(通常はActionResult)、
 		Jsonヘルパメソッドの戻り値を返します。
 
+		.cs
 		!public PartialViewResult Index()
 		!{
 		!	var q = from c in ctxt.Items select c;
@@ -37,6 +38,7 @@
 		コントローラの戻り値をPartialViewResultに変更して、
 		PartialView()により作成されたものを返すように作ります。
 
+		.cs
 		!public PartialViewResult Index()
 		!{
 		!	var q = from c in ctxt.Items select c;
@@ -45,17 +47,20 @@
 
 		次に、Html.Action()を使ってその結果を取り込みます。
 
+		.xml
 		!<%: Html.Action("Index", "Controller1") %>
 
 		単純な取り込みでよければ、
 		ページの最初あたりでコントロールを登録すると使えるようにります。
 
+		.xml
 		!<%@ Register TagPrefix="my"
 		! TagName="ctl1"
 		! Src="~/Views/Controller1/Index.ascx" %>
 
 		runat="server"は必須です。
 
+		.xml
 		!<my:ctl1 runat="server"/>
 
 		ただしこの場合、ユーザコントロールの中でModelを参照すると、
@@ -79,6 +84,7 @@
 
 		=?Length=7
 
+		.cs
 		!Html.ActionLink("Action", "Controller", new{ id=3 })
 
 		このようにすると、Home/Action?Length=7という
@@ -86,6 +92,7 @@
 		これはメソッドのオーバーロードが悪さをしているらしいので、
 		全部パラメータを与えてあげれば解決です。
 
+		.cs
 		!Html.ActionLink("Action", "Controller", new{ id=3 }, new{})
 
 		ここでnew{}の代わりにnullを使うとうまくないっぽい。
@@ -100,6 +107,7 @@
 			単純に戻る場合はUrlReferrerをみればいいです。
 			ただし、URLを直接入力した場合はnullなので使いづらい。
 
+			.cs
 			!if(Request.UrlReferrer != null)
 			!	Redirect(Request.UrlReferrer.AbsolutePath);
 
@@ -107,12 +115,14 @@
 
 			RedirectToUrlのようなパラメータにフォーム等で渡す方法。
 
+			.xml
 			!<% using(Html.BeginForm()) { %>
 			!	<%: Html.Hidden("redirectToUrl", "...") %>
 			!<% } %>
 
 			コントローラ側では、引数として受け取る。
 
+			.cs
 			!public ActionResult Action1(string redirectToUrl)
 			!{
 			!	...
@@ -135,6 +145,7 @@
 
 	オプションはいろいろありますが、よく使うものを例に書きました。
 
+	.js
 	!$(document).ready(function(){
 	!	$('#target').autocomplete(url, {
 	!		max: 25,

@@ -1,9 +1,9 @@
 @include u.i
 %title Mac OS Xのパッケージ管理
 
-=Mac OS Xのパッケージ管理
 .revision
 2013年8月18日作成
+=Mac OS Xのパッケージ管理
 
 	Macは、.app形式でアプリケーションを提供しているものと、
 	インストーラ付きの.pkg形式のものがあります。
@@ -17,14 +17,16 @@
 
 	=インストール済みパッケージを調べる
 
-	!pkgutil --pkgs
+	.console
+	!$ pkgutil --pkgs
 
 	インストール済みのパッケージIDが表示されます。
 	com.apple.のものがいっぱいあるので、grep -vしておくと便利です。
 
 	=パッケージのインストール先を調べる
 
-	!pkgutil --info {パッケージID}
+	.console
+	!$ pkgutil --info {パッケージID}
 
 	上記コマンドの出力結果から、
 	volumeとlocationを繋げた場所にインストールされています。
@@ -38,7 +40,8 @@
 
 	=パッケージに含まれるファイルを調べる
 
-	!pkgutil --files {パッケージID}
+	.console
+	!$ pkgutil --files {パッケージID}
 
 	ディレクトリ、ファイルを問わずすべて列挙します。
 	たとえば--infoで調べたインストール先が/直下で、--filesの結果が
