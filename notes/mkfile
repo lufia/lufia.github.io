@@ -17,7 +17,7 @@ PAGE2012=`{ls 2012/*.w}
 PAGE2013=`{ls 2013/*.w}
 PAGE2015=`{ls 2015/*.w}
 PAGE2016=`{ls 2016/*.w}
-PAGEOPT=`{ls *.w lib/*.js lib/*.css */*.jpg */*.df */*.pic}
+PAGEOPT=`{ls *.w */*.jpg */*.df */*.pic}
 
 world:V: \
 	${PAGE2004:%.w=$LIB/%.html}\

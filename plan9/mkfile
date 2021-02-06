@@ -6,6 +6,6 @@ IFILES=\
 
 WFFLAGS=-lja -x w html
 
-PAGE=`{ls *.w */*.w doc/*/*.w lib/*}
+PAGE=`{ls *.w */*.w doc/*/*.w}
 
 <../mkweb
