@@ -6,7 +6,7 @@ export default {
 	mode: "production",
 	entry: "./src/index.ts",
 	output: {
-		path: path.resolve(process.cwd(), "docs", "lib"),
+		path: path.resolve(process.cwd(), "lib"),
 		publicPath: "/lib/",
 		filename: "bundle.js"
 	},
