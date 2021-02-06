@@ -3,6 +3,12 @@
 
 =lufia.orgのサーバ
 
+	=Google Compute Engine
+	今はこれ。
+
+	=さくらVPS
+	2020年夏ごろまで使っていました。
+
 	=fileserver(fs64)
 	:CPU
 	-Celeron E3300 BX80571E3300
