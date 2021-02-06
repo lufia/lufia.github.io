@@ -1,9 +1,9 @@
 @include u.i
 %title 正当な証明書を扱う
 
-=正当な証明書を扱う
 .revision
 2014年5月2日更新
+=正当な証明書を扱う
 
 	=前置き
 
@@ -24,6 +24,7 @@
 	パスフレーズ付きの鍵では、どうやらPlan 9は読めない様子。
 	なので、安易だけれどパスフレーズを解除した状態で渡します。
 
+	.console
 	!unix$ openssl genrsa -aes128 2048 >private.key
 	!unix$ openssl genrsa -aes256 4096 >private.key
 	!Enter pass phrase:
@@ -33,6 +34,7 @@
 	安全な方法で鍵をPlan 9側へコピーします。
 	ここではdrawtermを使いましたが実際なんでもいいです。
 
+	.console
 	!unix$ drawterm -a a.lufia.org -c c.lufia.org -u bootes
 	!# ramfs -p
 	!# cp /mnt/term/Users/lufia/u.key /tmp/u.key
@@ -42,6 +44,7 @@
 	パスワードを待ち受けるようになって困るので、
 	以下はコンソールから作業します。
 
+	.console
 	!# cd /tmp
 	!# auth/pemdecode ‘RSA PRIVATE KEY’ u.key |
 	!> auth/asn12rsa -t ‘service=tls role=client owner=*’ >key
@@ -55,6 +58,7 @@
 
 	これで、Unixのパスフレーズ無し鍵はいらなくなったので消しましょう。
 
+	.console
 	!unix$ rm u.key
 
 	パスフレーズ有り版の鍵は証明書作成(更新も？)で使うので、
@@ -64,6 +68,7 @@
 
 	Plan 9上に秘密鍵と公開鍵が残せたので、あとはUnixでCSRを作成します。
 
+	.console
 	!unix$ openssl req -new -key private.key >a.csr
 	!Enter pass phrase for key:
 
@@ -85,6 +90,8 @@
 
 	最後に、所定の場所へ配置して終わり。
 
+	.console
+	!# con -l /srv/fscons
 	!prompt: fsys main create /active/sys/lib/tls/cert.pem sys sys 664
 	!# cp cert /sys/lib/tls/cert.pem
 

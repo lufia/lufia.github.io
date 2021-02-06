@@ -20,6 +20,7 @@
 
 	=プログラム
 
+	.main-cards
 	:[notefs|/plan9/src/notefs.c]
 	-メモを書き溜めるだけのファイルサーバ
 	-newに書けば、書いた日の$year/$mon/$day/$idに保存する
@@ -43,12 +44,14 @@
 
 	=一般カーネル用パッチ
 
+	.main-cards
 	:[IL/IPv6|../src/il.c]
 	-ilにIPv6パッチを当てたもの
 	-詳しくは[カーネルにilを組み込む|../doc/inst/il.w]を参照
 
 	=ファイルサーバカーネル用パッチ
 
+	.main-cards
 	:[AMD Vlance|../src/ether79c970.c]
 	-VMware ESXiのデバイスに対応させた
 	-詳しくは[VMware ESXiにPlan 9を移行したときのトラブルまとめ|
@@ -61,6 +64,7 @@
 
 	=失敗作
 
+	.main-cards
 	:[win9p|/plan9/src/win9p.zip]
 	-Pythonで書いた、9P用Windowsシェル名前空間拡張
 	-ドライブレター割り当てが不可能のため機能の実装が不可能と分かり、廃棄

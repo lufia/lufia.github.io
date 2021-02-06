@@ -1,9 +1,9 @@
 @include u.i
 %title TLS1.2に対応させる
 
-=TLS1.2に対応させる
 .revision
 2015年11月8日更新
+=TLS1.2に対応させる
 
 	現在はECDHE対応していないため無理ですが、TLS 1.2対応なら可能です。
 
@@ -35,22 +35,26 @@
 		カーネルは対応が終われば、hashalgsにsha256が追加される。
 		encalgsはデフォルトのまま。
 
+		.console
 		!# cat '#a'/tls/hashalgs
 		!clear md5 sha1 sha256
 		!# cat '#a'/tls/encalgs
 		!clear rc4_128 3des_ede_cbc aes_128_cbc aes_256_cbc
 
 		.note
-		libsec.hをincludeしているコマンド、
+		\*libsec.h*をincludeしているコマンド、
 		cpu, hget, import, tlsclient等いっぱいあるなあ...
 		とりあえずはhget, httpd, smtpd, tlssrv, tlsclientが対応していればいいか。
 
+		.console
 		!# cd /sys/src/libsec
 		!# mk (/$objtype/lib/libsec.aが更新される)
     
+		.console
 		!# cd /sys/src/cmd
 		!# mk hget.install
     
+		.console
 		!# cd /sys/src/cmd/ip/httpd
 		!# mk install
 

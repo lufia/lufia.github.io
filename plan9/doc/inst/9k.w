@@ -1,9 +1,9 @@
 @include u.i
 %title 64bit環境(9kカーネル)を構築する
 
-=64bit環境(9kカーネル)を構築する
 .revision
 2016年5月6日作成
+=64bit環境(9kカーネル)を構築する
 
 	Plan 9からforkしたプロジェクトがいくつかありますが、
 	ここではベル研のPlan 9と9legacyを使います。
@@ -25,16 +25,18 @@
 	{
 		9legacy-toolを使う場合、
 
+		.console
 		!% 9legacy/installall misc/patchlist
 		!% 9legacy/apply
 
-		とすれば/sys以下のファイルに9legacyパッチ後のファイルをbindします。
+		とすれば*/sys*以下のファイルに9legacyパッチ後のファイルをbindします。
 	}
 
-	また、以下の手順では/amd64以下にファイルを作成しますので、
+	また、以下の手順では*/amd64*以下にファイルを作成しますので、
 	作業するユーザはsysグループに属する必要があります。
 	fossilの場合は、
 
+	.console
 	!% con -l /srv/fscons
 	!prompt: uname sys +bootes
 
@@ -46,9 +48,10 @@
 
 	> runebase.c:xx illegal rune string
 
-	とか言われるので先にコンパイラの更新が必要です。
+	と言って怒られるので先にコンパイラの更新が必要です。
 	この時は、objtypeは現在使っている値(例えば386)のままで構いません。
 
+	.console
 	!% cd /sys/src/cmd/6c
 	!% mk install
 	!
@@ -60,6 +63,7 @@
 	9legacyのパッチでアセンブラがサポートする命令も増えているので、
 	アセンブラとリンカも更新します。
 
+	.console
 	!# アセンブラ
 	!% cd /sys/src/cmd/6a
 	!% mk install
@@ -74,13 +78,14 @@
 
 	amd64環境のコマンド等からリンクされるライブラリを作成します。
 	ライブラリは、mk nukeすると
-	作成された/$objtype/lib/**.aファイルも消えてしまうため、
+	作成された*/$objtype/lib/**.a*ファイルも消えてしまうため、
 	コンパイル時の中間ファイルを掃除するのはmk cleanを使いましょう。
 
 	.note
 	objtype環境変数を切り替えると、コンパイラが生成するオブジェクトの
 	ターゲットとなるアーキテクチャを切り替えられます。
 
+	.console
 	!% cd /sys/src
 	!% objtype=amd64
 	!% mk libs  # installとcleanを実行します
@@ -90,6 +95,7 @@
 	gs等、いくつかのコマンドをコンパイルする時に
 	ape/pcc等を使うので用意しておきましょう。
 
+	.console
 	!# apeライブラリ
 	!% mkdir /amd64/lib/ape
 	!% cd /sys/src/ape
@@ -105,9 +111,10 @@
 
 	=acme用コマンド
 
-	ほとんどのコマンドは/sys/src以下にソースがありますけど、
-	acme用のコマンドは/acme/**/srcに配置されています。
+	ほとんどのコマンドは*/sys/src*以下にソースがありますけど、
+	acme用のコマンドは*/acme/**/src*に配置されています。
 
+	.console
 	!% mkdir /acme/bin/amd64
 	!% cd /acme
 	!% mk install
@@ -119,6 +126,7 @@
 	カーネルの内部に一部のコマンドを埋め込むため、
 	先にコマンドのインストールが必要です。
 
+	.console
 	!% mkdir -p /amd64/bin/ ^ (aux auth dial disk fossil fs ip/httpd ndb replica upas usb venti)
 	!% cd /sys/src/cmd
 	!
@@ -135,12 +143,14 @@
 		9legacy-toolを使った場合、initだけはbind先に作成されてしまうので、
 		mk後に手動で移動させておきましょう。
 
+		.console
 		!% unmount /amd64
 		!% cp $home/9legacy/plan9/amd64/init /amd64/init
 	}
 
 	=ゲーム(不要なら飛ばす)
 
+	.console
 	!% mkdir /amd64/bin/games
 	!% cd /sys/src/games
 	!% mk install
@@ -148,11 +158,11 @@
 
 	=カーネル
 
-	ブートローダの更新が必要なら/sys/src/9k/bootにソースがありますけれど、
-	/sys/src/9以下の内容と同じなので何もしなくても構いません。
+	ブートローダの更新が必要なら*/sys/src/9k/boot*にソースがありますけれど、
+	\*/sys/src/9*以下の内容と同じなので何もしなくても構いません。
 
-	CPUサーバカーネルの場合はk10cpuコンフィグを使います。
-	ただ、k10cpuはsdドライバが含まれていないので、/dev/sdXX/nvramを読めません。
+	CPUサーバカーネルの場合は*k10cpu*コンフィグを使います。
+	ただ、*k10cpu*にはsdドライバが含まれていないので*/dev/sd**/nvram*を読めません。
 	通常それは困るため、sdドライバを入れましょう。
 
 	!dev +dev
@@ -172,6 +182,7 @@
 
 	最後にコンパイルして終わり。
 
+	.console
 	!% cd /sys/src/9k/k10
 	!% chmod +x ../mk/mkrootall
 	!% mk 'CONF=k10cpu'

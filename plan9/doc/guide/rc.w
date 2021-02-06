@@ -1,9 +1,9 @@
 @include u.i
 %title シェル
 
-=シェル
 .revision
 2004年11月29日更新
+=シェル
 
 	Plan 9唯一のシェルは/bin/rcです。
 	それについてのメモ。
@@ -17,10 +17,12 @@
 	単純な補完のようで、
 	以下のように入力しても、[date(1)]が選ばれるわけではないです。
 
+	.console
 	!% dat^f
 
 	次のものなら想像どおり。
 
+	.console
 	!% /bin/dat^f
 
 .aside

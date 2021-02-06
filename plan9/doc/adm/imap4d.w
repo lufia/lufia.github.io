@@ -1,13 +1,14 @@
 @include u.i
 %title IMAP4サービス
 
-=IMAP4サービス
 .revision
 2008年9月21日更新
+=IMAP4サービス
 
 	listenのサービスにtcp143を追加します。
 	もともと用意されているので、自分で書く必要はありません。
 
+	.console
 	!% cat /cfg/$sysname/service/tcp143
 	!#!/bin/rc
 	!exec /bin/ip/imap4d >[2]/sys/log/imap4d
@@ -30,6 +31,7 @@
 	same as the plan 9 passwordという質問にnと答えれば
 	続けてパスワードを尋ねられますので、そこで設定します。
 
+	.console
 	!# auth/changeuser -p user
 	!Password: (変更しなければ空でいい)
 	!Confirm password: (変更しなければ空でいい)
@@ -40,7 +42,7 @@
 	!略
 
 	また、いま有効になっているIMAP4パスワードを調べるには、
-	認証サーバのbootesから、/mnt/keys/$user/secretを読めばいいです。
+	認証サーバのbootesから、*/mnt/keys/$user/secret*を読めばいいです。
 
 .aside
 {

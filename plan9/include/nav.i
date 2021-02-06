@@ -1,11 +1,7 @@
-.header
-{
-	=[Plan 9|/plan9/]
-}
-
 .nav
 {
 	=メニュー
+	*[Plan 9|/plan9/]
 	*[インストール|/plan9/doc/inst/]
 	*[システムの使い方|/plan9/doc/guide/]
 	*[プログラミング|/plan9/doc/devel/]

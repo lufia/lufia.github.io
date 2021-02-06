@@ -10,12 +10,14 @@
 		VirtIOはPlan 9の標準ディストリビューションには含まれないので、
 		9legacyのパッチを当てます。
 
+		.console
 		!% cd /
 		!% hget http://www.9legacy.org/9legacy/patch/pc-sdvirtio.diff | ape/patch -p1
 		!% hget http://www.9legacy.org/9legacy/patch/pc-ethervirtio.diff | ape/patch -p1
 
 		自前のツールですが、9legacy/installを使うと便利です。
 
+		.console
 		!% 9legacy/init
 		!% 9legacy/installall <{9legacy/stable}
 		!% 9legacy/apply
@@ -23,6 +25,7 @@
 		次に、カーネルコンフィグへVirtIOドライバを追加します。
 		ここで不要なドライバを削除しておいてもいいかもしれません。
 
+		.console
 		!% cd /sys/src/9/pc
 		!% ed pccpuf
 
@@ -37,6 +40,7 @@
 		また、9loadにも足しておかないとデバイスが見つからなくて
 		ブートできなくなるので、9loadのコンフィグにもsdvirtioを足します。
 
+		.console
 		!% cd /sys/src/9/pcboot
 		!% ed load
 
@@ -47,35 +51,40 @@
 
 		カーネルのビルドを行います。
 
+		.console
 		!% cd /sys/src/9/pc
 		!% mk 'CONF=pccpuf'
 
 		次にローダのビルド。
 
+		.console
 		!% cd /sys/src/9/pcboot
 		!% ed load
 		!% mk 9load
 
 		9fat領域へカーネルとローダをコピーしたらインストール完了です。
 
+		.console
 		!# 9fat:
 		!# cp 9load /n/9fat/9load (きちんとdisk/format使ったほうが良いかも)
 		!# cp 9pccpuf /n/9fat/9pccpuf
 
 	=デバイス名を変更
 
-	VirtIOを有効にすると、デバイス名がsdC0からsdF0に変わります。
+	VirtIOを有効にすると、デバイス名が*sdC0*から*sdF0*に変わります。
 	そのため、fossil等、デバイス名の変更が必要です。
 	必ず、新しいカーネルでブートする前に実施しなくてはいけません。
 
-	まずplan9.iniを変更。
+	まず*plan9.ini*を変更。
 
+	.ini
 	!bootfile=sdF0!9fat!9pccpuf
 	!bootargs=local!#S/sdF0/fossil
 	!bootdisk=local!#S/sdF0/fossil
 
 	fossilのconfにも設定が入っているので修正します。
 
+	.console
 	!# fossil/conf /dev/sdC0/fossil >fossil.conf
 	!# ed fossil.conf
 	!fsys main config /dev/sdF0/fossil
@@ -83,6 +92,7 @@
 
 	ventiを使っている場合は、ventiの設定も修正が必要です。
 
+	.console
 	!% venti/conf /dev/sdC0/arenas >venti.conf
 	!% ed venti.conf
 	!isect /dev/sdF0/isect
@@ -122,6 +132,7 @@
 		ISOをアップロードしようとしたら、
 		以下のようなエラーで失敗するときがあります。
 
+		.console
 		!sftp> put plan9.iso
 		!Uploading plan9.iso to /iso/plan9.iso
 		!remote open("/iso/plan9.iso"): Failure

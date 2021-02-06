@@ -1,9 +1,9 @@
 @include u.i
 %title CDの取り扱い
 
-=CDの取り扱い
 .revision
 2009年9月5日更新
+=CDの取り扱い
 
 	=CD-Rを焼く
 
@@ -13,6 +13,7 @@
 
 	コマンドになおすと以下の通り。
 
+	.console
 	!% cdfs
 	!% #echo [quick]blank >/mnt/cd/ctl
 	!% cp data /mnt/cd/wd
@@ -24,6 +25,7 @@
 
 	CDから最初のトラックを/n/cdにマウントする場合
 
+	.console
 	!% cdfs
 	!% 9660srv -f d000
 	!% mount /srv/9660 /n/cd

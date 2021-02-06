@@ -1,9 +1,9 @@
 @include u.i
 %title libc tips
 
-=libc tips
 .revision
 2009年6月29日更新
+=libc tips
 
 	=atoi, atol
 

@@ -1,9 +1,9 @@
 @include u.i
 %title hget
 
-=hget
 .revision
 2009年12月11日更新
+=hget
 
 	=BASIC認証
 	\[Plan9でTwitter|

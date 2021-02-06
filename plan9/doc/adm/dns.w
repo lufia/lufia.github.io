@@ -1,12 +1,13 @@
 @include u.i
 %title DNSの設定
 
-=DNSの設定
 .revision
 2010年9月4日更新
+=DNSの設定
 
 	だいたいは[ネットワークの設定|ndb.w]と同じなので省略して。。
 
+	.ini
 	!#
 	!#  files comprising the database, use as many as you like, see ndb(6)
 	!#
@@ -80,6 +81,7 @@
 
 	設定が終わったら、cpurcのndb/dns呼び出しを以下のように変更。
 
+	.sh
 	!ndb/dns -sr
 
 .aside

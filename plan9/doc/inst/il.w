@@ -1,31 +1,35 @@
 @include u.i
 %title カーネルにilを組み込む
 
-=カーネルにilを組み込む
 .revision
 2011年7月1日更新
+=カーネルにilを組み込む
 
 	カーネルからilが外されてしまったので、dumpfsを利用する場合には、
 	自分でilを組み込まなければ動きません。
-	具体的には、まず、il.cを/sys/src/9/ip/il.cにコピーします。
+	具体的には、まず、*il.c*を*/sys/src/9/ip/il.c*にコピーします。
 
 	.note
 	{
 		\[IPv6対応のIL|../../src/il.c]を書いてみました。
 		ざっと使い方を書くと、
 
+		.sh
 		!aux/listen1 il!*!9001 /bin/exportfs -r $home
 
 		別のウィンドウで
 
+		.sh
 		!9fs il!::1!9001 /n/remote
 	}
 
+	.console
 	!% 9fs sources
 	!% cp /n/sources/extra/il.c /sys/src/9/ip/il.c
 
-	次に、/sys/src/9/ip/ip.hのLogtcp付近を以下のように変更します。
+	次に、*/sys/src/9/ip/ip.h*のLogtcp付近を以下のように変更します。
 
+	.c
 	!Logtcp=		1<<2,
 	!Logfs=		1<<3,
 	!Logil=		1<<4,	// 追加
@@ -37,8 +41,9 @@
 
 	.note
 	{
-		これに加えて、ip/netlog.cにも追加。無くても動きますが。
+		これに加えて、*ip/netlog.c*にも追加。無くても動きますが。
 
+		.c
 		!static Netlogflag flags[] =
 		!{
 		!	{ "ppp",	Logppp, },
@@ -62,15 +67,17 @@
 
 	2010年の途中まではここまでで動きましたが、
 	2011年5月に確認してみると、いくつかコンパイルエラーが出ました。
-	そこで、若干むりやりですが、boot以下のboot.hとbootip.cに追加します。
+	そこで、若干むりやりですが、boot以下の*boot.h*と*bootip.c*に追加します。
 
 		=boot/boot.h
 
+		.c
 		!extern void	configil(Method*);
 		!extern int	connectil(void);
 
 		=boot/bootip.c
 
+		.c
 		!void
 		!configil(Method*)
 		!{

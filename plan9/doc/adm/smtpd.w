@@ -1,12 +1,12 @@
 @include u.i
 %title メールサーバの設定
 
-=メールサーバの設定
 .revision
 2009年10月20日更新
+=メールサーバの設定
 
 	=各種ファイルの設定
-	/mail/lib以下のファイルを書き換えます。
+	\*/mail/lib*以下のファイルを書き換えます。
 
 	.note
 	これらはuid=upas gid=upasなので、
@@ -27,7 +27,7 @@
 	=rewrite(rewrite.directからコピーしたものを編集)
 
 	初期状態ではrewriteが存在しないので、
-	同じ場所にあるrewrite.directをコピーしてそれを書き換えます。
+	同じ場所にある*rewrite.direct*をコピーしてそれを書き換えます。
 	通常であれば、以下の部分だけ書き換えればいいと思います。
 
 	!# your local names
@@ -55,7 +55,7 @@
 
 	mailserverとなっている部分を実際のサーバ名で置き換えます。
 	cronの書式はUnixとほとんど同じみたい。
-	cron.dailyみたいなものはありません。
+	\*cron.daily*みたいなものはありません。
 
 	!# kick mail retries (replace mailserver with your system)
 	!0,10,20,30,40,50 * * * *	wisp		/bin/upas/runq -a /mail/queue /mail/lib/remotemail
@@ -70,7 +70,7 @@
 	*外部→webmaster
 
 	=メールの転送
-	転送したいアドレスを/mail/box/$user/forwardに書きます。
+	転送したいアドレスを*/mail/box/$user/forward*に書きます。
 	1行目だけ有効で、複数に転送する場合は空白で区切って書き、
 	また、メールボックスにも残しておく場合は、local!$userを加えます。
 
@@ -83,6 +83,7 @@
 	whitelistなど必要なファイルはインストール時において
 	すでに作られているので、特に気にしなくても問題ありません。
 
+	.sh
 	!#!/bin/rc
 	!#smtp serv net incalldir user
 	!
@@ -90,14 +91,15 @@
 	!exec upas/smtpd -g -n $3
 
 	あとは、適当なフリーメールなどから送信テストして、
-	/mail/grey/x.x.x.x/y.y.y.y/$userが作成されていれば完了。
-	詳しくは[スパム対策|http://plan9.aichi-u.ac.jp/spam/]を参考に。
+	\*/mail/grey/x.x.x.x/y.y.y.y/$user*が作成されていれば完了。
+	詳しくは[スパム対策|http://p9.nyx.link/spam/]を参考に。
 
 	=Outbound Port 25 Blocking
 
 	tcp!**!25とtcp!**!587でupas/smtpdが動いている状態を作ります。
 	また、SMTP Authが必要なので、smtpdに-aオプションを与えます。
 
+	.console
 	!% cat /cfg/$sysname/service/tcp587
 	!#!/bin/rc
 	!user=`{cat /dev/user}
@@ -119,33 +121,33 @@
 	=トラブルシューティング
 
 		=外部から受信したメールがconnection timed outする
-		/sys/log以下のsmtpd, smtp.fail, smtpd.mxあたりに
+		\*/sys/log*以下の*smtpd*, *smtp.fail*, *smtpd.mx*あたりに
 		connection timed outが記録されている場合。
 
-		cpurcなどでndb/dns実行より前にlistenしてしまうと、
-		smtpdから見える名前空間に/net/dnsが存在しないため、
+		\*cpurc*などでndb/dns実行より前にlistenしてしまうと、
+		smtpdから見える名前空間に*/net/dns*が存在しないため、
 		このようなエラーになることがあります。
 
-		この場合、/cfg/$sysname/cpurcで、
+		この場合、*/cfg/$sysname/cpurc*で、
 		listenより先にndb/dnsを動かせばいいです。
 
 		.note
 		{
 			当時、困ってた時のメモ。
 
-			デバッグのために、/mail/lib/validatesenderから呼ばれている
+			デバッグのために、*/mail/lib/validatesender*から呼ばれている
 			upas/smtpに-dオプションを与えたかったが、
 			配布ファイルのためになるべく書き換えたくなかった。
 			これはbindすればごまかせる。
 
-			デバッグオプションを加えると、ログ(/sys/log/smtpd.mx)に
-			!mxlookup returns nothing
+			デバッグオプションを加えると、ログ(*/sys/log/smtpd.mx*)に
+			>mxlookup returns nothing
 			というログが出る。
 
-			/proc/$smtpd/nsをみると、
-			/lib/namespaceから実行しているはずの
+			\*/proc/$smtpd/ns*をみると、
+			\*/lib/namespace*から実行しているはずの
 			mount -a /srv/dns /netが見当たらない。
-			でもbootesからは/srv/dnsが見える。
+			でもbootesからは*/srv/dns*が見える。
 			パーミッションは666なので問題ない。
 		}
 
@@ -155,15 +157,15 @@
 		DNSが新サーバを参照してしまうと困るので、
 		MXレコードには現行のサーバのIPのままにしておいて
 		user@xx.xx.xx.xxのようにIPアドレスで直接テストしていたのですが、
-		smtpd.confのourdomainsにIPが登録されていなかったために
-		/sys/log/smtpdにBad Forwardエラーが吐かれていました。
+		\*smtpd.conf*のourdomainsにIPが登録されていなかったために
+		\*/sys/log/smtpd*にBad Forwardエラーが吐かれていました。
 		この場合、たぶんforwardにもIP直打ち規則を登録しないといけない。
 
 		=/sys/log/cronに、upasの転送エラーが記録される
 
-		!upas:  can't call mailserver: cs: can't translate service
+		>upas:  can't call mailserver: cs: can't translate service
 
-		/cron/upas/cronから、
+		\*/cron/upas/cron*から、
 		mailserverとなっている部分をメールサーバ名に置き換えます。
 
 		smtpdを動かすつもりがないなら、runqの行を消すか、無効にする。
@@ -176,6 +178,7 @@
 		tip9ugメーリングリストはFreeMLを使っています。
 		その場合はこのように。
 
+		.console
 		!% cat >>/mail/grey/whitelist
 		!210.157.23.0/24 *.gmo-media.jp
 		!211.125.95.0/24 *.gmo-media.jp

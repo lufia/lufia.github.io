@@ -1,9 +1,9 @@
 @include u.i
 %title ハードウェアとインストール
 
-=ハードウェアとインストール
 .revision
 2016年5月7日更新
+=ハードウェアとインストール
 
 	Plan 9環境構築の記録。
 
@@ -11,6 +11,7 @@
 
 	=インストール
 
+	.main-cards
 	*[Sizka BASICへのインストール|sizka.w]
 	*[カーネルコンフィグの種類|kconfig.w]
 	*[認証サーバのインストール|auth.w]
@@ -23,6 +24,7 @@
 	*[bloomフィルタ付きventiを作る|bloom.w]
 
 	=さくらVPS
+	.main-cards
 	*[さくらVPSにPlan 9をインストール|vps.w]
 	*[さくらVPSでPlan 9ネットワークを構成してみた|vps-dist1.w]
 	*[さくらVPSでPlan 9ネットワークを構成してみた2|vps-dist2.w]

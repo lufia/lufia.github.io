@@ -1,9 +1,9 @@
 @include u.i
 %title ファイルのロック
 
-=ファイルのロック
 .revision
 2004年11月8日更新
+=ファイルのロック
 
 flockは無い。
 

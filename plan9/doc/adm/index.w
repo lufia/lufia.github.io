@@ -1,9 +1,9 @@
 @include u.i
 %title システム管理
 
-=Plan 9システム管理
 .revision
 2019年6月24日更新
+=Plan 9システム管理
 
 	=更新情報
 	:2019/06/24
@@ -11,6 +11,7 @@
 
 	=運用
 
+	.main-cards
 	*[時計合わせ|timezone.w]
 	*[ネットワークの設定|ndb.w]
 	*[バックアップ|backup.w]
@@ -21,6 +22,7 @@
 
 	=サーバ関係
 
+	.main-cards
 	*[httpdの立ち上げ|httpd.w]
 	*[メールサーバの設定|smtpd.w]
 	*[IMAP4サービス|imap4d.w]
@@ -31,6 +33,7 @@
 	*[DNSの設定|dns.w]
 
 	=その他
+	.main-cards
 	*[iPhoneまとめ|iphone.w]
 
 .aside

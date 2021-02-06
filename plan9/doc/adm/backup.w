@@ -1,9 +1,9 @@
 @include u.i
 %title バックアップ
 
-=バックアップ
 .revision
 2009年9月5日更新
+=バックアップ
 
 	Plan 9には、fsにしてもfossil+ventiにしても、
 	日々のバックアップは自動で残すようになっています。
@@ -20,6 +20,7 @@
 
 	=fsを/にマウントしている場合
 
+	.console
 	!% mount /srv/boot /n/fs
 	!fs: allow
 	!% disk/mkfs -a -u /n/fs/adm/users -s /n/fs \
@@ -31,6 +32,7 @@
 	もしCDなどに焼いて、他のシステムからもそのまま閲覧したい場合は、
 	上記のdisk/mkfs行を以下と差し替えます。
 
+	.console
 	!% disk/mk9660 -9cj -s /n/fs \
 	!	-p /sys/lib/sysconfig/proto/allproto plan9.iso
 
@@ -40,6 +42,7 @@
 
 	この例では、直接CD-Rに書き込みしています。
 
+	.console
 	!% mount /srv/kfs /n/kfs
 	!% disk/kfscmd allow
 	!% disk/mkfs -a -u files/adm.users -s /n/kfs \
@@ -56,6 +59,7 @@
 	展開先のホスト名をfsとして、
 	さらにfsはまっさらな状態(ream直後)とします。
 
+	.console
 	!% srv fs
 	!% mount /srv/fs /n/fs
 	!fs: allow

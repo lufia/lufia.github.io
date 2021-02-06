@@ -1,15 +1,16 @@
 @include u.i
 %title patchを送る
 
-=patchを送る
 .revision
 2008年6月12日更新
+=patchを送る
 
 	Plan 9には、配布物へのパッチを
 	sourcesへ送るコマンドが用意されています。
 
 	=使い方
 
+	.sh
 	!patch/create subject email paths [<description]
 
 	:subject
@@ -28,6 +29,7 @@
 	patch/createは、pathsの各ファイルと/n/sources以下の
 	同じファイルを比較してアップロードします。
 
+	.console
 	!% cd /tmp
 	!% cp $original $new
 	!(edit $new)

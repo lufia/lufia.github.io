@@ -1,17 +1,19 @@
 @include u.i
 %title プログラミング
 
-=Plan 9プログラミング
 .revision
 2009年10月20日更新
+=Plan 9プログラミング
 
 	Plan 9でプログラムを書くときのいろいろ。
 
 	=プログラミング環境
+	.main-cards
 	*[Cコンパイラ|cc.w]
 	*[Python|python.w]
 
 	=ライブラリなどの使い方
+	.main-cards
 	*[ファイルのロック|flock.w]
 	*[libc tips|libc.w]
 	*[lib9p tips|lib9p.w]

@@ -1,9 +1,9 @@
 @include u.i
 %title libdraw tips
 
-=libdraw tips
 .revision
 2004年11月10日更新
+=libdraw tips
 
 	=トラブルシューティング
 

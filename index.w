@@ -1,8 +1,12 @@
 %author	http://www.hatena.ne.jp/lufiabb/
+%script	/lib/bundle.js
 %title	lufia.org
+
+=lufia.org
 
 やっていること。
 
+.main-cards
 :[ルフィアノート|estpolis/]
 -エストポリス伝記 攻略ページ
 :[Plan 9|plan9/]

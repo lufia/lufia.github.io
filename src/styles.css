@@ -1,0 +1,249 @@
+@charset "utf-8";
+@import "~highlight.js/styles/github.css";
+
+:root {
+	--main-margin: 10%;
+	--main-mobile-margin: 5%;
+	--card-margin: 24px;
+	--header-link-color: #ddd;
+	--header-highlight-color: #fff;
+	--header-background-color: #333;
+	--footer-card-margin: 16px;
+	--footer-card-height: 4rem;
+	--footer-link-color: #000;
+	--footer-background-color: #f2f2f2;
+	--link-color: #1a0dab;
+	--link-visited-color: #639;
+	--table-border-color: #eee;
+}
+
+body {
+	margin: 0;
+}
+a {
+	text-decoration: none;
+}
+a:link {
+	color: var(--link-color);
+}
+a:visited {
+	color: var(--link-visited-color);
+}
+a:hover {
+	text-decoration: underline;
+}
+
+h1 {
+	font-size: 2rem;
+}
+h2 {
+	font-size: 22px;
+	font-weight: bold;
+}
+h3 {
+	font-size: 14px;
+	font-weight: bold;
+}
+h3:before {
+	content: "";
+	display: inline-block;
+	width: 12px;
+	height: 12px;
+	background-color: #000;
+	margin-right: 10px;
+}
+
+body > nav {
+	font-family: "SF Pro JP", "SF Pro Text", "Apple TP", "Myriad Set Pro", "SF Pro Icons", "Hiragino Kaku Gothic Pro", "ヒラギノ角ゴ Pro W3", "メイリオ", "Meiryo", "ＭＳ Ｐゴシック", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+	background-color: var(--header-background-color);
+	& h1 {
+		display: none;
+	}
+	& ul {
+		display: flex;
+		margin: 0;
+		padding: 0;
+		justify-content: space-around;
+		list-style-type: none;
+		& > li {
+			& > a {
+				display: block;
+				border-radius: 4px;
+				padding: 11px 22px;
+				text-decoration: none;
+				transition: 0.5s;
+			}
+			& > a:link {
+				color: var(--header-link-color);
+			}
+			& > a:hover {
+				color: var(--header-highlight-color);
+				text-decoration: none;
+			}
+		}
+	}
+}
+body > main {
+	& p.revision {
+		color: #999;
+		text-align: right;
+	}
+	& dl.main-cards {
+		display: flex;
+		flex-wrap: wrap;
+		padding: 0 50px;
+		& > div {
+			flex-basis: 25%;
+			margin: 0 1% 2% 1%;
+			padding: var(--card-margin);
+			border: 1px solid #dadce0;
+			border-radius: 4px;
+			line-height: 26px;
+			& > dt > a {
+				display: block;
+				width: 100%;
+				font-weight: normal;
+			}
+			& > dd {
+				margin-left: 0
+			}
+		}
+		& > div:hover
+		{
+			box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3),0 1px 3px 1px rgba(60,64,67,0.15);
+		}
+	}
+	& ul.main-cards {
+		display: flex;
+		flex-wrap: wrap;
+		padding: 0 50px;
+		& > li {
+			list-style-type: none;
+			flex-basis: 25%;
+			margin: 0 12px 24px 12px;
+			padding: var(--card-margin);
+			border: 1px solid #dadce0;
+			border-radius: 4px;
+			line-height: 26px;
+			& > a {
+				display: block;
+				width: 100%;
+			}
+		}
+		& > li:hover
+		{
+			box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3),0 1px 3px 1px rgba(60,64,67,0.15);
+		}
+	}
+	& p {
+		line-height: 1.75;
+		letter-spacing: 0.05rem;
+	}
+	& code {
+		font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+		font-size: 12px;
+		line-height: 20px;
+	}
+	& dl {
+		& > div {
+			margin-bottom: 0.75rem;
+		}
+		& > div > dt {
+			margin-bottom: 0.3rem;
+			font-weight: bold;
+		}
+	}
+	& table {
+		border-collapse: collapse;
+		border-spacing: 0;
+		width: 100%;
+		& tr {
+			border-top: solid 1px var(--table-border-color);
+			border-bottom: solid 1px var(--table-border-color);
+		}
+		& tr:hover {
+			background-color: #d4f0fd;
+		}
+		& th, & td {
+			text-align: center;
+			padding: 15px 0;
+		}
+	}
+}
+body > aside {
+	padding: 5px var(--card-margin);
+	background-color: var(--footer-background-color);
+	& h1 {
+		text-align: center;
+		font-family: "segoe ui", "meiryo bold", meiryo, "yu gothic bold", "hiragino kaku gothic pron", sans-serif;
+		font-weight: normal;
+	}
+	& ul {
+		display: flex;
+		flex-basis: 33%;
+		align-items: stretch;
+		flex-wrap: wrap;
+		& > li {
+			width: 25%;
+			margin: 1% 2%;
+			padding: var(--footer-card-margin);
+			list-style-type: none;
+			background-color: #fff;
+			height: var(--footer-card-height);
+			overflow: hidden;
+			outline: .1rem solid #e1e1e1;
+		}
+		& > li > a {
+			display: block;
+			vertical-align: middle;
+		}
+		& > li > a:link {
+			color: var(--footer-link-color);
+		}
+	}
+}
+body > footer {
+	padding: 0 var(--default-margin);
+	background-color: var(--footer-background-color);
+	& > p {
+		margin: 0;
+		padding-bottom: 16px;
+	}
+}
+
+@media screen and (min-width: 1024px) {
+	body > main {
+		margin: 0 var(--main-margin);
+		& ul > li {
+			margin-bottom: 0.5em;
+		}
+	}
+}
+
+@media screen and (max-width: 480px) {
+	body > nav ul {
+		flex-wrap: wrap;
+	}
+	body > main {
+		margin: 0 var(--main-mobile-margin);
+	}
+	body > main dl.main-cards,
+	body > main ul.main-cards {
+		display: block;
+		padding: 0;
+	}
+	body > main table {
+		& th, & td {
+			border: solid 1px var(--table-border-color);
+		}
+	}
+	body > aside ul {
+		display: block;
+		padding: 0;
+		& > li {
+			width: auto;
+			height: auto;
+			margin: 10px 0;
+		}
+	}
+}
