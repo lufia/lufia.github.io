@@ -1,9 +1,9 @@
 @include u.i
 %title listenについて
 
-=listenについて
 .revision
 2009年9月28日更新
+=listenについて
 
 	=listenとは
 
@@ -12,7 +12,7 @@
 	標準入出力をネットワークに切り替えて、
 	対応するプログラムをネットワークサービスとして実行します。
 
-	通常、/rc/bin/service, /rc/bin/service.authの2つあり、
+	通常、*/rc/bin/service*と*/rc/bin/service.auth*の2つあり、
 	どちらかにサービスプログラムを分類します。
 	この2つの違いは、service.authはホストオーナー(bootes)として
 	サービスを実行しますが、serviceではnoneとして実行します。

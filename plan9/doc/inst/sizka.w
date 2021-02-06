@@ -1,9 +1,9 @@
 @include u.i
 %title Sizka BASICへのインストール
 
-=Sizka BASICへのインストール
 .revision
 2006年9月23日更新
+=Sizka BASICへのインストール
 
 	若干の非力さは否めませんが、小型で無音の[Sizka BASIC|
 	http://www.pinon-pc.co.jp/pc/products/barebone/sizka-basic/index.html]にPlan 9をインストールしてみるページです。
@@ -36,10 +36,11 @@
 	!venti: Err 2 ...
 
 	これは、[ベル研のWiki|http://www.plan9.bell-labs.com/wiki/plan9/Network_configuration/index.html]によると、
-	IP割り当て前に/net/ipifc/0が127.1として存在するからなので、
-	termrcなどから、ifの行をコメントアウトすればいいです。
+	IP割り当て前に*/net/ipifc/0*が127.1として存在するからなので、
+	\*termrc*などから、ifの行をコメントアウトすればいいです。
 	ip/ipconfigとndb/dnsの2箇所。
 
+	.sh
 	!if(!test -e /net/ipifc/0/ctl)		# これを消す
 	!	ip/ipconfig
 
@@ -50,20 +51,23 @@
 	そこで、まずnoneでログインしVGAまわりを無効化、
 	その後glendaでログインとなります。
 
-	noneでログインした後は、以下のようにplan9.iniからVGA周りを無効化。
+	noneでログインした後は、以下のように*plan9.ini*からVGA周りを無効化。
 
+	.console
 	!% 9fat:
 	!% ramfs
 	!% ed /n/9fat/plan9.ini
 
 	だいたい、次の3行をコメントにしておけば大丈夫です。
 
+	.console
 	!#mouseport=ps2
 	!#monitor=xga
 	!#vgasize=640x480x8
 
 	で、ファイルシステムの停止。
 
+	.console
 	!% fshalt
 
 	初回のみ、fshaltの後にしばらくHDDへアクセスがあります。
@@ -78,8 +82,9 @@
 		=ventiがErr 2 ...というエラーを吐いている
 
 		時間をローカルに合わせると治まるかもしれません。
-		termrcまたはcpurcのどこかに記述してみてください。
+		\*termrc*または*cpurc*のどこかに記述してみてください。
 
+		.sh
 		!aux/timesync -rL
 
 =Sizka BASICの認証サーバ化ヒント
@@ -87,7 +92,7 @@
 	認証サーバのコンフィグレーションは、
 	他のカーネルと比べてドライバ周りがすっきりしているので、
 	そのままではSizkaのネットワークカードが認識されません。
-	/sys/src/9/pc/pcauthに以下の行を追加します。
+	\*/sys/src/9/pc/pcauth*に以下の行を追加します。
 
 	!link
 	!	...

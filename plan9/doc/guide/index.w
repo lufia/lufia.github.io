@@ -1,14 +1,16 @@
 @include u.i
 %title システムの使い方
 
-=Plan システムの使い方
 .revision
 2012年10月7日更新
+=Plan システムの使い方
 
 	=翻訳
+	.main-cards
 	*[ILプロトコル|il.w]
 
 	=シェル、コマンド
+	.main-cards
 	*[UNIXとPlan 9コマンドの違い|u2p9.w]
 	*[シェル|rc.w]
 	*[aux/getflagsの使い方|getflags.w]
@@ -21,6 +23,7 @@
 	*contribソフトウェアのインストール
 
 	=その他
+	.main-cards
 	*[patchを送る|patch.w]
 	*[drawterm|drawterm.w]
 

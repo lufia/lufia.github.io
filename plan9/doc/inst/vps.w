@@ -1,9 +1,9 @@
 @include u.i
 %title さくらVPSにPlan 9をインストール
 
-=さくらVPSにPlan 9をインストール
 .revision
 2014年2月22日作成
+=さくらVPSにPlan 9をインストール
 
 	さくらVPSにベル研版Plan 9をインストールしました。
 	最近のさくらVPSはISOインストールが可能になっていますので、
@@ -28,7 +28,7 @@
 
 	次に、インストール内容確認のところで、virtio有効にチェックが入っているので、
 	これを無効にしてから、インストールを開始します。
-	(virtioが有効になっていると/dev/sdC0が見つかりませんでした)
+	(virtioが有効になっていると*/dev/sdC0*が見つかりませんでした)
 
 	=インストール時の設定
 
@@ -78,9 +78,10 @@
 		=finish
 
 		インストールが一通り終わったら、再起動するように促されますが、
-		その前に、plan9.iniへ行の追加が必要です。
+		その前に、*plan9.ini*へ行の追加が必要です。
 		適当にウインドウを開いて、
 
+		.console
 		!% mount /srv/dos /n/9fat /dev/sdC0/9fat
 		!% cat /n/9fat/plan9.ini
 		!# 無ければ、以下の2行を追加
@@ -97,6 +98,7 @@
 	環境を操作できるようになりますので、
 	glendaでログインして以下のコマンドを実行しましょう。
 
+	.console
 	!% disk/mbr -m /386/mbr /dev/sdC0/data
 
 	最初にventiへ書き込みをしているようで、とても重いです。
@@ -113,11 +115,15 @@
 	http://d.hatena.ne.jp/oraccha/20100928/1285683705]を参考に
 	/sys/src/9/pc/etherigbe.c:at93c46rを以下のように変更2しました。
 
-	!snprint(rop, sizeof(rop), "CcS :%dDCc;", bits+3);
-	!// Ccを追加
+	.diff
+	!--- /sys/src/9/pc/etherigbe.c
+	!+++ /sys/src/9/pc/etherigbe.c
+	!-snprint(rop, sizeof(rop), "S :%dDCc;", bits+3);
+	!+snprint(rop, sizeof(rop), "CcS :%dDCc;", bits+3);
 
 	あとはコンパイルして再起動でNICを認識できます。
 
+	.console
 	!% cd /sys/src/9/pc
 	!% mk 'CONF=pcf'
 	!% 9fat:

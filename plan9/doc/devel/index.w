@@ -1,9 +1,9 @@
 @include u.i
 %title プログラミング
 
-=Plan 9プログラミング
 .revision
 2009年10月20日更新
+=Plan 9プログラミング
 
 	Plan 9でプログラムを書くときのいろいろ。
 

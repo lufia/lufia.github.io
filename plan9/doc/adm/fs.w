@@ -91,6 +91,7 @@
 
 	>You have to set up console logging yourself on a cpu server, like this:
 
+	.sh
 	!aux/clog /mnt/consoles/fileserver /sys/log/fileserver &
 
 	>where "fileserver" is the name of your file server.
@@ -100,59 +101,67 @@
 	> and wired up to a serial port on the cpu server doing the logging.
 	> Add this to your file server's plan9.ini:
 
+	.ini
 	!console=0 baud=9600
 
 	>It's a bit of work to set up, but very handy.
 	> Not only do you get a console log,
 	> but you can access the console from any of your Plan 9 machines with:
 
+	.sh
 	!C fileserver
 
 		=ファイルサーバ側の設定
-		ファイルサーバのplan9.iniに、consoleの設定を追加します。
+		ファイルサーバの*plan9.ini*に、consoleの設定を追加します。
 		このconsoleは0または1を設定でき、ポート0またはポート1から
 		データを流す、という意味になります。
 		baudはデフォルトで9600なので省略してもいいです。
 
+		.ini
 		!console=0
 
 		ログの受け皿も用意しておきます。
 
+		.console
 		!fs: create /sys/log/fileserver sys sys 666 a
 
 		=ログを受け取る側の設定
-		まず、/lib/ndb/consoledbを編集します。
+		まず、*/lib/ndb/consoledb*を編集します。
 
+		.ini
 		!# see consolefs(4)
 		!group=sys
 		!	uid=bootes
 		!console=fileserver dev=/dev/eia0 openondemand=1
 		!	gid=sys
 
-		次に/cfg/$sysname/namespace。
-		シリアルポートを/devにbindします。
+		次に*/cfg/$sysname/namespace*。
+		シリアルポートを*/dev*にbindします。
 		このファイルはシェルスクリプトのように見えますが、
 		限られたコマンドしか受け付けません。
 		詳細は[namespace(6)]。
 
+		.sh
 		!bind -a #t /dev
 
 		最後に、/cfg/$sysname/cpustartあたりに以下を追加。
 
+		.sh
 		!aux/consolefs
 		!aux/clog /mnt/consoles/fileserver /sys/log/fileserver &
 
 		=トラブルシューティング
 			=/dev/eia0等が無い
 			カーネルデバイス#tから見えますので、
-			/cfg/$sysname/namespaceあたりからbindします。
+			\*/cfg/$sysname/namespace*あたりからbindします。
 
 			=/cfg/$sysname/namespaceが実行されない
-			/cfg/$sysname/namespaceにbindを書いているのに
-			/dev/eia0が見つからない場合。
+			\*/cfg/$sysname/namespace*にbindを書いているのに
+			\*/dev/eia0*が見つからない場合。
 			環境変数sysnameが設定されていないかもしれません。
 
 			受信側のplan9.iniに、sysnameを追加します。
+			.ini
 			!sysname=wisp
 
 			または、consolefsを実行する直前にbindするとか。
@@ -160,8 +169,8 @@
 			.note
 			{
 				おそらく、namespaceの後にcpurcとなるので、
-				/lib/namespaceの最後にある$sysnameを使った行は
-				plan9.iniで設定しない限り実行されないのでしょう。。
+				\*/lib/namespace*の最後にある$sysnameを使った行は
+				\*plan9.ini*で設定しない限り実行されないのでしょう。。
 				手で設定したものとndb/csの結果が
 				違ったらどうするのだろうというのは置いておいて。
 
@@ -177,7 +186,7 @@
 				ここで、$sysnameは設定されていないので読みません。
 				では何のためにあるのかというと、ブート後、
 				名前空間を変更する場合に使うらしいです。
-				auth/noneとか、listen(8)の/rc/bin/serviceとか。
+				auth/noneとか、listen(8)の*/rc/bin/service*とか。
 				service.authのほうは、呼び出し元と同じ名前空間みたい。
 			}
 

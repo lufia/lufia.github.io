@@ -1,21 +1,23 @@
 @include u.i
 %title 時計合わせ
 
-=時計合わせ
 .revision
 2006年9月4日更新
+=時計合わせ
 
 	=timezoneの変更
 
-	/adm/timezone/localを、各地域のファイルで上書きします。
+	\*/adm/timezone/local*を、各地域のファイルで上書きします。
 	admグループの権限が必要になります。
 
+	.console
 	!% cp /adm/timezone/Japan /adm/timezone/local
 
 	=sntpから時刻を受信
 
 	aux/timesyncを使えばいいです。
 
+	.sh
 	!# ローカルの時間に合わせる場合
 	!aux/timesync -rL
 	!
@@ -31,11 +33,11 @@
 	{
 		ファイルサーバの時刻に合わせるというのは、
 		何か特別に通信するわけではなく、
-		単純に、/を開いて、そのアクセス時刻を調べているだけです。
+		単純に、*/*を開いて、そのアクセス時刻を調べているだけです。
 		なので、ファイルサーバにあわせる場合は、
 		必ずfsカーネルのtimezoneを変更しておきます。
 		そうしないと17時間進んでしまいますし、
-		対処療法として/adm/timezone/localを-22800と変更しても、
+		対処療法として*/adm/timezone/local*を-22800と変更しても、
 		メールの送信時刻が17時間ずれたままです。
 
 		これは、なぜ17時間なのかよく分かりません。
@@ -51,6 +53,7 @@
 	fs64/fs64.cから、以下2つの値を変更してコンパイル。
 	これをしないと、dumpが22:00にスケジュールされてしまいます。
 
+	.c
 	!conf.minuteswest = -9*60;
 	!conf.dsttime = 0;
 
@@ -115,6 +118,7 @@
 
 	configモードで、ipsntpを使います。
 
+	.console
 	!config: ipsntp xxx.xxx.xxx.xxx
 
 	1時間に1回、自動的に確認を行い、
@@ -126,6 +130,7 @@
 
 	また、sntpコマンドを使えば、手動でも動きます。
 
+	.console
 	!dryad: sntp kick
 	!sntp 1254076819
 

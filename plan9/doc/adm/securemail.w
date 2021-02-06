@@ -1,15 +1,17 @@
 @include u.i
 %title メール環境の暗号化
 
-=メール環境の暗号化
 .revision
 2009年10月20日更新
+=メール環境の暗号化
 
 	=サーバ証明書の作成
 
-	秘密鍵をsecstoreに、公開鍵を/sys/lib/tls/cert.pemに作成します。
+	秘密鍵をsecstoreに、証明書を*/sys/lib/tls/cert.pem*に作成します。
+	中間証明書があるなら*/sys/lib/tls/chain.pem*に置きましょう。
 	auth/rsa2x509の引数は自分の環境にあわせて書き換えます。
 
+	.console
 	!# ramfs
 	!# cd /tmp
 	!# auth/rsagen -t 'service=tls owner=*' >key
@@ -20,6 +22,7 @@
 	bootesのsecstoreへ1つ以上キーが登録されているなら、
 	それと今回作成したキーを結合しないといけませんが、省略しています。
 
+	.console
 	!# auth/secuser -v bootes
 	!(password)
 	!(confirm)
@@ -31,6 +34,7 @@
 	明示的にsecstoreを読み込むようcpurcを編集。
 	具体的には、auth/secstoredの下にauth/secstoreを追加。
 
+	.console
 	!# cat /cfg/$sysname/cpurc
 	!...
 	!auth/secstored
@@ -43,18 +47,21 @@
 	=証明書の配置
 
 	IMAP4, SMTPで使うため、適当な場所に証明書を移動します。
-	cert.pemの権限は444のほうが安全ですが、管理的にめんどくさいので664。
+	\*cert.pem*の権限は444のほうが安全ですが、管理的にめんどくさいので664。
 
-	ユーザ、グループをsysにするために、あらかじめファイルサーバから
-	cert.pemを作っておきます。
+	ユーザ、グループをsysにするために、
+	あらかじめファイルサーバから*cert.pem*を作っておきます。
 
+	.console
 	!fs: create /sys/lib/tls/cert.pem sys sys 664
 	!fs: newuser sys +bootes
 
+	.console
 	!# cat cert >/sys/lib/tls/cert.pem
 	!# rm cert
 	!# unmount /tmp
 
+	.console
 	!fs: newuser sys -bootes
 
 	=IMAP4 over SSL/TLS
@@ -63,6 +70,7 @@
 	以下ではserviceを/cfgへ移行した状態で書いています。
 	詳細は[認証サーバの構築|authinst.w]のサービスの隔離を参照。
 
+	.console
 	!fs: create /cfg/$sysname/service/tcp993 sys sys 775
 	!fs: newuser sys +bootes
 
@@ -70,6 +78,7 @@
 	fsカーネルでは$sysnameをそのまま使うことはできないので、
 	実際のホスト名に置き換えてください。
 
+	.console
 	!# cd /cfg/$sysname/service
 	!# cat >>tcp993
 	!#!/bin/rc
@@ -81,13 +90,16 @@
 	なんだろうこれ。ルータが動いているなら、ポートの開放も忘れずに。
 	プロンプトが%の行は、一般ユーザで実行しても問題ありません。
 
+	.console
 	!% upas/fs -f /imaps/wisp		# imapsを設定するサーバへ接続
 	!upas/fs: opening /imaps/wisp: wisp/imaps:server certificate xxxxxxxxxxxxxxxxxxxxxxxxxxxxx not
 
 	xxxxxxxxxが取得できたら、それをそのまま次に使います。
 
+	.console
 	!# echo 'x509 sha1=xxxxxxxxxxxxxxxxxxxxxxxxxxxxx' >/sys/lib/tls/mail
 
+	.console
 	!fs: newuser sys -bootes
 
 	動作確認が終われば、いらなくなったIMAP4サービスを削除します。
@@ -95,6 +107,7 @@
 	有名なメールクライアントはIMAP4Sに対応しているので、
 	わざわざ残しておくことはないだろうという気がします。
 
+	.console
 	!fs: remove /cfg/wisp/service/tcp143
 
 	=SMTP over SSL/TLS
@@ -114,6 +127,7 @@
 
 	今回はtcp587に-cオプションから証明書を与えました。
 
+	.sh
 	!# cat /cfg/wisp/service/tcp587
 	!#!/bin/rc
 	!#smtp serv net incalldir user
@@ -122,24 +136,24 @@
 	!exec upas/smtpd -ac/sys/lib/tls/cert.pem -g -n $3
 
 	これにより、暗号化通信が開始されると
-	/sys/log/smtpdにログが記録されるようになります。
+	\*/sys/log/smtpd*にログが記録されるようになります。
 
 	!started TLS with [...]
 
 	ついでなので、tcp25にも-c certを追加して終了。
 	あまり意味は無いかもしれません。
-	しかしfactotum+secstoreってすごいなあ。
-	秘密鍵がファイルシステムから隠れてしまった。
 
 	=トラブルシューティング
 
 		=tls reports failed
-		bootesの鍵が読み込めていない場合、/sys/log/imap4dに
+		bootesの鍵が読み込めていない場合、*/sys/log/imap4d*に
 		ログが記録されます。
 
 		!tls reports failed: tls: local factotum_rsa_open: no key matches proto=rsa service=tls role=client
 
-		auth/secstore -G factotumをcpurcに加えてください。
+		この場合は、以下の行をcpurcに加えてください。
+		.sh
+		auth/secstore -G factotum
 
 .aside
 {

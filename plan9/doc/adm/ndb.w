@@ -1,12 +1,12 @@
 @include u.i
 %title ネットワークの設定
 
-=ネットワークの設定
 .revision
 2009年9月5日更新
+=ネットワークの設定
 
-	Plan 9のネットワーク設定ファイルは、/lib/ndb/localです。
-	これはUnixで言うところの、hostsとnamed.confを
+	Plan 9のネットワーク設定ファイルは、*/lib/ndb/local*です。
+	これはUnixで言うところの、*hosts*と*named.conf*を
 	まとめたようなもので、そこそこ厄介です。
 
 	以下は、現在使っている設定から
@@ -14,6 +14,7 @@
 	ipnetに共通項を書いておいて、他のエントリから
 	参照するようにしています。
 
+	.ini
 	!
 	!#
 	!#  files comprising the database, use as many as you like, see ndb(6)
@@ -60,7 +61,7 @@
 	なので直接IPアドレスを書いています。
 
 	etherの値は該当カードのMACアドレスで、
-	/net/ether0/addrを読むと調べられます。
+	\*/net/ether0/addr*を読むと調べられます。
 	たぶん無くても動きます。
 
 	最後のエントリはwisp.lufia.orgの別名になります。

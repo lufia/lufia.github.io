@@ -1,9 +1,9 @@
 @include u.i
 %title bloomフィルタ付きventiを作る
 
-=bloomフィルタ付きventiを作る
 .revision
 2015年5月4日更新
+=bloomフィルタ付きventiを作る
 
 	現在の(ベル研が配布している)インストールCDは、
 	ventiのbloomフィルタを作成しません。
@@ -15,6 +15,7 @@
 	CDイメージからブートしたら、prepdiskまではそのまま進めます。
 	prepdiskまで進んだら、別のwindowを開いてprepdiskを手動実行します。
 
+	.console
 	!% disk/prep -a 9fat -a nvram -a arenas -a isect -a bloom -a fossil -a swap /dev/sdC0/plan9
 	!% disk/prep -p /dev/sdC0/plan9 >/dev/sdC0/ctl
 
@@ -23,8 +24,9 @@
 
 	=初回ブートのあと
 
-	/dev/swapの値を以下に設定して、bloomsizeを計算します。
+	\*/dev/swap*の値を以下に設定して、bloomsizeを計算します。
 
+	.awk
 	!#!/usr/bin/awk -f
 	!
 	!BEGIN {
@@ -40,10 +42,12 @@
 
 	上記結果をfmtbloomの-sオプションに与えてフォーマットします。
 
+	.console
 	!% venti/fmtbloom -s 64m /dev/sdC0/bloom
 
-	あとはventi.confにbloomを設定します。
+	あとは*venti.conf*にbloomを設定します。
 
+	.console
 	!% venti/conf /dev/sdC0/arenas >/tmp/venti.conf
 	!(isectとarenasの間あたりに追加)
 	!bloom /dev/sdC0/bloom

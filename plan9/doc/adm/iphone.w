@@ -1,9 +1,9 @@
 @include u.i
 %title iPhoneまとめ
 
-=iPhoneまとめ
 .revision
 2008年12月26日更新
+=iPhoneまとめ
 
 	iPhone用に設定したものまとめ。
 
@@ -27,6 +27,7 @@
 	http://kwappa.txt-nifty.com/blog/2008/07/iphoneipua_c1bd.html]
 	から。
 
+	.console
 	!% echo '126.240.0.0/12 *.panda-world.ne.jp' >>/mail/grey/whitelist
 
 	=IMAP4

@@ -1,9 +1,9 @@
 @include u.i
 %title Cコンパイラ
 
-=Cコンパイラ
 .revision
 2004年11月17日更新
+=Cコンパイラ
 
 	=配列の初期化
 

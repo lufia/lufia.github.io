@@ -1,25 +1,28 @@
 @include u.i
 %title Infernoメモ
 
-=Infernoメモ
 .revision
 2011年2月14日更新
+=Infernoメモ
 
 	=ユーザ名を指定してログイン
+	.sh
 	!emu -g 1024x768 wm/wm wm/logon -u username
 
 	=ユーザの作成
-	/usr/infernoをコピー。
+	\*/usr/inferno*をコピー。
 
+	.console
 	!% cd /usr
 	!% cp -r inferno username
 
 	=起動スクリプト
-	/sh/lib/profileに書く。
+	\*/sh/lib/profile*に書く。
 
 	=初期設定
-	\$home/lib/wmsetupに書く。
+	\*$home/lib/wmsetup*に書く。
 
+	.sh
 	!#plumber
 	!ndb/cs
 	!ndb/dns -r
@@ -28,6 +31,7 @@
 
 	=ホストOSとのクリップボード共有
 
+	.console
 	!% bind -b '#^' /chan
 
 	wmsetupあたりに記述しておくといいかもしれない。
@@ -35,6 +39,7 @@
 	=DNSが引けない
 	dnsが起動していない。$home/lib/wmsetupに以下を追加する。
 
+	.sh
 	!ndb/dns -r
 
 	=drawtermっぽいこと
@@ -42,6 +47,7 @@
 	inferno-listにあった[drawterm equivalent in inferno|
 	http://permalink.gmane.org/gmane.os.inferno.general/1416]より。
 
+	.console
 	!% mount {wmexport} /mnt/wm
 	!% cpu tcp!board
 	!; wmimport -w /n/client/mnt/wm wm/wm&

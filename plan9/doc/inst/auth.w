@@ -1,9 +1,9 @@
 @include u.i
 %title 認証サーバのインストール
 
-=認証サーバのインストール
 .revision
 2006年11月12日更新
+=認証サーバのインストール
 
 	=認証サーバカーネルのインストール
 
@@ -16,10 +16,11 @@
 			fossilやventiを使う場合には不要です。
 		}
 
-	/sys/src/9/pc/pcauthが認証サーバカーネルの設定ファイルになります。
-	必要ならpcauthに手を入れて、カーネルをコンパイルします。
+	\*/sys/src/9/pc/pcauth*が認証サーバカーネルの設定ファイルになります。
+	必要なら*pcauth*に手を入れて、カーネルをコンパイルします。
 	コマンドは以下。
 
+	.console
 	!% cd /sys/src/9/pc
 	!% mk 'CONF=pcauth'
 
@@ -28,10 +29,11 @@
 			=一般ユーザでのコンパイル
 
 			通常、sysグループに属していないユーザでは、
-			/sys/src/9に書き込みができないのでコンパイルできません。
+			\*/sys/src/9*に書き込みができないのでコンパイルできません。
 			そういう場合、[bind(1)]をうまく使うことによって、
 			書き込み先を変更するテクニックがあります。
 
+			.sh
 			!#!/bin/rc
 			!
 			!if(! test -e $home/cpu){
@@ -50,26 +52,28 @@
 			を参考にしました。
 		}
 
-	コンパイルが終われば、/n/9fat/に9pcauthをコピーします。
-	最後に/n/9fat/plan9.iniに以下を追加すると、
+	コンパイルが終われば、*/n/9fat/*に*9pcauth*をコピーします。
+	最後に*/n/9fat/plan9.ini*に以下を追加すると、
 	起動時にどちらのカーネルを使うか尋ねられるようになります。
 	すでにあるbootfileを書き換えた場合は聞かれません。
 
+	.ini
 	!bootfile=sdC0!9fat!9pcauth
 
 	まだ再起動しません。
 
 	=ネットワーク構成の編集
 
-	/lib/ndb/localに、認証サーバまわりの項を追加します。
+	\*/lib/ndb/local*に、認証サーバまわりの項を追加します。
 	詳しくは[ネットワークの設定|../adm/ndb.w]に書きます。
 
 	=サービスの隔離
 
-	通常、サービスは/rc/bin/^(service service.auth)をもとに起動しますが、
-	せっかく/cfg/$sysnameというサーバ固有の場所があるのですから
+	通常、サービスは*/rc/bin/^(service service.auth)*をもとに起動しますが、
+	せっかく*/cfg/$sysname*というサーバ固有の場所があるのですから
 	そちらに移してしまったほうが管理しやすいと思うので移動させます。
 
+	.console
 	!# mkdir /cfg/$sysname/ ^ (service service.auth)
 	!# cp -gux /rc/bin/service/* /cfg/$sysname/service
 	!# cp -gux /rc/bin/service.auth/* /cfg/$sysname/service.auth
@@ -83,27 +87,31 @@
 		fsカーネルコンソールから、各ディレクトリを作成。
 		fs:というのはファイルサーバのプロンプトになります。
 
+		.console
 		!fs: create /cfg/wisp/service sys sys 775 d
 		!fs: create /cfg/wisp/service.auth sys sys 775 d
 		!fs: allow		# 所有者もコピーするため
 
 		認証サーバでファイルといっしょに所有者情報もコピーする。
 
+		.console
 		!cpu% cp -gux /rc/bin/service/* /cfg/wisp/service
 		!cpu% cp -gux /rc/bin/service.auth/* /cfg/wisp/service.auth
 
 		ファイルサーバコンソールから、後始末。
 
+		.console
 		!fs: disallow
 	}
 
 	=cpurcの編集
 
-	次に、cpurcを編集します。
-	以前は/rc/bin/cpurcを直接編集する方法でしたが、
-	いつの間にか/cfg/$sysname/cpurcを用意する形になりました。
+	次に、*cpurc*を編集します。
+	以前は*/rc/bin/cpurc*を直接編集する方法でしたが、
+	いつの間にか*/cfg/$sysname/cpurc*を用意する形になりました。
 	2007年4月には変わってましたね。
 
+	.sh
 	!eval `{ndb/ipquery sys $sysname ip ipgw ipmask}
 	!ip/ipconfig -g $ipgw ether /net/ether0 add $ip $ipmask
 	!ndb/dns -r
@@ -124,14 +132,15 @@
 	IPを直接書いてしまってもかまいません。
 	sleepは、サービスが立ち上がりきるのを待ってます。
 
-	最後に、念のためnvramを壊しておいて、再起動。
+	最後に、念のため*nvram*を壊しておいて、再起動。
 
+	.console
 	!% echo blah >/dev/sdC0/nvram
 
 	=nvramの設定
 
 	初回起動時に、認証のための情報をいくつか尋ねられます。
-	この情報を変更したい場合は、再度nvramを壊して再起動するか、
+	この情報を変更したい場合は、再度*nvram*を壊して再起動するか、
 	認証サーバのコンソールからauth/wrkeyを実行すればいいです。
 
 	!authid: bootes
@@ -145,13 +154,15 @@
 
 	=ユーザbootesの作成
 
+	.console
 	!# auth/changeuser -p bootes  # パスワードはnvramと同じ
 
 	=認証でadmとsysをはじく
 
 	sysとadmをユーザとして認証しないように、
-	/lib/ndb/authに以下を追加します。
+	\*/lib/ndb/auth*に以下を追加します。
 
+	.ini
 	!hostid=bootes
 	!    uid=!sys uid=!adm uid=*
 
@@ -159,7 +170,7 @@
 
 	認証サーバのコンソールからauth/debugを使うと、
 	登録されているユーザごとに認証のテストが行えます。
-	認証でこけている場合は、cpurc等でのコマンド呼び出し順が
+	認証でこけている場合は、*cpurc*等でのコマンド呼び出し順が
 	違うのかもしれません。
 	名前空間の関係から、順番がかなり重要になっています。
 	何度か引っかかりました。

@@ -1,9 +1,9 @@
 @include u.i
 %title ファイルサーバのインストール
 
-=ファイルサーバのインストール
 .revision
 2011年7月23日更新
+=ファイルサーバのインストール
 
 	=はじめに
 
@@ -27,10 +27,11 @@
 
 	現在、fsカーネルはサポート外になってしまったので、
 	別途取得してこなければいけません。
-	ソースコード一式は/n/sources/extra/fsにあるので
+	ソースコード一式は*/n/sources/extra/fs*にあるので
 	普通にコピーしてもいいのですが、せっかくなのでreplica用の設定をします。
-	以下の内容を$home/fs/dist/replica/instとして保存します。
+	以下の内容を*$home/fs/dist/replica/inst*として保存します。
 
+	.console
 	!% cat $home/fs/dist/replica/inst
 	!#!/bin/rc
 	!
@@ -56,18 +57,20 @@
 	!
 	!applyopt=(-t -u -T$c/client/fs.time)
 
-	次に、$home/fs/dist/replica/client/fs.db(空でいい)を作成して、展開。
-	ここではとりあえず、展開先を$home/fsとします。
+	次に、*$home/fs/dist/replica/client/fs.db*(空でいい)を作成して、展開。
+	ここではとりあえず、展開先を*$home/fs*とします。
 	展開先を変えたい場合は、2行目のbindを変更してください。
 
+	.console
 	!% chmod +x $home/fs/dist/replica/inst
 	!% echo -n >$home/fs/dist/replica/client/fs.db
 	!% 9fs sources
 	!% bind -c $home/fs /n/inst
 	!% replica/pull -v /n/inst/dist/replica/inst
 
-	しばらく待てば、$home/fs以下は次のようになります。
+	しばらく待てば、*$home/fs*以下は次のようになります。
 
+	.console
 	!% lc $home/fs
 	!9netics32.16k dev           emelie        ip            pc
 	!9netics64.8k  dist          fs            mkfile        port
@@ -83,15 +86,17 @@
 
 	以上で準備が整いましたので、コンパイルします。
 
+	.console
 	!% cd $home/fs/fs64
 	!% mk
 
-	これで、9fsfs64というカーネルができますので、
-	続けてplan9.iniを用意します。
+	これで、*9fsfs64*というカーネルができますので、
+	続けて*plan9.ini*を用意します。
 	etherの項は手持ちのカードに合わせてください。
-	ソースコードのpc/etherif.cにネットワークカードの一覧が、
-	pc/scsi.cにSCSIカードの一覧があります。
+	ソースコードの*pc/etherif.c*にネットワークカードの一覧が、
+	\*pc/scsi.c*にSCSIカードの一覧があります。
 
+	.console
 	!% cat plan9.ini
 	!ether0=type=rtl8139
 	!bootfile=fd!0!9fsfs64
@@ -101,6 +106,7 @@
 	bootfileエントリを以下のようにすると解決するかもしれません。
 	それでもnvrエントリは古い書き方をします。
 
+	.ini
 	!bootfile=fd0!dos!9fsfs64
 
 	用意ができたら、カーネルとまとめてフロッピーに書き込みます。
@@ -108,6 +114,7 @@
 	ロードできない配置になってしまったりしますので、
 	pc/bootfloppyを使います。
 
+	.console
 	!# 端末から直接書き込む場合
 	!% pc/bootfloppy /dev/fd0disk plan9.ini 9fsfs64
 	!
@@ -121,8 +128,9 @@
 	サーバの設定を行います。
 	ブート中にキーを押してconfigモードに入り、設定します。
 
+	.console
 	!config: config w0
-	!config: service dryad
+	!config: service fs
 	!config: filsys main cw0f{w14w15}
 	!config: filsys dump o
 	!config: ipsntp 192.168.1.1
@@ -162,25 +170,28 @@
 	認証IDをbootes、認証ドメインとパスワードを
 	認証サーバのbootesと同じ値に設定します。
 
-	!dryad: users default
-	!dryad: passwd
+	.console
+	!fs: users default
+	!fs: passwd
 
 	このままではユーザ情報さえ保存できませんので、
 	続けて、/adm/usersのほか、必須のファイルを作成します。
 
-	!dryad: create /adm -1 -1 775 d
-	!dryad: create /adm/users -1 -1 664
-	!dryad: create /usr 10000 10000 775 d
+	.console
+	!fs: create /adm -1 -1 775 d
+	!fs: create /adm/users -1 -1 664
+	!fs: create /usr 10000 10000 775 d
 
 	.note
 	上記の、-1はadm、10000はsysと同等です。
 	名前も使えたはずですが、ここではIDを使いました。
 
-	準備ができたので、/adm/usersに保存します。
+	準備ができたので、*/adm/users*に保存します。
 	保存コマンドは特に無く、ユーザの追加や削除が行われたタイミングで
 	書き込みにいきますので、適当なユーザを追加してください。
 
-	!newuser lufia
+	.console
+	!fs: newuser lufia
 
 	.note
 	users defaultコマンドは、メモリに初期テーブルがロードされるだけです。
@@ -189,15 +200,17 @@
 	ファイルサーバをマウントするだけならこれで完了です。
 	クライアントのほうで以下のように使います。
 
+	.console
 	!% ramfs
 	!% echo 'key proto=p9sk1 dom=mana.lufia.org user=glenda !password=xxxxx' >/tmp/factotum
 	!% auth/secstore -p /tmp/factotum
 
-	あとは、$home/lib/profileなどから9fsを使ってマウント。
+	あとは、*$home/lib/profile*などから9fsを使ってマウント。
 
-	!9fs dryad
+	.console
+	!% 9fs fs
 
-	これで/n/dryadにマウントされます。
+	これで*/n/fs*にマウントされます。
 	fsをルートファイルシステムとする場合は関連情報を参照。
 
 	=トラブルシューティング

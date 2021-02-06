@@ -1,9 +1,9 @@
 @include u.i
 %title lib9p tips
 
-=lib9p tips
 .revision
 2004年11月7日更新
+=lib9p tips
 
 	=トラブルシューティング
 
@@ -11,6 +11,7 @@
 		((mode&DMDIR) != 0)なのに、cdできない場合。
 		忘れがちですが、attachでは以下2つのqidをセットすること。
 
+		.c
 		*r->>fid->>qid
 		*r->>ofcall.qid
 
@@ -21,6 +22,7 @@
 		utflenで落ちる場合はそれかもしれない。
 		例えば以下のような。
 
+		.console
 		!acid: stk()
 		!utflen(s=0xfefefefe)+0xf /sys/src/libc/port/utflen.c:13
 		!fmtstrcpy(f=0x4f194,s=0xfefefefe)+0xa9 /sys/src/libc/fmt/dofmt.c:251

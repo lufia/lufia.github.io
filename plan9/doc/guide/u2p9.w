@@ -1,9 +1,9 @@
 @include u.i
 %title UNIXとPlan 9コマンドの違い
 
-=UNIXとPlan 9コマンドの違い
 .revision
 2004年11月7日更新
+=UNIXとPlan 9コマンドの違い
 
 :chown
 -chgrp -u

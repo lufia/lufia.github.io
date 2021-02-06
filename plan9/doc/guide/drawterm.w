@@ -1,12 +1,13 @@
 @include u.i
 %title drawterm
 
-=drawterm
 .revision
 2009年11月4日更新
+=drawterm
 
 	=使い方
 
+	.sh
 	!drawterm -a authsrv -c cpusrv
 
 	その他のオプションは[drawterm(8)]。
@@ -60,6 +61,7 @@
 
 	そこで、core.shを以下のように書き換えました。
 
+	.sh
 	!#!/bin/sh
 	!
 	!cd ~ && /Applications/Drawterm.app/Contents/MacOS/drawterm -a auth -c cpu &

@@ -1,9 +1,9 @@
 @include u.i
 %title さくらVPSでPlan 9ネットワークを構成してみた
 
-=さくらVPSでPlan 9ネットワークを構成してみた
 .revision
 2014年5月4日作成
+=さくらVPSでPlan 9ネットワークを構成してみた
 
 	さくらVPSを使って、フルシステムのPlan 9を作ってみます。
 	最終的に、ファイルサーバ、認証サーバ、CPUサーバの3つ建てて、
@@ -48,7 +48,7 @@
 
 	また、インターネット側はNIC0にだけ割り当て可能です。
 	Plan 9は/netに内部ネットワークをバインドしたほうが楽なのですが、
-	/lib/namespaceの中でether0(NIC0)を/netにバインドしているので
+	\*/lib/namespace*の中でether0(NIC0)を*/net*にバインドしているので
 	これをether1へ切り替える必要があります。
 	切り替えたことにより、fsをルートにマウントするサーバは
 	かならずNICを2枚以上使って、NIC0をインターネット側に、
@@ -60,6 +60,7 @@
 
 		=タイムゾーン構成
 
+		.console
 		!fs% con -l /srv/fscons
 		!prompt: uname adm +glenda
 		!prompt: ctl+\
@@ -69,16 +70,18 @@
 
 		=ファイルサーバ用カーネルインストール
 
+		.console
 		!fs% cd /sys/src/9/pc
 		!fs% mk 'CONF=pccpuf'
 		!fs% 9fat:
 		!fs% mv 9pccpuf /n/9fat
 		!fs% mk 'CONF=pccpuf' nuke
 
-		終わったら、/n/9fat/plan9.iniを編集。
+		終わったら、*/n/9fat/plan9.ini*を編集。
 		bootfileエントリは、ブート時にカーネルを選べるように、
 		変更ではなく追加したほうがいいでしょう。
 
+		.ini
 		!bootfile=sdC0!9fat!9pccpuf
 		!sysname=fs
 		!auth=192.168.1.7
@@ -86,23 +89,26 @@
 
 		=ネットワーク構成
 
-		ローカルネットワーク(NIC1)を/netに割り当てるように変更します。
+		ローカルネットワーク(NIC1)を*/net*に割り当てるように変更します。
 
+		.console
 		!fs% grep /net /lib/namespace
 		!bind -a #l1 /net  (オリジナルは#lだった)
 		!bind -a #I /net
 
-		NIC0は/net.altへ割り当てますが、サーバによっては
+		NIC0は*/net.alt*へ割り当てますが、サーバによっては
 		どちらも/netに割り当てたい場合があるので、
 		サーバ固有構成のほうで設定します。
 
+		.console
 		!fs% cat /cfg/fs/namespace
 		!bind -a #l0 /net.alt
 		!bind -a #I1 /net.alt
 
-		cpurcで各NICへIPアドレスを設定。
+		\*cpurc*で各NICへIPアドレスを設定。
 		途中の$ipgwは、インストール時に示されたゲートウェイアドレス。
 
+		.console
 		!% cat /cfg/fs/cpurc
 		!ip/ipconfig ether /net/ether1 add 192.168.1.3 255.255.255.0
 		!ip/ipconfig -x.alt -g $ipgw ether /net.alt/ether0 add 133.242.aaa.aaa 255.255.254.0
@@ -113,17 +119,18 @@
 		!aux/listen -q -d /cfg/$sysname/service tcp
 		!sleep 3
 
-		/cfg/fs/serviceは、/rc/bin/serviceをコピーして
+		\*/cfg/fs/service*は、*/rc/bin/service*をコピーして
 		必要なサービスだけ残しています。9pサービスだけあればいいのですが、
-		何もListenしていないと/rc/bin/cpurcでいろいろサービスが起動してしまうので、
-		今回は割と無難なtcp9(discard)だけ立てていますが、
-		ほかに、/rc/bin/cpurcを変更してしまってもいいと思います。
+		何もListenしていないと*/rc/bin/cpurc*でいろいろサービスが起動してしまうので、
+		今回は割と無難な*tcp9*(discard)だけ立てていますが、
+		ほかに、*/rc/bin/cpurc*を変更してしまってもいいと思います。
 
-		/lib/ndb/local, /lib/ndb/externalは適切な値で構成しておきます。
-		localのほうはipnetを使ってグループにまとめられますが、
+		\*/lib/ndb/local*, */lib/ndb/external*は適切な値で構成しておきます。
+		\*local*のほうはipnetを使ってグループにまとめられますが、
 		グローバルIPアドレスはばらばらなので、個別に設定しましょう。
 		だいたいこんな感じ。
 
+		.ini
 		!sys=fs dom=fs.domain.dom
 		!	ether=xxxxxxxx
 		!	ip=133.242.aaa.aaa
@@ -136,6 +143,7 @@
 
 		bootesユーザを追加します。
 
+		.console
 		!fs% con -l /srv/fscons
 		!prompt: uname bootes bootes
 		!prompt: ctl+\
@@ -143,8 +151,9 @@
 
 		ファイルサーバを他のサーバからマウントできるように、
 		tcp564をListenするようにfossilを変更。
-		/rc/bin/service/!tcp564もあるけれど、こっちは使わない。
+		\*/rc/bin/service/!tcp564*もあるけれど、こっちは使わない。
 
+		.console
 		!fs% fossil/conf /dev/sdC0/fossil >/tmp/flproto
 		!fs% echo 'listen tcp!*!564' >>/tmp/flproto
 		!fs% fossil/conf -w /dev/sdC0/fossil /flproto
@@ -152,6 +161,7 @@
 
 		必要なユーザやファイルをあらかじめ作っておいて再起動。
 
+		.console
 		!prompt: uname adm +bootes
 		!prompt: uname adm -glenda
 		!prompt: uname sys -glenda
@@ -160,6 +170,7 @@
 		!prompt: create /active/sys/log/cron sys sys a666
 		!prompt: create /active/adm/secstore adm adm d775
 
+		.console
 		!fs% fshalt
 		!(停止したらコントロールパネルから再起動)
 
@@ -171,13 +182,14 @@
 
 		=再起動後
 
-		9pccpufカーネルで起動したら、
+		\*9pccpuf*カーネルで起動したら、
 		最初にbootesの情報をきかれるので入力します。
 		残りのサーバにも同じものを設定する必要があります。
 
-		終わったら、/sys/logにエラーが出ていないか、
+		終わったら、*/sys/log*にエラーが出ていないか、
 		必要なサービスだけになっているかを確認して終わり。
 
+		.console
 		!fs# netstat | grep Listen
 		!fs# netstat /net.alt | grep Listen
 
