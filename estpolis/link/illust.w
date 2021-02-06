@@ -2,9 +2,9 @@
 @include link.i
 %title イラスト、CG
 
-=イラスト、CG
 .revision
 2010年1月15日更新
+=イラスト、CG
 
 	:[幻想の森 らくがき|005.w]
 	-[<screenshot: http://www.aurora.dti.ne.jp/~miriko/diary/index.html>|005.w]

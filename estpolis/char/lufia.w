@@ -1,9 +1,9 @@
 @include	u.i
 %title	ルフィア
 
-=ルフィア
 .revision
 2009年11月16日更新
+=ルフィア
 
 	=経験値表
 

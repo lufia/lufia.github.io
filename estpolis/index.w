@@ -25,6 +25,7 @@
 
 	=シナリオチャート
 
+	.main-cards
 	*[アレキア〜トレック北の洞窟|story/ch1.w]
 	*[ロルベニア〜迷いの森|story/ch2.w]
 	*[ジェノバ〜なげきの塔|story/ch3.w]
@@ -32,6 +33,7 @@
 	*[エプロ〜虚空島|story/ch5.w]
 
 	=攻略のヒント
+	.main-cards
 	*[期間限定イベント|doc/term.w]
 	*[ドラゴンエッグと宝箱|doc/egg.w]
 	*[エッグドラゴン|doc/eggdragon.w]
@@ -43,6 +45,7 @@
 
 	=データベース
 
+	.main-cards
 	*[キャラクターリスト|char/index.w]
 	*[アイテムリスト|item/index.w]
 	*[魔法リスト|magic/index.w]
@@ -57,19 +60,8 @@
 .aside
 {
 	=Estpolis
-	\<lib/nest.jpg>
-	:[公式サイト|http://www.squeare-enix.co.jp/est/]
-	-エストポリス伝記2がDSでリメイクされて発売中です
-	:[メンバーズサイト|http://member.square-enix.com/jp/special/est/]
-	-公式のコミュニティ
-	:[オンラインショップ|http://store.jp.square-enix.com/detail/NTR-P-BSDJ]
-	-アフィリエイト等は付けていないので安心してください
-	:[エストポリス 攻略Wiki|http://www39.atwiki.jp/estpolis/]
-	-2chスレのまとめWiki
-
-	=モバイル版エストポリス伝記
-	:[公式サイト|http://www.taito.co.jp/mob/tsmg/pages/estpolis.html]
-	-オリジナルの携帯電話移植版です
+	*[Estpolis DS|https://www.jp.squeare-enix.co.jp/game/detail/est/]
+	*[エストポリス 攻略Wiki|http://www39.atwiki.jp/estpolis/]
 }
 
 @include nav.i

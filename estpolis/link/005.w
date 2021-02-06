@@ -2,9 +2,9 @@
 @include link.i
 %title 幻想の森 らくがき
 
-=幻想の森 らくがき
 .revision
 2010年1月15日更新
+=幻想の森 らくがき
 
 	\[<screenshot: http://www.aurora.dti.ne.jp/~miriko/diary/index.html>|http://www.aurora.dti.ne.jp/~miriko/diary/index.html]
 

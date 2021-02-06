@@ -1,9 +1,9 @@
 @include u.i
 %title ラミア
 
-=ラミア
 .revision
 2009年11月15日作成
+=ラミア
 
 	=モンスターデータ
 	:HP

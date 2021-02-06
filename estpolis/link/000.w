@@ -2,9 +2,9 @@
 @include link.i
 %title ネバーランドカンパニー
 
-=ネバーランドカンパニー
 .revision
 2010年1月15日更新
+=ネバーランドカンパニー
 
 	\[<screenshot: http://www.n-land.co.jp/>|http://www.n-land.co.jp/]
 

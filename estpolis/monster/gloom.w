@@ -1,9 +1,9 @@
 @include u.i
 %title デス
 
-=デス
 .revision
 2009年11月15日作成
+=デス
 
 	=モンスターデータ
 	:HP

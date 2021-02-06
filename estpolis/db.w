@@ -1,9 +1,9 @@
 @include u.i
 %title データベース
 
-=データベース
 .revision
 2009年11月16日更新
+=データベース
 
 	=利用する前に
 
@@ -21,6 +21,7 @@
 
 	=データベース
 
+	.main-cards
 	*[キャラクターリスト|char/index.w]
 	*[アイテムリスト|item/index.w]
 	*[魔法リスト|magic/index.w]

@@ -2,9 +2,9 @@
 @include link.i
 %title 攻略情報
 
-=攻略情報
 .revision
 2010年5月16日更新
+=攻略情報
 
 	=エストポリス伝記
 

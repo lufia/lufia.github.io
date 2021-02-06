@@ -1,9 +1,9 @@
 @include u.i
 %title パグ
 
-=パグ
 .revision
 2009年11月15日作成
+=パグ
 
 	=モンスターデータ
 	:HP

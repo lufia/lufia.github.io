@@ -1,11 +1,7 @@
-.header
-{
-	=[ルフィアノート|/estpolis/]
-}
-
 .nav
 {
 	=メニュー
+	*[ルフィアノート|/estpolis/]
 	*[攻略チャート|/estpolis/story/]
 	*[基本情報|/estpolis/doc/]
 	*[データベース|/estpolis/db.w]

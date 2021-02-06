@@ -1,9 +1,9 @@
 @include u.i
 %title アモン
 
-=アモン
 .revision
 2009年11月15日作成
+=アモン
 
 	=モンスターデータ
 	:HP

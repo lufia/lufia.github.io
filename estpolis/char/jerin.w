@@ -1,9 +1,9 @@
 @include	u.i
 %title	ジュリナ
 
-=ジュリナ
 .revision
 2009年11月16日更新
+=ジュリナ
 
 	=経験値表
 

@@ -2,9 +2,9 @@
 @include link.i
 %title くろもじ屋 Estpolis
 
-=くろもじ屋 Estpolis
 .revision
 2010年1月15日更新
+=くろもじ屋 Estpolis
 
 	\[<screenshot: http://www116.sakura.ne.jp/~kuromoji/est.htm>|http://www116.sakura.ne.jp/~kuromoji/est.htm]
 

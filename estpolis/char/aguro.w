@@ -1,9 +1,9 @@
 @include	u.i
 %title	アグロス
 
-=アグロス
 .revision
 2009年11月16日更新
+=アグロス
 
 	=経験値表
 

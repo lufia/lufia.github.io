@@ -1,9 +1,9 @@
 @include u.i
 %title ガデス
 
-=ガデス
 .revision
 2009年11月15日作成
+=ガデス
 
 	=モンスターデータ
 	:HP

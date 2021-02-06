@@ -1,9 +1,9 @@
 @include u.i
 %title おにび
 
-=おにび
 .revision
 2009年11月15日作成
+=おにび
 
 	=モンスターデータ
 	:HP

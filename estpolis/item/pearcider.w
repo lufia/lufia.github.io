@@ -1,9 +1,9 @@
 @include u.i
 %title ラム
 
-=ラム
 .revision
 2009年11月15日作成
+=ラム
 
 	=アイテムデータ
 	:種類

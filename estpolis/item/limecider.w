@@ -1,9 +1,9 @@
 @include u.i
 %title ジン
 
-=ジン
 .revision
 2009年11月15日作成
+=ジン
 
 	=アイテムデータ
 	:種類

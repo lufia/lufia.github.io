@@ -1,10 +1,11 @@
 @include u.i
 %title 攻略のヒント
 
-=攻略のヒント
 .revision
 2009年11月16日作成
+=攻略のヒント
 
+	.main-cards
 	*[期間限定イベント|term.w]
 	*[ドラゴンエッグと宝箱|egg.w]
 	*[エッグドラゴン|eggdragon.w]

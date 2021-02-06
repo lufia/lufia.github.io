@@ -1,9 +1,9 @@
 @include	u.i
 %title	主人公
 
-=主人公
 .revision
 2009年11月16日更新
+=主人公
 
 	=経験値表
 

@@ -1,9 +1,9 @@
 @include u.i
 %title ヒドラ
 
-=ヒドラ
 .revision
 2009年11月15日作成
+=ヒドラ
 
 	=モンスターデータ
 	:HP

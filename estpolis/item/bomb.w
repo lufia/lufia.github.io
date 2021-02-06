@@ -1,9 +1,9 @@
 @include u.i
 %title ボム
 
-=ボム
 .revision
 2009年11月15日作成
+=ボム
 
 	=アイテムデータ
 	:種類

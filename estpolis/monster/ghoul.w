@@ -1,9 +1,9 @@
 @include u.i
 %title グール
 
-=グール
 .revision
 2009年11月15日作成
+=グール
 
 	=モンスターデータ
 	:HP

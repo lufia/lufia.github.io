@@ -1,9 +1,9 @@
 @include u.i
 %title なべ
 
-=なべ
 .revision
 2009年11月15日作成
+=なべ
 
 	=頭装備データ
 	:価格

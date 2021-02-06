@@ -1,9 +1,9 @@
 @include u.i
 %title ジーラ
 
-=ジーラ
 .revision
 2009年11月15日作成
+=ジーラ
 
 	=モンスターデータ
 	:HP

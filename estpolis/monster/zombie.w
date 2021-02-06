@@ -1,9 +1,9 @@
 @include u.i
 %title ゾンビ
 
-=ゾンビ
 .revision
 2009年11月15日作成
+=ゾンビ
 
 	=モンスターデータ
 	:HP

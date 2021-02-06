@@ -1,9 +1,9 @@
 @include u.i
 %title ビーグ
 
-=ビーグ
 .revision
 2009年11月15日作成
+=ビーグ
 
 	=モンスターデータ
 	:HP
