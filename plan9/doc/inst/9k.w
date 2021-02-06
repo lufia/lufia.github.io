@@ -14,7 +14,7 @@
 	../adm/update.w]、本家最新のソースに更新しておいてください。
 
 	2015年1月以降、本家が更新されていないので、[9legacyのパッチ集|
-	http://9legacy.org/patch.html]から取得します。
+	https://9legacy.org/patch.html]から取得します。
 	現時点で、[64bit環境の動作が確認できたパッチ一覧|
 	https://github.com/lufia/9legacy-tool/blob/master/misc/patchlist]です。
 	上から順番に適用すれば依存関係も解決します。

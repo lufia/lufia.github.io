@@ -238,7 +238,7 @@
 
 	=参考ページ
 	*[Installing a Plan 9 File Server|
-	http://www.plan9.bell-labs.com/wiki/plan9/Installing_a_Plan_9_File_Server/index.html]
+	https://9p.io/wiki/plan9/Installing_a_Plan_9_File_Server/index.html]
 }
 
 @include nav.i

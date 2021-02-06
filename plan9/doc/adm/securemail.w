@@ -162,8 +162,8 @@
 	*[iPhoneまとめ|iphone.w]
 
 	=参考ページ
-	*[Mail configuration|http://www.plan9.bell-labs.com/wiki/plan9/Mail_configuration/index.html]
-	*[証明書|http://plan9.aichi-u.ac.jp/pegasus/man-2.1/cert.html]
+	*[Mail configuration|https://9p.io/wiki/plan9/Mail_configuration/index.html]
+	*[証明書|http://p9.nyx.link/pegasus/man-2.1/cert.html]
 
 	=参考書
 	:[新版暗号技術入門--秘密の国のアリス|http://www.hyuki.com/cr/]

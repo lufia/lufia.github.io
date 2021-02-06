@@ -95,7 +95,7 @@ pullに-vオプションを与えると詳細が表示されます。
 .aside
 {
 	=参考ページ
-	*[配布ファイルの更新|http://plan9.aichi-u.ac.jp/replica/]
+	*[配布ファイルの更新|http://p9.nyx.link/replica/]
 }
 
 @include nav.i

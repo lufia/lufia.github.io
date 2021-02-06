@@ -32,7 +32,7 @@ fsカーネルに近い運用形態になるのではないでしょうか。
 {
 	=参考ページ
 	*[Compiling kernels|
-	http://plan9.bell-labs.com/wiki/plan9/compiling_kernels/index.html]
+	https://9p.io/wiki/plan9/compiling_kernels/index.html]
 }
 
 @include nav.i

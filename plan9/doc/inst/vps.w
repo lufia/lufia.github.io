@@ -112,8 +112,8 @@
 	!igbe: bad EEPROM checksum - 0x535E
 
 	のようなエラーでNICが認識できていませんでしたので、[さくらVPSでPlan 9|
-	http://d.hatena.ne.jp/oraccha/20100928/1285683705]を参考に
-	/sys/src/9/pc/etherigbe.c:at93c46rを以下のように変更2しました。
+	https://oraccha.hatenadiary.org/entry/20100928/1285683705]を参考に
+	\*/sys/src/9/pc/etherigbe.c*を以下のように変更2しました。
 
 	.diff
 	!--- /sys/src/9/pc/etherigbe.c

@@ -59,7 +59,7 @@
 	=acmeのフォント
 
 	どうやら[Plan9他からコピーすればいい|
-	http://d.hatena.ne.jp/kayn_koen/20110202]みたい。
+	https://kayn-koen.hatenadiary.org/entries/2011/02/02]みたい。
 	WindowsのInfernoを使っていますが、コピーしただけでは
 	なぜかSegmentation Violationだったのですが、
 	/fonts/lucidasans/euro.8.fontの最後から

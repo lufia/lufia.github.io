@@ -340,7 +340,7 @@ ILの論文をおおよそ意訳でやってみました。
 .aside
 {
 	=関連情報
-	*[原文(PDF)|http://plan9.bell-labs.com/sys/doc/il/il.pdf]
+	*[原文(PDF)|https://9p.io/sys/doc/il/il.pdf]
 	*[il.cを読む|../../../notes/2011/0618.w]
 	*[カーネルにilを組み込む|../inst/il.w]
 }

@@ -193,8 +193,8 @@
 	=参考ページ
 	*[Plan9 System Management|http://c.p9c.info/plan9/root.html]
 	*[メールに関するファイルの設定|
-	http://plan9.aichi-u.ac.jp/admin/mail/config.html]
-	*[スパム対策|http://plan9.aichi-u.ac.jp/spam/]
+	http://p9.nyx.link/admin/mail/config.html]
+	*[スパム対策|http://p9.nyx.link/spam/]
 	*[迷惑メール対策OP25Bについてお勉強|
 	http://www.drk7.jp/MT/archives/001326.html]
 	*[OP25Bは迷惑メール行為を防げるのか?|

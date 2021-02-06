@@ -24,10 +24,8 @@
 .aside
 {
 	=参考ページ
-	*[Plan 9 from Bell Labs|http://plan9.bell-labs.com/plan9/]
-	*[Plan 9 from Bell Labs(mirror)|http://9p.io/plan9/]
+	*[Plan 9 from Bell Labs|https://9p.io/plan9/]
 	*[Plan 9(愛知大)|http://p9.nyx.link/]
-	*[Plan9(p9c)|http://c.p9c.info/plan9/]
 	*[Plan9メモ|http://www.geocities.co.jp/SiliconValley/6131/plan9/]
 	*[Plan 9 from Bell Labs翻訳プロジェクト|
 	https://sites.google.com/site/plan9jp/]

@@ -183,7 +183,7 @@
 
 	=参考ページ
 	*[Configuring a Standalone CPU Server|
-	http://www.plan9.bell-labs.com/wiki/plan9/Configuring_a_Standalone_CPU_Server/index.html]
+	https://9p.io/wiki/plan9/Configuring_a_Standalone_CPU_Server/index.html]
 	*[ADSLでお気軽自宅サーバ|
 	http://www.geocities.co.jp/SiliconValley/6131/plan9/easyserver.html]
 }

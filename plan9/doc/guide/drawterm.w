@@ -42,7 +42,7 @@
 	=DrawtermのApp化
 
 	MacでDockに登録するために、[Drawterm.app|
-	http://d.hatena.ne.jp/oraccha/20080209/1202565776]を
+	https://oraccha.hatenadiary.org/entry/20080209/1202565776]を
 	参考にしたのですが、なぜかこのままでは動きませんでした。
 	具体的に言えば、Carbon/X11共に、パスワードを入力した直後、
 	mountとbindがエラーになってしまいます。
@@ -72,7 +72,7 @@
 	=参考ページ
 	*[Drawterm|http://swtch.com/drawterm/]
 	*[Plan 9初心者ガイド - Plan9日記|
-	http://d.hatena.ne.jp/oraccha/20090211/1234354600]
+	https://oraccha.hatenadiary.org/entry/20090211/1234354600]
 }
 
 @include nav.i

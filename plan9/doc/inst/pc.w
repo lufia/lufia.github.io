@@ -42,7 +42,7 @@
 {
 	=参考ページ
 	*[Supported PC Hardware|
-	http://www.plan9.bell-labs.com/wiki/plan9/Supported_PC_hardware/index.html]
+	https://9p.io/wiki/plan9/Supported_PC_hardware/index.html]
 }
 
 @include nav.i

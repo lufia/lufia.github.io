@@ -28,8 +28,8 @@
 .aside
 {
 	=参考ページ
-	*[rc - the Plan9 shell|http://plan9.aichi-u.ac.jp/rc/index.html]
-	*[rc - the Plan9 shell(2)|http://plan9.aichi-u.ac.jp/rc/rc2.html]
+	*[rc - the Plan9 shell|http://p9.nyx.link/rc/index.html]
+	*[rc - the Plan9 shell(2)|http://p9.nyx.link/rc/rc2.html]
 }
 
 @include nav.i

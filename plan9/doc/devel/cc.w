@@ -50,7 +50,7 @@
 {
 	=参考ページ
 	*[2006-04-30 Plan9日記|
-	http://d.hatena.ne.jp/oraccha/?date=20060430]
+	https://oraccha.hatenadiary.org/archive/2006/04/30]
 }
 
 @include nav.i

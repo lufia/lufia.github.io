@@ -29,7 +29,7 @@
 
 	=配布ファイルの展開
 
-	現状、[Installing a Plan 9 File Server|http://plan9.bell-labs.com/wiki/plan9/Installing_a_Plan_9_File_Server/index.html]にあるwrap/instコマンドがありません。
+	現状、[Installing a Plan 9 File Server|https://9p.io/wiki/plan9/Installing_a_Plan_9_File_Server/index.html]にあるwrap/instコマンドがありません。
 	9fansで調べると[problems installing the plan9 distribution on fileserver|http://9fans.net/archive/2003/03/322]というのがあったので、それに沿って対応。
 
 	.console
@@ -203,8 +203,8 @@
 
 	=参考ページ
 	*[Installing a Plan 9 File Server|
-	http://www.plan9.bell-labs.com/wiki/plan9/Installing_a_Plan_9_File_Server/index.html]
-	*[分散システムの構築|http://plan9.aichi-u.ac.jp/install/distrib.html]
+	https://9p.io/wiki/plan9/Installing_a_Plan_9_File_Server/index.html]
+	*[分散システムの構築|http://p9.nyx.link/install/distrib.html]
 }
 
 @include nav.i

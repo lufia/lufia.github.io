@@ -145,7 +145,7 @@
 .aside
 {
 	=参考ページ
-	*[時刻合わせ|http://plan9.aichi-u.ac.jp/admin/timezone.html]
+	*[時刻合わせ|http://p9.nyx.link/admin/timezone.html]
 }
 
 @include nav.i

@@ -35,7 +35,7 @@
 	!can't read my ip address
 	!venti: Err 2 ...
 
-	これは、[ベル研のWiki|http://www.plan9.bell-labs.com/wiki/plan9/Network_configuration/index.html]によると、
+	これは、[ベル研のWiki|https://9p.io/wiki/plan9/Network_configuration/index.html]によると、
 	IP割り当て前に*/net/ipifc/0*が127.1として存在するからなので、
 	\*termrc*などから、ifの行をコメントアウトすればいいです。
 	ip/ipconfigとndb/dnsの2箇所。
@@ -108,7 +108,7 @@
 
 	=参考ページ
 	*[Installation instructions|
-	http://www.plan9.bell-labs.com/wiki/plan9/Installation_instructions/index.html]
+	https://9p.io/wiki/plan9/Installation_instructions/index.html]
 }
 
 @include nav.i
