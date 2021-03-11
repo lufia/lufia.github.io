@@ -27,7 +27,9 @@ export default {
 							postcssOptions: {
 								plugins: [
 									autoprefixer,
-									nested
+									nested,
+									// no @types
+									require("postcss-mixins")
 								]
 							}
 						}

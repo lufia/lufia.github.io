@@ -6,7 +6,6 @@
 	--main-margin--mobile: 5%;
 	--revision-color: #999;
 	--card-padding: 24px;
-	--card-width: 30%;
 	--note-color: #6a737d;
 	--note-background-color: #f8f8f8;
 	--header-link-color: #ddd;
@@ -23,6 +22,18 @@
 	--table-border-color: #eee;
 	--blockquote-color: #6a737d;
 	--blockquote-left-color: #dfe2e5;
+}
+
+@define-mixin card-container {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+@define-mixin card-item $padding {
+	flex-basis: 31%;
+	box-sizing: border-box;
+	margin: 0 1% 2% 1%;
+	padding: $(padding);
 }
 
 body {
@@ -97,14 +108,10 @@ body > main {
 		text-align: right;
 	}
 	& dl.main-cards {
-		display: flex;
-		flex-wrap: wrap;
+		@mixin card-container;
 		padding: 0 50px;
 		& > div {
-			flex-basis: var(--card-width);
-			box-sizing: border-box;
-			margin: 0 1% 2% 1%;
-			padding: var(--card-padding);
+			@mixin card-item var(--card-padding);
 			border: 1px solid #dadce0;
 			border-radius: 4px;
 			line-height: 26px;
@@ -123,15 +130,11 @@ body > main {
 		}
 	}
 	& ul.main-cards {
-		display: flex;
-		flex-wrap: wrap;
+		@mixin card-container;
 		padding: 0 50px;
 		& > li {
+			@mixin card-item var(--card-padding);
 			list-style-type: none;
-			flex-basis: var(--card-width);
-			box-sizing: border-box;
-			margin: 0 1% 2% 1%;
-			padding: var(--card-padding);
 			border: 1px solid #dadce0;
 			border-radius: 4px;
 			line-height: 26px;
@@ -200,14 +203,10 @@ body > aside {
 		font-weight: normal;
 	}
 	& ul {
-		display: flex;
+		@mixin card-container;
 		align-items: stretch;
-		flex-wrap: wrap;
 		& > li {
-			flex-basis: var(--card-width);
-			box-sizing: border-box;
-			margin: 0 1% 2% 1%;
-			padding: var(--footer-card-padding);
+			@mixin card-item var(--footer-card-padding);
 			list-style-type: none;
 			background-color: var(--aside-card-background-color);
 			overflow: hidden;
