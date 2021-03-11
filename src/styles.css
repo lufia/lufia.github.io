@@ -3,12 +3,18 @@
 
 :root {
 	--main-margin: 10%;
-	--main-mobile-margin: 5%;
-	--card-margin: 24px;
+	--main-margin--mobile: 5%;
+	--revision-color: #999;
+	--card-padding: 24px;
+	--card-width: 30%;
+	--note-color: #6a737d;
+	--note-background-color: #f8f8f8;
 	--header-link-color: #ddd;
 	--header-highlight-color: #fff;
 	--header-background-color: #333;
-	--footer-card-margin: 16px;
+	--aside-card-background-color: #fff;
+	--aside-card-border-color: #e1e1e1;
+	--footer-card-padding: 16px;
 	--footer-card-height: 4rem;
 	--footer-link-color: #000;
 	--footer-background-color: #f2f2f2;
@@ -87,7 +93,7 @@ body > nav {
 }
 body > main {
 	& p.revision {
-		color: #999;
+		color: var(--revision-color);
 		text-align: right;
 	}
 	& dl.main-cards {
@@ -95,9 +101,10 @@ body > main {
 		flex-wrap: wrap;
 		padding: 0 50px;
 		& > div {
-			flex-basis: 25%;
+			flex-basis: var(--card-width);
+			box-sizing: border-box;
 			margin: 0 1% 2% 1%;
-			padding: var(--card-margin);
+			padding: var(--card-padding);
 			border: 1px solid #dadce0;
 			border-radius: 4px;
 			line-height: 26px;
@@ -121,9 +128,10 @@ body > main {
 		padding: 0 50px;
 		& > li {
 			list-style-type: none;
-			flex-basis: 25%;
+			flex-basis: var(--card-width);
+			box-sizing: border-box;
 			margin: 0 1% 2% 1%;
-			padding: var(--card-margin);
+			padding: var(--card-padding);
 			border: 1px solid #dadce0;
 			border-radius: 4px;
 			line-height: 26px;
@@ -175,9 +183,16 @@ body > main {
 		padding: 0 1em;
 		color: var(--blockquote-color);
 	}
+
+	& .note {
+		margin: 0.5rem;
+		padding: 0.5rem;
+		background-color: var(--note-background-color);
+		color: var(--note-color);
+	}
 }
 body > aside {
-	padding: 5px var(--card-margin);
+	padding: 5px var(--card-padding);
 	background-color: var(--footer-background-color);
 	& h1 {
 		text-align: center;
@@ -186,22 +201,24 @@ body > aside {
 	}
 	& ul {
 		display: flex;
-		flex-basis: 33%;
 		align-items: stretch;
 		flex-wrap: wrap;
 		& > li {
-			width: 25%;
-			margin: 1% 2%;
-			padding: var(--footer-card-margin);
+			flex-basis: var(--card-width);
+			box-sizing: border-box;
+			margin: 0 1% 2% 1%;
+			padding: var(--footer-card-padding);
 			list-style-type: none;
-			background-color: #fff;
-			height: var(--footer-card-height);
+			background-color: var(--aside-card-background-color);
 			overflow: hidden;
-			outline: .1rem solid #e1e1e1;
+			outline: .1rem solid var(--aside-card-border-color);
 		}
 		& > li > a {
-			display: block;
-			vertical-align: middle;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			height: var(--footer-card-height);
 		}
 		& > li > a:link {
 			color: var(--footer-link-color);
@@ -209,7 +226,7 @@ body > aside {
 	}
 }
 body > footer {
-	padding: 5px var(--card-margin);
+	padding: 5px var(--card-padding);
 	background-color: var(--footer-background-color);
 	& > p {
 		margin: 0;
@@ -231,7 +248,7 @@ body > footer {
 		flex-wrap: wrap;
 	}
 	body > main {
-		margin: 0 var(--main-mobile-margin);
+		margin: 0 var(--main-margin--mobile);
 	}
 	body > main dl.main-cards,
 	body > main ul.main-cards {
