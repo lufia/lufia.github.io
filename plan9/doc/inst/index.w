@@ -12,6 +12,7 @@
 	=インストール
 
 	.main-cards
+	*[Plan 9のフォーク|forks.w]
 	*[Sizka BASICへのインストール|sizka.w]
 	*[カーネルコンフィグの種類|kconfig.w]
 	*[認証サーバのインストール|auth.w]
