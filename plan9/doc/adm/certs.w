@@ -11,7 +11,7 @@
 	いわゆる自己署名でない証明書のことです。
 	認証局に署名リクエストを出すとき、CSRが必要になりますが、
 	Plan 9には、CSRを作るためのコマンドが無さそうです。
-	auth/rsa2x509コマンドでは自己署名になってしまうので使えません。
+	\`auth/rsa2x509`では自己署名になってしまうので使えません。
 	Plan 9の秘密鍵をUnixで理解できる形に変換して、
 	Unix(openssl)でCSRを作る方法も調べましたが、
 	全く情報がありませんでした。
@@ -32,15 +32,15 @@
 	!unix$ openssl rsa -in private.key -out u.key
 
 	安全な方法で鍵をPlan 9側へコピーします。
-	ここではdrawtermを使いましたが実際なんでもいいです。
+	ここでは`drawterm`を使いましたが実際なんでもいいです。
 
 	.console
 	!unix$ drawterm -a a.lufia.org -c c.lufia.org -u bootes
 	!# ramfs -p
 	!# cp /mnt/term/Users/lufia/u.key /tmp/u.key
 
-	drawtermを使ってbootesユーザでauth/secstoreすると、
-	drawterm側ではなくcpuサーバのコンソール側(!)で
+	\`drawterm`を使って*bootes*ユーザで`auth/secstore`すると、
+	\`drawterm`側ではなくcpuサーバのコンソール側(!)で
 	パスワードを待ち受けるようになって困るので、
 	以下はコンソールから作業します。
 
@@ -53,7 +53,7 @@
 	!# auth/secstore -p factotum
 	!# rm factotum key u.key
 
-	マニュアルによると、asn12rsaした後の出力にある、!p=と!q=の値が
+	マニュアルによると、`asn12rsa`した後の出力にある*!p=*と*!q=*の値が
 	素数ペアになっているようですね。
 
 	これで、Unixのパスフレーズ無し鍵はいらなくなったので消しましょう。
@@ -75,15 +75,15 @@
 	この後、いくつか質問されますが、大切なところは、
 	Common Nameを証明書申請するドメイン名にすること。
 	他の項目は認証局のサイトにある説明をよく読んで入力しましょう。
-	たとえばRapidSSLは、拡張情報・チェレンジパスワードを入力してはいけません。
+	RapidSSLでは、拡張情報・チャレンジパスワードを入力してはいけません。
 
 	CSRを作り終わったら認証局へ申請します。
-	RapidSSLの場合は、フォームにa.csrの内容をコピペして、
+	RapidSSLの場合は、フォームに*a.csr*の内容をコピペして、
 	サーバの種類を選ぶ場所で「その他」を選んでおくといいでしょう。
 
 	その後「SSLサーバ証明書発行完了のお知らせ」というメールが届いたら、
 	メール本文の中ほどにある「SSLサーバ証明書(X.509形式)」の
-	BEGIN CERTIFICATEからEND CERTIFICATEまで(含む)をPlan 9へ送ります。
+	\*BEGIN CERTIFICATE*から*END CERTIFICATE*まで(含む)をPlan 9へ送ります。
 	秘密鍵と異なり、公開情報なので送る方法はなんでもかまいません。
 	ファイル末尾に改行がない場合、Plan 9は読んでくれないので
 	改行までをコピーするように注意してください。
