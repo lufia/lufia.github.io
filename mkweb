@@ -13,7 +13,12 @@ TARG=\
 
 FILES=${IFILES:%=$IDIR/%}
 
-all:V: $TARG
+all:V: dirs $TARG
+
+dirs:V: ${DIRS:%=$LIB/%}
+
+$LIB/%: %
+	mkdir -p $target
 
 $LIB/%.html:D: %.w $FILES
 	include -a $IDIR $stem.w | wf $WFFLAGS >$target
