@@ -19,6 +19,8 @@
 	*[ファイルサーバの管理|fs.w]
 	*[secstoreの使い方|../guide/secstore.w]
 	*[listenについて|listen.w]
+	*[Blog: Plan 9でのユーザ管理|https://blog.lufia.org/entry/2014/04/11/000000]
+	*[Ventiディスクをオフサイトバックアップする方法[[9fans]]|https://blog.lufia.org/entry/2017/10/30/232700]
 
 	=サーバ関係
 
@@ -35,6 +37,8 @@
 	=その他
 	.main-cards
 	*[iPhoneまとめ|iphone.w]
+	*[Blog: Macから9Pをマウントする|https://blog.lufia.org/entry/2014/03/31/010900]
+	*[Blog: Plan 9とATS|https://blog.lufia.org/entry/2016/04/20/071600]
 
 .aside
 {

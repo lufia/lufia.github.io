@@ -4,6 +4,14 @@ IFILES=\
 	u.i\
 	nav.i\
 
+DIRS=\
+	doc/adm\
+	doc/devel\
+	doc/guide\
+	doc/inst\
+	doc/inferno\
+	man\
+
 WFFLAGS=-lja -x w html
 
 PAGE=`{ls *.w */*.w doc/*/*.w}

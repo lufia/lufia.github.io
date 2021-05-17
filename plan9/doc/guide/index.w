@@ -21,11 +21,19 @@
 	*[hget|hget.w]
 	*[cronの使い方|cron.w]
 	*contribソフトウェアのインストール
+	*[Blog: Plan 9の便利そうなコマンド|https://blog.lufia.org/entry/2012/10/07/205700]
+	*[Blog: Plan 9で知っておくと便利なこと|https://blog.lufia.org/entry/2015/09/28/013300]
+	*[Blog: Unix-timeと日時の相互変換|https://blog.lufia.org/entry/2016/12/07/131800]
 
 	=その他
 	.main-cards
 	*[patchを送る|patch.w]
 	*[drawterm|drawterm.w]
+	*[Blog: Plan 9カーネルの読み物|https://blog.lufia.org/entry/2015/09/13/233100]
+	*[Blog: Contribディレクトリにソースコードを公開する|https://blog.lufia.org/entry/2020/07/24/052611]
+	*[Blog: Plan 9カーネルのIPルーティング|https://blog.lufia.org/entry/2020/09/05/180329]
+	*[Blog: Plan 9はファイルをどのように使っているか|https://blog.lufia.org/entry/2020/10/11/041134]
+	*[Blog: Plan 9におけるTLSの実装|https://blog.lufia.org/entry/2021/02/10/113000]
 
 .aside
 {
