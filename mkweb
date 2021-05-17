@@ -1,6 +1,6 @@
 TARG=\
 	${PAGE:%.w=$LIB/%.html}\
-	${PAGE:%.map=$LIB/%.png}\
+	${PAGE:%.map=$LIB/%.svg}\
 	${PAGE:%.df=$LIB/%.png}\
 	${PAGE:%.pic=$LIB/%.png}\
 	${PAGE:%.js=$LIB/%.js}\
@@ -22,6 +22,9 @@ $LIB/%: %
 
 $LIB/%.html:D: %.w $FILES
 	include -a $IDIR $stem.w | wf $WFFLAGS >$target
+
+$LIB/%.svg:D: %.map
+	games/mapsvg $MAPFLAGS $prereq >$target
 
 $LIB/%.png:D: %.map
 	games/map $MAPFLAGS $prereq |

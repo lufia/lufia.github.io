@@ -6,7 +6,19 @@ IFILES=\
 	link.i\
 	linknav.i\
 
-WFFLAGS=-lja -x w html -x map png
+DIRS=\
+	boss\
+	char\
+	doc\
+	item\
+	link\
+	magic\
+	map\
+	monster\
+	story\
+	stuff\
+
+WFFLAGS=-lja -x w html -x map svg
 #MAPFLAGS=-v
 
 PAGE=`{lspart $LSFLAGS $DB}
