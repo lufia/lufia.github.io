@@ -6,18 +6,6 @@ IFILES=\
 	link.i\
 	linknav.i\
 
-DIRS=\
-	boss\
-	char\
-	doc\
-	item\
-	link\
-	magic\
-	map\
-	monster\
-	story\
-	stuff\
-
 WFFLAGS=-lja -x w html -x map svg
 #MAPFLAGS=-v
 
