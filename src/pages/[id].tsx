@@ -5,8 +5,8 @@ import {
 	InferGetStaticPropsType,
 	NextPage,
 } from "next";
-import { Parser as HtmlToReactParser } from "html-to-react";
 import { convertToHtml, include } from "../html-generator";
+import { optimize, parse } from "../react-node-optimizer";
 
 type Params = Readonly<{
 	id: string;
@@ -44,9 +44,8 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
 };
 
 const Page: NextPage<Props> = (props) => {
-	const parser = new HtmlToReactParser();
-	const html = parser.parse(props.message);
-	return html;
+	const node = parse(props.message);
+	return <>{optimize(node)}</>;
 };
 
 export default Page;
