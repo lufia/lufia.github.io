@@ -1,5 +1,6 @@
 import React from "react";
 import Head from "next/head";
+import Link from "next/link";
 import { Parser as HtmlToReactParser } from "html-to-react";
 
 // <head> to <Head>
@@ -20,21 +21,25 @@ export function optimize(node: React.ReactNode): React.ReactNode {
 	const heads = getElements(html, "head")
 		.map(p => React.createElement(Head, p.props, p.props.children));
 	const n = React.cloneElement(body, {}, heads, body.props.children);
-	return n.props.children;
+	return optimizeLinks(n).props.children;
 }
 
-function getElement(e: React.ReactElement, tagName: string): React.ReactElement {
-	const a = getElements(e, tagName);
-	if(a.length === 0)
-		return null;
-	return a[0];
+function optimizeLinks(e: React.ReactElement): React.ReactElement {
+	if(isPrimitive(e))
+		return e;
+	const a = React.Children.map(e.props.children, p => {
+		if(p.type === "a"){
+			const e = React.createElement("a", {}, p.props.children);
+			return React.createElement(Link, p.props, e);
+		}
+		return optimizeLinks(p);
+	});
+	return React.cloneElement(e, {}, a);
 }
 
 function getElements(e: React.ReactElement, tagName: string): readonly React.ReactElement[] {
-	// https://dackdive.hateblo.jp/entry/2019/08/07/090000
-	if(typeof e === "number" || typeof e === "string")
+	if(isPrimitive(e))
 		return [];
-
 	const a: React.ReactElement[] = [];
 	React.Children.forEach(e.props.children, p => {
 		if(p.type === tagName)
@@ -44,4 +49,16 @@ function getElements(e: React.ReactElement, tagName: string): readonly React.Rea
 			a.push(c);
 	});
 	return a;
+}
+
+// TODO: bug??
+function isPrimitive(e: React.ReactElement): boolean {
+	return typeof e === "string";
+}
+
+function getElement(e: React.ReactElement, tagName: string): React.ReactElement {
+	const a = getElements(e, tagName);
+	if(a.length === 0)
+		return null;
+	return a[0];
 }
