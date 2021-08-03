@@ -23,7 +23,7 @@ export const getStaticPaths: GetStaticPaths<Params> = async () => {
 			// BUG?: pass {slug:[]} then getStaticProps receives undefined from context.
 			{ params: { slug: undefined } },
 			{ params: { slug: ["estpolis"] } },
-			{ params: { slug: ["estpolis", "story", "ch1.html"] } },
+			{ params: { slug: ["estpolis", "story", "ch1"] } },
 		],
 		fallback: false,
 	};
