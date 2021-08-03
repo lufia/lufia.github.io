@@ -2,9 +2,10 @@ import React from "react";
 import Head from "next/head";
 import Link from "next/link";
 import { Parser as HtmlToReactParser } from "html-to-react";
+import { combineAsUrl } from "../path";
 
 // <head> to <Head>
-// <a href="xxx"> to <Link href="xxx"><a>
+// <a href="xxx"> to <Link href="xxx" as=""><a>
 // <img> to ?
 
 export function parse(content: string): React.ReactNode {
@@ -12,7 +13,13 @@ export function parse(content: string): React.ReactNode {
 	return parser.parse(content);
 }
 
-export function optimize(node: React.ReactNode): React.ReactNode {
+type OptimizerParams = Readonly<{
+	node: React.ReactNode;
+	pathname: string;
+	urlPath: string;
+}>;
+
+export function optimize({ node, pathname, urlPath }: OptimizerParams): React.ReactNode {
 	const root = React.createElement("root", null, node);
 	const html = getElement(root, "html");
 	if(!html)
@@ -21,18 +28,24 @@ export function optimize(node: React.ReactNode): React.ReactNode {
 	const heads = getElements(html, "head")
 		.map(p => React.createElement(Head, p.props, p.props.children));
 	const n = React.cloneElement(body, {}, heads, body.props.children);
-	return optimizeLinks(n).props.children;
+	return optimizeLinks(n, pathname, urlPath).props.children;
 }
 
-function optimizeLinks(e: React.ReactElement): React.ReactElement {
+function optimizeLinks(e: React.ReactElement, pathname: string, urlPath: string): React.ReactElement {
 	if(isPrimitive(e))
 		return e;
 	const a = React.Children.map(e.props.children, p => {
 		if(p.type === "a"){
+			if(p.props.href.startsWith("http:") || p.props.href.startsWith("https:"))
+				return p;
+			const props = {
+				href: pathname,
+				as: combineAsUrl(urlPath, p.props.href),
+			};
 			const e = React.createElement("a", {}, p.props.children);
-			return React.createElement(Link, p.props, e);
+			return React.createElement(Link, props, e);
 		}
-		return optimizeLinks(p);
+		return optimizeLinks(p, pathname, urlPath);
 	});
 	return React.cloneElement(e, {}, a);
 }
