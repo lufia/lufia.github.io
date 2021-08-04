@@ -40,14 +40,16 @@ export function combine(dir: string, target: string): string {
 }
 
 export function combineAsUrl(base: string, target: string): string {
-	if(base.endsWith("/"))
-		return combine(base, target);
-	const dir = path.dirname(base);
+	const dir = base.endsWith("/") ? base : path.dirname(base);
 	const urlPath = combine(dir, target);
-	const s = path.basename(urlPath);
-	if(s === "index.html")
-		return path.dirname(urlPath);
+	if(isIndex(urlPath))
+		return path.dirname(urlPath) + "/";
 	return urlPath;
+}
+
+function isIndex(s: string): boolean {
+	const f = path.basename(s);
+	return f === "index.html";
 }
 
 export async function walk(fs: fsPromises, dir: string, fn: (f: string) => void, recursive: boolean): Promise<void> {
