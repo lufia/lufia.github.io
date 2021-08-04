@@ -11,20 +11,46 @@ import {
 import path from "path";
 import { convertToHtml, include } from "../html-generator";
 import { optimize, parse } from "../react-node-optimizer";
-import { findUp, getProjectDir, stat } from "../path";
+import { findUp, getProjectDir, stat, walk } from "../path";
 
 type Params = Readonly<{
+	// BUG?: pass {slug:[]} then getStaticProps receives undefined from context.
 	slug: string[] | undefined;
 }>;
 
+const targetDirs = [
+	{ dir: ".", recursive: false },
+	{ dir: "estpolis", recursive: true },
+	{ dir: "notes", recursive: true },
+	{ dir: "plan9", recursive: true },
+	{ dir: "pkg", recursive: true },
+] as const;
+
 export const getStaticPaths: GetStaticPaths<Params> = async () => {
+	const projectDir = await getProjectDir(fs);
+	const files: string[] = [];
+	for(const p of targetDirs){
+		const dir = path.join(projectDir, p.dir);
+		await walk(fs, dir, file => {
+			const r = path.relative(projectDir, file);
+			if(path.normalize(r) === "index.w")
+				files.push(""); // avoid set to '.'
+			else if(path.basename(r) === "index.w")
+				files.push(path.dirname(r));
+			else if(path.extname(r) === ".w"){
+				const d = path.dirname(r);
+				const f = path.basename(r, ".w");
+				files.push(path.join(d, f));
+			}
+		}, p.recursive);
+	}
+	const paths = files.map(file => ({
+		params: {
+			slug: file.split(path.sep),
+		},
+	}));
 	return {
-		paths: [
-			// BUG?: pass {slug:[]} then getStaticProps receives undefined from context.
-			{ params: { slug: undefined } },
-			{ params: { slug: ["estpolis"] } },
-			{ params: { slug: ["estpolis", "story", "ch1"] } },
-		],
+		paths,
 		fallback: false,
 	};
 };

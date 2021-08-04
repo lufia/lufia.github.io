@@ -1,15 +1,15 @@
 import type { promises, Stats } from "fs";
 import path from "path";
 
-export async function findUp(dir: string, f: (dir: string) => Promise<string | undefined>): Promise<string | undefined> {
+export async function findUp(dir: string, fn: (dir: string) => Promise<string | undefined>): Promise<string | undefined> {
 	const current = path.resolve(dir);
-	const s = await f(current);
+	const s = await fn(current);
 	if(s !== undefined)
 		return s;
 	const parent = path.dirname(current);
 	if(parent === current)
 		return undefined;
-	return findUp(parent, f);
+	return findUp(parent, fn);
 }
 
 type fsPromises = typeof promises;
@@ -48,4 +48,17 @@ export function combineAsUrl(base: string, target: string): string {
 	if(s === "index.html")
 		return path.dirname(urlPath);
 	return urlPath;
+}
+
+export async function walk(fs: fsPromises, dir: string, fn: (f: string) => void, recursive: boolean): Promise<void> {
+	const d = await fs.opendir(dir);
+	for await (const e of d){
+		const f = path.join(dir, e.name);
+		if(e.isDirectory()){
+			if(recursive)
+				await walk(fs, f, fn, recursive);
+			continue;
+		}
+		await fn(f);
+	}
 }
