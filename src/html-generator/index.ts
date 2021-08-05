@@ -1,5 +1,5 @@
 import { ChildProcess, spawn } from "child_process";
-import { Transform } from "stream";
+import { Transform, Writable } from "stream";
 
 export function include(dir?: string): Transform {
 	const args = dir ? ["-a", dir] : [];
@@ -55,4 +55,18 @@ function createTransform(p: ChildProcess): Transform {
 		},
 	});
 	return t;
+}
+
+export function createWriteStream(): Readonly<{ stream: Writable, result: () => string }> {
+	const a: string[] = [];
+	const w = new Writable({
+		write: (data, encoding, callback): void => {
+			a.push(data);
+			callback();
+		},
+	});
+	return {
+		stream: w,
+		result: () => a.join(""),
+	};
 }

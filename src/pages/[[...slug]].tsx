@@ -9,7 +9,8 @@ import {
 	NextPage,
 } from "next";
 import path from "path";
-import { convertToHtml, include } from "../html-generator";
+import { pipeline } from "stream/promises";
+import { convertToHtml, include, createWriteStream } from "../html-generator";
 import { optimize, parse } from "../react-node-optimizer";
 import { findUp, getProjectDir, stat, walk } from "../path";
 
@@ -65,17 +66,14 @@ export const getStaticProps = async (context: GetStaticPropsContext<Params>) => 
 
 	const includeDir = await lookupIncludeDir(info.file);
 	const f = createReadStream(info.file, "utf-8");
-	const stream = f.pipe(include(includeDir)).pipe(convertToHtml({
+	const { stream: w, result } = createWriteStream();
+	await pipeline(f, include(includeDir), convertToHtml({
 		lang: "ja",
 		extensions: { "w": "html" },
-	}));
-	const data: string[] = [];
-	for await (const s of stream) {
-		data.push(s)
-	}
+	}), w);
 	return {
 		props: {
-			message: data.join(""),
+			message: result(),
 			pathname: "/[[...slug]]",
 			urlPath: info.urlPath,
 		},
