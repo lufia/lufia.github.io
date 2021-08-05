@@ -36,8 +36,6 @@ export const getStaticPaths: GetStaticPaths<Params> = async () => {
 			const r = path.relative(projectDir, file);
 			if(path.normalize(r) === "index.w")
 				files.push(""); // avoid set to '.'
-			else if(path.basename(r) === "index.w")
-				files.push(path.dirname(r));
 			else if(path.extname(r) === ".w"){
 				const d = path.dirname(r);
 				const f = path.basename(r, ".w");
