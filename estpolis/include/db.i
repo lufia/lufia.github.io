@@ -1,11 +1,11 @@
 .aside
 {
 	=データベース
-	*[キャラクターリスト|/estpolis/char/]
-	*[アイテムリスト|/estpolis/item/]
-	*[魔法リスト|/estpolis/magic/]
-	*[装備品リスト|/estpolis/stuff/]
-	*[マップリスト|/estpolis/map/]
-	*[モンスターリスト|/estpolis/monster/]
-	*[ボスリスト|/estpolis/boss/]
+	*[キャラクターリスト|/estpolis/char/index.w]
+	*[アイテムリスト|/estpolis/item/index.w]
+	*[魔法リスト|/estpolis/magic/index.w]
+	*[装備品リスト|/estpolis/stuff/index.w]
+	*[マップリスト|/estpolis/map/index.w]
+	*[モンスターリスト|/estpolis/monster/index.w]
+	*[ボスリスト|/estpolis/boss/index.w]
 }

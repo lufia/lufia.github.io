@@ -1,7 +1,7 @@
 .nav
 {
 	=メニュー
-	*[orange/note|/notes/]
+	*[orange/note|/notes/index.w]
 	*[PC関連|/notes/pc.w]
 	*[web製作|/notes/web.w]
 	*[セキュリティ|/notes/sec.w]
@@ -12,7 +12,7 @@
 .aside
 {
 	=やっていること
-	*[Plan 9|/plan9/]
+	*[Plan 9|/plan9/index.w]
 	*[Alefコンパイラを読む|http://web.me.com/lufia/alefcompiler/alef/]
 }
 

@@ -1,12 +1,12 @@
 .nav
 {
 	=メニュー
-	*[ルフィアノート|/estpolis/]
-	*[攻略チャート|/estpolis/story/]
-	*[基本情報|/estpolis/doc/]
+	*[ルフィアノート|/estpolis/index.w]
+	*[攻略チャート|/estpolis/story/index.w]
+	*[基本情報|/estpolis/doc/index.w]
 	*[データベース|/estpolis/db.w]
-	*[リンク|/estpolis/link/]
-	*[セリフ|/estpolis/dialog/]
+	*[リンク|/estpolis/link/index.w]
+	*[セリフ|/estpolis/dialog/index.w]
 }
 
 .footer

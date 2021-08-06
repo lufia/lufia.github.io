@@ -6,7 +6,7 @@
 =AtomとXSLTと名前空間(2)
 
 	=環境を選びますが
-	\[orange/note|/notes/]では、JavaScript+XSLTを使い、
+	\[orange/note|/notes/index.w]では、JavaScript+XSLTを使い、
 	\[atom.xml|/notes/atom.xml]から[index.html|/notes/index.html]を
 	自動生成しています。
 	これを作るときにめいっぱい悩んだのでメモ。
