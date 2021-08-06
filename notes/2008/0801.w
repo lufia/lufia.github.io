@@ -18,7 +18,7 @@
 	|hget url >>out		webgrab -o out url
 	|mntgen /n		mount {mntgen} /n
 	|rfork			pctl; nsbuild
-	|while(line=`{read}){ command }	getlines { command }
+	|while(line=``{read}){ command }	getlines { command }
 	|ip/httpd/httpd		svc/httpd/httpd
 
 	=file structure
