@@ -8,13 +8,13 @@
 やっていること。
 
 .main-cards
-:[ルフィアノート|estpolis/]
+:[ルフィアノート|estpolis/index.w]
 -エストポリス伝記 攻略ページ
-:[Plan 9|plan9/]
+:[Plan 9|plan9/index.w]
 -Plan 9 archive
 :[Plan 9とGo言語のブログ|https://blog.lufia.org/]
 -Blog
-:[orange/note|notes/]
+:[orange/note|notes/index.w]
 -notes
 :[GitHub|https://github.com/lufia/]
 -ソースコードなど
