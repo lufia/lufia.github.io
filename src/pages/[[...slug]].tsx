@@ -67,7 +67,10 @@ export const getStaticProps = async (context: GetStaticPropsContext<Params>) => 
 	const { stream: w, result } = createWriteStream();
 	await pipeline(f, include(includeDir), convertToHtml({
 		lang: "ja",
-		extensions: { "w": "html" },
+		extensions: {
+			"map": "svg",
+			"w": "html",
+		},
 	}), w);
 	return {
 		props: {
