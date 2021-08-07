@@ -1,5 +1,4 @@
 %author	http://www.hatena.ne.jp/lufiabb/
-%script	/lib/bundle.js
 %title	lufia.org
 %viewport width=device-width,initial-scale=1
 
