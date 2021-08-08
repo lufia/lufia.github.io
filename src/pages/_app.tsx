@@ -3,7 +3,7 @@ import "../styles.css";
 import hljs from "../highlight";
 
 if(process.browser)
-	hljs.initHighlightingOnLoad();
+	hljs.highlightAll();
 
 function App({ Component, pageProps }: AppProps) {
 	return <Component {...pageProps} />;
