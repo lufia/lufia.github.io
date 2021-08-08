@@ -6,11 +6,15 @@
       "dom.iterable",
       "esnext"
     ],
+    "paths": {
+      "html-to-react": ["./types/html-to-react"]
+    },
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
+    "noImplicitAny": true,
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "node",
