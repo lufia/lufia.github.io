@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/lufia/lufia.github.io#readme",
   "dependencies": {
+    "glob": "^7.1.7",
     "highlight.js": "^11.0.0",
     "html-to-react": "^1.4.5",
     "next": "^11.0.1",
@@ -27,6 +28,7 @@
     "react-dom": "^17.0.2"
   },
   "devDependencies": {
+    "@types/glob": "^7.1.4",
     "@types/highlight.js": "^10.1.0",
     "@types/react": "^17.0.14",
     "autoprefixer": "^10.2.5",

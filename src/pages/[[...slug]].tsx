@@ -2,6 +2,7 @@ import {
 	promises as fs,
 	createReadStream,
 } from "fs";
+import glob from "glob";
 import {
 	GetStaticPaths,
 	GetStaticPropsContext,
@@ -10,44 +11,35 @@ import {
 } from "next";
 import path from "path";
 import { pipeline } from "stream/promises";
+import { promisify } from "util";
 import { convertToHtml, include, createWriteStream } from "../html-generator";
 import { optimize, parse } from "../react-node-optimizer";
-import { findUp, getProjectDir, stat, walk } from "../path";
+import { findUp, getProjectDir, stat } from "../path";
+
+const globAsync = promisify(glob);
 
 type Params = Readonly<{
 	// BUG?: pass {slug:[]} then getStaticProps receives undefined from context.
 	slug: string[] | undefined;
 }>;
 
-const targetDirs = [
-	{ dir: ".", recursive: false },
-	{ dir: "estpolis", recursive: true },
-	{ dir: "notes", recursive: true },
-	{ dir: "plan9", recursive: true },
-	{ dir: "pkg", recursive: true },
-] as const;
-
 export const getStaticPaths: GetStaticPaths<Params> = async () => {
 	const projectDir = await getProjectDir(fs);
-	const files: string[] = [];
-	for(const p of targetDirs){
-		const dir = path.join(projectDir, p.dir);
-		await walk(fs, dir, file => {
-			const r = path.relative(projectDir, file);
-			if(path.normalize(r) === "index.w")
-				files.push(""); // avoid set to '.'
-			else if(path.extname(r) === ".w"){
-				const d = path.dirname(r);
-				const f = path.basename(r, ".w");
-				files.push(path.join(d, f));
-			}
-		}, p.recursive);
-	}
-	const paths = files.map(file => ({
-		params: {
-			slug: file.split(path.sep),
-		},
-	}));
+	const files = await globAsync("**/*.w", {
+		cwd: projectDir,
+	});
+	const paths = files.map(s => {
+		if(path.normalize(s) === "index.w"){
+			return {
+				params: { slug: undefined },
+			};
+		}
+		const dir = path.dirname(s);
+		const name = path.basename(s, ".w");
+		return {
+			params: { slug: dir.split(path.sep).concat(name) }
+		};
+	});
 	return {
 		paths,
 		fallback: false,

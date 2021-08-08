@@ -43,16 +43,3 @@ export function combineAsUrl(base: string, target: string): string {
 	const dir = base.endsWith("/") ? base : path.dirname(base);
 	return combine(dir, target);
 }
-
-export async function walk(fs: fsPromises, dir: string, fn: (f: string) => void, recursive: boolean): Promise<void> {
-	const d = await fs.opendir(dir);
-	for await (const e of d){
-		const f = path.join(dir, e.name);
-		if(e.isDirectory()){
-			if(recursive)
-				await walk(fs, f, fn, recursive);
-			continue;
-		}
-		await fn(f);
-	}
-}
