@@ -4,5 +4,5 @@ import { ReactElement } from "react";
 export class Parser {
 	constructor(options?: ParserOptions);
 
-	parse(html: string): readonly ReactElement[];
+	parse(html: string): ReadonlyArray<ReactElement | string>;
 }

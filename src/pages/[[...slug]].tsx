@@ -13,8 +13,8 @@ import path from "path";
 import { pipeline } from "stream/promises";
 import { promisify } from "util";
 import { convertToHtml, include, createWriteStream } from "../html-generator";
-import { optimize, parse } from "../react-node-optimizer";
 import { findUp, getProjectDir, stat } from "../path";
+import { Link, RenderHtml } from "../components";
 
 const globAsync = promisify(glob);
 
@@ -51,11 +51,11 @@ type Props = InferGetStaticPropsType<typeof getStaticProps>;
 export const getStaticProps = async (context: GetStaticPropsContext<Params>) => {
 	const { params } = context;
 	const slug = params.slug || [];
-	const queryPath = path.join(...slug);
-	const info = await getPathInfo(queryPath);
+	const asPath = path.join(...slug);
+	const file = await getSourcePath(asPath);
 
-	const includeDir = await lookupIncludeDir(info.file);
-	const f = createReadStream(info.file, "utf-8");
+	const includeDir = await lookupIncludeDir(file);
+	const f = createReadStream(file, "utf-8");
 	const { stream: w, result } = createWriteStream();
 	await pipeline(f, include(includeDir), convertToHtml({
 		lang: "ja",
@@ -66,33 +66,20 @@ export const getStaticProps = async (context: GetStaticPropsContext<Params>) => 
 	}), w);
 	return {
 		props: {
-			message: result(),
-			pathname: "/[[...slug]]",
-			urlPath: info.urlPath,
+			html: result(),
 		},
 	};
 };
 
-type PathInfo = Readonly<{
-	file: string;
-	urlPath: string;
-}>;
-
-async function getPathInfo(queryPath: string): Promise<PathInfo> {
+async function getSourcePath(asPath: string): Promise<string> {
 	const projectDir = await getProjectDir(fs);
-	const candidate = path.join(projectDir, queryPath);
+	const candidate = path.join(projectDir, asPath);
 	const s = await stat(fs, candidate);
 	if(s && s.isDirectory())
-		return {
-			file: path.join(candidate, "index.w"),
-			urlPath: `/${queryPath}/`,
-		};
+		return path.join(candidate, "index.w");
 	const dir = path.dirname(candidate);
 	const base = path.basename(candidate, ".html");
-	return {
-		file: path.join(dir, base + ".w"),
-		urlPath: `/${queryPath}`,
-	};
+	return path.join(dir, base + ".w");
 }
 
 async function lookupIncludeDir(file: string): Promise<string | undefined> {
@@ -106,13 +93,12 @@ async function lookupIncludeDir(file: string): Promise<string | undefined> {
 	});
 }
 
-const Page: NextPage<Props> = (props) => {
-	const node = parse(props.message);
-	return <>{optimize({
-		node,
-		pathname: props.pathname,
-		urlPath: props.urlPath,
-	})}</>;
+const components = {
+	"a": Link,
+};
+
+const Page: NextPage<Props> = ({ html }) => {
+	return <RenderHtml html={html} components={components} />;
 };
 
 export default Page;

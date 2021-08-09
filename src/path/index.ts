@@ -43,3 +43,9 @@ export function combineAsUrl(base: string, target: string): string {
 	const dir = base.endsWith("/") ? base : path.dirname(base);
 	return combine(dir, target);
 }
+
+const schemeExpr = new RegExp("^(:?[a-z]*)://", "i");
+
+export function hasScheme(url: string): boolean {
+	return schemeExpr.test(url);
+}
