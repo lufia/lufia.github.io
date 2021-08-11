@@ -57,16 +57,20 @@ function createTransform(p: ChildProcess): Transform {
 	return t;
 }
 
-export function createWriteStream(): Readonly<{ stream: Writable, result: () => string }> {
-	const a: string[] = [];
-	const w = new Writable({
-		write: (data, encoding, callback): void => {
-			a.push(data);
-			callback();
-		},
-	});
-	return {
-		stream: w,
-		result: () => a.join(""),
-	};
+export class WritableMemoryStream extends Writable {
+	private data: string[];
+
+	constructor() {
+		super();
+		this.data = [];
+	}
+
+	_write(data: any, encoding: BufferEncoding, callback: (error?: Error | null) => void) {
+		this.data.push(data);
+		callback();
+	}
+
+	toString(): string {
+		return this.data.join("");
+	}
 }

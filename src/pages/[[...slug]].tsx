@@ -12,7 +12,11 @@ import {
 import path from "path";
 import { pipeline } from "stream/promises";
 import { promisify } from "util";
-import { convertToHtml, include, createWriteStream } from "../html-generator";
+import {
+	convertToHtml,
+	include,
+	WritableMemoryStream,
+} from "../html-generator";
 import { findUp, getProjectDir, stat } from "../path";
 import { Link, RenderHtml } from "../components";
 
@@ -56,7 +60,7 @@ export const getStaticProps = async (context: GetStaticPropsContext<Params>) => 
 
 	const includeDir = await lookupIncludeDir(file);
 	const f = createReadStream(file, "utf-8");
-	const { stream: w, result } = createWriteStream();
+	const w = new WritableMemoryStream();
 	await pipeline(f, include(includeDir), convertToHtml({
 		lang: "ja",
 		extensions: {
@@ -66,7 +70,7 @@ export const getStaticProps = async (context: GetStaticPropsContext<Params>) => 
 	}), w);
 	return {
 		props: {
-			html: result(),
+			html: w.toString(),
 		},
 	};
 };
