@@ -16,12 +16,11 @@ export const RenderHtml: React.VFC<RenderProps> = ({ html, components }) => {
 	const root = parse(html);
 	if(root === undefined)
 		return null;
-	const heads = Children
-		.deepFilter(root, match("head"))
-		.map(p => upgrade(Head, p));
+	const h = Children.deepFind(root, match("head"))
+	const head = h === undefined ? null : upgrade(Head, h);
 	const body = Children.deepFind(root, match("body"));
 	if(!Children.hasChildren(body))
-		return <>{heads}</>;
+		return <>{head}</>;
 	const contents = Children.deepMap(body.props.children, p => {
 		if(!React.isValidElement(p))
 			return p;
@@ -32,7 +31,7 @@ export const RenderHtml: React.VFC<RenderProps> = ({ html, components }) => {
 			return p;
 		return upgrade(c, p);
 	});
-	return <>{[...heads, ...contents]}</>;
+	return <>{[head, ...contents]}</>;
 }
 
 function parse(html: string): React.ReactElement | undefined {
