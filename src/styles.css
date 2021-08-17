@@ -92,7 +92,7 @@ body > div#__next > nav {
 				text-decoration: none;
 				transition: 0.5s;
 			}
-			& > a:link {
+			& > a:link, & > a:visited {
 				color: var(--header-link-color);
 			}
 			& > a:hover {
