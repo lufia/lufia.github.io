@@ -25,6 +25,24 @@ jobs:
       - name: Install dependencies
         uses: bahmutov/npm-install@v1
 
+      - name: Set up plan9port
+        uses: lufia/setup-plan9port@v1
+
+      - uses: actions/checkout@v2
+        with:
+          repository: lufia/contrib
+          path: .contrib
+
+      - name: install contrib
+        run: |
+          cd .contrib/src/cmd
+          9c include.c
+          9l include.o
+          cp o.include $PLAN9/bin/include
+          cd wf
+          mk -f mkfile.unix install
+        shell: rc {0}
+
       - name: Restore next build
         uses: actions/cache@v2
         id: restore-build-cache
