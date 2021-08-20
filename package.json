@@ -40,5 +40,10 @@
     "postcss-mixins": "^8.0.0",
     "postcss-preset-env": "^6.7.0",
     "ts-loader": "^9.2.3"
+  },
+  "nextBundleAnalysis": {
+    "budget": 358400,
+    "budgetPercentIncreaseRed": 20,
+    "showDetails": true
   }
 }
