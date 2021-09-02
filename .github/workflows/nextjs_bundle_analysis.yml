@@ -39,7 +39,7 @@ jobs:
         run: |
           cd .contrib/src/cmd
           9c include.c
-          9l include.o
+          9l -o o.include include.o
           cp o.include $PLAN9/bin/include
           cd wf
           mk -f mkfile.unix install
