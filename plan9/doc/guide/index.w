@@ -27,6 +27,7 @@
 
 	=その他
 	.main-cards
+	*[関連リソースなど|9rel.w]
 	*[patchを送る|patch.w]
 	*[drawterm|drawterm.w]
 	*[Blog: Plan 9カーネルの読み物|https://blog.lufia.org/entry/2015/09/13/233100]
