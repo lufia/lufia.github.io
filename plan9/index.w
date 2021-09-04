@@ -3,7 +3,6 @@
 =Plan 9 archive
 
 	Plan 9に関連するものをいろいろ溜め込む場所。
-	もちろんabacoでも見れますよ。
 
 	.main-cards
 	:[ハードウェアとインストール|doc/inst/index.w]
