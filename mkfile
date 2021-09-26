@@ -5,7 +5,8 @@ MKSHELL=$PLAN9/bin/rc
 PAGE=\
 	`{ls lib/*.js lib/*.xsd}\
 	`{ls estpolis/*/*/*.map}\
-	`{ls notes/*/*.jpg}
+	`{ls notes/*/*.jpg}\
+	`{ls notes/*/*.png}\
 #	`{ls notes/*/*.jpg notes/*/*.df notes/*/*.pic}\
 
 TARG=\
@@ -14,6 +15,7 @@ TARG=\
 	${PAGE:%.pic=public/%.png}\
 	${PAGE:%.js=public/%.js}\
 	${PAGE:%.jpg=public/%.jpg}\
+	${PAGE:%.png=public/%.png}\
 	${PAGE:%.xsd=public/%.xsd}\
 
 all:V: $TARG
