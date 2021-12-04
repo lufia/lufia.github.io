@@ -7,7 +7,9 @@
       "esnext"
     ],
     "paths": {
-      "html-to-react": ["./types/html-to-react"]
+      "html-to-react": [
+        "./types/html-to-react"
+      ]
     },
     "allowJs": true,
     "skipLibCheck": true,
@@ -20,7 +22,8 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "incremental": true
   },
   "include": [
     "next-env.d.ts",
