@@ -6,6 +6,7 @@
 	*[git-split-diffsを使ってみた|2021/0519.w]
 	*[GitHubの慣習的なリポジトリ名|2021/0905.w]
 	*[Firefox AutoConfig|2021/1114.w]
+	*[GitのCombined Diffフォーマット|2021/1204.w]
 
 	=2019年
 	*[Android移行メモ|2019/0804.w]
