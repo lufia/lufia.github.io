@@ -5,6 +5,7 @@
 	=2021年
 	*[GitHubの慣習的なリポジトリ名|2021/0905.w]
 	*[Firefox AutoConfig|2021/1114.w]
+	*[Google WorkspaceのGmailでDMARC|2021/1208.w]
 
 	=2011年
 	*[SproutCoreのいろいろ|2011/0128.w]
