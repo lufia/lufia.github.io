@@ -8,6 +8,7 @@
 	*[Firefox AutoConfig|2021/1114.w]
 	*[GitのCombined Diffフォーマット|2021/1204.w]
 	*[Google WorkspaceのGmailでDMARC|2021/1208.w]
+	*[設定ファイルやキャッシュの保存先を変更する|2021/1219.w]
 
 	=2019年
 	*[Android移行メモ|2019/0804.w]
