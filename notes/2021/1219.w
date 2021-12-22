@@ -106,6 +106,7 @@
 	=メモ
 
 	*[lufia/til: 環境構築|https://github.com/lufia/til/blob/master/setup.rst]
+	*[XDG Base Directory - ArchWiki|https://wiki.archlinux.org/title/XDG_Base_Directory]
 }
 
 @include nav.i
