@@ -20,6 +20,9 @@
 :[塚田農場家飲み便|http://www.ienomibin.com/]
 -会社の歓迎会などで食べた
 -柚子胡椒がすごく好み
+:[竹下商店|https://yuzukosyou.com/]
+-柚子胡椒
+-スプーンでそのまま食べてもいい
 :[nonpi foodbox|https://nonpi-foodbox.com/]
 -これも会社のイベントで食べた
 -笹寿司みたいなものがあった記憶がある
