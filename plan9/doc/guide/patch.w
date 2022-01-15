@@ -2,11 +2,13 @@
 %title patchを送る
 
 .revision
-2008年6月12日更新
+2022年1月15日更新
 =patchを送る
 
-	Plan 9には、配布物へのパッチを
-	sourcesへ送るコマンドが用意されています。
+	Plan 9には、配布物へのパッチをsourcesへ送るコマンドが用意されています。
+
+	2022年現在、plan9.bell-labs.comは停止しているので、9legacyの[9fs-9p.io|
+	http://9legacy.org/9legacy/patch/9fs-9p.io.diff]を当てておきましょう。
 
 	=使い方
 
