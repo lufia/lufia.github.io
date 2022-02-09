@@ -4,6 +4,7 @@
 =PC関連
 	=2022年
 	*[Linuxデスクトップのメンテナンス|2022/0203.w]
+	*[ArchLinuxのPythonでpkg_resourcesモジュールが見つからない|2022/0209.w]
 
 	=2021年
 	*[git-split-diffsを使ってみた|2021/0519.w]
