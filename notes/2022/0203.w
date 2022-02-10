@@ -25,7 +25,7 @@
 	!$ sudo journalctl --vacuum-size=200M
 	!$ sudo journalctl --vacuum-time=30d
 
-	/var/log/journal
+	ログ自体は*/var/log/journal*にある。
 
 	=古いパッケージキャッシュの削除
 
