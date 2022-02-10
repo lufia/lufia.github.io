@@ -13,6 +13,10 @@
 	!$ flatpak update
 	!$ fwupdmgr update
 
+	=フォントキャッシュの更新
+
+	!$ fc-cache -fv
+
 	=古いログの削除
 
 	.console
