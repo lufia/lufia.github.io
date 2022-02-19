@@ -16,9 +16,9 @@ type fsPromises = typeof promises;
 
 export async function getProjectDir(fs: fsPromises): Promise<string> {
 	return findUp(__dirname, async dir => {
-		const file = path.join(dir, "package.json");
+		const file = path.join(dir, ".git");
 		const s = await stat(fs, file);
-		if(s && s.isFile())
+		if(s && s.isDirectory())
 			return dir;
 		return undefined;
 	});
