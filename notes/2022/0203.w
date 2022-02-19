@@ -41,4 +41,11 @@
 
 	!$ flatpak uninstall --unused
 
+	=Borg backup
+
+	古いバックアップを破棄する方法は以下の記事に書いた。
+
+	*[12インチMacBookにArch Linuxをインストールした|
+	https://blog.lufia.org/entry/2021/04/05/170000]
+
 @include nav.i
