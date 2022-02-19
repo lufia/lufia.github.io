@@ -7,6 +7,7 @@
 	*[ArchLinuxのPythonでpkg_resourcesモジュールが見つからない|2022/0209.w]
 	*[廃棄前にディスクのデータを消す|2022/0210.w]
 	*[Linuxのパッケージ管理システム|2022/0211.w]
+	*[Windowsに移植されたplan9port|2022/0219.w]
 
 	=2021年
 	*[git-split-diffsを使ってみた|2021/0519.w]
