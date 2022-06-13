@@ -10,6 +10,7 @@
 	*[Windowsに移植されたplan9port|2022/0219.w]
 	*[VAIO Z(VJZ1421)を買った|2022/0327.w]
 	*[ffmpegでHTTPリクエストにヘッダを追加する|2022/0607.w]
+	*[Arch Linuxで最新のAWS CLI v2をインストールする|2022/0613.w]
 
 	=2021年
 	*[git-split-diffsを使ってみた|2021/0519.w]
