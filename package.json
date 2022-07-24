@@ -24,7 +24,7 @@
   "dependencies": {
     "glob": "^8.0.3",
     "highlight.js": "^11.5.1",
-    "html-to-react": "^1.4.5",
+    "html-to-react": "^1.5.0",
     "next": "^12.1.6",
     "react": "^17.0.2",
     "react-children-utilities": "^2.8.0",
