@@ -2,6 +2,9 @@
 %title Web製作
 
 =Web製作
+	=2022年
+	*[CSSの:where()疑似クラス関数|2022/0630.w]
+
 	=2021年
 	*[GitHubの慣習的なリポジトリ名|2021/0905.w]
 	*[Firefox AutoConfig|2021/1114.w]
