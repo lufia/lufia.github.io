@@ -12,6 +12,7 @@
 	*[ffmpegでHTTPリクエストにヘッダを追加する|2022/0607.w]
 	*[Arch Linuxで最新のAWS CLI v2をインストールする|2022/0613.w]
 	*[nftablesの導入|2022/0728.w]
+	*[GitHub Projects(classic)を移行した|2022/0729.w]
 
 	=2021年
 	*[git-split-diffsを使ってみた|2021/0519.w]
