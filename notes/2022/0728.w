@@ -2,7 +2,7 @@
 %title nftablesの導入
 
 .revision
-2022年7月29日作成
+2022年7月28日作成
 =nftablesの導入
 
 公共のWi-Fiに繋ぐこともあるかもしれないので`nftables`を導入してみた。
