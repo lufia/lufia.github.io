@@ -39,7 +39,7 @@
     "eslint-config-next": "^12.3.0",
     "postcss-flexbugs-fixes": "^5.0.2",
     "postcss-mixins": "^9.0.3",
-    "postcss-preset-env": "^7.8.1",
+    "postcss-preset-env": "^7.8.2",
     "ts-loader": "^9.3.1"
   },
   "nextBundleAnalysis": {
