@@ -34,7 +34,7 @@
     "@types/glob": "^8.0.0",
     "@types/highlight.js": "^10.1.0",
     "@types/react": "^18.0.25",
-    "autoprefixer": "^10.4.12",
+    "autoprefixer": "^10.4.13",
     "eslint": "^8.28.0",
     "eslint-config-next": "^12.3.1",
     "postcss-flexbugs-fixes": "^5.0.2",
