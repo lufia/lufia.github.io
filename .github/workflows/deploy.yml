@@ -1,0 +1,68 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+    - main
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: lufia/setup-plan9port@v1
+      with:
+        environment: ubuntu-latest
+    - uses: actions/checkout@v3
+      with:
+        repository: lufia/contrib
+        path: .contrib
+    - name: install contrib
+      run: |
+        cd .contrib/src/cmd
+        9c include.c
+        9l -o o.include include.o
+        cp o.include $PLAN9/bin/include
+        cd wf
+        mk -f mkfile.unix install
+      shell: rc {0}
+
+    - uses: actions/setup-node@v3
+      with:
+        node-version: '18.x'
+    - uses: actions/configure-pages@v2
+      with:
+        static_site_generator: next
+    - uses: actions/cache@v3
+      env:
+        cache-name: cache-next-build
+      with:
+        path: .next/cache
+        key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**.ts', '**.tsx') }}
+        restore-keys: |
+          ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+      id: restore-build-cache
+    - name: build static files
+      run: |
+        mkdir -p out
+        touch out/.nojekyll
+        npm install
+        npm run build
+    - uses: actions/upload-pages-artifact@v1
+      with:
+        path: out
+
+  deploy:
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/deploy-pages@v1
+      id: deployment
