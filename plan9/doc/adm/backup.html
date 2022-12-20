@@ -1,0 +1,93 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>Plan 9: バックアップ</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="/plan9/doc/inst/index.html"><a>インストール</a></a></li>
+	<li><a href="/plan9/doc/guide/index.html"><a>システムの使い方</a></a></li>
+	<li><a href="/plan9/doc/devel/index.html"><a>プログラミング</a></a></li>
+	<li><a href="/plan9/doc/adm/index.html"><a>システム管理</a></a></li>
+	<li><a href="/plan9/man/index.html"><a>自作ツール集</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2009年9月5日更新</p>
+	<section>
+		<h1>バックアップ</h1>
+		<p>Plan 9には、fsにしてもfossil+ventiにしても、
+		日々のバックアップは自動で残すようになっています。
+		なので、それほど必要ではありませんが、たとえば災害に備えて
+		外部メディアに予備を残しておくというのは悪いことではありません。</p>
+		<p>以下いくつかサンプルを書いていますが、どれも</p>
+		<ol>
+		<li>生のファイルを見えるようにする。</li>
+		<li><em>mkfs</em>を使って、バックアップを取る。</li>
+		<li>後片付け</li>
+		</ol>
+		<p>という手順になっています。</p>
+		<section>
+			<h2>fsを/にマウントしている場合</h2>
+			<pre><code class="console">% mount /srv/boot /n/fs
+fs: allow
+% disk/mkfs -a -u /n/fs/adm/users -s /n/fs \
+	/sys/lib/sysconfig/proto/allproto &gt;plan9.20090905
+fs: disallow
+% unmount /n/fs</code></pre>
+			<p>この場合、バックアップは1つのファイルになります。
+			もしCDなどに焼いて、他のシステムからもそのまま閲覧したい場合は、
+			上記の<em>disk/mkfs</em>行を以下と差し替えます。</p>
+			<pre><code class="console">% disk/mk9660 -9cj -s /n/fs \
+	-p /sys/lib/sysconfig/proto/allproto plan9.iso</code></pre>
+			<p>これでCDイメージを直接作成できますので、あとは焼くだけです。</p>
+		</section>
+		<section>
+			<h2>kfsの場合</h2>
+			<p>この例では、直接CD-Rに書き込みしています。</p>
+			<pre><code class="console">% mount /srv/kfs /n/kfs
+% disk/kfscmd allow
+% disk/mkfs -a -u files/adm.users -s /n/kfs \
+	/sys/lib/sysconfig/proto/allproto &gt;/mnt/cd/wd/plan9.20090905
+% disk/kfscmd disallow
+% unmount /n/kfs</code></pre>
+		</section>
+	</section>
+	<section>
+		<h1>リストア</h1>
+		<p>ここでは<em>disk/mkfs</em>で作成したバックアップを展開する場合です。</p>
+		<section>
+			<h2>fsに展開する場合</h2>
+			<p>展開先のホスト名をfsとして、
+			さらにfsはまっさらな状態(ream直後)とします。</p>
+			<pre><code class="console">% srv fs
+% mount /srv/fs /n/fs
+fs: allow
+fs: users default
+% disk/mkext -u -d /n/fs /adm/users &lt;plan9.20090905
+fs: users
+% disk/mkext -u -d /n/fs &lt;plan9.20090905</code></pre>
+			<p>上記の例で<em>disk/mkext</em>を2度使っているのは、
+			fsにユーザ情報を読み込ませないと標準以外の所有者・グループ等を
+			うまく復元してくれないためです。1回目でユーザ情報を復元して、
+			その後<em>users</em>コマンドでfsカーネルのテーブルに読み込んでいます。</p>
+		</section>
+	</section>
+</main>
+<aside>
+	<section>
+		<h1>関連情報</h1>
+		<ul>
+		<li><a href="/plan9/doc/guide/disc.html"><a>CDの取り扱い</a></a></li>
+		</ul>
+	</section>
+	<section>
+		<h1>参考ページ</h1>
+		<ul>
+		<li><a href="https://9p.io/magic/man2html/8/mkfs">mkfs(8)</a></li>
+		<li><a href="https://9p.io/magic/man2html/8/mk9660">mk9660(8)</a></li>
+		</ul>
+	</section>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/plan9/doc/adm/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003ePlan 9: バックアップ\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/inst/index.html\"\u003eインストール\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/guide/index.html\"\u003eシステムの使い方\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/devel/index.html\"\u003eプログラミング\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/adm/index.html\"\u003eシステム管理\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/man/index.html\"\u003e自作ツール集\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2009年9月5日更新\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eバックアップ\u003c/h1\u003e\n\t\t\u003cp\u003ePlan 9には、fsにしてもfossil+ventiにしても、\n\t\t日々のバックアップは自動で残すようになっています。\n\t\tなので、それほど必要ではありませんが、たとえば災害に備えて\n\t\t外部メディアに予備を残しておくというのは悪いことではありません。\u003c/p\u003e\n\t\t\u003cp\u003e以下いくつかサンプルを書いていますが、どれも\u003c/p\u003e\n\t\t\u003col\u003e\n\t\t\u003cli\u003e生のファイルを見えるようにする。\u003c/li\u003e\n\t\t\u003cli\u003e\u003cem\u003emkfs\u003c/em\u003eを使って、バックアップを取る。\u003c/li\u003e\n\t\t\u003cli\u003e後片付け\u003c/li\u003e\n\t\t\u003c/ol\u003e\n\t\t\u003cp\u003eという手順になっています。\u003c/p\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003efsを/にマウントしている場合\u003c/h2\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% mount /srv/boot /n/fs\nfs: allow\n% disk/mkfs -a -u /n/fs/adm/users -s /n/fs \\\n\t/sys/lib/sysconfig/proto/allproto \u0026gt;plan9.20090905\nfs: disallow\n% unmount /n/fs\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eこの場合、バックアップは1つのファイルになります。\n\t\t\tもしCDなどに焼いて、他のシステムからもそのまま閲覧したい場合は、\n\t\t\t上記の\u003cem\u003edisk/mkfs\u003c/em\u003e行を以下と差し替えます。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% disk/mk9660 -9cj -s /n/fs \\\n\t-p /sys/lib/sysconfig/proto/allproto plan9.iso\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eこれでCDイメージを直接作成できますので、あとは焼くだけです。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003ekfsの場合\u003c/h2\u003e\n\t\t\t\u003cp\u003eこの例では、直接CD-Rに書き込みしています。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% mount /srv/kfs /n/kfs\n% disk/kfscmd allow\n% disk/mkfs -a -u files/adm.users -s /n/kfs \\\n\t/sys/lib/sysconfig/proto/allproto \u0026gt;/mnt/cd/wd/plan9.20090905\n% disk/kfscmd disallow\n% unmount /n/kfs\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eリストア\u003c/h1\u003e\n\t\t\u003cp\u003eここでは\u003cem\u003edisk/mkfs\u003c/em\u003eで作成したバックアップを展開する場合です。\u003c/p\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003efsに展開する場合\u003c/h2\u003e\n\t\t\t\u003cp\u003e展開先のホスト名をfsとして、\n\t\t\tさらにfsはまっさらな状態(ream直後)とします。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% srv fs\n% mount /srv/fs /n/fs\nfs: allow\nfs: users default\n% disk/mkext -u -d /n/fs /adm/users \u0026lt;plan9.20090905\nfs: users\n% disk/mkext -u -d /n/fs \u0026lt;plan9.20090905\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e上記の例で\u003cem\u003edisk/mkext\u003c/em\u003eを2度使っているのは、\n\t\t\tfsにユーザ情報を読み込ませないと標準以外の所有者・グループ等を\n\t\t\tうまく復元してくれないためです。1回目でユーザ情報を復元して、\n\t\t\tその後\u003cem\u003eusers\u003c/em\u003eコマンドでfsカーネルのテーブルに読み込んでいます。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003e関連情報\u003c/h1\u003e\n\t\t\u003cul\u003e\n\t\t\u003cli\u003e\u003ca href=\"../guide/disc.html\"\u003eCDの取り扱い\u003c/a\u003e\u003c/li\u003e\n\t\t\u003c/ul\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003e参考ページ\u003c/h1\u003e\n\t\t\u003cul\u003e\n\t\t\u003cli\u003e\u003ca href=\"https://9p.io/magic/man2html/8/mkfs\"\u003emkfs(8)\u003c/a\u003e\u003c/li\u003e\n\t\t\u003cli\u003e\u003ca href=\"https://9p.io/magic/man2html/8/mk9660\"\u003emk9660(8)\u003c/a\u003e\u003c/li\u003e\n\t\t\u003c/ul\u003e\n\t\u003c/section\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["plan9","doc","adm","backup"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

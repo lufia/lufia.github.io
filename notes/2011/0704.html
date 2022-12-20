@@ -1,0 +1,117 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: IL/IPv6対応</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2011年7月4日作成</p>
+	<section>
+		<h1>IL/IPv6対応</h1>
+		<p>さすがにそろそろIPv6は無視できないということで、
+		ざっと<a href="/plan9/src/il.c"><a>ILをIPv6に対応</a></a>させました。
+		そのときのメモなどを少し書き残し。</p>
+		<section>
+			<h2>IPv4とIPv6の違い</h2>
+			<p>当たり前ですが、ILそのものは特に変わりありません。
+			雑に言うとIlhdrのIPヘッダ部分が違うだけなので、
+			今回追加したコードはその振り分けとチェックサム計算部分です。</p>
+			<p>Il6hdrの名前は、極力Il4hdrのものを残しました。
+			IPv6の仕様ではnextheaderですがこれをprotoに、
+			同様にhoplimitをttlとしました。</p>
+		</section>
+		<section>
+			<h2>ヘッダの振り分け</h2>
+			<p>Block構造体があれば、そのrpからwpの間に、
+			IPヘッダとデータが続けて格納されています。
+			なので、これの最初4bitを調べると、IPバージョンが分かります。</p>
+			<pre><code class="c">Block *bp;
+Il4hdr *h4;
+Il6hdr *h6;
+uchar version;
+
+h4 = (Il4hdr*)bp-&gt;rp;
+version = ((h4-&gt;vihl&amp;0xF0)==IP_VER6) ? V6 : V4;
+switch(version){
+case V4:
+	...
+	break;
+case V6:
+	h6 = (Il6hdr*)bp-&gt;rp;
+	...
+	break;
+default:
+	panic(&quot;ilxxx: version %d&quot;, version);
+}</code></pre>
+			<p>ilkickなど、Blockが無い場合は、
+			Conv構造体のipversionをみると判別できます。</p>
+		</section>
+		<section>
+			<h2>チェックサム計算</h2>
+			<p>チェックサムはパケットが壊れていないかを判断するために使います。
+			パケットの送信者がチェックサムフィールド(ilsum)を0として計算し、
+			それをilsumに格納して送信します。
+			データが届いたら、受信者はチェックサムを計算しますが、
+			ここではilsumを受け取ったまま計算に含めます。
+			データに破損がなければ、チェックサム値は0になります。
+			詳しい話は置いておきますが、雑に書くと</p>
+			<pre><code class="c">~sum16(X + ~sum16(X)) = 0</code></pre>
+			<p>これは結局、0だった16bit数が~sum16(X)に置き換わるだけなので</p>
+			<pre><code class="c">~(sum16(X) + ~sum16(X)) = ~0xFFFF = 0</code></pre>
+			<p>次は実装について。</p>
+			<p>IL/IPv4の場合、ILヘッダからチェックサムを計算します。
+			これはIPv4がチェックサムを持っているから省略したのだと思われますが、
+			IPv6では無くなっているので、IPヘッダも含めなければいけません。
+			TCPやUDPでは<a href="http://www.wdic.org/w/WDIC/%E7%96%91%E4%BC%BC%E3%83%98%E3%83%83%E3%83%80">疑似ヘッダ</a>
+			を使っていますので、ILもそれに併せました。</p>
+			<p>計算の実際では、疑似ヘッダをそのまま作ったりはしていません。
+			その代わり、適当にそれっぽい値を割り当てて、まとめて計算しています。
+			具体的には以下の通り。</p>
+			<table>
+			<tr><th>仕様</th><th>Il6hdrメンバ</th></tr>
+			<tr><td>Length</td><td>viclfl</td></tr>
+			<tr><td>Zero(16bit)</td><td>len</td></tr>
+			<tr><td>Zero(8bit)</td><td>proto</td></tr>
+			<tr><td>Next Header</td><td>ttl</td></tr>
+			<tr><td>Source Addr</td><td>src</td></tr>
+			<tr><td>Dest Addr</td><td>dst</td></tr>
+			</table>
+			<p>暗号などと違い、チェックサムの計算アルゴリズムは比較的ゆるく、
+			先頭から順に16bit数として加算し、その結果から1の補数を求める、
+			というものなので順番が違っても問題にはならないのですね。</p>
+		</section>
+		<section>
+			<h2>その他メモ</h2>
+			<p>ttlとtosは、ipoput4またはipoput6が設定しているので
+			パケット組み立て時には気にしなくてもいいみたい。
+			IPv6ヘッダにtosはありませんが、
+			同等のものがviclflの5ビット目から12ビット目まで。</p>
+			<p>IL/IPv6ヘッダは、長さフィールドがIPv6側とIL側にあります。
+			これはどちらもIPヘッダを除いた長さ(ILヘッダ長+データ長)なので、
+			illenはいらないかなあとは思いますけど、どうでしょうか。</p>
+		</section>
+	</section>
+</main>
+<aside>
+	<h1>関連情報</h1>
+	<ul>
+	<li><a href="/notes/2011/0618.html"><a>il.cを読む</a></a></li>
+	</ul>
+</aside>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2011/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: IL/IPv6対応\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2011年7月4日作成\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eIL/IPv6対応\u003c/h1\u003e\n\t\t\u003cp\u003eさすがにそろそろIPv6は無視できないということで、\n\t\tざっと\u003ca href=\"../../plan9/src/il.c\"\u003eILをIPv6に対応\u003c/a\u003eさせました。\n\t\tそのときのメモなどを少し書き残し。\u003c/p\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eIPv4とIPv6の違い\u003c/h2\u003e\n\t\t\t\u003cp\u003e当たり前ですが、ILそのものは特に変わりありません。\n\t\t\t雑に言うとIlhdrのIPヘッダ部分が違うだけなので、\n\t\t\t今回追加したコードはその振り分けとチェックサム計算部分です。\u003c/p\u003e\n\t\t\t\u003cp\u003eIl6hdrの名前は、極力Il4hdrのものを残しました。\n\t\t\tIPv6の仕様ではnextheaderですがこれをprotoに、\n\t\t\t同様にhoplimitをttlとしました。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eヘッダの振り分け\u003c/h2\u003e\n\t\t\t\u003cp\u003eBlock構造体があれば、そのrpからwpの間に、\n\t\t\tIPヘッダとデータが続けて格納されています。\n\t\t\tなので、これの最初4bitを調べると、IPバージョンが分かります。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"c\"\u003eBlock *bp;\nIl4hdr *h4;\nIl6hdr *h6;\nuchar version;\n\nh4 = (Il4hdr*)bp-\u0026gt;rp;\nversion = ((h4-\u0026gt;vihl\u0026amp;0xF0)==IP_VER6) ? V6 : V4;\nswitch(version){\ncase V4:\n\t...\n\tbreak;\ncase V6:\n\th6 = (Il6hdr*)bp-\u0026gt;rp;\n\t...\n\tbreak;\ndefault:\n\tpanic(\u0026quot;ilxxx: version %d\u0026quot;, version);\n}\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eilkickなど、Blockが無い場合は、\n\t\t\tConv構造体のipversionをみると判別できます。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eチェックサム計算\u003c/h2\u003e\n\t\t\t\u003cp\u003eチェックサムはパケットが壊れていないかを判断するために使います。\n\t\t\tパケットの送信者がチェックサムフィールド(ilsum)を0として計算し、\n\t\t\tそれをilsumに格納して送信します。\n\t\t\tデータが届いたら、受信者はチェックサムを計算しますが、\n\t\t\tここではilsumを受け取ったまま計算に含めます。\n\t\t\tデータに破損がなければ、チェックサム値は0になります。\n\t\t\t詳しい話は置いておきますが、雑に書くと\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"c\"\u003e~sum16(X + ~sum16(X)) = 0\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eこれは結局、0だった16bit数が~sum16(X)に置き換わるだけなので\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"c\"\u003e~(sum16(X) + ~sum16(X)) = ~0xFFFF = 0\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e次は実装について。\u003c/p\u003e\n\t\t\t\u003cp\u003eIL/IPv4の場合、ILヘッダからチェックサムを計算します。\n\t\t\tこれはIPv4がチェックサムを持っているから省略したのだと思われますが、\n\t\t\tIPv6では無くなっているので、IPヘッダも含めなければいけません。\n\t\t\tTCPやUDPでは\u003ca href=\"http://www.wdic.org/w/WDIC/%E7%96%91%E4%BC%BC%E3%83%98%E3%83%83%E3%83%80\"\u003e疑似ヘッダ\u003c/a\u003e\n\t\t\tを使っていますので、ILもそれに併せました。\u003c/p\u003e\n\t\t\t\u003cp\u003e計算の実際では、疑似ヘッダをそのまま作ったりはしていません。\n\t\t\tその代わり、適当にそれっぽい値を割り当てて、まとめて計算しています。\n\t\t\t具体的には以下の通り。\u003c/p\u003e\n\t\t\t\u003ctable\u003e\n\t\t\t\u003ctr\u003e\u003cth\u003e仕様\u003c/th\u003e\u003cth\u003eIl6hdrメンバ\u003c/th\u003e\u003c/tr\u003e\n\t\t\t\u003ctr\u003e\u003ctd\u003eLength\u003c/td\u003e\u003ctd\u003eviclfl\u003c/td\u003e\u003c/tr\u003e\n\t\t\t\u003ctr\u003e\u003ctd\u003eZero(16bit)\u003c/td\u003e\u003ctd\u003elen\u003c/td\u003e\u003c/tr\u003e\n\t\t\t\u003ctr\u003e\u003ctd\u003eZero(8bit)\u003c/td\u003e\u003ctd\u003eproto\u003c/td\u003e\u003c/tr\u003e\n\t\t\t\u003ctr\u003e\u003ctd\u003eNext Header\u003c/td\u003e\u003ctd\u003ettl\u003c/td\u003e\u003c/tr\u003e\n\t\t\t\u003ctr\u003e\u003ctd\u003eSource Addr\u003c/td\u003e\u003ctd\u003esrc\u003c/td\u003e\u003c/tr\u003e\n\t\t\t\u003ctr\u003e\u003ctd\u003eDest Addr\u003c/td\u003e\u003ctd\u003edst\u003c/td\u003e\u003c/tr\u003e\n\t\t\t\u003c/table\u003e\n\t\t\t\u003cp\u003e暗号などと違い、チェックサムの計算アルゴリズムは比較的ゆるく、\n\t\t\t先頭から順に16bit数として加算し、その結果から1の補数を求める、\n\t\t\tというものなので順番が違っても問題にはならないのですね。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eその他メモ\u003c/h2\u003e\n\t\t\t\u003cp\u003ettlとtosは、ipoput4またはipoput6が設定しているので\n\t\t\tパケット組み立て時には気にしなくてもいいみたい。\n\t\t\tIPv6ヘッダにtosはありませんが、\n\t\t\t同等のものがviclflの5ビット目から12ビット目まで。\u003c/p\u003e\n\t\t\t\u003cp\u003eIL/IPv6ヘッダは、長さフィールドがIPv6側とIL側にあります。\n\t\t\tこれはどちらもIPヘッダを除いた長さ(ILヘッダ長+データ長)なので、\n\t\t\tillenはいらないかなあとは思いますけど、どうでしょうか。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003e関連情報\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"0618.html\"\u003eil.cを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2011","0704"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

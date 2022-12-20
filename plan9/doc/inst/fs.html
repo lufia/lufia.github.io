@@ -1,0 +1,211 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>Plan 9: ファイルサーバのインストール</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="/plan9/doc/inst/index.html"><a>インストール</a></a></li>
+	<li><a href="/plan9/doc/guide/index.html"><a>システムの使い方</a></a></li>
+	<li><a href="/plan9/doc/devel/index.html"><a>プログラミング</a></a></li>
+	<li><a href="/plan9/doc/adm/index.html"><a>システム管理</a></a></li>
+	<li><a href="/plan9/man/index.html"><a>自作ツール集</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2011年7月23日更新</p>
+	<section>
+		<h1>ファイルサーバのインストール</h1>
+		<section>
+			<h2>はじめに</h2>
+			<p>これは、ファイルサーバ専用のカーネル構築記録です。
+			dumpfs、ken fs、fs64等いろいろな呼び方がありますが、
+			だいたい同じものを指しています。以下fsカーネルと呼びます。</p>
+			<p>現在、fsカーネルはサポート外となり配布物から外されています。
+			配布物から外れる前から使っているのでここに書いていますが、
+			今から構築するには、あまりおすすめしません。
+			ATAディスク周りにはバグがありますし、情報も少ないので。</p>
+			<p>それでも、高い安定度は魅力的だなあ、と思います。
+			フルSCSI化してからというもの、	
+			ハードウェアトラブル以外で落ちたことがないですよ。</p>
+			<p>なにはともあれ認証サーバが1台必要になります。
+			注意する点としては、必ず<a href="/plan9/doc/inst/il.html"><a>ilを組み込んで</a></a>ください。</p>
+		</section>
+		<section>
+			<h2>ソースコードの取得</h2>
+			<p>現在、fsカーネルはサポート外になってしまったので、
+			別途取得してこなければいけません。
+			ソースコード一式は<strong>/n/sources/extra/fs</strong>にあるので
+			普通にコピーしてもいいのですが、せっかくなのでreplica用の設定をします。
+			以下の内容を<strong>$home/fs/dist/replica/inst</strong>として保存します。</p>
+			<pre><code class="console">% cat $home/fs/dist/replica/inst
+#!/bin/rc
+
+# ken fs template.
+# Assumes that distribution should be installed
+# to /n/inst.
+
+s=/n/sources/extra/fs/replica
+serverroot=/n/sources/extra/fs/fs
+serverlog=$s/fs.log
+serverdb=$s/fs.db
+serverproto=$s/fs.proto
+fn servermount { status=&#x27;&#x27; } 
+fn serverupdate { status=&#x27;&#x27; }
+
+fn clientmount { status=&#x27;&#x27; }
+c=/n/inst/dist/replica
+clientroot=/n/inst
+clientproto=$c/fs.proto
+clientdb=$c/client/fs.db
+clientexclude=(dist/replica/client)
+clientlog=$c/client/fs.log
+
+applyopt=(-t -u -T$c/client/fs.time)</code></pre>
+			<p>次に、<strong>$home/fs/dist/replica/client/fs.db</strong>(空でいい)を作成して、展開。
+			ここではとりあえず、展開先を<strong>$home/fs</strong>とします。
+			展開先を変えたい場合は、2行目のbindを変更してください。</p>
+			<pre><code class="console">% chmod +x $home/fs/dist/replica/inst
+% echo -n &gt;$home/fs/dist/replica/client/fs.db
+% 9fs sources
+% bind -c $home/fs /n/inst
+% replica/pull -v /n/inst/dist/replica/inst</code></pre>
+			<p>しばらく待てば、<strong>$home/fs</strong>以下は次のようになります。</p>
+			<pre><code class="console">% lc $home/fs
+9netics32.16k dev           emelie        ip            pc
+9netics64.8k  dist          fs            mkfile        port
+choline       doc           fs64          patch         run</code></pre>
+		</section>
+		<section>
+			<h2>時計合わせ</h2>
+			<p>fsカーネルでは、timezoneを変更するには
+			ソースを書き換えなければできません。
+			詳しくは<a href="/plan9/doc/adm/timezone.html"><a>時計合わせ</a></a>を参照してください。</p>
+		</section>
+		<section>
+			<h2>コンパイル</h2>
+			<p>以上で準備が整いましたので、コンパイルします。</p>
+			<pre><code class="console">% cd $home/fs/fs64
+% mk</code></pre>
+			<p>これで、<strong>9fsfs64</strong>というカーネルができますので、
+			続けて<strong>plan9.ini</strong>を用意します。
+			etherの項は手持ちのカードに合わせてください。
+			ソースコードの<strong>pc/etherif.c</strong>にネットワークカードの一覧が、
+			<strong>pc/scsi.c</strong>にSCSIカードの一覧があります。</p>
+			<pre><code class="console">% cat plan9.ini
+ether0=type=rtl8139
+bootfile=fd!0!9fsfs64
+nvr=fd!0!plan9.nvr</code></pre>
+			<p>または、9loadがカーネルを見つけられない場合、
+			bootfileエントリを以下のようにすると解決するかもしれません。
+			それでもnvrエントリは古い書き方をします。</p>
+			<pre><code class="ini">bootfile=fd0!dos!9fsfs64</code></pre>
+			<p>用意ができたら、カーネルとまとめてフロッピーに書き込みます。
+			単純にファイルをコピーしただけでは、
+			ロードできない配置になってしまったりしますので、
+			pc/bootfloppyを使います。</p>
+			<pre><code class="console"># 端末から直接書き込む場合
+% pc/bootfloppy /dev/fd0disk plan9.ini 9fsfs64
+
+# フロッピーイメージを作成する場合
+% pc/bootfloppy floppy.img plan9.ini 9fsfs64</code></pre>
+			<p>完成したらそれを使ってブートします。</p>
+		</section>
+		<section>
+			<h2>ファイルサーバの構成</h2>
+			<p>サーバの設定を行います。
+			ブート中にキーを押してconfigモードに入り、設定します。</p>
+			<pre><code class="console">config: config w0
+config: service fs
+config: filsys main cw0f{w14w15}
+config: filsys dump o
+config: ipsntp 192.168.1.1
+config: ip 192.168.1.23
+config: ipgw 192.168.1.1
+config: ipmask 255.255.255.0
+config: ream main
+config: end</code></pre>
+			<p>各行についてですが、serviceコマンドでホスト名を設定、
+			filsysコマンドでファイルシステムの名前付けと
+			ディスクの割り当てを行っています。
+			上記の例では、mainファイルシステムとして、SCSIディスク0をキャッシュ、
+			SCSIディスク14と15をミラーリングして擬似WORMとしています。</p>
+			<p class="note">fsカーネルでは、ルールさえ覚えてしまえば、
+			簡単なコマンドでディスクを単純に連結したり、
+			ストライピングしたりもできます。
+			詳細は<a href="https://9p.io/magic/man2html/8/fsconfig">fsconfig(8)</a>を読んでください。</p>
+			<p>ipまわりは、そのままの意味。
+			ネットワークカードが複数ある場合、1枚目はip0, ipgw0, ipmask0、
+			2枚目はip1, ipgw1, ipmask1のように見えます。</p>
+			<p>最後に、reamコマンドでファイルシステムを初期化です。
+			このコマンドは、configモードを終えてから初期化を開始します。</p>
+			<p>endコマンドでconfigモードを終えて通常運用モードに進みます。
+			reamコマンドを発行した場合は、ここで初期化を行います。</p>
+		</section>
+		<section>
+			<h2>ホストオーナーの設定とユーザの初期化</h2>
+			<p>しばらく待つとファイルサーバのプロンプトが表示されます。
+			そこで、ユーザの初期化とファイルサーバパスワードの設定をします。
+			passwdコマンドでは、認証ID、認証ドメイン、パスワードを聞かれますので、
+			認証IDをbootes、認証ドメインとパスワードを
+			認証サーバのbootesと同じ値に設定します。</p>
+			<pre><code class="console">fs: users default
+fs: passwd</code></pre>
+			<p>このままではユーザ情報さえ保存できませんので、
+			続けて、/adm/usersのほか、必須のファイルを作成します。</p>
+			<pre><code class="console">fs: create /adm -1 -1 775 d
+fs: create /adm/users -1 -1 664
+fs: create /usr 10000 10000 775 d</code></pre>
+			<p class="note">上記の、-1はadm、10000はsysと同等です。
+			名前も使えたはずですが、ここではIDを使いました。</p>
+			<p>準備ができたので、<strong>/adm/users</strong>に保存します。
+			保存コマンドは特に無く、ユーザの追加や削除が行われたタイミングで
+			書き込みにいきますので、適当なユーザを追加してください。</p>
+			<pre><code class="console">fs: newuser lufia</code></pre>
+			<p class="note">users defaultコマンドは、メモリに初期テーブルがロードされるだけです。
+			書き込みは行いません。</p>
+			<p>ファイルサーバをマウントするだけならこれで完了です。
+			クライアントのほうで以下のように使います。</p>
+			<pre><code class="console">% ramfs
+% echo &#x27;key proto=p9sk1 dom=mana.lufia.org user=glenda !password=xxxxx&#x27; &gt;/tmp/factotum
+% auth/secstore -p /tmp/factotum</code></pre>
+			<p>あとは、<strong>$home/lib/profile</strong>などから9fsを使ってマウント。</p>
+			<pre><code class="console">% 9fs fs</code></pre>
+			<p>これで<strong>/n/fs</strong>にマウントされます。
+			fsをルートファイルシステムとする場合は関連情報を参照。</p>
+		</section>
+		<section>
+			<h2>トラブルシューティング</h2>
+			<section>
+				<h3>認証サーバからファイルサーバをマウントできない</h3>
+				<p>ファイルサーバのpasswdコマンドで設定するIDは、
+				認証サーバと同じにしないといけないみたいです。
+				通常、どちらもbootesにしておくのが無難です。
+				もちろんパスワードも同じにします。</p>
+			</section>
+			<section>
+				<h3>VMwareでNICを認識しない</h3>
+				<p>配布されているものは対応していません。
+				パッチを当てたものが<a href="/plan9/src/etherigbe.c"><a>etherigbe.c</a></a>にありますので差し替えて使ってください。</p>
+			</section>
+		</section>
+	</section>
+</main>
+<aside>
+	<section>
+		<h1>関連情報</h1>
+		<ul>
+		<li><a href="/plan9/doc/inst/sizka.html"><a>Sizka BASICへのインストール</a></a></li>
+		<li><a href="/plan9/doc/inst/dist.html"><a>分散システムのインストール</a></a></li>
+		<li><a href="/notes/2011/0723.html"><a>VMware Playerにファイルサーバをインストール</a></a></li>
+		</ul>
+	</section>
+	<section>
+		<h1>参考ページ</h1>
+		<ul>
+		<li><a href="https://9p.io/wiki/plan9/Installing_a_Plan_9_File_Server/index.html">Installing a Plan 9 File Server</a></li>
+		</ul>
+	</section>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/plan9/doc/inst/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003ePlan 9: ファイルサーバのインストール\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/inst/index.html\"\u003eインストール\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/guide/index.html\"\u003eシステムの使い方\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/devel/index.html\"\u003eプログラミング\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/adm/index.html\"\u003eシステム管理\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/man/index.html\"\u003e自作ツール集\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2011年7月23日更新\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eファイルサーバのインストール\u003c/h1\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eはじめに\u003c/h2\u003e\n\t\t\t\u003cp\u003eこれは、ファイルサーバ専用のカーネル構築記録です。\n\t\t\tdumpfs、ken fs、fs64等いろいろな呼び方がありますが、\n\t\t\tだいたい同じものを指しています。以下fsカーネルと呼びます。\u003c/p\u003e\n\t\t\t\u003cp\u003e現在、fsカーネルはサポート外となり配布物から外されています。\n\t\t\t配布物から外れる前から使っているのでここに書いていますが、\n\t\t\t今から構築するには、あまりおすすめしません。\n\t\t\tATAディスク周りにはバグがありますし、情報も少ないので。\u003c/p\u003e\n\t\t\t\u003cp\u003eそれでも、高い安定度は魅力的だなあ、と思います。\n\t\t\tフルSCSI化してからというもの、\t\n\t\t\tハードウェアトラブル以外で落ちたことがないですよ。\u003c/p\u003e\n\t\t\t\u003cp\u003eなにはともあれ認証サーバが1台必要になります。\n\t\t\t注意する点としては、必ず\u003ca href=\"il.html\"\u003eilを組み込んで\u003c/a\u003eください。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eソースコードの取得\u003c/h2\u003e\n\t\t\t\u003cp\u003e現在、fsカーネルはサポート外になってしまったので、\n\t\t\t別途取得してこなければいけません。\n\t\t\tソースコード一式は\u003cstrong\u003e/n/sources/extra/fs\u003c/strong\u003eにあるので\n\t\t\t普通にコピーしてもいいのですが、せっかくなのでreplica用の設定をします。\n\t\t\t以下の内容を\u003cstrong\u003e$home/fs/dist/replica/inst\u003c/strong\u003eとして保存します。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% cat $home/fs/dist/replica/inst\n#!/bin/rc\n\n# ken fs template.\n# Assumes that distribution should be installed\n# to /n/inst.\n\ns=/n/sources/extra/fs/replica\nserverroot=/n/sources/extra/fs/fs\nserverlog=$s/fs.log\nserverdb=$s/fs.db\nserverproto=$s/fs.proto\nfn servermount { status='' } \nfn serverupdate { status='' }\n\nfn clientmount { status='' }\nc=/n/inst/dist/replica\nclientroot=/n/inst\nclientproto=$c/fs.proto\nclientdb=$c/client/fs.db\nclientexclude=(dist/replica/client)\nclientlog=$c/client/fs.log\n\napplyopt=(-t -u -T$c/client/fs.time)\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e次に、\u003cstrong\u003e$home/fs/dist/replica/client/fs.db\u003c/strong\u003e(空でいい)を作成して、展開。\n\t\t\tここではとりあえず、展開先を\u003cstrong\u003e$home/fs\u003c/strong\u003eとします。\n\t\t\t展開先を変えたい場合は、2行目のbindを変更してください。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% chmod +x $home/fs/dist/replica/inst\n% echo -n \u0026gt;$home/fs/dist/replica/client/fs.db\n% 9fs sources\n% bind -c $home/fs /n/inst\n% replica/pull -v /n/inst/dist/replica/inst\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eしばらく待てば、\u003cstrong\u003e$home/fs\u003c/strong\u003e以下は次のようになります。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% lc $home/fs\n9netics32.16k dev           emelie        ip            pc\n9netics64.8k  dist          fs            mkfile        port\ncholine       doc           fs64          patch         run\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e時計合わせ\u003c/h2\u003e\n\t\t\t\u003cp\u003efsカーネルでは、timezoneを変更するには\n\t\t\tソースを書き換えなければできません。\n\t\t\t詳しくは\u003ca href=\"../adm/timezone.html\"\u003e時計合わせ\u003c/a\u003eを参照してください。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eコンパイル\u003c/h2\u003e\n\t\t\t\u003cp\u003e以上で準備が整いましたので、コンパイルします。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% cd $home/fs/fs64\n% mk\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eこれで、\u003cstrong\u003e9fsfs64\u003c/strong\u003eというカーネルができますので、\n\t\t\t続けて\u003cstrong\u003eplan9.ini\u003c/strong\u003eを用意します。\n\t\t\tetherの項は手持ちのカードに合わせてください。\n\t\t\tソースコードの\u003cstrong\u003epc/etherif.c\u003c/strong\u003eにネットワークカードの一覧が、\n\t\t\t\u003cstrong\u003epc/scsi.c\u003c/strong\u003eにSCSIカードの一覧があります。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% cat plan9.ini\nether0=type=rtl8139\nbootfile=fd!0!9fsfs64\nnvr=fd!0!plan9.nvr\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eまたは、9loadがカーネルを見つけられない場合、\n\t\t\tbootfileエントリを以下のようにすると解決するかもしれません。\n\t\t\tそれでもnvrエントリは古い書き方をします。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"ini\"\u003ebootfile=fd0!dos!9fsfs64\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e用意ができたら、カーネルとまとめてフロッピーに書き込みます。\n\t\t\t単純にファイルをコピーしただけでは、\n\t\t\tロードできない配置になってしまったりしますので、\n\t\t\tpc/bootfloppyを使います。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e# 端末から直接書き込む場合\n% pc/bootfloppy /dev/fd0disk plan9.ini 9fsfs64\n\n# フロッピーイメージを作成する場合\n% pc/bootfloppy floppy.img plan9.ini 9fsfs64\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e完成したらそれを使ってブートします。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eファイルサーバの構成\u003c/h2\u003e\n\t\t\t\u003cp\u003eサーバの設定を行います。\n\t\t\tブート中にキーを押してconfigモードに入り、設定します。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003econfig: config w0\nconfig: service fs\nconfig: filsys main cw0f{w14w15}\nconfig: filsys dump o\nconfig: ipsntp 192.168.1.1\nconfig: ip 192.168.1.23\nconfig: ipgw 192.168.1.1\nconfig: ipmask 255.255.255.0\nconfig: ream main\nconfig: end\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e各行についてですが、serviceコマンドでホスト名を設定、\n\t\t\tfilsysコマンドでファイルシステムの名前付けと\n\t\t\tディスクの割り当てを行っています。\n\t\t\t上記の例では、mainファイルシステムとして、SCSIディスク0をキャッシュ、\n\t\t\tSCSIディスク14と15をミラーリングして擬似WORMとしています。\u003c/p\u003e\n\t\t\t\u003cp class=\"note\"\u003efsカーネルでは、ルールさえ覚えてしまえば、\n\t\t\t簡単なコマンドでディスクを単純に連結したり、\n\t\t\tストライピングしたりもできます。\n\t\t\t詳細は\u003ca href=\"https://9p.io/magic/man2html/8/fsconfig\"\u003efsconfig(8)\u003c/a\u003eを読んでください。\u003c/p\u003e\n\t\t\t\u003cp\u003eipまわりは、そのままの意味。\n\t\t\tネットワークカードが複数ある場合、1枚目はip0, ipgw0, ipmask0、\n\t\t\t2枚目はip1, ipgw1, ipmask1のように見えます。\u003c/p\u003e\n\t\t\t\u003cp\u003e最後に、reamコマンドでファイルシステムを初期化です。\n\t\t\tこのコマンドは、configモードを終えてから初期化を開始します。\u003c/p\u003e\n\t\t\t\u003cp\u003eendコマンドでconfigモードを終えて通常運用モードに進みます。\n\t\t\treamコマンドを発行した場合は、ここで初期化を行います。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eホストオーナーの設定とユーザの初期化\u003c/h2\u003e\n\t\t\t\u003cp\u003eしばらく待つとファイルサーバのプロンプトが表示されます。\n\t\t\tそこで、ユーザの初期化とファイルサーバパスワードの設定をします。\n\t\t\tpasswdコマンドでは、認証ID、認証ドメイン、パスワードを聞かれますので、\n\t\t\t認証IDをbootes、認証ドメインとパスワードを\n\t\t\t認証サーバのbootesと同じ値に設定します。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003efs: users default\nfs: passwd\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eこのままではユーザ情報さえ保存できませんので、\n\t\t\t続けて、/adm/usersのほか、必須のファイルを作成します。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003efs: create /adm -1 -1 775 d\nfs: create /adm/users -1 -1 664\nfs: create /usr 10000 10000 775 d\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp class=\"note\"\u003e上記の、-1はadm、10000はsysと同等です。\n\t\t\t名前も使えたはずですが、ここではIDを使いました。\u003c/p\u003e\n\t\t\t\u003cp\u003e準備ができたので、\u003cstrong\u003e/adm/users\u003c/strong\u003eに保存します。\n\t\t\t保存コマンドは特に無く、ユーザの追加や削除が行われたタイミングで\n\t\t\t書き込みにいきますので、適当なユーザを追加してください。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003efs: newuser lufia\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp class=\"note\"\u003eusers defaultコマンドは、メモリに初期テーブルがロードされるだけです。\n\t\t\t書き込みは行いません。\u003c/p\u003e\n\t\t\t\u003cp\u003eファイルサーバをマウントするだけならこれで完了です。\n\t\t\tクライアントのほうで以下のように使います。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% ramfs\n% echo 'key proto=p9sk1 dom=mana.lufia.org user=glenda !password=xxxxx' \u0026gt;/tmp/factotum\n% auth/secstore -p /tmp/factotum\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eあとは、\u003cstrong\u003e$home/lib/profile\u003c/strong\u003eなどから9fsを使ってマウント。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% 9fs fs\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eこれで\u003cstrong\u003e/n/fs\u003c/strong\u003eにマウントされます。\n\t\t\tfsをルートファイルシステムとする場合は関連情報を参照。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eトラブルシューティング\u003c/h2\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003e認証サーバからファイルサーバをマウントできない\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eファイルサーバのpasswdコマンドで設定するIDは、\n\t\t\t\t認証サーバと同じにしないといけないみたいです。\n\t\t\t\t通常、どちらもbootesにしておくのが無難です。\n\t\t\t\tもちろんパスワードも同じにします。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eVMwareでNICを認識しない\u003c/h3\u003e\n\t\t\t\t\u003cp\u003e配布されているものは対応していません。\n\t\t\t\tパッチを当てたものが\u003ca href=\"../../src/etherigbe.c\"\u003eetherigbe.c\u003c/a\u003eにありますので差し替えて使ってください。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003e関連情報\u003c/h1\u003e\n\t\t\u003cul\u003e\n\t\t\u003cli\u003e\u003ca href=\"sizka.html\"\u003eSizka BASICへのインストール\u003c/a\u003e\u003c/li\u003e\n\t\t\u003cli\u003e\u003ca href=\"dist.html\"\u003e分散システムのインストール\u003c/a\u003e\u003c/li\u003e\n\t\t\u003cli\u003e\u003ca href=\"../../../notes/2011/0723.html\"\u003eVMware Playerにファイルサーバをインストール\u003c/a\u003e\u003c/li\u003e\n\t\t\u003c/ul\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003e参考ページ\u003c/h1\u003e\n\t\t\u003cul\u003e\n\t\t\u003cli\u003e\u003ca href=\"https://9p.io/wiki/plan9/Installing_a_Plan_9_File_Server/index.html\"\u003eInstalling a Plan 9 File Server\u003c/a\u003e\u003c/li\u003e\n\t\t\u003c/ul\u003e\n\t\u003c/section\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["plan9","doc","inst","fs"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

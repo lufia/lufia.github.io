@@ -1,0 +1,82 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: 最近のタスク管理</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2021年11月28日作成</p>
+	<section>
+		<h1>最近のタスク管理</h1>
+		<p>やりたいことが多くなったのでプライベート活動のタスク管理をはじめた。</p>
+		<p>以前は専用のタスク管理ツールを使っていたが、
+		ソースコードを扱う場合など最終的にGitHubを使うことが多く、
+		管理が二度手間になって面倒になったので、GitHubにまとめるようにした。</p>
+		<p>GitHubのモバイルWeb版でもプロジェクトにアクセスできるので外出中でも困らない。</p>
+		<section>
+			<h2>GitHub Projectsを使っている</h2>
+			<p>GitHub Projectsはユーザー、リポジトリ、組織のどこにでも作成できる。
+			プライベート活動のタスクをまとめて扱いたいので、
+			ユーザーの直下にプロジェクトを作成して、頻繁に利用するリポジトリをリンクした。
+			リンクすると、GitHub Projectsの機能により、新規追加したイシューを自動的に
+			プロジェクトへ登録したりなど、ある程度の自動化ができるようになる。</p>
+			<p>頻繁に使わないリポジトリにはリンクしていないが、
+			リンクしていなくても<strong>Only show results from linked repositories</strong>のチェックを
+			外せば登録できるので、頻度が少なければ問題にはならないと思う。</p>
+			<p>以下のように、よくある列(Column)を作っている。</p>
+			<ul>
+			<li>Inbox</li>
+			<li>Next Action</li>
+			<li>Projects</li>
+			<li>@Agendas</li>
+			<li>@Errands</li>
+			<li>Waiting for ...</li>
+			<li>Someday</li>
+			<li>Done</li>
+			</ul>
+			<p>カレンダーはGoogle Calendarを使うので列としては用意していない。</p>
+			<p>具体的には、新しくタスクを追加する場合は<strong>Inbox</strong>にノート(Note)を作成する。
+			ここに手間がかかると登録しなくなって破綻するので、後から思い出せるなら雑でもいい。
+			実はノートにはMarkdownが書けるし、イシューなどのURLを書くと内容を展開してくれるので、
+			例えば「靴を洗う」のような簡単なものならノートのまま扱うこともある。</p>
+			<p>タスクに関するメモなどを残したくなったら、<strong>Convert to issue</strong>でノートを変換する。
+			イシューへ変換する際には、どのリポジトリに作成するか選ぶことになるが、
+			公開したくないものは当然ある。そういったイシューのために、
+			タスク管理用のプライベートなリポジトリを用意している。</p>
+		</section>
+		<section>
+			<h2>複雑なタスクの扱い</h2>
+			<p>完了までに複数の手順が必要な大きいタスクは、イシューの中に</p>
+			<pre><code>- [x] todo1
+- [ ] todo2
+- [ ] todo3</code></pre>
+			<p>のようにチェックリストを用意する。
+			これでもまだサブタスクが大きい場合は、それぞれのサブタスクをイシューに変換する。
+			チェックリストの上をマウスでホバーすると、<strong>Convert to issue</strong>ボタンが表示されるので、
+			実行すればチェックリストのイシューを作成して置き替えできる。
+			例えば上の<strong>todo2</strong>を<strong>Convert to issue</strong>した場合、<strong>todo2</strong>というイシューが作られて、
+			チェックリストは<em>- [ ] #20</em>のようなイシュー番号に変換される。</p>
+		</section>
+		<section>
+			<h2>便利なこと</h2>
+			<p>旅行準備チェックリストなどを<strong>.github/ISSUE_TEMPLATE</strong>で作っておくと便利だった。</p>
+		</section>
+	</section>
+</main>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2021/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: 最近のタスク管理\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2021年11月28日作成\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003e最近のタスク管理\u003c/h1\u003e\n\t\t\u003cp\u003eやりたいことが多くなったのでプライベート活動のタスク管理をはじめた。\u003c/p\u003e\n\t\t\u003cp\u003e以前は専用のタスク管理ツールを使っていたが、\n\t\tソースコードを扱う場合など最終的にGitHubを使うことが多く、\n\t\t管理が二度手間になって面倒になったので、GitHubにまとめるようにした。\u003c/p\u003e\n\t\t\u003cp\u003eGitHubのモバイルWeb版でもプロジェクトにアクセスできるので外出中でも困らない。\u003c/p\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eGitHub Projectsを使っている\u003c/h2\u003e\n\t\t\t\u003cp\u003eGitHub Projectsはユーザー、リポジトリ、組織のどこにでも作成できる。\n\t\t\tプライベート活動のタスクをまとめて扱いたいので、\n\t\t\tユーザーの直下にプロジェクトを作成して、頻繁に利用するリポジトリをリンクした。\n\t\t\tリンクすると、GitHub Projectsの機能により、新規追加したイシューを自動的に\n\t\t\tプロジェクトへ登録したりなど、ある程度の自動化ができるようになる。\u003c/p\u003e\n\t\t\t\u003cp\u003e頻繁に使わないリポジトリにはリンクしていないが、\n\t\t\tリンクしていなくても\u003cstrong\u003eOnly show results from linked repositories\u003c/strong\u003eのチェックを\n\t\t\t外せば登録できるので、頻度が少なければ問題にはならないと思う。\u003c/p\u003e\n\t\t\t\u003cp\u003e以下のように、よくある列(Column)を作っている。\u003c/p\u003e\n\t\t\t\u003cul\u003e\n\t\t\t\u003cli\u003eInbox\u003c/li\u003e\n\t\t\t\u003cli\u003eNext Action\u003c/li\u003e\n\t\t\t\u003cli\u003eProjects\u003c/li\u003e\n\t\t\t\u003cli\u003e@Agendas\u003c/li\u003e\n\t\t\t\u003cli\u003e@Errands\u003c/li\u003e\n\t\t\t\u003cli\u003eWaiting for ...\u003c/li\u003e\n\t\t\t\u003cli\u003eSomeday\u003c/li\u003e\n\t\t\t\u003cli\u003eDone\u003c/li\u003e\n\t\t\t\u003c/ul\u003e\n\t\t\t\u003cp\u003eカレンダーはGoogle Calendarを使うので列としては用意していない。\u003c/p\u003e\n\t\t\t\u003cp\u003e具体的には、新しくタスクを追加する場合は\u003cstrong\u003eInbox\u003c/strong\u003eにノート(Note)を作成する。\n\t\t\tここに手間がかかると登録しなくなって破綻するので、後から思い出せるなら雑でもいい。\n\t\t\t実はノートにはMarkdownが書けるし、イシューなどのURLを書くと内容を展開してくれるので、\n\t\t\t例えば「靴を洗う」のような簡単なものならノートのまま扱うこともある。\u003c/p\u003e\n\t\t\t\u003cp\u003eタスクに関するメモなどを残したくなったら、\u003cstrong\u003eConvert to issue\u003c/strong\u003eでノートを変換する。\n\t\t\tイシューへ変換する際には、どのリポジトリに作成するか選ぶことになるが、\n\t\t\t公開したくないものは当然ある。そういったイシューのために、\n\t\t\tタスク管理用のプライベートなリポジトリを用意している。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e複雑なタスクの扱い\u003c/h2\u003e\n\t\t\t\u003cp\u003e完了までに複数の手順が必要な大きいタスクは、イシューの中に\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003e- [x] todo1\n- [ ] todo2\n- [ ] todo3\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eのようにチェックリストを用意する。\n\t\t\tこれでもまだサブタスクが大きい場合は、それぞれのサブタスクをイシューに変換する。\n\t\t\tチェックリストの上をマウスでホバーすると、\u003cstrong\u003eConvert to issue\u003c/strong\u003eボタンが表示されるので、\n\t\t\t実行すればチェックリストのイシューを作成して置き替えできる。\n\t\t\t例えば上の\u003cstrong\u003etodo2\u003c/strong\u003eを\u003cstrong\u003eConvert to issue\u003c/strong\u003eした場合、\u003cstrong\u003etodo2\u003c/strong\u003eというイシューが作られて、\n\t\t\tチェックリストは\u003cem\u003e- [ ] #20\u003c/em\u003eのようなイシュー番号に変換される。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e便利なこと\u003c/h2\u003e\n\t\t\t\u003cp\u003e旅行準備チェックリストなどを\u003cstrong\u003e.github/ISSUE_TEMPLATE\u003c/strong\u003eで作っておくと便利だった。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2021","1128"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

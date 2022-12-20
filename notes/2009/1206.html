@@ -1,0 +1,118 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: Macbook AirでWindows7</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2009年12月6日作成</p>
+	<section>
+		<h1>Macbook AirでWindows7</h1>
+		<p>Macbook Air(OSX10.6)にWindows 7をインストールしてみました。</p>
+		<p>アプリケーション→ユーティリティの、
+		Boot CampアシスタントでWindows用に20GB確保。
+		あとは指示どおりにインストールを開始します。
+		今にして思えば、Win7 64bitはインストール直後で10Gほど使用するので、
+		デフォルトの32Gにしておけばよかったかなあ。</p>
+		<section>
+			<h2>パーティションのフォーマット</h2>
+			<p>Windows 7は、NTFSフォーマットされた
+			パーティションにしかインストールできません。
+			このため、Boot Campアシスタントで作ったパーティションを
+			NTFSでフォーマットし直します。
+			パーティションを作り直すとだめらしいので注意。
+			あとは普通にインストールを続けて、2回ほど再起動すれば完了。</p>
+		</section>
+		<section>
+			<h2>ドライバのインストール</h2>
+			<p>ログイン直後は、ドライバがそろっていないので
+			Snow Leopardのディスクからインストールします。</p>
+			<p>このとき、setup.exeを実行すると、64bit未対応というエラーになりますが、
+			これはsetup.exeが意地悪しているだけなので、
+			bootcamp64.msiを<strong>管理者モードで</strong>実行すればいいです。</p>
+			<pre><code>d:¥boot camp¥drivers¥apple¥bootcamp64.msi</code></pre>
+			<p>管理者モードでの実行方法なのですが、
+			Win7からは「管理者として実行」メニューが表示されていないので、
+			非常にまわりくどい手順を踏むはめになりました。</p>
+			<ol>
+			<li>アクセサリのコマンドプロンプトを実行してすぐ閉じる</li>
+			<li>スタートメニューに「コマンドプロンプト」が現れるので右クリック</li>
+			<li>管理者モードのプロンプトから上記のbootcamp64.msiを実行</li>
+			</ol>
+			<p class="note">右クリックが使えない場合、shift+fn+F10で代用可能です。</p>
+			<p>これで、一通りの環境が整います。</p>
+		</section>
+		<section>
+			<h2>Windowsの起動方法</h2>
+			<p>Optionキーを押しながらブート。</p>
+		</section>
+		<section>
+			<h2>トラブルとその解決</h2>
+			<section>
+				<h3>無線に繋がらない</h3>
+				<p>SSIDを見えなくしている場合、
+				コントロールパネルにある、
+				ネットワーク共有センター→ワイヤレスネットワークの管理で
+				追加しなければならない。分かりにくい。</p>
+			</section>
+			<section>
+				<h3>bluetoothマウスが認識しない</h3>
+				<p>接続しています、で止まる場合、
+				いちど、Macのほうからシステム設定→bluetoothを開いて登録解除、
+				そのままwinから認識させれば動いた。</p>
+				<p>何が原因？よくわからない</p>
+			</section>
+			<section>
+				<h3>トラックパッドがスクロールしか認識しない</h3>
+				<p>コントロールパネルの、
+				システムとセキュリティ→bootcampに設定がある。
+				デフォルトではほとんど無効なので全部にチェックを入れた。</p>
+			</section>
+			<section>
+				<h3>Windowsでクラムシェルモード</h3>
+				<p>ふつうに外部ディスプレイを繋げば動く。
+				ただし、不定期にスリープモードに入ってしまうことがある。
+				スリープしない設定にしているのに。なぜ？</p>
+			</section>
+			<section>
+				<h3>メモリが足りない</h3>
+				<p>Airは2Gしかメモリを塔載していませんので、
+				ゲームなどを動かすと、それなりにしんどいです。
+				Windows 7にSecurity Essentialsを入れただけで、
+				メモリを600Mほど使いますし。</p>
+				<ul>
+				<li>デスクトップテーマをクラシックに変更</li>
+				<li>Superfetchサービスを無効にする</li>
+				</ul>
+				<p>これでずいぶん改善されるはず。</p>
+			</section>
+			<section>
+				<h3>MacからWindowsのディスクに書き込めない</h3>
+				<p>NTFSフォーマットでは、通常読むだけしかできませんが、
+				/etc/fstabを作ると書き込みもできるらしいです。
+				詳しくは<a href="http://journal.mycom.co.jp/column/osx/342/index.html">知られざるSnow Leopard(NTFS編)</a>に。</p>
+			</section>
+			<section>
+				<h3>WindowsからMacの個人フォルダを見るとファイルが無い</h3>
+				<p>フォルダに.XAuthorityがあると、見えなくなるようです。</p>
+			</section>
+		</section>
+	</section>
+</main>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2009/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: Macbook AirでWindows7\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2009年12月6日作成\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eMacbook AirでWindows7\u003c/h1\u003e\n\t\t\u003cp\u003eMacbook Air(OSX10.6)にWindows 7をインストールしてみました。\u003c/p\u003e\n\t\t\u003cp\u003eアプリケーション→ユーティリティの、\n\t\tBoot CampアシスタントでWindows用に20GB確保。\n\t\tあとは指示どおりにインストールを開始します。\n\t\t今にして思えば、Win7 64bitはインストール直後で10Gほど使用するので、\n\t\tデフォルトの32Gにしておけばよかったかなあ。\u003c/p\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eパーティションのフォーマット\u003c/h2\u003e\n\t\t\t\u003cp\u003eWindows 7は、NTFSフォーマットされた\n\t\t\tパーティションにしかインストールできません。\n\t\t\tこのため、Boot Campアシスタントで作ったパーティションを\n\t\t\tNTFSでフォーマットし直します。\n\t\t\tパーティションを作り直すとだめらしいので注意。\n\t\t\tあとは普通にインストールを続けて、2回ほど再起動すれば完了。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eドライバのインストール\u003c/h2\u003e\n\t\t\t\u003cp\u003eログイン直後は、ドライバがそろっていないので\n\t\t\tSnow Leopardのディスクからインストールします。\u003c/p\u003e\n\t\t\t\u003cp\u003eこのとき、setup.exeを実行すると、64bit未対応というエラーになりますが、\n\t\t\tこれはsetup.exeが意地悪しているだけなので、\n\t\t\tbootcamp64.msiを\u003cstrong\u003e管理者モードで\u003c/strong\u003e実行すればいいです。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003ed:¥boot camp¥drivers¥apple¥bootcamp64.msi\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e管理者モードでの実行方法なのですが、\n\t\t\tWin7からは「管理者として実行」メニューが表示されていないので、\n\t\t\t非常にまわりくどい手順を踏むはめになりました。\u003c/p\u003e\n\t\t\t\u003col\u003e\n\t\t\t\u003cli\u003eアクセサリのコマンドプロンプトを実行してすぐ閉じる\u003c/li\u003e\n\t\t\t\u003cli\u003eスタートメニューに「コマンドプロンプト」が現れるので右クリック\u003c/li\u003e\n\t\t\t\u003cli\u003e管理者モードのプロンプトから上記のbootcamp64.msiを実行\u003c/li\u003e\n\t\t\t\u003c/ol\u003e\n\t\t\t\u003cp class=\"note\"\u003e右クリックが使えない場合、shift+fn+F10で代用可能です。\u003c/p\u003e\n\t\t\t\u003cp\u003eこれで、一通りの環境が整います。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eWindowsの起動方法\u003c/h2\u003e\n\t\t\t\u003cp\u003eOptionキーを押しながらブート。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eトラブルとその解決\u003c/h2\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003e無線に繋がらない\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eSSIDを見えなくしている場合、\n\t\t\t\tコントロールパネルにある、\n\t\t\t\tネットワーク共有センター→ワイヤレスネットワークの管理で\n\t\t\t\t追加しなければならない。分かりにくい。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003ebluetoothマウスが認識しない\u003c/h3\u003e\n\t\t\t\t\u003cp\u003e接続しています、で止まる場合、\n\t\t\t\tいちど、Macのほうからシステム設定→bluetoothを開いて登録解除、\n\t\t\t\tそのままwinから認識させれば動いた。\u003c/p\u003e\n\t\t\t\t\u003cp\u003e何が原因？よくわからない\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eトラックパッドがスクロールしか認識しない\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eコントロールパネルの、\n\t\t\t\tシステムとセキュリティ→bootcampに設定がある。\n\t\t\t\tデフォルトではほとんど無効なので全部にチェックを入れた。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eWindowsでクラムシェルモード\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eふつうに外部ディスプレイを繋げば動く。\n\t\t\t\tただし、不定期にスリープモードに入ってしまうことがある。\n\t\t\t\tスリープしない設定にしているのに。なぜ？\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eメモリが足りない\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eAirは2Gしかメモリを塔載していませんので、\n\t\t\t\tゲームなどを動かすと、それなりにしんどいです。\n\t\t\t\tWindows 7にSecurity Essentialsを入れただけで、\n\t\t\t\tメモリを600Mほど使いますし。\u003c/p\u003e\n\t\t\t\t\u003cul\u003e\n\t\t\t\t\u003cli\u003eデスクトップテーマをクラシックに変更\u003c/li\u003e\n\t\t\t\t\u003cli\u003eSuperfetchサービスを無効にする\u003c/li\u003e\n\t\t\t\t\u003c/ul\u003e\n\t\t\t\t\u003cp\u003eこれでずいぶん改善されるはず。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eMacからWindowsのディスクに書き込めない\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eNTFSフォーマットでは、通常読むだけしかできませんが、\n\t\t\t\t/etc/fstabを作ると書き込みもできるらしいです。\n\t\t\t\t詳しくは\u003ca href=\"http://journal.mycom.co.jp/column/osx/342/index.html\"\u003e知られざるSnow Leopard(NTFS編)\u003c/a\u003eに。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eWindowsからMacの個人フォルダを見るとファイルが無い\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eフォルダに.XAuthorityがあると、見えなくなるようです。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2009","1206"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

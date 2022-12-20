@@ -1,0 +1,172 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>Plan 9: 認証サーバのインストール</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="/plan9/doc/inst/index.html"><a>インストール</a></a></li>
+	<li><a href="/plan9/doc/guide/index.html"><a>システムの使い方</a></a></li>
+	<li><a href="/plan9/doc/devel/index.html"><a>プログラミング</a></a></li>
+	<li><a href="/plan9/doc/adm/index.html"><a>システム管理</a></a></li>
+	<li><a href="/plan9/man/index.html"><a>自作ツール集</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2006年11月12日更新</p>
+	<section>
+		<h1>認証サーバのインストール</h1>
+		<section>
+			<h2>認証サーバカーネルのインストール</h2>
+			<div class="note">
+				<section>
+					<h3>ilの組み込み</h3>
+					<p>dumpfsへ接続する場合には、ilの組み込みが必須です。
+					詳細は<a href="/plan9/doc/inst/il.html"><a>カーネルにilを組み込む</a></a>をみてください。
+					fossilやventiを使う場合には不要です。</p>
+				</section>
+			</div>
+			<p><strong>/sys/src/9/pc/pcauth</strong>が認証サーバカーネルの設定ファイルになります。
+			必要なら<strong>pcauth</strong>に手を入れて、カーネルをコンパイルします。
+			コマンドは以下。</p>
+			<pre><code class="console">% cd /sys/src/9/pc
+% mk &#x27;CONF=pcauth&#x27;</code></pre>
+			<div class="note">
+				<section>
+					<h3>一般ユーザでのコンパイル</h3>
+					<p>通常、sysグループに属していないユーザでは、
+					<strong>/sys/src/9</strong>に書き込みができないのでコンパイルできません。
+					そういう場合、<a href="https://9p.io/magic/man2html/1/bind">bind(1)</a>をうまく使うことによって、
+					書き込み先を変更するテクニックがあります。</p>
+					<pre><code class="sh">#!/bin/rc
+
+if(! test -e $home/cpu){
+	mkdir -p $home/cpu/ ^ (pc port boot)
+	cp /sys/src/9/pc/pcauth $home/cpu/pc/pcauth
+}
+bind -bc $home/cpu/pc /sys/src/9/pc
+bind -bc $home/cpu/port /sys/src/9/port
+bind -bc $home/cpu/boot /sys/src/9/boot
+bind $home/cpu/pcauth /sys/src/9/pc/pcauth
+
+echo &#x27;cd /sys/src/9/pc &amp;&amp; mk &#x27;&#x27;CONF=pcauth&#x27;&#x27;&#x27;</code></pre>
+					<p>このスクリプトは<a href="http://www.geocities.co.jp/SiliconValley/6131/plan9/easyserver.html">ADSLでお気軽自宅サーバ</a>
+					を参考にしました。</p>
+				</section>
+			</div>
+			<p>コンパイルが終われば、<strong>/n/9fat/</strong>に<strong>9pcauth</strong>をコピーします。
+			最後に<strong>/n/9fat/plan9.ini</strong>に以下を追加すると、
+			起動時にどちらのカーネルを使うか尋ねられるようになります。
+			すでにあるbootfileを書き換えた場合は聞かれません。</p>
+			<pre><code class="ini">bootfile=sdC0!9fat!9pcauth</code></pre>
+			<p>まだ再起動しません。</p>
+		</section>
+		<section>
+			<h2>ネットワーク構成の編集</h2>
+			<p><strong>/lib/ndb/local</strong>に、認証サーバまわりの項を追加します。
+			詳しくは<a href="/plan9/doc/adm/ndb.html"><a>ネットワークの設定</a></a>に書きます。</p>
+		</section>
+		<section>
+			<h2>サービスの隔離</h2>
+			<p>通常、サービスは<strong>/rc/bin/^(service service.auth)</strong>をもとに起動しますが、
+			せっかく<strong>/cfg/$sysname</strong>というサーバ固有の場所があるのですから
+			そちらに移してしまったほうが管理しやすいと思うので移動させます。</p>
+			<pre><code class="console"># mkdir /cfg/$sysname/ ^ (service service.auth)
+# cp -gux /rc/bin/service/* /cfg/$sysname/service
+# cp -gux /rc/bin/service.auth/* /cfg/$sysname/service.auth</code></pre>
+			<div class="note">
+				<p>fsカーネルをルートファイルシステムとしている場合は、
+				allowしないと所有者情報などが書き込みできません。
+				その場合、次のようにします。</p>
+				<p>fsカーネルコンソールから、各ディレクトリを作成。
+				fs:というのはファイルサーバのプロンプトになります。</p>
+				<pre><code class="console">fs: create /cfg/wisp/service sys sys 775 d
+fs: create /cfg/wisp/service.auth sys sys 775 d
+fs: allow		# 所有者もコピーするため</code></pre>
+				<p>認証サーバでファイルといっしょに所有者情報もコピーする。</p>
+				<pre><code class="console">cpu% cp -gux /rc/bin/service/* /cfg/wisp/service
+cpu% cp -gux /rc/bin/service.auth/* /cfg/wisp/service.auth</code></pre>
+				<p>ファイルサーバコンソールから、後始末。</p>
+				<pre><code class="console">fs: disallow</code></pre>
+			</div>
+		</section>
+		<section>
+			<h2>cpurcの編集</h2>
+			<p>次に、<strong>cpurc</strong>を編集します。
+			以前は<strong>/rc/bin/cpurc</strong>を直接編集する方法でしたが、
+			いつの間にか<strong>/cfg/$sysname/cpurc</strong>を用意する形になりました。
+			2007年4月には変わってましたね。</p>
+			<pre><code class="sh">eval `{ndb/ipquery sys $sysname ip ipgw ipmask}
+ip/ipconfig -g $ipgw ether /net/ether0 add $ip $ipmask
+ndb/dns -r
+aux/timesync -rL
+
+auth/keyfs -wp -m /mnt/keys /adm/keys &gt;/dev/null &gt;[2=1]
+auth/cron &gt;&gt;/sys/log/cron &gt;[2=1] &amp;
+auth/secstored
+
+aux/listen -q -t /cfg/wisp/service.auth -d /cfg/$sysname/service tcp
+
+# ilを組み込んだ場合は以下も有効に
+#aux/listen -q -t /cfg/wisp/service.auth -d /cfg/$sysname/service il
+
+sleep 3</code></pre>
+			<p>愛知大学の真似をしてndbからデータを引いていますが、
+			IPを直接書いてしまってもかまいません。
+			sleepは、サービスが立ち上がりきるのを待ってます。</p>
+			<p>最後に、念のため<strong>nvram</strong>を壊しておいて、再起動。</p>
+			<pre><code class="console">% echo blah &gt;/dev/sdC0/nvram</code></pre>
+		</section>
+		<section>
+			<h2>nvramの設定</h2>
+			<p>初回起動時に、認証のための情報をいくつか尋ねられます。
+			この情報を変更したい場合は、再度<strong>nvram</strong>を壊して再起動するか、
+			認証サーバのコンソールからauth/wrkeyを実行すればいいです。</p>
+			<pre><code>authid: bootes
+authdom: mana.lufia.org
+secstore: xxxxx
+password: zzzzz</code></pre>
+			<p>secstoreには、bootesのsecstoreパスワードを入力します。
+			imap4sを立てるときに鍵置き場として使いましたが、
+			通常は空でいいと思います。</p>
+		</section>
+		<section>
+			<h2>ユーザbootesの作成</h2>
+			<pre><code class="console"># auth/changeuser -p bootes  # パスワードはnvramと同じ</code></pre>
+		</section>
+		<section>
+			<h2>認証でadmとsysをはじく</h2>
+			<p>sysとadmをユーザとして認証しないように、
+			<strong>/lib/ndb/auth</strong>に以下を追加します。</p>
+			<pre><code class="ini">hostid=bootes
+    uid=!sys uid=!adm uid=*</code></pre>
+		</section>
+		<section>
+			<h2>デバッグ</h2>
+			<p>認証サーバのコンソールからauth/debugを使うと、
+			登録されているユーザごとに認証のテストが行えます。
+			認証でこけている場合は、<strong>cpurc</strong>等でのコマンド呼び出し順が
+			違うのかもしれません。
+			名前空間の関係から、順番がかなり重要になっています。
+			何度か引っかかりました。</p>
+		</section>
+	</section>
+</main>
+<aside>
+	<section>
+		<h1>関連情報</h1>
+		<ul>
+		<li><a href="/plan9/doc/inst/il.html"><a>カーネルにilを組み込む</a></a></li>
+		<li><a href="/plan9/doc/inst/dist.html"><a>分散システムのインストール</a></a></li>
+		</ul>
+	</section>
+	<section>
+		<h1>参考ページ</h1>
+		<ul>
+		<li><a href="https://9p.io/wiki/plan9/Configuring_a_Standalone_CPU_Server/index.html">Configuring a Standalone CPU Server</a></li>
+		<li><a href="http://www.geocities.co.jp/SiliconValley/6131/plan9/easyserver.html">ADSLでお気軽自宅サーバ</a></li>
+		</ul>
+	</section>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/plan9/doc/inst/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003ePlan 9: 認証サーバのインストール\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/inst/index.html\"\u003eインストール\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/guide/index.html\"\u003eシステムの使い方\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/devel/index.html\"\u003eプログラミング\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/adm/index.html\"\u003eシステム管理\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/man/index.html\"\u003e自作ツール集\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2006年11月12日更新\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003e認証サーバのインストール\u003c/h1\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e認証サーバカーネルのインストール\u003c/h2\u003e\n\t\t\t\u003cdiv class=\"note\"\u003e\n\t\t\t\t\u003csection\u003e\n\t\t\t\t\t\u003ch3\u003eilの組み込み\u003c/h3\u003e\n\t\t\t\t\t\u003cp\u003edumpfsへ接続する場合には、ilの組み込みが必須です。\n\t\t\t\t\t詳細は\u003ca href=\"il.html\"\u003eカーネルにilを組み込む\u003c/a\u003eをみてください。\n\t\t\t\t\tfossilやventiを使う場合には不要です。\u003c/p\u003e\n\t\t\t\t\u003c/section\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cp\u003e\u003cstrong\u003e/sys/src/9/pc/pcauth\u003c/strong\u003eが認証サーバカーネルの設定ファイルになります。\n\t\t\t必要なら\u003cstrong\u003epcauth\u003c/strong\u003eに手を入れて、カーネルをコンパイルします。\n\t\t\tコマンドは以下。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% cd /sys/src/9/pc\n% mk 'CONF=pcauth'\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cdiv class=\"note\"\u003e\n\t\t\t\t\u003csection\u003e\n\t\t\t\t\t\u003ch3\u003e一般ユーザでのコンパイル\u003c/h3\u003e\n\t\t\t\t\t\u003cp\u003e通常、sysグループに属していないユーザでは、\n\t\t\t\t\t\u003cstrong\u003e/sys/src/9\u003c/strong\u003eに書き込みができないのでコンパイルできません。\n\t\t\t\t\tそういう場合、\u003ca href=\"https://9p.io/magic/man2html/1/bind\"\u003ebind(1)\u003c/a\u003eをうまく使うことによって、\n\t\t\t\t\t書き込み先を変更するテクニックがあります。\u003c/p\u003e\n\t\t\t\t\t\u003cpre\u003e\u003ccode class=\"sh\"\u003e#!/bin/rc\n\nif(! test -e $home/cpu){\n\tmkdir -p $home/cpu/ ^ (pc port boot)\n\tcp /sys/src/9/pc/pcauth $home/cpu/pc/pcauth\n}\nbind -bc $home/cpu/pc /sys/src/9/pc\nbind -bc $home/cpu/port /sys/src/9/port\nbind -bc $home/cpu/boot /sys/src/9/boot\nbind $home/cpu/pcauth /sys/src/9/pc/pcauth\n\necho 'cd /sys/src/9/pc \u0026amp;\u0026amp; mk ''CONF=pcauth'''\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\t\u003cp\u003eこのスクリプトは\u003ca href=\"http://www.geocities.co.jp/SiliconValley/6131/plan9/easyserver.html\"\u003eADSLでお気軽自宅サーバ\u003c/a\u003e\n\t\t\t\t\tを参考にしました。\u003c/p\u003e\n\t\t\t\t\u003c/section\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cp\u003eコンパイルが終われば、\u003cstrong\u003e/n/9fat/\u003c/strong\u003eに\u003cstrong\u003e9pcauth\u003c/strong\u003eをコピーします。\n\t\t\t最後に\u003cstrong\u003e/n/9fat/plan9.ini\u003c/strong\u003eに以下を追加すると、\n\t\t\t起動時にどちらのカーネルを使うか尋ねられるようになります。\n\t\t\tすでにあるbootfileを書き換えた場合は聞かれません。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"ini\"\u003ebootfile=sdC0!9fat!9pcauth\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eまだ再起動しません。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eネットワーク構成の編集\u003c/h2\u003e\n\t\t\t\u003cp\u003e\u003cstrong\u003e/lib/ndb/local\u003c/strong\u003eに、認証サーバまわりの項を追加します。\n\t\t\t詳しくは\u003ca href=\"../adm/ndb.html\"\u003eネットワークの設定\u003c/a\u003eに書きます。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eサービスの隔離\u003c/h2\u003e\n\t\t\t\u003cp\u003e通常、サービスは\u003cstrong\u003e/rc/bin/^(service service.auth)\u003c/strong\u003eをもとに起動しますが、\n\t\t\tせっかく\u003cstrong\u003e/cfg/$sysname\u003c/strong\u003eというサーバ固有の場所があるのですから\n\t\t\tそちらに移してしまったほうが管理しやすいと思うので移動させます。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e# mkdir /cfg/$sysname/ ^ (service service.auth)\n# cp -gux /rc/bin/service/* /cfg/$sysname/service\n# cp -gux /rc/bin/service.auth/* /cfg/$sysname/service.auth\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cdiv class=\"note\"\u003e\n\t\t\t\t\u003cp\u003efsカーネルをルートファイルシステムとしている場合は、\n\t\t\t\tallowしないと所有者情報などが書き込みできません。\n\t\t\t\tその場合、次のようにします。\u003c/p\u003e\n\t\t\t\t\u003cp\u003efsカーネルコンソールから、各ディレクトリを作成。\n\t\t\t\tfs:というのはファイルサーバのプロンプトになります。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003efs: create /cfg/wisp/service sys sys 775 d\nfs: create /cfg/wisp/service.auth sys sys 775 d\nfs: allow\t\t# 所有者もコピーするため\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003e認証サーバでファイルといっしょに所有者情報もコピーする。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003ecpu% cp -gux /rc/bin/service/* /cfg/wisp/service\ncpu% cp -gux /rc/bin/service.auth/* /cfg/wisp/service.auth\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003eファイルサーバコンソールから、後始末。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003efs: disallow\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003c/div\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003ecpurcの編集\u003c/h2\u003e\n\t\t\t\u003cp\u003e次に、\u003cstrong\u003ecpurc\u003c/strong\u003eを編集します。\n\t\t\t以前は\u003cstrong\u003e/rc/bin/cpurc\u003c/strong\u003eを直接編集する方法でしたが、\n\t\t\tいつの間にか\u003cstrong\u003e/cfg/$sysname/cpurc\u003c/strong\u003eを用意する形になりました。\n\t\t\t2007年4月には変わってましたね。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"sh\"\u003eeval `{ndb/ipquery sys $sysname ip ipgw ipmask}\nip/ipconfig -g $ipgw ether /net/ether0 add $ip $ipmask\nndb/dns -r\naux/timesync -rL\n\nauth/keyfs -wp -m /mnt/keys /adm/keys \u0026gt;/dev/null \u0026gt;[2=1]\nauth/cron \u0026gt;\u0026gt;/sys/log/cron \u0026gt;[2=1] \u0026amp;\nauth/secstored\n\naux/listen -q -t /cfg/wisp/service.auth -d /cfg/$sysname/service tcp\n\n# ilを組み込んだ場合は以下も有効に\n#aux/listen -q -t /cfg/wisp/service.auth -d /cfg/$sysname/service il\n\nsleep 3\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e愛知大学の真似をしてndbからデータを引いていますが、\n\t\t\tIPを直接書いてしまってもかまいません。\n\t\t\tsleepは、サービスが立ち上がりきるのを待ってます。\u003c/p\u003e\n\t\t\t\u003cp\u003e最後に、念のため\u003cstrong\u003envram\u003c/strong\u003eを壊しておいて、再起動。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% echo blah \u0026gt;/dev/sdC0/nvram\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003envramの設定\u003c/h2\u003e\n\t\t\t\u003cp\u003e初回起動時に、認証のための情報をいくつか尋ねられます。\n\t\t\tこの情報を変更したい場合は、再度\u003cstrong\u003envram\u003c/strong\u003eを壊して再起動するか、\n\t\t\t認証サーバのコンソールからauth/wrkeyを実行すればいいです。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003eauthid: bootes\nauthdom: mana.lufia.org\nsecstore: xxxxx\npassword: zzzzz\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003esecstoreには、bootesのsecstoreパスワードを入力します。\n\t\t\timap4sを立てるときに鍵置き場として使いましたが、\n\t\t\t通常は空でいいと思います。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eユーザbootesの作成\u003c/h2\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e# auth/changeuser -p bootes  # パスワードはnvramと同じ\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e認証でadmとsysをはじく\u003c/h2\u003e\n\t\t\t\u003cp\u003esysとadmをユーザとして認証しないように、\n\t\t\t\u003cstrong\u003e/lib/ndb/auth\u003c/strong\u003eに以下を追加します。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"ini\"\u003ehostid=bootes\n    uid=!sys uid=!adm uid=*\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eデバッグ\u003c/h2\u003e\n\t\t\t\u003cp\u003e認証サーバのコンソールからauth/debugを使うと、\n\t\t\t登録されているユーザごとに認証のテストが行えます。\n\t\t\t認証でこけている場合は、\u003cstrong\u003ecpurc\u003c/strong\u003e等でのコマンド呼び出し順が\n\t\t\t違うのかもしれません。\n\t\t\t名前空間の関係から、順番がかなり重要になっています。\n\t\t\t何度か引っかかりました。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003e関連情報\u003c/h1\u003e\n\t\t\u003cul\u003e\n\t\t\u003cli\u003e\u003ca href=\"il.html\"\u003eカーネルにilを組み込む\u003c/a\u003e\u003c/li\u003e\n\t\t\u003cli\u003e\u003ca href=\"dist.html\"\u003e分散システムのインストール\u003c/a\u003e\u003c/li\u003e\n\t\t\u003c/ul\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003e参考ページ\u003c/h1\u003e\n\t\t\u003cul\u003e\n\t\t\u003cli\u003e\u003ca href=\"https://9p.io/wiki/plan9/Configuring_a_Standalone_CPU_Server/index.html\"\u003eConfiguring a Standalone CPU Server\u003c/a\u003e\u003c/li\u003e\n\t\t\u003cli\u003e\u003ca href=\"http://www.geocities.co.jp/SiliconValley/6131/plan9/easyserver.html\"\u003eADSLでお気軽自宅サーバ\u003c/a\u003e\u003c/li\u003e\n\t\t\u003c/ul\u003e\n\t\u003c/section\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["plan9","doc","inst","auth"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

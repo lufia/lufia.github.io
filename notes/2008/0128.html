@@ -1,0 +1,72 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: Alef言語</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2008年1月28日作成</p>
+	<section>
+		<h1>Alef言語</h1>
+		<p>最初は自分で移植してたけど、/n/sources/contrib/lucio以下に
+		ソースがあったので、ありがたく使わせてもらうことにします。</p>
+		<section>
+			<h2>展開</h2>
+			<pre><code class="console">% cd /n/sources/contrib/lucio
+% gunzip -c alef.tgz | @{cd /sys/src &amp;&amp; tar x}
+% cd sys/include
+% tar c alef | @{cd /sys/include &amp;&amp; tar x}</code></pre>
+		</section>
+		<section>
+			<h2>コンパイル</h2>
+			<pre><code class="console">% cd /sys/src/alef/8
+% mk install		# 8alコマンドが作られる
+% cd ../lib
+% mk install		# libA.a等のライブラリ作成</code></pre>
+		</section>
+		<section>
+			<h2>プログラム作成</h2>
+			<pre><code class="c">#include &lt;alef.h&gt;
+
+void
+main(void)
+{
+	int fd, n;
+	byte buf[1024];
+
+	fd = open(&quot;a.l&quot;, 0);
+	while((n=read(fd, buf, sizeof buf)) &gt; 0)
+		write(1, buf, n);
+}</code></pre>
+		</section>
+		<section>
+			<h2>テスト</h2>
+			<pre><code class="console">% 8al a.l
+% 8l a.8
+% 8.out</code></pre>
+		</section>
+		<section>
+			<h2>まとめ</h2>
+			<p>動いた。当たり前かもしれないけど、ちょっと感動してます。
+			ざっとソースを眺めた限りでは、lint等いくつか見当たらないけど、
+			今日はもうお腹いっぱいなので、そこは後日調べていこうかななんて。</p>
+		</section>
+	</section>
+</main>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2008/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: Alef言語\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2008年1月28日作成\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eAlef言語\u003c/h1\u003e\n\t\t\u003cp\u003e最初は自分で移植してたけど、/n/sources/contrib/lucio以下に\n\t\tソースがあったので、ありがたく使わせてもらうことにします。\u003c/p\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e展開\u003c/h2\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% cd /n/sources/contrib/lucio\n% gunzip -c alef.tgz | @{cd /sys/src \u0026amp;\u0026amp; tar x}\n% cd sys/include\n% tar c alef | @{cd /sys/include \u0026amp;\u0026amp; tar x}\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eコンパイル\u003c/h2\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% cd /sys/src/alef/8\n% mk install\t\t# 8alコマンドが作られる\n% cd ../lib\n% mk install\t\t# libA.a等のライブラリ作成\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eプログラム作成\u003c/h2\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"c\"\u003e#include \u0026lt;alef.h\u0026gt;\n\nvoid\nmain(void)\n{\n\tint fd, n;\n\tbyte buf[1024];\n\n\tfd = open(\u0026quot;a.l\u0026quot;, 0);\n\twhile((n=read(fd, buf, sizeof buf)) \u0026gt; 0)\n\t\twrite(1, buf, n);\n}\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eテスト\u003c/h2\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% 8al a.l\n% 8l a.8\n% 8.out\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eまとめ\u003c/h2\u003e\n\t\t\t\u003cp\u003e動いた。当たり前かもしれないけど、ちょっと感動してます。\n\t\t\tざっとソースを眺めた限りでは、lint等いくつか見当たらないけど、\n\t\t\t今日はもうお腹いっぱいなので、そこは後日調べていこうかななんて。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2008","0128"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

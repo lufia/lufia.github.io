@@ -1,0 +1,108 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: 設定ファイルやキャッシュの保存先を変更する</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2021年12月19日作成</p>
+	<section>
+		<h1>設定ファイルやキャッシュの保存先を変更する</h1>
+		<p>Plan 9では、<strong>.</strong>で始まるファイルを隠さない。
+		代わりに設定ファイルなどは<strong>$home/lib</strong>以下に入れられる。</p>
+		<section>
+			<h2>Git</h2>
+			<p>環境変数<em>XDG_CONFIG_HOME</em>を設定して<strong>$XDG_CONFIG_HOME/git/config</strong>に置く。
+			Linuxでは<em>XDG_CONFIG_HOME</em>を設定していなくても<strong>~/.config/git/config</strong>があれば認識する。</p>
+			<pre><code class="sh">export XDG_CONFIG_HOME=~/.config</code></pre>
+			<p>他のファイルは上記の<strong>config</strong>ファイルで変更できる。</p>
+			<pre><code class="ini">[core]
+    excludesfile = ~/.config/git/gitignore_global
+[init]
+    temmplatedir = ~/.config/git/template
+[http]
+    cookiefile = ~/.config/git/gitcookies</code></pre>
+		</section>
+		<section>
+			<h2>*env</h2>
+			<p>環境変数<em>*ENV_ROOT</em>を設定すると、指定したディレクトリで各種バージョンを管理できる。</p>
+			<pre><code class="sh">export NODENV_ROOT=~/pkg/nodenv
+export RBENV_ROOT=~/pkg/rbenv
+export PLENV_ROOT=~/pkg/plenv
+
+export PATH=$PATH:$NODENV_ROOT/shims:$RBENV_ROOT/shims:$PLENV/shims</code></pre>
+		</section>
+		<section>
+			<h2>nが管理するバージョンをインストールする先</h2>
+			<p>環境変数<em>N_PREFIX</em>で変更できる。</p>
+			<pre><code class="sh">export N_PREFIX=~/pkg/nodejs
+
+export PATH=$PATH:$N_PREFIX/bin</code></pre>
+		</section>
+		<section>
+			<h2>npmのいろいろ</h2>
+			<p><strong>~/.npmrc</strong>の<em>prefix</em>でnpmパッケージのインストール先を変更できる。</p>
+			<pre><code class="ini">prefix = ~/pkg/nodejs
+init.author.email = user@example.com
+init.author.name = username</code></pre>
+			<p><strong>~/.npmrc</strong>の場所は環境変数<em>NPM_CONFIG_USERCONFIG</em>で変更できる。</p>
+			<pre><code class="sh">export NPM_CONFIG_USERCONFIG=~/lib/npmrc</code></pre>
+			<p>システム全体の設定を扱う<em>NPM_CONFIG_GLOBALCONFIG</em>もある。</p>
+		</section>
+		<section>
+			<h2>Pythonのpip --userでインストールする先を変更</h2>
+			<p>環境変数<em>PYTHONUSERBASE</em>で変更できる。</p>
+			<pre><code class="sh">export PYTHONUSERBASE=~/pkg/python
+
+export PATH=$PATH:$PYTHONUSERBASE/bin</code></pre>
+		</section>
+		<section>
+			<h2>RubyGemsのインストール先</h2>
+			<p>環境変数<em>GEM_HOME</em>で変更できるが、
+			ディレクトリはRubyのバージョンごとに分かれているので少し工夫が必要だった。</p>
+			<pre><code class="sh">export GEM_HOME=~/pkg/gem/ruby/$(ruby -e &#x27;puts RUBY_VERSION&#x27;)
+
+export PATH=$PATH:$GEM_HOME/bin</code></pre>
+		</section>
+		<section>
+			<h2>Perlのcpanmでインストールする先を変更</h2>
+			<p>あまり覚えていないが、以下の環境変数を設定していた。</p>
+			<pre><code class="sh">export PERL_LOCAL_LIB_ROOT=~/pkg/perl
+export PERL_MB_OPT=&quot;--install_base $PERL_LOCAL_LIB_ROOT&quot;
+export PERL_MM_OPT=&quot;INSTALL_BASE=$PERL_LOCAL_LIB_ROOT&quot;
+export PERL5LIB=$PERL_LOCAL_LIB_ROOT/lib/perl5
+export PERL_CPANM_HOME=~/Library/Caches/cpanm
+
+export PATH=$PATH:$PERL_LOCAL_LIB_ROOT/bin</code></pre>
+		</section>
+		<section>
+			<h2>Cocoapods</h2>
+			<p>キャッシュを管理するディレクトリは<em>CP_HOME_DIR</em>で変更できる。</p>
+			<pre><code class="sh">export CP_HOME_DIR=~/pkg/cocoapods</code></pre>
+		</section>
+	</section>
+</main>
+<aside>
+	<h1>メモ</h1>
+	<ul>
+	<li><a href="https://github.com/lufia/til/blob/master/setup.rst">lufia/til: 環境構築</a></li>
+	<li><a href="https://wiki.archlinux.org/title/XDG_Base_Directory">XDG Base Directory - ArchWiki</a></li>
+	</ul>
+</aside>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2021/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: 設定ファイルやキャッシュの保存先を変更する\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2021年12月19日作成\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003e設定ファイルやキャッシュの保存先を変更する\u003c/h1\u003e\n\t\t\u003cp\u003ePlan 9では、\u003cstrong\u003e.\u003c/strong\u003eで始まるファイルを隠さない。\n\t\t代わりに設定ファイルなどは\u003cstrong\u003e$home/lib\u003c/strong\u003e以下に入れられる。\u003c/p\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eGit\u003c/h2\u003e\n\t\t\t\u003cp\u003e環境変数\u003cem\u003eXDG_CONFIG_HOME\u003c/em\u003eを設定して\u003cstrong\u003e$XDG_CONFIG_HOME/git/config\u003c/strong\u003eに置く。\n\t\t\tLinuxでは\u003cem\u003eXDG_CONFIG_HOME\u003c/em\u003eを設定していなくても\u003cstrong\u003e~/.config/git/config\u003c/strong\u003eがあれば認識する。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"sh\"\u003eexport XDG_CONFIG_HOME=~/.config\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e他のファイルは上記の\u003cstrong\u003econfig\u003c/strong\u003eファイルで変更できる。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"ini\"\u003e[core]\n    excludesfile = ~/.config/git/gitignore_global\n[init]\n    temmplatedir = ~/.config/git/template\n[http]\n    cookiefile = ~/.config/git/gitcookies\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e*env\u003c/h2\u003e\n\t\t\t\u003cp\u003e環境変数\u003cem\u003e*ENV_ROOT\u003c/em\u003eを設定すると、指定したディレクトリで各種バージョンを管理できる。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"sh\"\u003eexport NODENV_ROOT=~/pkg/nodenv\nexport RBENV_ROOT=~/pkg/rbenv\nexport PLENV_ROOT=~/pkg/plenv\n\nexport PATH=$PATH:$NODENV_ROOT/shims:$RBENV_ROOT/shims:$PLENV/shims\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003enが管理するバージョンをインストールする先\u003c/h2\u003e\n\t\t\t\u003cp\u003e環境変数\u003cem\u003eN_PREFIX\u003c/em\u003eで変更できる。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"sh\"\u003eexport N_PREFIX=~/pkg/nodejs\n\nexport PATH=$PATH:$N_PREFIX/bin\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003enpmのいろいろ\u003c/h2\u003e\n\t\t\t\u003cp\u003e\u003cstrong\u003e~/.npmrc\u003c/strong\u003eの\u003cem\u003eprefix\u003c/em\u003eでnpmパッケージのインストール先を変更できる。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"ini\"\u003eprefix = ~/pkg/nodejs\ninit.author.email = user@example.com\ninit.author.name = username\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e\u003cstrong\u003e~/.npmrc\u003c/strong\u003eの場所は環境変数\u003cem\u003eNPM_CONFIG_USERCONFIG\u003c/em\u003eで変更できる。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"sh\"\u003eexport NPM_CONFIG_USERCONFIG=~/lib/npmrc\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eシステム全体の設定を扱う\u003cem\u003eNPM_CONFIG_GLOBALCONFIG\u003c/em\u003eもある。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003ePythonのpip --userでインストールする先を変更\u003c/h2\u003e\n\t\t\t\u003cp\u003e環境変数\u003cem\u003ePYTHONUSERBASE\u003c/em\u003eで変更できる。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"sh\"\u003eexport PYTHONUSERBASE=~/pkg/python\n\nexport PATH=$PATH:$PYTHONUSERBASE/bin\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eRubyGemsのインストール先\u003c/h2\u003e\n\t\t\t\u003cp\u003e環境変数\u003cem\u003eGEM_HOME\u003c/em\u003eで変更できるが、\n\t\t\tディレクトリはRubyのバージョンごとに分かれているので少し工夫が必要だった。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"sh\"\u003eexport GEM_HOME=~/pkg/gem/ruby/$(ruby -e 'puts RUBY_VERSION')\n\nexport PATH=$PATH:$GEM_HOME/bin\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003ePerlのcpanmでインストールする先を変更\u003c/h2\u003e\n\t\t\t\u003cp\u003eあまり覚えていないが、以下の環境変数を設定していた。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"sh\"\u003eexport PERL_LOCAL_LIB_ROOT=~/pkg/perl\nexport PERL_MB_OPT=\u0026quot;--install_base $PERL_LOCAL_LIB_ROOT\u0026quot;\nexport PERL_MM_OPT=\u0026quot;INSTALL_BASE=$PERL_LOCAL_LIB_ROOT\u0026quot;\nexport PERL5LIB=$PERL_LOCAL_LIB_ROOT/lib/perl5\nexport PERL_CPANM_HOME=~/Library/Caches/cpanm\n\nexport PATH=$PATH:$PERL_LOCAL_LIB_ROOT/bin\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eCocoapods\u003c/h2\u003e\n\t\t\t\u003cp\u003eキャッシュを管理するディレクトリは\u003cem\u003eCP_HOME_DIR\u003c/em\u003eで変更できる。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"sh\"\u003eexport CP_HOME_DIR=~/pkg/cocoapods\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003eメモ\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"https://github.com/lufia/til/blob/master/setup.rst\"\u003elufia/til: 環境構築\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"https://wiki.archlinux.org/title/XDG_Base_Directory\"\u003eXDG Base Directory - ArchWiki\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2021","1219"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

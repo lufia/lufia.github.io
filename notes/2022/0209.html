@@ -1,0 +1,60 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: ArchLinuxのPythonでpkg_resourcesモジュールが見つからない</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2022年2月9日作成</p>
+	<section>
+		<h1>ArchLinuxのPythonでpkg_resourcesモジュールが見つからない</h1>
+		<p>ArchLinuxで<em>awslogs</em>を実行したとき以下のエラーが発生した。</p>
+		<pre><code class="console">$ awslogs
+Traceback (most recent call last):
+  File &quot;/usr/bin/awslogs&quot;, line 33, in &lt;module&gt;
+    sys.exit(load_entry_point(&#x27;awslogs==0.14.0&#x27;, &#x27;console_scripts&#x27;, &#x27;awslogs&#x27;)())
+  File &quot;/usr/bin/awslogs&quot;, line 25, in importlib_load_entry_point
+    return next(matches).load()
+  File &quot;/usr/lib/python3.10/importlib/metadata/__init__.py&quot;, line 162, in load
+    module = import_module(match.group(&#x27;module&#x27;))
+  File &quot;/usr/lib/python3.10/importlib/__init__.py&quot;, line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 1050, in _gcd_import
+  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 1027, in _find_and_load
+  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 992, in _find_and_load_unlocked
+  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 241, in _call_with_frames_removed
+  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 1050, in _gcd_import
+  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 1027, in _find_and_load
+  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 1006, in _find_and_load_unlocked
+  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 688, in _load_unlocked
+  File &quot;&lt;frozen importlib._bootstrap_external&gt;&quot;, line 883, in exec_module
+  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 241, in _call_with_frames_removed
+  File &quot;/usr/lib/python3.10/site-packages/awslogs/__init__.py&quot;, line 1, in &lt;module&gt;
+    from ._version import __version__  # noqa
+  File &quot;/usr/lib/python3.10/site-packages/awslogs/_version.py&quot;, line 1, in &lt;module&gt;
+    from pkg_resources import get_distribution
+ModuleNotFoundError: No module named &#x27;pkg_resources&#x27;</code></pre>
+		<p>どうやら<em>pkg_resources</em>は<strong>python-setuptools</strong>に含まれているようだけど、
+		これは<strong>awslogs</strong>パッケージの<em>makedepends</em>とされているので、
+		パッケージの掃除をしたときに消してしまったらしい。</p>
+		<p>なので解消するには、<strong>python-setuptools</strong>パッケージをインストールすればよい。</p>
+		<pre><code class="console">$ sudo pacman -S --asdeps python-setuptools</code></pre>
+	</section>
+</main>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2022/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: ArchLinuxのPythonでpkg_resourcesモジュールが見つからない\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2022年2月9日作成\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eArchLinuxのPythonでpkg_resourcesモジュールが見つからない\u003c/h1\u003e\n\t\t\u003cp\u003eArchLinuxで\u003cem\u003eawslogs\u003c/em\u003eを実行したとき以下のエラーが発生した。\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e$ awslogs\nTraceback (most recent call last):\n  File \u0026quot;/usr/bin/awslogs\u0026quot;, line 33, in \u0026lt;module\u0026gt;\n    sys.exit(load_entry_point('awslogs==0.14.0', 'console_scripts', 'awslogs')())\n  File \u0026quot;/usr/bin/awslogs\u0026quot;, line 25, in importlib_load_entry_point\n    return next(matches).load()\n  File \u0026quot;/usr/lib/python3.10/importlib/metadata/__init__.py\u0026quot;, line 162, in load\n    module = import_module(match.group('module'))\n  File \u0026quot;/usr/lib/python3.10/importlib/__init__.py\u0026quot;, line 126, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n  File \u0026quot;\u0026lt;frozen importlib._bootstrap\u0026gt;\u0026quot;, line 1050, in _gcd_import\n  File \u0026quot;\u0026lt;frozen importlib._bootstrap\u0026gt;\u0026quot;, line 1027, in _find_and_load\n  File \u0026quot;\u0026lt;frozen importlib._bootstrap\u0026gt;\u0026quot;, line 992, in _find_and_load_unlocked\n  File \u0026quot;\u0026lt;frozen importlib._bootstrap\u0026gt;\u0026quot;, line 241, in _call_with_frames_removed\n  File \u0026quot;\u0026lt;frozen importlib._bootstrap\u0026gt;\u0026quot;, line 1050, in _gcd_import\n  File \u0026quot;\u0026lt;frozen importlib._bootstrap\u0026gt;\u0026quot;, line 1027, in _find_and_load\n  File \u0026quot;\u0026lt;frozen importlib._bootstrap\u0026gt;\u0026quot;, line 1006, in _find_and_load_unlocked\n  File \u0026quot;\u0026lt;frozen importlib._bootstrap\u0026gt;\u0026quot;, line 688, in _load_unlocked\n  File \u0026quot;\u0026lt;frozen importlib._bootstrap_external\u0026gt;\u0026quot;, line 883, in exec_module\n  File \u0026quot;\u0026lt;frozen importlib._bootstrap\u0026gt;\u0026quot;, line 241, in _call_with_frames_removed\n  File \u0026quot;/usr/lib/python3.10/site-packages/awslogs/__init__.py\u0026quot;, line 1, in \u0026lt;module\u0026gt;\n    from ._version import __version__  # noqa\n  File \u0026quot;/usr/lib/python3.10/site-packages/awslogs/_version.py\u0026quot;, line 1, in \u0026lt;module\u0026gt;\n    from pkg_resources import get_distribution\nModuleNotFoundError: No module named 'pkg_resources'\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003cp\u003eどうやら\u003cem\u003epkg_resources\u003c/em\u003eは\u003cstrong\u003epython-setuptools\u003c/strong\u003eに含まれているようだけど、\n\t\tこれは\u003cstrong\u003eawslogs\u003c/strong\u003eパッケージの\u003cem\u003emakedepends\u003c/em\u003eとされているので、\n\t\tパッケージの掃除をしたときに消してしまったらしい。\u003c/p\u003e\n\t\t\u003cp\u003eなので解消するには、\u003cstrong\u003epython-setuptools\u003c/strong\u003eパッケージをインストールすればよい。\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e$ sudo pacman -S --asdeps python-setuptools\u003c/code\u003e\u003c/pre\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2022","0209"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

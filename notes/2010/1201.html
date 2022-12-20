@@ -1,0 +1,108 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: SproutCore開発環境構築</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2011年1月28日更新</p>
+	<section>
+		<h1>SproutCore開発環境構築</h1>
+		<p>JavaScriptフレームワークの<a href="http://www.sproutcore.com/">SproutCore</a>を使ってみました。
+		詰まったところをいろいろまとめていく予定です。
+		今回は環境を準備するところまで。</p>
+		<section>
+			<h2>インストール</h2>
+			<section>
+				<h3>Ruby 1.8.x</h3>
+				<p>まずはRubyのインストールから始めます。
+				Macの場合はもともと付属しているので次に進みます。</p>
+				<p>SproutCoreが依存しているjson 1.4.6は
+				msvcrt-ruby18.dllを参照していて、
+				まだ1.9系では使えないみたいなので、<a href="http://www.garbagecollect.jp/ruby/mswin32/ja/download/release.html">Ruby 1.8.x-mswin</a>を
+				c:\rubyにインストールします。</p>
+			</section>
+			<section>
+				<h3>PATHの設定</h3>
+				<p>PATHにc:\ruby\binを追加します。</p>
+			</section>
+			<section>
+				<h3>RubyGems</h3>
+				<p>Ruby 1.8系はgemが付属していないので、<a href="http://rubyforge.org/frs/?group_id=126">RubyGems</a>から
+				1.3.7.zipを展開してsetup.rbを実行。
+				これでruby/bin/gemが作られます。</p>
+				<pre><code>gem -v</code></pre>
+			</section>
+			<section>
+				<h3>各種ライブラリ</h3>
+				<p>必要なライブラリをc:\ruby\binにコピーします。
+				11月時点でOpenSSLは0.9.8oと1.0.0aの2種類ありますが、
+				1.0版を使うと序数xxxエラーで停止しますので注意です。</p>
+				<ul>
+				<li><a href="http://jarp.does.notwork.org/win32/">zlib-1.1.4-1</a>/bin/zlib.dll</li>
+				<li><a href="http://jarp.does.notwork.org/win32/">readline-4.3-2-mswin</a>/bin/readline.dll</li>
+				<li><a href="http://www.limber.jp/?Software/OpenSSL for Windows">OpenSSL for Win</a>/sslay32.dll</li>
+				<li><a href="http://www.limber.jp/?Software/OpenSSL for Windows">OpenSSL for Win</a>/libeay32.dll</li>
+				<li><a href="http://www.rubylife.jp/install/other/index1.html">iconv-1.8.win32</a>/lib/iconv.dll</li>
+				</ul>
+			</section>
+			<section>
+				<h3>SproutCoreのインストール</h3>
+				<pre><code class="console">$ gem install sproutcore</code></pre>
+				<p>依存するパッケージも含めて全部インストールしてくれます。便利。</p>
+				<pre><code class="console">$ gem update</code></pre>
+				<p>アップデートがあるものを全部まとめて処理してくれます。</p>
+				<pre><code class="console">$ gem cleanup</code></pre>
+				<p>最新のパッケージを除いて、古いものを削除します。</p>
+			</section>
+		</section>
+		<section>
+			<h2>ファイルツリーのメモ</h2>
+			<section>
+				<h3>gemsのインストール先</h3>
+				<p>$rubydir/lib/ruby/gems/$rubyver</p>
+				<table>
+				<tr><td>$gems/doc/ridoc</td><td>リファレンスマニュアルっぽい</td></tr>
+				<tr><td>$gems/gems</td><td>各種パッケージ</td></tr>
+				</table>
+			</section>
+			<section>
+				<h3>SproutCoreパッケージ</h3>
+				<p>$gems/gems/sproutcore-$ver</p>
+				<table>
+				<tr><td>$sc/bin</td><td>sc-genやsc-serverといったコマンド</td></tr>
+				<tr><td>$sc/lib/buildtasks</td><td>各種rakeファイル</td></tr>
+				<tr><td>$sc/lib/doc_templates</td><td>?</td></tr>
+				<tr><td>$sc/lib/frameworks/sproutcore</td><td>これがソースっぽいね</td></tr>
+				<tr><td>$sc/lib/sproutcore</td><td>sc-コマンドで使うrbファイルかな</td></tr>
+				<tr><td>$sc/lib/gen</td><td>sc-genで使うテンプレート</td></tr>
+				<tr><td>$sc/design</td><td>?</td></tr>
+				<tr><td>$sc/spec</td><td>?</td></tr>
+				</table>
+			</section>
+		</section>
+	</section>
+</main>
+<aside>
+	<h1>参考サイト</h1>
+	<ul>
+	<li><a href="http://www.ibm.com/developerworks/jp/web/library/wa-mobilewebapp/">モバイルWebアプリケーションフレームワークの比較</a></li>
+	</ul>
+</aside>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2010/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: SproutCore開発環境構築\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2011年1月28日更新\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eSproutCore開発環境構築\u003c/h1\u003e\n\t\t\u003cp\u003eJavaScriptフレームワークの\u003ca href=\"http://www.sproutcore.com/\"\u003eSproutCore\u003c/a\u003eを使ってみました。\n\t\t詰まったところをいろいろまとめていく予定です。\n\t\t今回は環境を準備するところまで。\u003c/p\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eインストール\u003c/h2\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eRuby 1.8.x\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eまずはRubyのインストールから始めます。\n\t\t\t\tMacの場合はもともと付属しているので次に進みます。\u003c/p\u003e\n\t\t\t\t\u003cp\u003eSproutCoreが依存しているjson 1.4.6は\n\t\t\t\tmsvcrt-ruby18.dllを参照していて、\n\t\t\t\tまだ1.9系では使えないみたいなので、\u003ca href=\"http://www.garbagecollect.jp/ruby/mswin32/ja/download/release.html\"\u003eRuby 1.8.x-mswin\u003c/a\u003eを\n\t\t\t\tc:\\rubyにインストールします。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003ePATHの設定\u003c/h3\u003e\n\t\t\t\t\u003cp\u003ePATHにc:\\ruby\\binを追加します。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eRubyGems\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eRuby 1.8系はgemが付属していないので、\u003ca href=\"http://rubyforge.org/frs/?group_id=126\"\u003eRubyGems\u003c/a\u003eから\n\t\t\t\t1.3.7.zipを展開してsetup.rbを実行。\n\t\t\t\tこれでruby/bin/gemが作られます。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode\u003egem -v\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003e各種ライブラリ\u003c/h3\u003e\n\t\t\t\t\u003cp\u003e必要なライブラリをc:\\ruby\\binにコピーします。\n\t\t\t\t11月時点でOpenSSLは0.9.8oと1.0.0aの2種類ありますが、\n\t\t\t\t1.0版を使うと序数xxxエラーで停止しますので注意です。\u003c/p\u003e\n\t\t\t\t\u003cul\u003e\n\t\t\t\t\u003cli\u003e\u003ca href=\"http://jarp.does.notwork.org/win32/\"\u003ezlib-1.1.4-1\u003c/a\u003e/bin/zlib.dll\u003c/li\u003e\n\t\t\t\t\u003cli\u003e\u003ca href=\"http://jarp.does.notwork.org/win32/\"\u003ereadline-4.3-2-mswin\u003c/a\u003e/bin/readline.dll\u003c/li\u003e\n\t\t\t\t\u003cli\u003e\u003ca href=\"http://www.limber.jp/?Software/OpenSSL for Windows\"\u003eOpenSSL for Win\u003c/a\u003e/sslay32.dll\u003c/li\u003e\n\t\t\t\t\u003cli\u003e\u003ca href=\"http://www.limber.jp/?Software/OpenSSL for Windows\"\u003eOpenSSL for Win\u003c/a\u003e/libeay32.dll\u003c/li\u003e\n\t\t\t\t\u003cli\u003e\u003ca href=\"http://www.rubylife.jp/install/other/index1.html\"\u003eiconv-1.8.win32\u003c/a\u003e/lib/iconv.dll\u003c/li\u003e\n\t\t\t\t\u003c/ul\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eSproutCoreのインストール\u003c/h3\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e$ gem install sproutcore\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003e依存するパッケージも含めて全部インストールしてくれます。便利。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e$ gem update\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003eアップデートがあるものを全部まとめて処理してくれます。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e$ gem cleanup\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003e最新のパッケージを除いて、古いものを削除します。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eファイルツリーのメモ\u003c/h2\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003egemsのインストール先\u003c/h3\u003e\n\t\t\t\t\u003cp\u003e$rubydir/lib/ruby/gems/$rubyver\u003c/p\u003e\n\t\t\t\t\u003ctable\u003e\n\t\t\t\t\u003ctr\u003e\u003ctd\u003e$gems/doc/ridoc\u003c/td\u003e\u003ctd\u003eリファレンスマニュアルっぽい\u003c/td\u003e\u003c/tr\u003e\n\t\t\t\t\u003ctr\u003e\u003ctd\u003e$gems/gems\u003c/td\u003e\u003ctd\u003e各種パッケージ\u003c/td\u003e\u003c/tr\u003e\n\t\t\t\t\u003c/table\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eSproutCoreパッケージ\u003c/h3\u003e\n\t\t\t\t\u003cp\u003e$gems/gems/sproutcore-$ver\u003c/p\u003e\n\t\t\t\t\u003ctable\u003e\n\t\t\t\t\u003ctr\u003e\u003ctd\u003e$sc/bin\u003c/td\u003e\u003ctd\u003esc-genやsc-serverといったコマンド\u003c/td\u003e\u003c/tr\u003e\n\t\t\t\t\u003ctr\u003e\u003ctd\u003e$sc/lib/buildtasks\u003c/td\u003e\u003ctd\u003e各種rakeファイル\u003c/td\u003e\u003c/tr\u003e\n\t\t\t\t\u003ctr\u003e\u003ctd\u003e$sc/lib/doc_templates\u003c/td\u003e\u003ctd\u003e?\u003c/td\u003e\u003c/tr\u003e\n\t\t\t\t\u003ctr\u003e\u003ctd\u003e$sc/lib/frameworks/sproutcore\u003c/td\u003e\u003ctd\u003eこれがソースっぽいね\u003c/td\u003e\u003c/tr\u003e\n\t\t\t\t\u003ctr\u003e\u003ctd\u003e$sc/lib/sproutcore\u003c/td\u003e\u003ctd\u003esc-コマンドで使うrbファイルかな\u003c/td\u003e\u003c/tr\u003e\n\t\t\t\t\u003ctr\u003e\u003ctd\u003e$sc/lib/gen\u003c/td\u003e\u003ctd\u003esc-genで使うテンプレート\u003c/td\u003e\u003c/tr\u003e\n\t\t\t\t\u003ctr\u003e\u003ctd\u003e$sc/design\u003c/td\u003e\u003ctd\u003e?\u003c/td\u003e\u003c/tr\u003e\n\t\t\t\t\u003ctr\u003e\u003ctd\u003e$sc/spec\u003c/td\u003e\u003ctd\u003e?\u003c/td\u003e\u003c/tr\u003e\n\t\t\t\t\u003c/table\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003e参考サイト\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"http://www.ibm.com/developerworks/jp/web/library/wa-mobilewebapp/\"\u003eモバイルWebアプリケーションフレームワークの比較\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2010","1201"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

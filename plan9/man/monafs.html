@@ -1,0 +1,210 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>Plan 9: 2chファイルサーバ</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="/plan9/doc/inst/index.html"><a>インストール</a></a></li>
+	<li><a href="/plan9/doc/guide/index.html"><a>システムの使い方</a></a></li>
+	<li><a href="/plan9/doc/devel/index.html"><a>プログラミング</a></a></li>
+	<li><a href="/plan9/doc/adm/index.html"><a>システム管理</a></a></li>
+	<li><a href="/plan9/man/index.html"><a>自作ツール集</a></a></li>
+	</ul>
+</nav>
+<main>
+	<h1>monafs</h1>
+	<section>
+		<h2>SYNOPSIS</h2>
+		<pre><code>monafs [-dv] [-m mtpt] [-s srv]</code></pre>
+	</section>
+	<section>
+		<h2>OPTIONS</h2>
+		<dl>
+		<div>
+			<dt>d</dt>
+			<dd>デバッグ文を有効にします。</dd>
+		</div>
+		<div>
+			<dt>m mtpt</dt>
+			<dd>mtptをマウントポイントとして使用します。</dd>
+			<dd>指定がなければ/n/2chを使います。</dd>
+		</div>
+		<div>
+			<dt>s srv</dt>
+			<dd>/srv以下にサービスファイルを作成します。</dd>
+		</div>
+		<div>
+			<dt>v</dt>
+			<dd>進行状況をstderrに書き出します。</dd>
+			<dd>デバッグ文とはまた違う出力になります。</dd>
+		</div>
+		</dl>
+	</section>
+	<section>
+		<h2>INSTALL</h2>
+		<p><a href="http://lufia.org/plan9/src/libkanji.tgz">libkanji</a>が必要です。
+		あらかじめインストールしておいてください。
+		または、monafsに付属する以下の関数をいじれば、libtcsでも大丈夫です。</p>
+		<ul>
+		<li>util.c:sjistostring</li>
+		<li>util.c:Ufmt</li>
+		</ul>
+		<p>libtcs (半角カナ対応版)
+		<a href="http://c.p9c.info/plan9/">http://c.p9c.info/plan9/</a></p>
+		<p>また、書き込み機能が必要な場合には、
+		<a href="https://9p.io/magic/man2html/4/webfs">webfs(4)</a>をreferer送信に対応させることが必須です。
+		同封のwebfs.diffを当てたものを作成しておいてください。</p>
+		<p class="note">これは古いです。おそらくパッチも当たらないでしょうし、
+		当てたとしても2chの仕様も変わってしまったため、
+		書き込みはできないと思われます。</p>
+		<p>準備ができたら、</p>
+		<pre><code>% mk
+% mk install</code></pre>
+		<p>これで、$home/bin/$objtype以下にインストールされます。
+		マウントポイントに/n/2chを使うので、
+		なければそれも作っておいてください。</p>
+		<pre><code># 実際に作成する場合
+% mkdir /n/2ch
+% chgrp -u sys /n/2ch
+
+# 動的に生成する場合(こちらがおすすめ)
+% mntgen</code></pre>
+	</section>
+	<section>
+		<h2>FILES</h2>
+		<p>マウント後のファイル構造は以下のようになっています。</p>
+		<pre><code>category/ (1からn)
+	subject
+	board/ (例えばunix)
+		ctl
+		post
+		subject
+		thread/ (1029374722)
+			ctl
+			post
+			subject
+			article/ (1から1000)
+				from
+				mail
+				date (YYYY/MM/DD HH:MM:SS)
+				id
+				be
+				message</code></pre>
+		<p>これらは必ず作成されます。
+		内容が無い場合は、空ファイルになっています。</p>
+		<p>全てのsubjectと、from、articleの内容は、
+		実体参照(例えば&amp;lt;&amp;gt;)や文字符号(&amp;#1234;)が、
+		通常の文字(例えば&lt;&gt;)へと変換されています。
+		またmailの内容は、%HH形式の16進コードを
+		それが対応する文字へと変換します。</p>
+		<p>dateはタイムゾーンの設定によって変わってきますが、
+		その値はどれも同じ時間を表します。
+		例えばタイムゾーンをJSTに設定すれば、
+		2ちゃんねるに表示される時間と同じ値になります。
+		また、あぼーんや[ここ壊れています]の場合には、
+		1970/01/01 09:00(time=0の時刻)となります。</p>
+		<p class="note">皇暦など、通常ではない時間の場合には不具合が出るかもしれません。</p>
+		<p>ctlへrefreshと書くと、板またはスレッドを読みなおします。
+		また、ctlを読むと、スレッドや板の詳細が入っています。
+		共通して、文字の区切りはスペース(0x20)1つです。</p>
+		<section>
+			<h3>board/ctl</h3>
+			<pre><code>host server.domain.dom</code></pre>
+			<p>その板のあるホスト名が入ります。</p>
+		</section>
+		<section>
+			<h3>thread/ctl</h3>
+			<pre><code>rank XXXX
+article XXXX</code></pre>
+			<p>rankはスレッド一覧の表示順位を持ちます。
+			1が最新(上)で、順に下がっていきます。
+			articleは、そのスレッドに書き込みされたレス数です。</p>
+		</section>
+		<section>
+			<h3>thread/post</h3>
+			<p>ここへ書くと、それを書き込みとして処理します。</p>
+			<pre><code>from:no name
+mail:mail address
+raw text...</code></pre>
+			<p>fromは書き込みした人の名前で、mailはメールアドレスです。
+			from:またはmail:が先頭の行のみ、属性と認識されます。
+			それ以外が現れた行以降は、ただのテキストと判断します。
+			from,mailを省略すると、空文字列が補われます。</p>
+		</section>
+		<section>
+			<h3>thread/post</h3>
+			<p>書き込みできる属性が見れます。
+			acmeなどで開いて、そのまま使えます。</p>
+			<pre><code>from:
+mail:</code></pre>
+		</section>
+		<section>
+			<h3>board/post</h3>
+			<p>ほとんどthread/postと同じですが、
+			属性にsubject:thread subjectが追加されています。</p>
+			<p>日本語文字はUTF-8で書いてください。monafsが変換します。
+			書き込みされた掲示板は、自動的にecho refresh &gt;ctlされます。</p>
+		</section>
+	</section>
+	<section>
+		<h2>EXTRA</h2>
+		<p>rc/以下に、おまけのプログラムを用意してみました。
+		詳しくはrc/READMEを読んでください。</p>
+	</section>
+	<section>
+		<h2>BUGS</h2>
+		<p>まちBBSには対応してません。</p>
+		<p>monafsのリリース以降、2chに仕様変更が起こったため
+		現在おそらく書き込みできません。時間のあるときに修正します。</p>
+		<p>バグなどはこちらまで &lt;lufia@lufia.org&gt;</p>
+	</section>
+	<section>
+		<h2>TODO</h2>
+		<p>思いついたものを列挙してみました。</p>
+		<section>
+			<h3>サーバに優しく</h3>
+			<ul>
+			<li>gzip圧縮に対応</li>
+			<li>If-Modified-Sinceで更新を調べる</li>
+			<li>差分だけ読み込む</li>
+			</ul>
+		</section>
+		<section>
+			<h3>仕様へ追いつく。</h3>
+			<ul>
+			<li>ID:xxxx BE:xxxx</li>
+			<li>subbbs.cgiの廃止</li>
+			</ul>
+		</section>
+		<section>
+			<h3>埋め込み設定を別ファイルにする。</h3>
+			<ul>
+			<li>実体参照テーブル</li>
+			<li>書き込み判定文字</li>
+			</ul>
+		</section>
+		<section>
+			<h3>外部板に対応</h3>
+			<ul>
+			<li>まちBBS</li>
+			<li>したらば、JBBS</li>
+			</ul>
+		</section>
+		<section>
+			<h3>ほか</h3>
+			<ul>
+			<li>●(有料)IDに対応</li>
+			<li>BEに対応。</li>
+			</ul>
+		</section>
+	</section>
+</main>
+<aside>
+	<h1>関連リンク</h1>
+	<ul>
+	<li><a href="http://c.p9c.info/plan9/">9ch(acme用2chブラウザ)</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/plan9/man/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003ePlan 9: 2chファイルサーバ\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/inst/index.html\"\u003eインストール\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/guide/index.html\"\u003eシステムの使い方\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/devel/index.html\"\u003eプログラミング\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/adm/index.html\"\u003eシステム管理\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/man/index.html\"\u003e自作ツール集\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003ch1\u003emonafs\u003c/h1\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003eSYNOPSIS\u003c/h2\u003e\n\t\t\u003cpre\u003e\u003ccode\u003emonafs [-dv] [-m mtpt] [-s srv]\u003c/code\u003e\u003c/pre\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003eOPTIONS\u003c/h2\u003e\n\t\t\u003cdl\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003ed\u003c/dt\u003e\n\t\t\t\u003cdd\u003eデバッグ文を有効にします。\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003em mtpt\u003c/dt\u003e\n\t\t\t\u003cdd\u003emtptをマウントポイントとして使用します。\u003c/dd\u003e\n\t\t\t\u003cdd\u003e指定がなければ/n/2chを使います。\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003es srv\u003c/dt\u003e\n\t\t\t\u003cdd\u003e/srv以下にサービスファイルを作成します。\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003ev\u003c/dt\u003e\n\t\t\t\u003cdd\u003e進行状況をstderrに書き出します。\u003c/dd\u003e\n\t\t\t\u003cdd\u003eデバッグ文とはまた違う出力になります。\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003c/dl\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003eINSTALL\u003c/h2\u003e\n\t\t\u003cp\u003e\u003ca href=\"http://lufia.org/plan9/src/libkanji.tgz\"\u003elibkanji\u003c/a\u003eが必要です。\n\t\tあらかじめインストールしておいてください。\n\t\tまたは、monafsに付属する以下の関数をいじれば、libtcsでも大丈夫です。\u003c/p\u003e\n\t\t\u003cul\u003e\n\t\t\u003cli\u003eutil.c:sjistostring\u003c/li\u003e\n\t\t\u003cli\u003eutil.c:Ufmt\u003c/li\u003e\n\t\t\u003c/ul\u003e\n\t\t\u003cp\u003elibtcs (半角カナ対応版)\n\t\t\u003ca href=\"http://c.p9c.info/plan9/\"\u003ehttp://c.p9c.info/plan9/\u003c/a\u003e\u003c/p\u003e\n\t\t\u003cp\u003eまた、書き込み機能が必要な場合には、\n\t\t\u003ca href=\"https://9p.io/magic/man2html/4/webfs\"\u003ewebfs(4)\u003c/a\u003eをreferer送信に対応させることが必須です。\n\t\t同封のwebfs.diffを当てたものを作成しておいてください。\u003c/p\u003e\n\t\t\u003cp class=\"note\"\u003eこれは古いです。おそらくパッチも当たらないでしょうし、\n\t\t当てたとしても2chの仕様も変わってしまったため、\n\t\t書き込みはできないと思われます。\u003c/p\u003e\n\t\t\u003cp\u003e準備ができたら、\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode\u003e% mk\n% mk install\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003cp\u003eこれで、$home/bin/$objtype以下にインストールされます。\n\t\tマウントポイントに/n/2chを使うので、\n\t\tなければそれも作っておいてください。\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode\u003e# 実際に作成する場合\n% mkdir /n/2ch\n% chgrp -u sys /n/2ch\n\n# 動的に生成する場合(こちらがおすすめ)\n% mntgen\u003c/code\u003e\u003c/pre\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003eFILES\u003c/h2\u003e\n\t\t\u003cp\u003eマウント後のファイル構造は以下のようになっています。\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode\u003ecategory/ (1からn)\n\tsubject\n\tboard/ (例えばunix)\n\t\tctl\n\t\tpost\n\t\tsubject\n\t\tthread/ (1029374722)\n\t\t\tctl\n\t\t\tpost\n\t\t\tsubject\n\t\t\tarticle/ (1から1000)\n\t\t\t\tfrom\n\t\t\t\tmail\n\t\t\t\tdate (YYYY/MM/DD HH:MM:SS)\n\t\t\t\tid\n\t\t\t\tbe\n\t\t\t\tmessage\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003cp\u003eこれらは必ず作成されます。\n\t\t内容が無い場合は、空ファイルになっています。\u003c/p\u003e\n\t\t\u003cp\u003e全てのsubjectと、from、articleの内容は、\n\t\t実体参照(例えば\u0026amp;lt;\u0026amp;gt;)や文字符号(\u0026amp;#1234;)が、\n\t\t通常の文字(例えば\u0026lt;\u0026gt;)へと変換されています。\n\t\tまたmailの内容は、%HH形式の16進コードを\n\t\tそれが対応する文字へと変換します。\u003c/p\u003e\n\t\t\u003cp\u003edateはタイムゾーンの設定によって変わってきますが、\n\t\tその値はどれも同じ時間を表します。\n\t\t例えばタイムゾーンをJSTに設定すれば、\n\t\t2ちゃんねるに表示される時間と同じ値になります。\n\t\tまた、あぼーんや[ここ壊れています]の場合には、\n\t\t1970/01/01 09:00(time=0の時刻)となります。\u003c/p\u003e\n\t\t\u003cp class=\"note\"\u003e皇暦など、通常ではない時間の場合には不具合が出るかもしれません。\u003c/p\u003e\n\t\t\u003cp\u003ectlへrefreshと書くと、板またはスレッドを読みなおします。\n\t\tまた、ctlを読むと、スレッドや板の詳細が入っています。\n\t\t共通して、文字の区切りはスペース(0x20)1つです。\u003c/p\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch3\u003eboard/ctl\u003c/h3\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003ehost server.domain.dom\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eその板のあるホスト名が入ります。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch3\u003ethread/ctl\u003c/h3\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003erank XXXX\narticle XXXX\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003erankはスレッド一覧の表示順位を持ちます。\n\t\t\t1が最新(上)で、順に下がっていきます。\n\t\t\tarticleは、そのスレッドに書き込みされたレス数です。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch3\u003ethread/post\u003c/h3\u003e\n\t\t\t\u003cp\u003eここへ書くと、それを書き込みとして処理します。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003efrom:no name\nmail:mail address\nraw text...\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003efromは書き込みした人の名前で、mailはメールアドレスです。\n\t\t\tfrom:またはmail:が先頭の行のみ、属性と認識されます。\n\t\t\tそれ以外が現れた行以降は、ただのテキストと判断します。\n\t\t\tfrom,mailを省略すると、空文字列が補われます。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch3\u003ethread/post\u003c/h3\u003e\n\t\t\t\u003cp\u003e書き込みできる属性が見れます。\n\t\t\tacmeなどで開いて、そのまま使えます。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003efrom:\nmail:\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch3\u003eboard/post\u003c/h3\u003e\n\t\t\t\u003cp\u003eほとんどthread/postと同じですが、\n\t\t\t属性にsubject:thread subjectが追加されています。\u003c/p\u003e\n\t\t\t\u003cp\u003e日本語文字はUTF-8で書いてください。monafsが変換します。\n\t\t\t書き込みされた掲示板は、自動的にecho refresh \u0026gt;ctlされます。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003eEXTRA\u003c/h2\u003e\n\t\t\u003cp\u003erc/以下に、おまけのプログラムを用意してみました。\n\t\t詳しくはrc/READMEを読んでください。\u003c/p\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003eBUGS\u003c/h2\u003e\n\t\t\u003cp\u003eまちBBSには対応してません。\u003c/p\u003e\n\t\t\u003cp\u003emonafsのリリース以降、2chに仕様変更が起こったため\n\t\t現在おそらく書き込みできません。時間のあるときに修正します。\u003c/p\u003e\n\t\t\u003cp\u003eバグなどはこちらまで \u0026lt;lufia@lufia.org\u0026gt;\u003c/p\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003eTODO\u003c/h2\u003e\n\t\t\u003cp\u003e思いついたものを列挙してみました。\u003c/p\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch3\u003eサーバに優しく\u003c/h3\u003e\n\t\t\t\u003cul\u003e\n\t\t\t\u003cli\u003egzip圧縮に対応\u003c/li\u003e\n\t\t\t\u003cli\u003eIf-Modified-Sinceで更新を調べる\u003c/li\u003e\n\t\t\t\u003cli\u003e差分だけ読み込む\u003c/li\u003e\n\t\t\t\u003c/ul\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch3\u003e仕様へ追いつく。\u003c/h3\u003e\n\t\t\t\u003cul\u003e\n\t\t\t\u003cli\u003eID:xxxx BE:xxxx\u003c/li\u003e\n\t\t\t\u003cli\u003esubbbs.cgiの廃止\u003c/li\u003e\n\t\t\t\u003c/ul\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch3\u003e埋め込み設定を別ファイルにする。\u003c/h3\u003e\n\t\t\t\u003cul\u003e\n\t\t\t\u003cli\u003e実体参照テーブル\u003c/li\u003e\n\t\t\t\u003cli\u003e書き込み判定文字\u003c/li\u003e\n\t\t\t\u003c/ul\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch3\u003e外部板に対応\u003c/h3\u003e\n\t\t\t\u003cul\u003e\n\t\t\t\u003cli\u003eまちBBS\u003c/li\u003e\n\t\t\t\u003cli\u003eしたらば、JBBS\u003c/li\u003e\n\t\t\t\u003c/ul\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch3\u003eほか\u003c/h3\u003e\n\t\t\t\u003cul\u003e\n\t\t\t\u003cli\u003e●(有料)IDに対応\u003c/li\u003e\n\t\t\t\u003cli\u003eBEに対応。\u003c/li\u003e\n\t\t\t\u003c/ul\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003e関連リンク\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"http://c.p9c.info/plan9/\"\u003e9ch(acme用2chブラウザ)\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["plan9","man","monafs"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

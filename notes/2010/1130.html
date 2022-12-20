@@ -1,0 +1,213 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: WindowsインストーラWiX</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2010年11月30日作成</p>
+	<section>
+		<h1>WindowsインストーラWiX</h1>
+		<p>昨日、今日とマイクロソフト系のネタが続くなあ。。</p>
+		<ul>
+		<li><a href="http://msdn.microsoft.com/ja-jp/windowsserver/bb980924.aspx">Platform SDK</a></li>
+		<li>Orca</li>
+		<li><a href="http://wix.sourceforge.net/">Wix3.0</a></li>
+		</ul>
+		<p>これらをインストール。
+		Orcaは、Platform SDKがインストールされた場所のbinフォルダに、
+		orca.msiがあるのでそれを実行すればいいです。分かりにくいね。</p>
+		<p class="note">Visual Studioのインテリセンスを有効にする場合は、
+		Wixのインストール先から
+		doc/wix.xsdをVC#/xml/Schema以下にコピーします。</p>
+		<section>
+			<h2>構成ファイル</h2>
+			<p>拡張子をwxsにしたXMLファイルを作成します。
+			基本的に参考サイトを見てもらったほうが早いかなあと思いますが、
+			それだけだと寂しいので分かりにくいところをメモしました。</p>
+			<section>
+				<h3>Product</h3>
+				<dl>
+				<div>
+					<dt>Product.Id</dt>
+					<dd>アプリケーションのGUID</dd>
+				</div>
+				<div>
+					<dt>Product.Name</dt>
+					<dd>プログラムの追加と削除に表示する名前</dd>
+				</div>
+				<div>
+					<dt>Product.Language</dt>
+					<dd>日本語は1041</dd>
+				</div>
+				<div>
+					<dt>Codepage</dt>
+					<dd>文字コード？</dd>
+				</div>
+				</dl>
+			</section>
+			<section>
+				<h3>Directory.Id</h3>
+				<dl>
+				<div>
+					<dt>Id=&quot;TARGETDIR&quot;の場合</dt>
+					<dd>ルートディレクトリ</dd>
+					<dd>特定の場所ではない</dd>
+				</div>
+				<div>
+					<dt>Id=&quot;ProgramFilesFolder&quot;ほか</dt>
+					<dd><a href="http://msdn.microsoft.com/en-us/library/Aa372057">特定のフォルダ</a></dd>
+				</div>
+				<div>
+					<dt>その他</dt>
+					<dd>DirectoryRef.Idで参照するためのID</dd>
+				</div>
+				</dl>
+			</section>
+			<section>
+				<h3>ほか</h3>
+				<dl>
+				<div>
+					<dt>UpgradeCode</dt>
+					<dd>これを変えればアップグレード？</dd>
+				</div>
+				<div>
+					<dt>Media.Id</dt>
+					<dd>Component.DiskIdまたはFile.DiskIdで参照するID</dd>
+				</div>
+				<div>
+					<dt>Component.KeyPath</dt>
+					<dd>これがあればインストール済みだとかなんとか</dd>
+				</div>
+				<div>
+					<dt>UIRef.Id</dt>
+					<dd><a href="http://cml.s10.xrea.com/ej/WiX/WixUI_dialog_library_old.htm">インストーラの種類</a></dd>
+				</div>
+				<div>
+					<dt>Property.Id=&quot;WIXUI_INSTALLDIR&quot;</dt>
+					<dd>UIRef.Id=&quot;WixUI_InstallDir&quot;の場合は必須</dd>
+				</div>
+				</dl>
+			</section>
+		</section>
+		<section>
+			<h2>ビルドコマンド</h2>
+			<p>Visual Studioのビルド完了後コマンド等に設定しておきます。</p>
+			<pre><code>set WIX=&quot;c:\program files\windows installer xml v3\bin&quot;
+%WIX%\candle.exe &quot;$(ProjectDir)\Setup.wxs&quot;
+%WIX%\light.exe -ext WixUIExtension -cultures:ja-jp Setup.wixobj</code></pre>
+			<p>これで、Setup.msiがDebugまたはReleaseフォルダ以下にできます。</p>
+		</section>
+		<section>
+			<h2>サンプル</h2>
+			<pre><code class="xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;Wix xmlns=&quot;http://schemas.microsoft.com/wix/2006/wi&quot;&gt;
+	&lt;Product Id=&quot;B6A98E5F-D6A7-46FB-9E9D-1F7BF443491C&quot; Name=&quot;ディスク容量ログビューア&quot;
+		Version=&quot;1.0.0&quot; Manufacturer=&quot;lufia.org&quot;
+		Language=&quot;1041&quot; Codepage=&quot;932&quot;
+		UpgradeCode=&quot;{E6A4DF6E-EC69-436b-917A-E875AC8F15F8}&quot;&gt;
+		&lt;Package
+			Description=&quot;ディスク容量ログビューア&quot;
+			InstallerVersion=&quot;200&quot; Compressed=&quot;yes&quot;
+			Manufacturer=&quot;lufia.org&quot; Languages=&quot;1041&quot; SummaryCodepage=&quot;932&quot;/&gt;
+		&lt;Media Id=&quot;1&quot; Cabinet=&quot;DiskUsage.cab&quot; EmbedCab=&quot;yes&quot;/&gt;
+
+		&lt;Directory Id=&quot;TARGETDIR&quot; Name=&quot;SourceDir&quot;&gt;
+			&lt;Directory Id=&quot;ProgramFilesFolder&quot;&gt;
+				&lt;Directory Id=&quot;Applications&quot; Name=&quot;社内ツール&quot;&gt;
+					&lt;Directory Id=&quot;INSTALLLOCATION&quot; Name=&quot;DiskUsage&quot;/&gt;
+				&lt;/Directory&gt;
+			&lt;/Directory&gt;
+			&lt;Directory Id=&quot;ProgramMenuFolder&quot;&gt;
+				&lt;Directory Id=&quot;APPLICATIONPROGRAMFOLDER&quot; Name=&quot;ツール&quot;/&gt;
+			&lt;/Directory&gt;
+		&lt;/Directory&gt;
+
+		&lt;DirectoryRef Id=&quot;INSTALLLOCATION&quot;&gt;
+			&lt;Component Id=&quot;Component1&quot; DiskId=&quot;1&quot; KeyPath=&quot;yes&quot; Guid=&quot;C6849E44-5613-4733-B59D-24E01E01E90C&quot;&gt;
+				&lt;File Id=&quot;DiskUsage.exe&quot; Source=&quot;DiskUsage.exe&quot;/&gt;
+				&lt;File Id=&quot;DiskUsage.exe.config&quot; Source=&quot;DiskUsage.exe.config&quot;/&gt;
+				&lt;File Id=&quot;DynamicDataDisplay.dll&quot; Source=&quot;DynamicDataDisplay.dll&quot;/&gt;
+				&lt;File Id=&quot;Interop.IWshRuntimeLibrary.dll&quot; Source=&quot;Interop.IWshRuntimeLibrary.dll&quot;/&gt;
+				&lt;File Id=&quot;Sys.dll&quot; Source=&quot;Sys.dll&quot;/&gt;
+				&lt;File Id=&quot;README.txt&quot; Source=&quot;README.txt&quot;/&gt;
+			&lt;/Component&gt;
+		&lt;/DirectoryRef&gt;
+
+		&lt;DirectoryRef Id=&quot;APPLICATIONPROGRAMFOLDER&quot;&gt;
+			&lt;Component Id=&quot;Component2&quot; Guid=&quot;{2451FD7E-59F1-44dd-AF1B-30F540DA6831}&quot;&gt;
+				&lt;Shortcut Id=&quot;Shortcut1&quot; Name=&quot;ディスク容量ログビューア&quot;
+						Description=&quot;ディスク容量ログビューアの起動&quot;
+						Target=&quot;[INSTALLLOCATION]DiskUsage.exe&quot;
+						WorkingDirectory=&quot;INSTALLLOCATION&quot;/&gt;
+				&lt;RemoveFolder Id=&quot;APPLICATIONPROGRAMFOLDER&quot; On=&quot;uninstall&quot;/&gt;
+				&lt;RegistryValue Root=&quot;HKCU&quot; Key=&quot;Software\TryYearn\DiskUsage&quot; Name=&quot;Installed&quot;
+					Type=&quot;integer&quot; Value=&quot;1&quot; KeyPath=&quot;yes&quot;/&gt;
+			&lt;/Component&gt;
+		&lt;/DirectoryRef&gt;
+
+		&lt;Feature Id=&quot;Feature1&quot; Level=&quot;1&quot;&gt;
+			&lt;ComponentRef Id=&quot;Component1&quot;/&gt;
+			&lt;ComponentRef Id=&quot;Component2&quot;/&gt;
+		&lt;/Feature&gt;
+
+		&lt;UIRef Id=&quot;WixUI_ErrorProgressText&quot;/&gt;
+		&lt;UIRef Id=&quot;WixUI_InstallDir&quot;/&gt;
+		&lt;Property Id=&quot;WIXUI_INSTALLDIR&quot; Value=&quot;INSTALLLOCATION&quot;/&gt;
+	&lt;/Product&gt;
+&lt;/Wix&gt;</code></pre>
+		</section>
+		<section>
+			<h2>トラブルシューティング</h2>
+			<section>
+				<h3>ライセンスに同意して次へ進むと不明なエラー</h3>
+				<p>不明なエラー(コード2819)の場合は、
+				Property.Id=&quot;WIXUI_INSTALLDIR&quot;が無いためです。
+				設定ファイルに追加すれば動きます。</p>
+			</section>
+			<section>
+				<h3>ロケールが無い</h3>
+				<p>参考サイトの<a href="http://yy2.sakura.ne.jp/007_wix/wix.html#N20111">WiX 3.0 UIの指定</a>によると、</p>
+				<blockquote>WiXでは、UIをロケールに合わせて変更できるようになっています。
+				その設定が含まれているのがlocオプションで指定した
+				「WixUI_ja-jp.wxl」というファイルです。
+				この「WixUI_ja-jp.wxl」はWiXのソースコードを
+				ダウンロードすることで取得することができます。
+				(WiXのマニュアルを参照すると日本語は、
+				WiX内に含まれているように思われるので「WixUI_ja-jp.wxl」を
+				別途ダウンロードする必要はないように思えるのですが、
+				いろいろと試しましたがうまくいかず、
+				locオプションで指定する方法にしています。)</blockquote>
+				<p>とありますが、lightの引数で-culturesを指定すると変更できました。</p>
+				<pre><code>cultures:ja-jp</code></pre>
+				<p>言語の一覧は<a href="http://cml.s10.xrea.com/ej/WiX/WixUI_localization.htm">ローカライズされたバージョンのWixUIの使用</a>を
+				参照です。</p>
+			</section>
+		</section>
+	</section>
+</main>
+<aside>
+	<h1>参考サイト</h1>
+	<ul>
+	<li><a href="http://kuronuko.com/vs_installer/wix_installer.html">黒ぬこ</a></li>
+	<li><a href="http://yy2.sakura.ne.jp/007_wix/wix.html">Wix 3.0</a></li>
+	<li><a href="http://cml.s10.xrea.com/ej/WiX/generate_guids.htm">GUIDを生成する</a></li>
+	</ul>
+</aside>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2010/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: WindowsインストーラWiX\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2010年11月30日作成\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eWindowsインストーラWiX\u003c/h1\u003e\n\t\t\u003cp\u003e昨日、今日とマイクロソフト系のネタが続くなあ。。\u003c/p\u003e\n\t\t\u003cul\u003e\n\t\t\u003cli\u003e\u003ca href=\"http://msdn.microsoft.com/ja-jp/windowsserver/bb980924.aspx\"\u003ePlatform SDK\u003c/a\u003e\u003c/li\u003e\n\t\t\u003cli\u003eOrca\u003c/li\u003e\n\t\t\u003cli\u003e\u003ca href=\"http://wix.sourceforge.net/\"\u003eWix3.0\u003c/a\u003e\u003c/li\u003e\n\t\t\u003c/ul\u003e\n\t\t\u003cp\u003eこれらをインストール。\n\t\tOrcaは、Platform SDKがインストールされた場所のbinフォルダに、\n\t\torca.msiがあるのでそれを実行すればいいです。分かりにくいね。\u003c/p\u003e\n\t\t\u003cp class=\"note\"\u003eVisual Studioのインテリセンスを有効にする場合は、\n\t\tWixのインストール先から\n\t\tdoc/wix.xsdをVC#/xml/Schema以下にコピーします。\u003c/p\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e構成ファイル\u003c/h2\u003e\n\t\t\t\u003cp\u003e拡張子をwxsにしたXMLファイルを作成します。\n\t\t\t基本的に参考サイトを見てもらったほうが早いかなあと思いますが、\n\t\t\tそれだけだと寂しいので分かりにくいところをメモしました。\u003c/p\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eProduct\u003c/h3\u003e\n\t\t\t\t\u003cdl\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eProduct.Id\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eアプリケーションのGUID\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eProduct.Name\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eプログラムの追加と削除に表示する名前\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eProduct.Language\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e日本語は1041\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eCodepage\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e文字コード？\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003c/dl\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eDirectory.Id\u003c/h3\u003e\n\t\t\t\t\u003cdl\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eId=\u0026quot;TARGETDIR\u0026quot;の場合\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eルートディレクトリ\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003e特定の場所ではない\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eId=\u0026quot;ProgramFilesFolder\u0026quot;ほか\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e\u003ca href=\"http://msdn.microsoft.com/en-us/library/Aa372057\"\u003e特定のフォルダ\u003c/a\u003e\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eその他\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eDirectoryRef.Idで参照するためのID\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003c/dl\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eほか\u003c/h3\u003e\n\t\t\t\t\u003cdl\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eUpgradeCode\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eこれを変えればアップグレード？\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eMedia.Id\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eComponent.DiskIdまたはFile.DiskIdで参照するID\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eComponent.KeyPath\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eこれがあればインストール済みだとかなんとか\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eUIRef.Id\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e\u003ca href=\"http://cml.s10.xrea.com/ej/WiX/WixUI_dialog_library_old.htm\"\u003eインストーラの種類\u003c/a\u003e\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eProperty.Id=\u0026quot;WIXUI_INSTALLDIR\u0026quot;\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eUIRef.Id=\u0026quot;WixUI_InstallDir\u0026quot;の場合は必須\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003c/dl\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eビルドコマンド\u003c/h2\u003e\n\t\t\t\u003cp\u003eVisual Studioのビルド完了後コマンド等に設定しておきます。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003eset WIX=\u0026quot;c:\\program files\\windows installer xml v3\\bin\u0026quot;\n%WIX%\\candle.exe \u0026quot;$(ProjectDir)\\Setup.wxs\u0026quot;\n%WIX%\\light.exe -ext WixUIExtension -cultures:ja-jp Setup.wixobj\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eこれで、Setup.msiがDebugまたはReleaseフォルダ以下にできます。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eサンプル\u003c/h2\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"xml\"\u003e\u0026lt;?xml version=\u0026quot;1.0\u0026quot; encoding=\u0026quot;utf-8\u0026quot;?\u0026gt;\n\u0026lt;Wix xmlns=\u0026quot;http://schemas.microsoft.com/wix/2006/wi\u0026quot;\u0026gt;\n\t\u0026lt;Product Id=\u0026quot;B6A98E5F-D6A7-46FB-9E9D-1F7BF443491C\u0026quot; Name=\u0026quot;ディスク容量ログビューア\u0026quot;\n\t\tVersion=\u0026quot;1.0.0\u0026quot; Manufacturer=\u0026quot;lufia.org\u0026quot;\n\t\tLanguage=\u0026quot;1041\u0026quot; Codepage=\u0026quot;932\u0026quot;\n\t\tUpgradeCode=\u0026quot;{E6A4DF6E-EC69-436b-917A-E875AC8F15F8}\u0026quot;\u0026gt;\n\t\t\u0026lt;Package\n\t\t\tDescription=\u0026quot;ディスク容量ログビューア\u0026quot;\n\t\t\tInstallerVersion=\u0026quot;200\u0026quot; Compressed=\u0026quot;yes\u0026quot;\n\t\t\tManufacturer=\u0026quot;lufia.org\u0026quot; Languages=\u0026quot;1041\u0026quot; SummaryCodepage=\u0026quot;932\u0026quot;/\u0026gt;\n\t\t\u0026lt;Media Id=\u0026quot;1\u0026quot; Cabinet=\u0026quot;DiskUsage.cab\u0026quot; EmbedCab=\u0026quot;yes\u0026quot;/\u0026gt;\n\n\t\t\u0026lt;Directory Id=\u0026quot;TARGETDIR\u0026quot; Name=\u0026quot;SourceDir\u0026quot;\u0026gt;\n\t\t\t\u0026lt;Directory Id=\u0026quot;ProgramFilesFolder\u0026quot;\u0026gt;\n\t\t\t\t\u0026lt;Directory Id=\u0026quot;Applications\u0026quot; Name=\u0026quot;社内ツール\u0026quot;\u0026gt;\n\t\t\t\t\t\u0026lt;Directory Id=\u0026quot;INSTALLLOCATION\u0026quot; Name=\u0026quot;DiskUsage\u0026quot;/\u0026gt;\n\t\t\t\t\u0026lt;/Directory\u0026gt;\n\t\t\t\u0026lt;/Directory\u0026gt;\n\t\t\t\u0026lt;Directory Id=\u0026quot;ProgramMenuFolder\u0026quot;\u0026gt;\n\t\t\t\t\u0026lt;Directory Id=\u0026quot;APPLICATIONPROGRAMFOLDER\u0026quot; Name=\u0026quot;ツール\u0026quot;/\u0026gt;\n\t\t\t\u0026lt;/Directory\u0026gt;\n\t\t\u0026lt;/Directory\u0026gt;\n\n\t\t\u0026lt;DirectoryRef Id=\u0026quot;INSTALLLOCATION\u0026quot;\u0026gt;\n\t\t\t\u0026lt;Component Id=\u0026quot;Component1\u0026quot; DiskId=\u0026quot;1\u0026quot; KeyPath=\u0026quot;yes\u0026quot; Guid=\u0026quot;C6849E44-5613-4733-B59D-24E01E01E90C\u0026quot;\u0026gt;\n\t\t\t\t\u0026lt;File Id=\u0026quot;DiskUsage.exe\u0026quot; Source=\u0026quot;DiskUsage.exe\u0026quot;/\u0026gt;\n\t\t\t\t\u0026lt;File Id=\u0026quot;DiskUsage.exe.config\u0026quot; Source=\u0026quot;DiskUsage.exe.config\u0026quot;/\u0026gt;\n\t\t\t\t\u0026lt;File Id=\u0026quot;DynamicDataDisplay.dll\u0026quot; Source=\u0026quot;DynamicDataDisplay.dll\u0026quot;/\u0026gt;\n\t\t\t\t\u0026lt;File Id=\u0026quot;Interop.IWshRuntimeLibrary.dll\u0026quot; Source=\u0026quot;Interop.IWshRuntimeLibrary.dll\u0026quot;/\u0026gt;\n\t\t\t\t\u0026lt;File Id=\u0026quot;Sys.dll\u0026quot; Source=\u0026quot;Sys.dll\u0026quot;/\u0026gt;\n\t\t\t\t\u0026lt;File Id=\u0026quot;README.txt\u0026quot; Source=\u0026quot;README.txt\u0026quot;/\u0026gt;\n\t\t\t\u0026lt;/Component\u0026gt;\n\t\t\u0026lt;/DirectoryRef\u0026gt;\n\n\t\t\u0026lt;DirectoryRef Id=\u0026quot;APPLICATIONPROGRAMFOLDER\u0026quot;\u0026gt;\n\t\t\t\u0026lt;Component Id=\u0026quot;Component2\u0026quot; Guid=\u0026quot;{2451FD7E-59F1-44dd-AF1B-30F540DA6831}\u0026quot;\u0026gt;\n\t\t\t\t\u0026lt;Shortcut Id=\u0026quot;Shortcut1\u0026quot; Name=\u0026quot;ディスク容量ログビューア\u0026quot;\n\t\t\t\t\t\tDescription=\u0026quot;ディスク容量ログビューアの起動\u0026quot;\n\t\t\t\t\t\tTarget=\u0026quot;[INSTALLLOCATION]DiskUsage.exe\u0026quot;\n\t\t\t\t\t\tWorkingDirectory=\u0026quot;INSTALLLOCATION\u0026quot;/\u0026gt;\n\t\t\t\t\u0026lt;RemoveFolder Id=\u0026quot;APPLICATIONPROGRAMFOLDER\u0026quot; On=\u0026quot;uninstall\u0026quot;/\u0026gt;\n\t\t\t\t\u0026lt;RegistryValue Root=\u0026quot;HKCU\u0026quot; Key=\u0026quot;Software\\TryYearn\\DiskUsage\u0026quot; Name=\u0026quot;Installed\u0026quot;\n\t\t\t\t\tType=\u0026quot;integer\u0026quot; Value=\u0026quot;1\u0026quot; KeyPath=\u0026quot;yes\u0026quot;/\u0026gt;\n\t\t\t\u0026lt;/Component\u0026gt;\n\t\t\u0026lt;/DirectoryRef\u0026gt;\n\n\t\t\u0026lt;Feature Id=\u0026quot;Feature1\u0026quot; Level=\u0026quot;1\u0026quot;\u0026gt;\n\t\t\t\u0026lt;ComponentRef Id=\u0026quot;Component1\u0026quot;/\u0026gt;\n\t\t\t\u0026lt;ComponentRef Id=\u0026quot;Component2\u0026quot;/\u0026gt;\n\t\t\u0026lt;/Feature\u0026gt;\n\n\t\t\u0026lt;UIRef Id=\u0026quot;WixUI_ErrorProgressText\u0026quot;/\u0026gt;\n\t\t\u0026lt;UIRef Id=\u0026quot;WixUI_InstallDir\u0026quot;/\u0026gt;\n\t\t\u0026lt;Property Id=\u0026quot;WIXUI_INSTALLDIR\u0026quot; Value=\u0026quot;INSTALLLOCATION\u0026quot;/\u0026gt;\n\t\u0026lt;/Product\u0026gt;\n\u0026lt;/Wix\u0026gt;\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eトラブルシューティング\u003c/h2\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eライセンスに同意して次へ進むと不明なエラー\u003c/h3\u003e\n\t\t\t\t\u003cp\u003e不明なエラー(コード2819)の場合は、\n\t\t\t\tProperty.Id=\u0026quot;WIXUI_INSTALLDIR\u0026quot;が無いためです。\n\t\t\t\t設定ファイルに追加すれば動きます。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eロケールが無い\u003c/h3\u003e\n\t\t\t\t\u003cp\u003e参考サイトの\u003ca href=\"http://yy2.sakura.ne.jp/007_wix/wix.html#N20111\"\u003eWiX 3.0 UIの指定\u003c/a\u003eによると、\u003c/p\u003e\n\t\t\t\t\u003cblockquote\u003eWiXでは、UIをロケールに合わせて変更できるようになっています。\n\t\t\t\tその設定が含まれているのがlocオプションで指定した\n\t\t\t\t「WixUI_ja-jp.wxl」というファイルです。\n\t\t\t\tこの「WixUI_ja-jp.wxl」はWiXのソースコードを\n\t\t\t\tダウンロードすることで取得することができます。\n\t\t\t\t(WiXのマニュアルを参照すると日本語は、\n\t\t\t\tWiX内に含まれているように思われるので「WixUI_ja-jp.wxl」を\n\t\t\t\t別途ダウンロードする必要はないように思えるのですが、\n\t\t\t\tいろいろと試しましたがうまくいかず、\n\t\t\t\tlocオプションで指定する方法にしています。)\u003c/blockquote\u003e\n\t\t\t\t\u003cp\u003eとありますが、lightの引数で-culturesを指定すると変更できました。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode\u003ecultures:ja-jp\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003e言語の一覧は\u003ca href=\"http://cml.s10.xrea.com/ej/WiX/WixUI_localization.htm\"\u003eローカライズされたバージョンのWixUIの使用\u003c/a\u003eを\n\t\t\t\t参照です。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003e参考サイト\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"http://kuronuko.com/vs_installer/wix_installer.html\"\u003e黒ぬこ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://yy2.sakura.ne.jp/007_wix/wix.html\"\u003eWix 3.0\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://cml.s10.xrea.com/ej/WiX/generate_guids.htm\"\u003eGUIDを生成する\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2010","1130"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

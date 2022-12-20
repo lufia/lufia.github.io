@@ -1,0 +1,55 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: Windows 8.1以降でWi-Fiが「制限あり」になる</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2016年9月26日作成</p>
+	<section>
+		<h1>Windows 8.1以降でWi-Fiが「制限あり」になる</h1>
+		<p>MacBook AirのBootcampでWindowsを使っていますが、
+		確かWindows 8.1にした頃から無線ネットワークが頻繁に「制限あり」となってしまって
+		インターネットに接続できなくなる問題が起こっていました。</p>
+		<p>同様の問題を調べると、</p>
+		<ul>
+		<li>ドライバを入れなおす</li>
+		<li>ネットワークのプロパティで「自動的に接続する」</li>
+		<li>SSIDをブロードキャストしていなくても接続する</li>
+		<li>電源オプションのワイヤレスアダプタ省電力モードを変更</li>
+		<li>完全シャットダウンで電源を落とす</li>
+		<li>ルータの再起動やファームウェアアップデート</li>
+		<li>Wi-Fiのチャンネルを変更する</li>
+		</ul>
+		<p>など、いくつか解決方法は見つかりましたが、どれも効果はありませんでした。</p>
+		<p>結局はドライバが原因で、ネットワークドライバの<strong>WMM</strong>を<strong>無効</strong>にすることで
+		「制限あり」となる問題は発生しなくなりました。
+		ただし、Windowsアップデート(特に大き目のアップデート)を行った後は
+		&quot;WMM&quot;の設定が&quot;自動&quot;に戻ってしまうことがあるため、その場合は再設定が必要です。</p>
+	</section>
+</main>
+<aside>
+	<h1>参考記事</h1>
+	<ul>
+	<li><a href="http://cubeundcube.hatenablog.com/entry/2014/08/16/110945">Windows 8.1でWi-Fi（無線LAN）が「制限あり」になってネットにつながらなくなる現象対策</a></li>
+	<li><a href="http://blog.kuborn.info/2013/11/macbook-air-13-inch-mid-2011windows81lan.html">MacBook Air (13-inch, Mid 2011)でWindows8.1を使っていると無線LANが頻繁に切れる問題を解決する</a></li>
+	<li><a href="https://support.apple.com/kb/DL1637?locale=ja_JP">Boot Camp Support Software 4.1.4586</a></li>
+	</ul>
+</aside>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2016/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: Windows 8.1以降でWi-Fiが「制限あり」になる\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2016年9月26日作成\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eWindows 8.1以降でWi-Fiが「制限あり」になる\u003c/h1\u003e\n\t\t\u003cp\u003eMacBook AirのBootcampでWindowsを使っていますが、\n\t\t確かWindows 8.1にした頃から無線ネットワークが頻繁に「制限あり」となってしまって\n\t\tインターネットに接続できなくなる問題が起こっていました。\u003c/p\u003e\n\t\t\u003cp\u003e同様の問題を調べると、\u003c/p\u003e\n\t\t\u003cul\u003e\n\t\t\u003cli\u003eドライバを入れなおす\u003c/li\u003e\n\t\t\u003cli\u003eネットワークのプロパティで「自動的に接続する」\u003c/li\u003e\n\t\t\u003cli\u003eSSIDをブロードキャストしていなくても接続する\u003c/li\u003e\n\t\t\u003cli\u003e電源オプションのワイヤレスアダプタ省電力モードを変更\u003c/li\u003e\n\t\t\u003cli\u003e完全シャットダウンで電源を落とす\u003c/li\u003e\n\t\t\u003cli\u003eルータの再起動やファームウェアアップデート\u003c/li\u003e\n\t\t\u003cli\u003eWi-Fiのチャンネルを変更する\u003c/li\u003e\n\t\t\u003c/ul\u003e\n\t\t\u003cp\u003eなど、いくつか解決方法は見つかりましたが、どれも効果はありませんでした。\u003c/p\u003e\n\t\t\u003cp\u003e結局はドライバが原因で、ネットワークドライバの\u003cstrong\u003eWMM\u003c/strong\u003eを\u003cstrong\u003e無効\u003c/strong\u003eにすることで\n\t\t「制限あり」となる問題は発生しなくなりました。\n\t\tただし、Windowsアップデート(特に大き目のアップデート)を行った後は\n\t\t\u0026quot;WMM\u0026quot;の設定が\u0026quot;自動\u0026quot;に戻ってしまうことがあるため、その場合は再設定が必要です。\u003c/p\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003e参考記事\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"http://cubeundcube.hatenablog.com/entry/2014/08/16/110945\"\u003eWindows 8.1でWi-Fi（無線LAN）が「制限あり」になってネットにつながらなくなる現象対策\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://blog.kuborn.info/2013/11/macbook-air-13-inch-mid-2011windows81lan.html\"\u003eMacBook Air (13-inch, Mid 2011)でWindows8.1を使っていると無線LANが頻繁に切れる問題を解決する\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"https://support.apple.com/kb/DL1637?locale=ja_JP\"\u003eBoot Camp Support Software 4.1.4586\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2016","0926"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

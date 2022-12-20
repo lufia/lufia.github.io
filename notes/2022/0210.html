@@ -1,0 +1,75 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: 廃棄前にディスクのデータを消す</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2022年2月10日作成</p>
+	<section>
+		<h1>廃棄前にディスクのデータを消す</h1>
+		<p>ストレージの種類によって消去方法が異なるのでメモ。</p>
+		<section>
+			<h2>暗号化している場合</h2>
+			<p>鍵さえ漏れなければ読むことは不可能なので、そのままでよい。</p>
+		</section>
+		<section>
+			<h2>HDD</h2>
+			<p>ATAコマンドのSecure Eraseを実装したディスクならそれを使えばいいらしい。
+			実装されているかどうかは、<em>hdparm</em>コマンドで調べられる。</p>
+			<pre><code class="console">$ hdparm -I /dev/sda</code></pre>
+			<p>実装されていない場合は<em>shred</em>コマンドを使って、
+			ランダムなデータを3回と最後にゼロで合計4回上書きすることになる。
+			ゼロで上書きするだけでは最適化などの影響でデータが残り続けることがある。</p>
+			<pre><code class="console">$ sudo shred -v -n 3 -z /dev/sda</code></pre>
+			<p>手元で試すと、<em>shred</em>は100GBの領域を更新するのに1時間ほど必要だったので、
+			容量の大きなディスクを消去する場合は分割実行を検討してもよいと思う。</p>
+			<pre><code class="console">$ sudo shred -v -n 1 /dev/sda
+$ sudo shred -v -n 1 /dev/sda
+$ sudo shred -v -n 1 /dev/sda
+$ sudo shred -v -n 0 -z /dev/sda</code></pre>
+		</section>
+		<section>
+			<h2>SSD</h2>
+			<p>これは試したことがないけれど、NVMeと同じではないか。</p>
+		</section>
+		<section>
+			<h2>NVMe</h2>
+			<p>これも規格によりSecure Eraseが提供されている。
+			Secure Eraseを利用できるかどうかは以下のコマンドで調べられる。</p>
+			<pre><code class="console">$ sudo nvme id-ctrl /dev/nvme0 -H | grep &#x27;Format \|Crypto Erase\|Sanitize&#x27;</code></pre>
+			<p>対応しているなら<em>nvme format</em>で消去するといい。</p>
+			<pre><code class="console">$ sudo nvme format /dev/nvme0 -ses 2 -n 1</code></pre>
+			<ul>
+			<li><a href="https://wiki.archlinux.org/title/Solid_state_drive/Memory_cell_clearing">Solid state drive/Memory cell clearning - ArchWiki</a></li>
+			</ul>
+			<p>対応していない場合は、<em>rm</em>で全て消去したうえで<em>fstrim</em>を使うと良いらしい。</p>
+			<pre><code class="console">$ sudo mount /dev/nvme0n1p2 /mnt
+$ sudo rm -rf /mnt/*
+$ sudo sync
+$ sudo fstrim -v /mnt</code></pre>
+			<p>SSDやNVMeはデータを更新するとき、空きブロックから新しいブロックを取得して、
+			内容を更新したあとでアドレステーブルを交換するため<em>shred</em>はうまく動かない。</p>
+			<ul>
+			<li><a href="https://unix.stackexchange.com/questions/593181/is-shred-bad-for-erasing-ssds">Is shred bad for erasing SSDs?</a></li>
+			</ul>
+		</section>
+	</section>
+</main>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2022/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: 廃棄前にディスクのデータを消す\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2022年2月10日作成\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003e廃棄前にディスクのデータを消す\u003c/h1\u003e\n\t\t\u003cp\u003eストレージの種類によって消去方法が異なるのでメモ。\u003c/p\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e暗号化している場合\u003c/h2\u003e\n\t\t\t\u003cp\u003e鍵さえ漏れなければ読むことは不可能なので、そのままでよい。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eHDD\u003c/h2\u003e\n\t\t\t\u003cp\u003eATAコマンドのSecure Eraseを実装したディスクならそれを使えばいいらしい。\n\t\t\t実装されているかどうかは、\u003cem\u003ehdparm\u003c/em\u003eコマンドで調べられる。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e$ hdparm -I /dev/sda\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e実装されていない場合は\u003cem\u003eshred\u003c/em\u003eコマンドを使って、\n\t\t\tランダムなデータを3回と最後にゼロで合計4回上書きすることになる。\n\t\t\tゼロで上書きするだけでは最適化などの影響でデータが残り続けることがある。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e$ sudo shred -v -n 3 -z /dev/sda\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e手元で試すと、\u003cem\u003eshred\u003c/em\u003eは100GBの領域を更新するのに1時間ほど必要だったので、\n\t\t\t容量の大きなディスクを消去する場合は分割実行を検討してもよいと思う。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e$ sudo shred -v -n 1 /dev/sda\n$ sudo shred -v -n 1 /dev/sda\n$ sudo shred -v -n 1 /dev/sda\n$ sudo shred -v -n 0 -z /dev/sda\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eSSD\u003c/h2\u003e\n\t\t\t\u003cp\u003eこれは試したことがないけれど、NVMeと同じではないか。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eNVMe\u003c/h2\u003e\n\t\t\t\u003cp\u003eこれも規格によりSecure Eraseが提供されている。\n\t\t\tSecure Eraseを利用できるかどうかは以下のコマンドで調べられる。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e$ sudo nvme id-ctrl /dev/nvme0 -H | grep 'Format \\|Crypto Erase\\|Sanitize'\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e対応しているなら\u003cem\u003envme format\u003c/em\u003eで消去するといい。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e$ sudo nvme format /dev/nvme0 -ses 2 -n 1\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cul\u003e\n\t\t\t\u003cli\u003e\u003ca href=\"https://wiki.archlinux.org/title/Solid_state_drive/Memory_cell_clearing\"\u003eSolid state drive/Memory cell clearning - ArchWiki\u003c/a\u003e\u003c/li\u003e\n\t\t\t\u003c/ul\u003e\n\t\t\t\u003cp\u003e対応していない場合は、\u003cem\u003erm\u003c/em\u003eで全て消去したうえで\u003cem\u003efstrim\u003c/em\u003eを使うと良いらしい。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e$ sudo mount /dev/nvme0n1p2 /mnt\n$ sudo rm -rf /mnt/*\n$ sudo sync\n$ sudo fstrim -v /mnt\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eSSDやNVMeはデータを更新するとき、空きブロックから新しいブロックを取得して、\n\t\t\t内容を更新したあとでアドレステーブルを交換するため\u003cem\u003eshred\u003c/em\u003eはうまく動かない。\u003c/p\u003e\n\t\t\t\u003cul\u003e\n\t\t\t\u003cli\u003e\u003ca href=\"https://unix.stackexchange.com/questions/593181/is-shred-bad-for-erasing-ssds\"\u003eIs shred bad for erasing SSDs?\u003c/a\u003e\u003c/li\u003e\n\t\t\t\u003c/ul\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2022","0210"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

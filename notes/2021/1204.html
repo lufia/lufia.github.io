@@ -1,0 +1,116 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: GitのCombined Diffフォーマット</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2021年12月4日作成</p>
+	<section>
+		<h1>GitのCombined Diffフォーマット</h1>
+		<p>通常のコミットに対して</p>
+		<pre><code class="console">% git diff</code></pre>
+		<p>すると、Unified Diffフォーマットで出力されます。
+		このフォーマットでは左側1文字目の文字をみることで、
+		その行が追加されたのか削除されたのか、を見わけることができます。</p>
+		<pre><code class="diff">diff --git a/sys/src/cmd/auth/factotum/totp.c b/sys/src/cmd/auth/factotum/totp.c
+index f32caa77..95202886 100644
+--- a/sys/src/cmd/auth/factotum/totp.c
++++ b/sys/src/cmd/auth/factotum/totp.c
+@@ -50,7 +50,7 @@ base32d(uchar *dest, int ndest, char *src, int nsrc)
+        tab = &quot;ABCDEFGHIJKLMNOPQRSTUVWXYZ234567&quot;;
+        while(nsrc&gt;=8){
+                for(i = 0; i &lt; 8; i++){
+-                       s = strchr(tab, src[i]);
++                       s = strchr(tab, toupper(src[i]));
+                        if(s == nil)
+                                return -1;
+                        u[i] = s-tab;</code></pre>
+		<p><em>+</em>の行は追加、<em>-</em>の行は削除、変更のない行はスペースです。</p>
+		<section>
+			<h2>マージコミットの場合</h2>
+			<p>Gitでマージしたとき、以下の3つが登場します。</p>
+			<ol>
+			<li>共通の祖先(<em>-1</em>, <em>--base</em>)</li>
+			<li>自分たちの差分(<em>-2</em>, <em>--ours</em>)</li>
+			<li>相手側(マージするブランチ)の差分(<em>-3</em>, <em>--theirs</em>)</li>
+			</ol>
+			<p>例えば、</p>
+			<pre><code class="console">% git switch main
+% git merge other</code></pre>
+			<p>と実行した場合、<em>--base</em>は<strong>main</strong>と<strong>other</strong>の共通にある祖先、
+			<em>--ours</em>は<strong>main</strong>の差分、<em>--theirs</em>は<strong>other</strong>の差分となります。</p>
+			<p>マージまたはリベース時にコンフリクトが発生したとき、
+			通常のdiffとは異なり、左側の先頭2文字で状態を表現するフォーマットが使われます。</p>
+			<pre><code class="diff">diff --cc sys/src/ape/lib/ap/plan9/_buf.c
+index a2dea18c,67f3f9c6..00000000
+--- a/sys/src/ape/lib/ap/plan9/_buf.c
++++ b/sys/src/ape/lib/ap/plan9/_buf.c
+@@@ -349,7 -348,7 +404,13 @@@ select(int nfds, fd_set *rfds, fd_set *
+        }
+        mux-&gt;selwait = 1;
+        unlock(&amp;mux-&gt;lock);
+++&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+ +      fd = (uintptr_t)_RENDEZVOUS(&amp;mux-&gt;selwait, 0);
+++||||||| 338bd13f
+++      fd = _RENDEZVOUS((uintptr_t)&amp;mux-&gt;selwait, 0);
+++=======
++       fd = _RENDEZVOUS((unsigned long)&amp;mux-&gt;selwait, 0);
+++&gt;&gt;&gt;&gt;&gt;&gt;&gt; stable
+        if(fd &gt;= 0) {
+                b = _fdinfo[fd].buf;
+                if(FD_ISSET(fd, &amp;mux-&gt;rwant)) {</code></pre>
+			<p>このフォーマットはCombined Diffフォーマットといって、
+			<em>--ours</em>に含まれる差分は1文字目、<em>--theirs</em>に含まれる差分は2文字目を使って表します。
+			また、どちらにも存在しない(新規の)差分を<em>++</em>で表現します。
+			上記例の場合、<em>++</em>となっているのはマージ失敗によりGitが追加した行ですね。</p>
+			<p>このコンフリクトを解消してコミットすると、また少し異なる表示になります。</p>
+			<pre><code class="diff">diff --cc sys/src/ape/lib/ap/plan9/_buf.c
+index a2dea18c,67f3f9c6..f6bd186a
+--- a/sys/src/ape/lib/ap/plan9/_buf.c
++++ b/sys/src/ape/lib/ap/plan9/_buf.c
+@@@ -349,7 -348,7 +348,7 @@@ select(int nfds, fd_set *rfds, fd_set *
+  	     }
+        mux-&gt;selwait = 1;
+        unlock(&amp;mux-&gt;lock);
+-       fd = (uintptr_t)_RENDEZVOUS(&amp;mux-&gt;selwait, 0);
+ -      fd = _RENDEZVOUS((unsigned long)&amp;mux-&gt;selwait, 0);
+++      fd = (int)_RENDEZVOUS(&amp;mux-&gt;selwait, 0);
+        if(fd &gt;= 0) {
+                b = _fdinfo[fd].buf;
+                if(FD_ISSET(fd, &amp;mux-&gt;rwant)) {</code></pre>
+			<p>これも同様に、<em>--ours</em>の差分を1文字目、
+			<em>--theirs</em>の差分を2文字目を使って表しますが、
+			上記のdiffはマージした結果なので、</p>
+			<ul>
+			<li><em>--ours</em>のブランチにあった行を削除</li>
+			<li><em>--theirs</em>のブランチにあった行も削除</li>
+			<li>代わりに、<em>++</em>の行を追加</li>
+			</ul>
+			<p>このように編集すると、現在のブランチ内容と同じになる、という意味です。</p>
+		</section>
+		<section>
+			<h2>参考</h2>
+			<ul>
+			<li><a href="https://git-scm.com/book/ja/v2/Git-%E3%81%AE%E3%81%95%E3%81%BE%E3%81%96%E3%81%BE%E3%81%AA%E3%83%84%E3%83%BC%E3%83%AB-%E9%AB%98%E5%BA%A6%E3%81%AA%E3%83%9E%E3%83%BC%E3%82%B8%E6%89%8B%E6%B3%95#_combined_diff_%E5%BD%A2%E5%BC%8F">Git - 高度なマージ手法</a></li>
+			</ul>
+		</section>
+	</section>
+</main>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2021/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: GitのCombined Diffフォーマット\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2021年12月4日作成\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eGitのCombined Diffフォーマット\u003c/h1\u003e\n\t\t\u003cp\u003e通常のコミットに対して\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% git diff\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003cp\u003eすると、Unified Diffフォーマットで出力されます。\n\t\tこのフォーマットでは左側1文字目の文字をみることで、\n\t\tその行が追加されたのか削除されたのか、を見わけることができます。\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode class=\"diff\"\u003ediff --git a/sys/src/cmd/auth/factotum/totp.c b/sys/src/cmd/auth/factotum/totp.c\nindex f32caa77..95202886 100644\n--- a/sys/src/cmd/auth/factotum/totp.c\n+++ b/sys/src/cmd/auth/factotum/totp.c\n@@ -50,7 +50,7 @@ base32d(uchar *dest, int ndest, char *src, int nsrc)\n        tab = \u0026quot;ABCDEFGHIJKLMNOPQRSTUVWXYZ234567\u0026quot;;\n        while(nsrc\u0026gt;=8){\n                for(i = 0; i \u0026lt; 8; i++){\n-                       s = strchr(tab, src[i]);\n+                       s = strchr(tab, toupper(src[i]));\n                        if(s == nil)\n                                return -1;\n                        u[i] = s-tab;\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003cp\u003e\u003cem\u003e+\u003c/em\u003eの行は追加、\u003cem\u003e-\u003c/em\u003eの行は削除、変更のない行はスペースです。\u003c/p\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eマージコミットの場合\u003c/h2\u003e\n\t\t\t\u003cp\u003eGitでマージしたとき、以下の3つが登場します。\u003c/p\u003e\n\t\t\t\u003col\u003e\n\t\t\t\u003cli\u003e共通の祖先(\u003cem\u003e-1\u003c/em\u003e, \u003cem\u003e--base\u003c/em\u003e)\u003c/li\u003e\n\t\t\t\u003cli\u003e自分たちの差分(\u003cem\u003e-2\u003c/em\u003e, \u003cem\u003e--ours\u003c/em\u003e)\u003c/li\u003e\n\t\t\t\u003cli\u003e相手側(マージするブランチ)の差分(\u003cem\u003e-3\u003c/em\u003e, \u003cem\u003e--theirs\u003c/em\u003e)\u003c/li\u003e\n\t\t\t\u003c/ol\u003e\n\t\t\t\u003cp\u003e例えば、\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% git switch main\n% git merge other\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eと実行した場合、\u003cem\u003e--base\u003c/em\u003eは\u003cstrong\u003emain\u003c/strong\u003eと\u003cstrong\u003eother\u003c/strong\u003eの共通にある祖先、\n\t\t\t\u003cem\u003e--ours\u003c/em\u003eは\u003cstrong\u003emain\u003c/strong\u003eの差分、\u003cem\u003e--theirs\u003c/em\u003eは\u003cstrong\u003eother\u003c/strong\u003eの差分となります。\u003c/p\u003e\n\t\t\t\u003cp\u003eマージまたはリベース時にコンフリクトが発生したとき、\n\t\t\t通常のdiffとは異なり、左側の先頭2文字で状態を表現するフォーマットが使われます。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"diff\"\u003ediff --cc sys/src/ape/lib/ap/plan9/_buf.c\nindex a2dea18c,67f3f9c6..00000000\n--- a/sys/src/ape/lib/ap/plan9/_buf.c\n+++ b/sys/src/ape/lib/ap/plan9/_buf.c\n@@@ -349,7 -348,7 +404,13 @@@ select(int nfds, fd_set *rfds, fd_set *\n        }\n        mux-\u0026gt;selwait = 1;\n        unlock(\u0026amp;mux-\u0026gt;lock);\n++\u0026lt;\u0026lt;\u0026lt;\u0026lt;\u0026lt;\u0026lt;\u0026lt; HEAD\n +      fd = (uintptr_t)_RENDEZVOUS(\u0026amp;mux-\u0026gt;selwait, 0);\n++||||||| 338bd13f\n++      fd = _RENDEZVOUS((uintptr_t)\u0026amp;mux-\u0026gt;selwait, 0);\n++=======\n+       fd = _RENDEZVOUS((unsigned long)\u0026amp;mux-\u0026gt;selwait, 0);\n++\u0026gt;\u0026gt;\u0026gt;\u0026gt;\u0026gt;\u0026gt;\u0026gt; stable\n        if(fd \u0026gt;= 0) {\n                b = _fdinfo[fd].buf;\n                if(FD_ISSET(fd, \u0026amp;mux-\u0026gt;rwant)) {\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eこのフォーマットはCombined Diffフォーマットといって、\n\t\t\t\u003cem\u003e--ours\u003c/em\u003eに含まれる差分は1文字目、\u003cem\u003e--theirs\u003c/em\u003eに含まれる差分は2文字目を使って表します。\n\t\t\tまた、どちらにも存在しない(新規の)差分を\u003cem\u003e++\u003c/em\u003eで表現します。\n\t\t\t上記例の場合、\u003cem\u003e++\u003c/em\u003eとなっているのはマージ失敗によりGitが追加した行ですね。\u003c/p\u003e\n\t\t\t\u003cp\u003eこのコンフリクトを解消してコミットすると、また少し異なる表示になります。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"diff\"\u003ediff --cc sys/src/ape/lib/ap/plan9/_buf.c\nindex a2dea18c,67f3f9c6..f6bd186a\n--- a/sys/src/ape/lib/ap/plan9/_buf.c\n+++ b/sys/src/ape/lib/ap/plan9/_buf.c\n@@@ -349,7 -348,7 +348,7 @@@ select(int nfds, fd_set *rfds, fd_set *\n  \t     }\n        mux-\u0026gt;selwait = 1;\n        unlock(\u0026amp;mux-\u0026gt;lock);\n-       fd = (uintptr_t)_RENDEZVOUS(\u0026amp;mux-\u0026gt;selwait, 0);\n -      fd = _RENDEZVOUS((unsigned long)\u0026amp;mux-\u0026gt;selwait, 0);\n++      fd = (int)_RENDEZVOUS(\u0026amp;mux-\u0026gt;selwait, 0);\n        if(fd \u0026gt;= 0) {\n                b = _fdinfo[fd].buf;\n                if(FD_ISSET(fd, \u0026amp;mux-\u0026gt;rwant)) {\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eこれも同様に、\u003cem\u003e--ours\u003c/em\u003eの差分を1文字目、\n\t\t\t\u003cem\u003e--theirs\u003c/em\u003eの差分を2文字目を使って表しますが、\n\t\t\t上記のdiffはマージした結果なので、\u003c/p\u003e\n\t\t\t\u003cul\u003e\n\t\t\t\u003cli\u003e\u003cem\u003e--ours\u003c/em\u003eのブランチにあった行を削除\u003c/li\u003e\n\t\t\t\u003cli\u003e\u003cem\u003e--theirs\u003c/em\u003eのブランチにあった行も削除\u003c/li\u003e\n\t\t\t\u003cli\u003e代わりに、\u003cem\u003e++\u003c/em\u003eの行を追加\u003c/li\u003e\n\t\t\t\u003c/ul\u003e\n\t\t\t\u003cp\u003eこのように編集すると、現在のブランチ内容と同じになる、という意味です。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e参考\u003c/h2\u003e\n\t\t\t\u003cul\u003e\n\t\t\t\u003cli\u003e\u003ca href=\"https://git-scm.com/book/ja/v2/Git-%E3%81%AE%E3%81%95%E3%81%BE%E3%81%96%E3%81%BE%E3%81%AA%E3%83%84%E3%83%BC%E3%83%AB-%E9%AB%98%E5%BA%A6%E3%81%AA%E3%83%9E%E3%83%BC%E3%82%B8%E6%89%8B%E6%B3%95#_combined_diff_%E5%BD%A2%E5%BC%8F\"\u003eGit - 高度なマージ手法\u003c/a\u003e\u003c/li\u003e\n\t\t\t\u003c/ul\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2021","1204"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

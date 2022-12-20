@@ -1,0 +1,174 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: ESXiでfsカーネルのブート</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2012年10月7日作成</p>
+	<section>
+		<h1>ESXiでfsカーネルのブート</h1>
+		<p>6/12頃、ESXi 5.0にfs64カーネルを置いて動かしたところ、
+		起動時に、たぶんカーネルの実行がはじまったあたりで、
+		割り込みかなにかを受けてパニックしました。
+		回避はしたけど解決できていないので、いちおうまとめ。</p>
+		<p>具体的なメッセージはこんなの。</p>
+		<pre><code>cpu0: 2590MHz P6
+apm ax=f000 cx=f000 dx=40 di=ffff ebx=5470 esi=-1
+bios (usb) loading disabled
+no ethernet interfaces recognised
+bus dev type vid  did intlognised
+bus dev type vid  did intl memory
+found 9fsfs64
+.388008.........................+1208352.................+189444-705804
+entry: 0x80100020
+FLAGS=10086 TRAP=e ECODE=0 PC=80128b8c
+  AX f000ff53  BX 801913b4  CX 801959a4  DX 801913b4
+  SI 8012b96b  DI 001ac964  BP 00000049
+  CS 0010 DS 0008  ES 0000  FS 0008  GS 0008
+  CR0 80010011 CR2 f000ff53 CR3 00183000
+panic: exception/interrupt 14
+FLAGS=10086 TRAP=e ECODE=0 PC=8001e777
+  AX 8001e769  BX 00000c80  CX 808185fc  DX 00000006
+  SI 00000000  DI 8004f3e8  BP 0000000a
+  CS 0010 DS 0008  ES 0000  FS 0008  GS 0008
+  CR0 80010011 CR2 80818614 CR3 00183000
+panic: exception/interrupt 14
+....</code></pre>
+		<section>
+			<h2>interrupt 14とは</h2>
+			<p>調べると、page faultでした。結構いやな感じ。</p>
+			<p>上記のログ&quot;entry: 0x80100020&quot;に続くのは、
+			おそらく&quot;Plan 9 63-bit fileserver&quot;で、
+			この文字列はmain()の中、一部の初期化が終わったところにあります。
+			で、exception/interrupt 14というメッセージは、
+			ローダの割り込みハンドラに書かれています。</p>
+		</section>
+		<section>
+			<h2>最新のローダで動かす</h2>
+			<p>最新(6/14頃)のCD imageからインストールしてみると普通に動きました。
+			そのまま、カーネルだけfs64に差し替えてみたらエラー。
+			なのでローダのメッセージが出ているけれど、原因はカーネルっぽい。</p>
+		</section>
+		<section>
+			<h2>ESXiとの相性問題なのか調べる</h2>
+			<p>少なくとも物理マシンで動いていた、2010年頃(もっと前かも)に作成した
+			fs64のブートフロッピーからブートしたら動きました。
+			そのままカーネルだけを新しくコンパイルしたものに差し替えたら起動しません。</p>
+		</section>
+		<section>
+			<h2>ビルド環境を変えてみる</h2>
+			<p>fsカーネルは/386/lib/libc.a等をリンクしているようなので
+			適当に、/n/dump/2011/0701/386を/386にバインドして
+			コンパイルしたものの、やっぱり変わらずエラー。</p>
+			<p>コンパイラとリンカを2011/07/01のものに変えたらなんだか動いた。</p>
+			<pre><code class="console">% 9fs dump
+% bind /n/dump/2011/0701/386/8c /bin/8c
+% bind /n/dump/2011/0701/386/8l /bin/8l</code></pre>
+			<p>コンパイラのバグが修正されて、修正の結果、
+			それまでバグがあったおかげでたまたまうまく動いていた部分が
+			今回から落ちるようになったのなら、放置すると後で困りそうだなあ。</p>
+		</section>
+		<section>
+			<h2>おまけ</h2>
+			<p>いちおう読んだfsカーネルのブート周りのフロー。</p>
+			<pre><code>port/main.c:main
+	port/sub.c:formatinit()	# printの書式などを初期化
+	port/main.c:machinit()	# mってなんだ？
+	pc/pc.c:vecinit()
+		# たぶん、9loadに読み込まれたplan9.iniをパースする
+		# confname[n], confval[n]に入る
+		# =が複数ある場合は、最初の=までがconfname
+	port/main.c:confinit()
+		# conf構造体を初期化
+		pc/pc.c:meminit()
+			pc/pc.c:mconfinit()
+				# mmap, mapaddrを初期化しているっぽい
+			pc/mmu.c:mmuinit()
+				# gdt, kptを初期化？
+				# このあたりになるとよくわからない
+				pc/mmu.c:taskswitch()
+					# tssを初期化
+			trapinit()
+				# 割り込み設定
+				# intr0, 1みたいな関数は、pc/l.sにあるアセンブリコード
+				# そこから潜って、pc/trap.c:trapに落ち着く
+
+				SEGCG: call gate
+				SEGIG: interrupt gate
+				SEGTG: task gate
+
+				# 0..255までにtask gateとして、intrbadを設定
+				sethvec() for 17..23, 40..255
+
+				# 0から16までは特別なintr0, intr1みたいなトラップ
+				# うち、14(page fault), 16(math coprocessor)はinterrupt gate
+				sethvec() for 0..16
+
+				# デバイス割り込みはinterrupt gate; これも特別なトラップ
+				sethvec() for 24..39
+
+				なんかいろいろ
+				fpinit()
+		fs64/9fsfs64.c:localconfinit()
+			# confをいろいろ設定
+			# 時間とか
+	pc/pc.c:lockinit()
+		# 何もしない
+	port/devcons.c:printinit()
+		# printq, readqを初期化
+		pc/pc.c:consinit()
+			# consgetc, consputc, consputs, intrputsの設定
+			# コンフィグがconsole=cgaでなければbaudとかも設定
+			pc/kbd.c:kbdinit()
+	port/proc.c:procinit()
+		# procallocを初期化
+		wakeup()
+	pc/8253.c:clockinit()
+		# 他もだが、特にここは本気でわからない
+		setvec()
+		cpuid()
+		cycles()
+		aamloop()
+
+	print(&quot;Plan 9 64 bit file server...&quot;)
+
+	printsizes()
+	alarminit()
+
+	# このあたりでserveq, raheadqを初期化
+
+	mbinit()
+	sntpinit()
+	fs64/9fsfs64.c:otherinit()
+
+	# 終わりに、files, wpaths, uid, gidspaceを初期化
+
+	authinit()
+	iobufinit()
+	arginit()
+	userinit()
+
+	wakeup()
+	launchinit()
+	schedinit()</code></pre>
+		</section>
+	</section>
+</main>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2012/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: ESXiでfsカーネルのブート\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2012年10月7日作成\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eESXiでfsカーネルのブート\u003c/h1\u003e\n\t\t\u003cp\u003e6/12頃、ESXi 5.0にfs64カーネルを置いて動かしたところ、\n\t\t起動時に、たぶんカーネルの実行がはじまったあたりで、\n\t\t割り込みかなにかを受けてパニックしました。\n\t\t回避はしたけど解決できていないので、いちおうまとめ。\u003c/p\u003e\n\t\t\u003cp\u003e具体的なメッセージはこんなの。\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode\u003ecpu0: 2590MHz P6\napm ax=f000 cx=f000 dx=40 di=ffff ebx=5470 esi=-1\nbios (usb) loading disabled\nno ethernet interfaces recognised\nbus dev type vid  did intlognised\nbus dev type vid  did intl memory\nfound 9fsfs64\n.388008.........................+1208352.................+189444-705804\nentry: 0x80100020\nFLAGS=10086 TRAP=e ECODE=0 PC=80128b8c\n  AX f000ff53  BX 801913b4  CX 801959a4  DX 801913b4\n  SI 8012b96b  DI 001ac964  BP 00000049\n  CS 0010 DS 0008  ES 0000  FS 0008  GS 0008\n  CR0 80010011 CR2 f000ff53 CR3 00183000\npanic: exception/interrupt 14\nFLAGS=10086 TRAP=e ECODE=0 PC=8001e777\n  AX 8001e769  BX 00000c80  CX 808185fc  DX 00000006\n  SI 00000000  DI 8004f3e8  BP 0000000a\n  CS 0010 DS 0008  ES 0000  FS 0008  GS 0008\n  CR0 80010011 CR2 80818614 CR3 00183000\npanic: exception/interrupt 14\n....\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003einterrupt 14とは\u003c/h2\u003e\n\t\t\t\u003cp\u003e調べると、page faultでした。結構いやな感じ。\u003c/p\u003e\n\t\t\t\u003cp\u003e上記のログ\u0026quot;entry: 0x80100020\u0026quot;に続くのは、\n\t\t\tおそらく\u0026quot;Plan 9 63-bit fileserver\u0026quot;で、\n\t\t\tこの文字列はmain()の中、一部の初期化が終わったところにあります。\n\t\t\tで、exception/interrupt 14というメッセージは、\n\t\t\tローダの割り込みハンドラに書かれています。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e最新のローダで動かす\u003c/h2\u003e\n\t\t\t\u003cp\u003e最新(6/14頃)のCD imageからインストールしてみると普通に動きました。\n\t\t\tそのまま、カーネルだけfs64に差し替えてみたらエラー。\n\t\t\tなのでローダのメッセージが出ているけれど、原因はカーネルっぽい。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eESXiとの相性問題なのか調べる\u003c/h2\u003e\n\t\t\t\u003cp\u003e少なくとも物理マシンで動いていた、2010年頃(もっと前かも)に作成した\n\t\t\tfs64のブートフロッピーからブートしたら動きました。\n\t\t\tそのままカーネルだけを新しくコンパイルしたものに差し替えたら起動しません。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eビルド環境を変えてみる\u003c/h2\u003e\n\t\t\t\u003cp\u003efsカーネルは/386/lib/libc.a等をリンクしているようなので\n\t\t\t適当に、/n/dump/2011/0701/386を/386にバインドして\n\t\t\tコンパイルしたものの、やっぱり変わらずエラー。\u003c/p\u003e\n\t\t\t\u003cp\u003eコンパイラとリンカを2011/07/01のものに変えたらなんだか動いた。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% 9fs dump\n% bind /n/dump/2011/0701/386/8c /bin/8c\n% bind /n/dump/2011/0701/386/8l /bin/8l\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eコンパイラのバグが修正されて、修正の結果、\n\t\t\tそれまでバグがあったおかげでたまたまうまく動いていた部分が\n\t\t\t今回から落ちるようになったのなら、放置すると後で困りそうだなあ。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eおまけ\u003c/h2\u003e\n\t\t\t\u003cp\u003eいちおう読んだfsカーネルのブート周りのフロー。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003eport/main.c:main\n\tport/sub.c:formatinit()\t# printの書式などを初期化\n\tport/main.c:machinit()\t# mってなんだ？\n\tpc/pc.c:vecinit()\n\t\t# たぶん、9loadに読み込まれたplan9.iniをパースする\n\t\t# confname[n], confval[n]に入る\n\t\t# =が複数ある場合は、最初の=までがconfname\n\tport/main.c:confinit()\n\t\t# conf構造体を初期化\n\t\tpc/pc.c:meminit()\n\t\t\tpc/pc.c:mconfinit()\n\t\t\t\t# mmap, mapaddrを初期化しているっぽい\n\t\t\tpc/mmu.c:mmuinit()\n\t\t\t\t# gdt, kptを初期化？\n\t\t\t\t# このあたりになるとよくわからない\n\t\t\t\tpc/mmu.c:taskswitch()\n\t\t\t\t\t# tssを初期化\n\t\t\ttrapinit()\n\t\t\t\t# 割り込み設定\n\t\t\t\t# intr0, 1みたいな関数は、pc/l.sにあるアセンブリコード\n\t\t\t\t# そこから潜って、pc/trap.c:trapに落ち着く\n\n\t\t\t\tSEGCG: call gate\n\t\t\t\tSEGIG: interrupt gate\n\t\t\t\tSEGTG: task gate\n\n\t\t\t\t# 0..255までにtask gateとして、intrbadを設定\n\t\t\t\tsethvec() for 17..23, 40..255\n\n\t\t\t\t# 0から16までは特別なintr0, intr1みたいなトラップ\n\t\t\t\t# うち、14(page fault), 16(math coprocessor)はinterrupt gate\n\t\t\t\tsethvec() for 0..16\n\n\t\t\t\t# デバイス割り込みはinterrupt gate; これも特別なトラップ\n\t\t\t\tsethvec() for 24..39\n\n\t\t\t\tなんかいろいろ\n\t\t\t\tfpinit()\n\t\tfs64/9fsfs64.c:localconfinit()\n\t\t\t# confをいろいろ設定\n\t\t\t# 時間とか\n\tpc/pc.c:lockinit()\n\t\t# 何もしない\n\tport/devcons.c:printinit()\n\t\t# printq, readqを初期化\n\t\tpc/pc.c:consinit()\n\t\t\t# consgetc, consputc, consputs, intrputsの設定\n\t\t\t# コンフィグがconsole=cgaでなければbaudとかも設定\n\t\t\tpc/kbd.c:kbdinit()\n\tport/proc.c:procinit()\n\t\t# procallocを初期化\n\t\twakeup()\n\tpc/8253.c:clockinit()\n\t\t# 他もだが、特にここは本気でわからない\n\t\tsetvec()\n\t\tcpuid()\n\t\tcycles()\n\t\taamloop()\n\n\tprint(\u0026quot;Plan 9 64 bit file server...\u0026quot;)\n\n\tprintsizes()\n\talarminit()\n\n\t# このあたりでserveq, raheadqを初期化\n\n\tmbinit()\n\tsntpinit()\n\tfs64/9fsfs64.c:otherinit()\n\n\t# 終わりに、files, wpaths, uid, gidspaceを初期化\n\n\tauthinit()\n\tiobufinit()\n\targinit()\n\tuserinit()\n\n\twakeup()\n\tlaunchinit()\n\tschedinit()\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2012","1007"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

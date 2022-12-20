@@ -1,0 +1,173 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>Plan 9: さくらVPSでPlan 9ネットワークを構成してみた</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="/plan9/doc/inst/index.html"><a>インストール</a></a></li>
+	<li><a href="/plan9/doc/guide/index.html"><a>システムの使い方</a></a></li>
+	<li><a href="/plan9/doc/devel/index.html"><a>プログラミング</a></a></li>
+	<li><a href="/plan9/doc/adm/index.html"><a>システム管理</a></a></li>
+	<li><a href="/plan9/man/index.html"><a>自作ツール集</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2014年5月4日作成</p>
+	<section>
+		<h1>さくらVPSでPlan 9ネットワークを構成してみた</h1>
+		<p>さくらVPSを使って、フルシステムのPlan 9を作ってみます。
+		最終的に、ファイルサーバ、認証サーバ、CPUサーバの3つ建てて、
+		インターネットからdrawtermでアクセスできるところまでの予定です。</p>
+		<section>
+			<h2>方針</h2>
+			<p>ざっくりと構成方針です。</p>
+			<table>
+			<tr><th>ホスト</th><th>カーネル</th><th>ether0</th><th>ether1</th><th>fs</th></tr>
+			<tr><td>fs</td><td>pccpuf</td><td>133.242.aaa.aaa</td><td>192.168.1.3</td><td>venti+fossil</td></tr>
+			<tr><td>auth</td><td>pcauth</td><td>133.242.bbb.bbb</td><td>192.168.1.7</td><td>fossil</td></tr>
+			<tr><td>cpu</td><td>pccpu</td><td>133.242.ccc.ccc</td><td>192.168.1.23</td><td>fossil</td></tr>
+			</table>
+			<p>authとcpuは、最終的にfsをルートにマウントするので、
+			fossilのみで構成しています。</p>
+			<p>133.242.ではじまるアドレスは、
+			さくらVPSに割り当てられているアドレスを使います。
+			ネットワークの構成(ipgw, ipmaskなど)は
+			VPSコントロールパネルのOSインストール時に見られます。
+			それ以外の方法で知る方法は知りませんので、
+			情報を控えておいたほうがいいでしょう。</p>
+		</section>
+		<section>
+			<h2>準備</h2>
+			<p>まずは3台のVPSが必要なので、NICを認識するところまで作業します。
+			VPSに単体Plan 9をインストールする部分は、<a href="/plan9/doc/inst/vps.html"><a>さくらVPSにPlan 9をインストール</a></a>を読んでください。</p>
+			<p>サーバ3台の構築が終わったら、VPSコントロールパネルから、
+			ローカルネットワークの追加が必要です。
+			これは本契約でなければ使えません。
+			本契約になってしばらくすればサーバ一覧に出てきます。
+			サーバを停止した状態で、各サーバのNIC1にローカルネットワークを接続します。
+			これでローカルネットワーク経由での通信が可能となります。</p>
+			<p>このネットワークは扱いがちょっと面倒です。
+			OS再インストールをすると、おそらくISOからブートするより前に、
+			ローカルネットワーク構成がリセットされてしまいますので
+			忘れずに再接続しなければなりません。</p>
+			<p>また、インターネット側はNIC0にだけ割り当て可能です。
+			Plan 9は/netに内部ネットワークをバインドしたほうが楽なのですが、
+			<strong>/lib/namespace</strong>の中でether0(NIC0)を<strong>/net</strong>にバインドしているので
+			これをether1へ切り替える必要があります。
+			切り替えたことにより、fsをルートにマウントするサーバは
+			かならずNICを2枚以上使って、NIC0をインターネット側に、
+			NIC1をローカルネットワークしなければならなくなります。</p>
+		</section>
+		<section>
+			<h2>ファイルサーバ</h2>
+			<p>NICを認識したpcfカーネルが動作した直後だと仮定しています。</p>
+			<section>
+				<h3>タイムゾーン構成</h3>
+				<pre><code class="console">fs% con -l /srv/fscons
+prompt: uname adm +glenda
+prompt: ctl+\
+&gt;&gt;&gt; q
+fs% cd /adm/timezone
+fs% cp Japan local</code></pre>
+			</section>
+			<section>
+				<h3>ファイルサーバ用カーネルインストール</h3>
+				<pre><code class="console">fs% cd /sys/src/9/pc
+fs% mk &#x27;CONF=pccpuf&#x27;
+fs% 9fat:
+fs% mv 9pccpuf /n/9fat
+fs% mk &#x27;CONF=pccpuf&#x27; nuke</code></pre>
+				<p>終わったら、<strong>/n/9fat/plan9.ini</strong>を編集。
+				bootfileエントリは、ブート時にカーネルを選べるように、
+				変更ではなく追加したほうがいいでしょう。</p>
+				<pre><code class="ini">bootfile=sdC0!9fat!9pccpuf
+sysname=fs
+auth=192.168.1.7
+console=0 b115200 l8 pn s1</code></pre>
+			</section>
+			<section>
+				<h3>ネットワーク構成</h3>
+				<p>ローカルネットワーク(NIC1)を<strong>/net</strong>に割り当てるように変更します。</p>
+				<pre><code class="console">fs% grep /net /lib/namespace
+bind -a #l1 /net  (オリジナルは#lだった)
+bind -a #I /net</code></pre>
+				<p>NIC0は<strong>/net.alt</strong>へ割り当てますが、サーバによっては
+				どちらも/netに割り当てたい場合があるので、
+				サーバ固有構成のほうで設定します。</p>
+				<pre><code class="console">fs% cat /cfg/fs/namespace
+bind -a #l0 /net.alt
+bind -a #I1 /net.alt</code></pre>
+				<p><strong>cpurc</strong>で各NICへIPアドレスを設定。
+				途中の$ipgwは、インストール時に示されたゲートウェイアドレス。</p>
+				<pre><code class="console">% cat /cfg/fs/cpurc
+ip/ipconfig ether /net/ether1 add 192.168.1.3 255.255.255.0
+ip/ipconfig -x.alt -g $ipgw ether /net.alt/ether0 add 133.242.aaa.aaa 255.255.254.0
+ndb/dns -r
+ndb/cs -x.alt -f /lib/ndb/external
+ndb/dns -rx.alt -f /lib/ndb/external
+aux/timesync -n /net.alt/udp!ntp1.sakura.ad.jp
+aux/listen -q -d /cfg/$sysname/service tcp
+sleep 3</code></pre>
+				<p><strong>/cfg/fs/service</strong>は、<strong>/rc/bin/service</strong>をコピーして
+				必要なサービスだけ残しています。9pサービスだけあればいいのですが、
+				何もListenしていないと<strong>/rc/bin/cpurc</strong>でいろいろサービスが起動してしまうので、
+				今回は割と無難な<strong>tcp9</strong>(discard)だけ立てていますが、
+				ほかに、<strong>/rc/bin/cpurc</strong>を変更してしまってもいいと思います。</p>
+				<p><strong>/lib/ndb/local</strong>, <strong>/lib/ndb/external</strong>は適切な値で構成しておきます。
+				<strong>local</strong>のほうはipnetを使ってグループにまとめられますが、
+				グローバルIPアドレスはばらばらなので、個別に設定しましょう。
+				だいたいこんな感じ。</p>
+				<pre><code class="ini">sys=fs dom=fs.domain.dom
+	ether=xxxxxxxx
+	ip=133.242.aaa.aaa
+	ipgw=xxx.xxx.xxx.xxx
+	ipmask=255.255.254.0
+	dns=133.242.0.3
+	dns=133.242.0.4</code></pre>
+			</section>
+			<section>
+				<h3>サーバ構成</h3>
+				<p>bootesユーザを追加します。</p>
+				<pre><code class="console">fs% con -l /srv/fscons
+prompt: uname bootes bootes
+prompt: ctl+\
+&gt;&gt;&gt; q</code></pre>
+				<p>ファイルサーバを他のサーバからマウントできるように、
+				tcp564をListenするようにfossilを変更。
+				<strong>/rc/bin/service/!tcp564</strong>もあるけれど、こっちは使わない。</p>
+				<pre><code class="console">fs% fossil/conf /dev/sdC0/fossil &gt;/tmp/flproto
+fs% echo &#x27;listen tcp!*!564&#x27; &gt;&gt;/tmp/flproto
+fs% fossil/conf -w /dev/sdC0/fossil /flproto
+fs% rm /tmp/flproto</code></pre>
+				<p>必要なユーザやファイルをあらかじめ作っておいて再起動。</p>
+				<pre><code class="console">prompt: uname adm +bootes
+prompt: uname adm -glenda
+prompt: uname sys -glenda
+prompt: uname adm -sys (これは好み)
+prompt: fsys main
+prompt: create /active/sys/log/cron sys sys a666
+prompt: create /active/adm/secstore adm adm d775</code></pre>
+				<pre><code class="console">fs% fshalt
+(停止したらコントロールパネルから再起動)</code></pre>
+				<p>理由は分かりませんが、Plan 9でctl+t, ctl+t, rとリブートすると
+				VPSの状態が「不明」になって、強制停止も起動もできなくなります。
+				こうなると、不明から脱するには再インストールを行って
+				むりやり「起動」状態に戻す必要があります。
+				(「起動」になればいいので、再インストールを最後まで行う必要はありません)</p>
+			</section>
+			<section>
+				<h3>再起動後</h3>
+				<p><strong>9pccpuf</strong>カーネルで起動したら、
+				最初にbootesの情報をきかれるので入力します。
+				残りのサーバにも同じものを設定する必要があります。</p>
+				<p>終わったら、<strong>/sys/log</strong>にエラーが出ていないか、
+				必要なサービスだけになっているかを確認して終わり。</p>
+				<pre><code class="console">fs# netstat | grep Listen
+fs# netstat /net.alt | grep Listen</code></pre>
+			</section>
+		</section>
+	</section>
+</main>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/plan9/doc/inst/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003ePlan 9: さくらVPSでPlan 9ネットワークを構成してみた\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/inst/index.html\"\u003eインストール\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/guide/index.html\"\u003eシステムの使い方\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/devel/index.html\"\u003eプログラミング\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/adm/index.html\"\u003eシステム管理\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/man/index.html\"\u003e自作ツール集\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2014年5月4日作成\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eさくらVPSでPlan 9ネットワークを構成してみた\u003c/h1\u003e\n\t\t\u003cp\u003eさくらVPSを使って、フルシステムのPlan 9を作ってみます。\n\t\t最終的に、ファイルサーバ、認証サーバ、CPUサーバの3つ建てて、\n\t\tインターネットからdrawtermでアクセスできるところまでの予定です。\u003c/p\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e方針\u003c/h2\u003e\n\t\t\t\u003cp\u003eざっくりと構成方針です。\u003c/p\u003e\n\t\t\t\u003ctable\u003e\n\t\t\t\u003ctr\u003e\u003cth\u003eホスト\u003c/th\u003e\u003cth\u003eカーネル\u003c/th\u003e\u003cth\u003eether0\u003c/th\u003e\u003cth\u003eether1\u003c/th\u003e\u003cth\u003efs\u003c/th\u003e\u003c/tr\u003e\n\t\t\t\u003ctr\u003e\u003ctd\u003efs\u003c/td\u003e\u003ctd\u003epccpuf\u003c/td\u003e\u003ctd\u003e133.242.aaa.aaa\u003c/td\u003e\u003ctd\u003e192.168.1.3\u003c/td\u003e\u003ctd\u003eventi+fossil\u003c/td\u003e\u003c/tr\u003e\n\t\t\t\u003ctr\u003e\u003ctd\u003eauth\u003c/td\u003e\u003ctd\u003epcauth\u003c/td\u003e\u003ctd\u003e133.242.bbb.bbb\u003c/td\u003e\u003ctd\u003e192.168.1.7\u003c/td\u003e\u003ctd\u003efossil\u003c/td\u003e\u003c/tr\u003e\n\t\t\t\u003ctr\u003e\u003ctd\u003ecpu\u003c/td\u003e\u003ctd\u003epccpu\u003c/td\u003e\u003ctd\u003e133.242.ccc.ccc\u003c/td\u003e\u003ctd\u003e192.168.1.23\u003c/td\u003e\u003ctd\u003efossil\u003c/td\u003e\u003c/tr\u003e\n\t\t\t\u003c/table\u003e\n\t\t\t\u003cp\u003eauthとcpuは、最終的にfsをルートにマウントするので、\n\t\t\tfossilのみで構成しています。\u003c/p\u003e\n\t\t\t\u003cp\u003e133.242.ではじまるアドレスは、\n\t\t\tさくらVPSに割り当てられているアドレスを使います。\n\t\t\tネットワークの構成(ipgw, ipmaskなど)は\n\t\t\tVPSコントロールパネルのOSインストール時に見られます。\n\t\t\tそれ以外の方法で知る方法は知りませんので、\n\t\t\t情報を控えておいたほうがいいでしょう。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e準備\u003c/h2\u003e\n\t\t\t\u003cp\u003eまずは3台のVPSが必要なので、NICを認識するところまで作業します。\n\t\t\tVPSに単体Plan 9をインストールする部分は、\u003ca href=\"vps.html\"\u003eさくらVPSにPlan 9をインストール\u003c/a\u003eを読んでください。\u003c/p\u003e\n\t\t\t\u003cp\u003eサーバ3台の構築が終わったら、VPSコントロールパネルから、\n\t\t\tローカルネットワークの追加が必要です。\n\t\t\tこれは本契約でなければ使えません。\n\t\t\t本契約になってしばらくすればサーバ一覧に出てきます。\n\t\t\tサーバを停止した状態で、各サーバのNIC1にローカルネットワークを接続します。\n\t\t\tこれでローカルネットワーク経由での通信が可能となります。\u003c/p\u003e\n\t\t\t\u003cp\u003eこのネットワークは扱いがちょっと面倒です。\n\t\t\tOS再インストールをすると、おそらくISOからブートするより前に、\n\t\t\tローカルネットワーク構成がリセットされてしまいますので\n\t\t\t忘れずに再接続しなければなりません。\u003c/p\u003e\n\t\t\t\u003cp\u003eまた、インターネット側はNIC0にだけ割り当て可能です。\n\t\t\tPlan 9は/netに内部ネットワークをバインドしたほうが楽なのですが、\n\t\t\t\u003cstrong\u003e/lib/namespace\u003c/strong\u003eの中でether0(NIC0)を\u003cstrong\u003e/net\u003c/strong\u003eにバインドしているので\n\t\t\tこれをether1へ切り替える必要があります。\n\t\t\t切り替えたことにより、fsをルートにマウントするサーバは\n\t\t\tかならずNICを2枚以上使って、NIC0をインターネット側に、\n\t\t\tNIC1をローカルネットワークしなければならなくなります。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eファイルサーバ\u003c/h2\u003e\n\t\t\t\u003cp\u003eNICを認識したpcfカーネルが動作した直後だと仮定しています。\u003c/p\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eタイムゾーン構成\u003c/h3\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003efs% con -l /srv/fscons\nprompt: uname adm +glenda\nprompt: ctl+\\\n\u0026gt;\u0026gt;\u0026gt; q\nfs% cd /adm/timezone\nfs% cp Japan local\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eファイルサーバ用カーネルインストール\u003c/h3\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003efs% cd /sys/src/9/pc\nfs% mk 'CONF=pccpuf'\nfs% 9fat:\nfs% mv 9pccpuf /n/9fat\nfs% mk 'CONF=pccpuf' nuke\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003e終わったら、\u003cstrong\u003e/n/9fat/plan9.ini\u003c/strong\u003eを編集。\n\t\t\t\tbootfileエントリは、ブート時にカーネルを選べるように、\n\t\t\t\t変更ではなく追加したほうがいいでしょう。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"ini\"\u003ebootfile=sdC0!9fat!9pccpuf\nsysname=fs\nauth=192.168.1.7\nconsole=0 b115200 l8 pn s1\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eネットワーク構成\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eローカルネットワーク(NIC1)を\u003cstrong\u003e/net\u003c/strong\u003eに割り当てるように変更します。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003efs% grep /net /lib/namespace\nbind -a #l1 /net  (オリジナルは#lだった)\nbind -a #I /net\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003eNIC0は\u003cstrong\u003e/net.alt\u003c/strong\u003eへ割り当てますが、サーバによっては\n\t\t\t\tどちらも/netに割り当てたい場合があるので、\n\t\t\t\tサーバ固有構成のほうで設定します。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003efs% cat /cfg/fs/namespace\nbind -a #l0 /net.alt\nbind -a #I1 /net.alt\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003e\u003cstrong\u003ecpurc\u003c/strong\u003eで各NICへIPアドレスを設定。\n\t\t\t\t途中の$ipgwは、インストール時に示されたゲートウェイアドレス。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% cat /cfg/fs/cpurc\nip/ipconfig ether /net/ether1 add 192.168.1.3 255.255.255.0\nip/ipconfig -x.alt -g $ipgw ether /net.alt/ether0 add 133.242.aaa.aaa 255.255.254.0\nndb/dns -r\nndb/cs -x.alt -f /lib/ndb/external\nndb/dns -rx.alt -f /lib/ndb/external\naux/timesync -n /net.alt/udp!ntp1.sakura.ad.jp\naux/listen -q -d /cfg/$sysname/service tcp\nsleep 3\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003e\u003cstrong\u003e/cfg/fs/service\u003c/strong\u003eは、\u003cstrong\u003e/rc/bin/service\u003c/strong\u003eをコピーして\n\t\t\t\t必要なサービスだけ残しています。9pサービスだけあればいいのですが、\n\t\t\t\t何もListenしていないと\u003cstrong\u003e/rc/bin/cpurc\u003c/strong\u003eでいろいろサービスが起動してしまうので、\n\t\t\t\t今回は割と無難な\u003cstrong\u003etcp9\u003c/strong\u003e(discard)だけ立てていますが、\n\t\t\t\tほかに、\u003cstrong\u003e/rc/bin/cpurc\u003c/strong\u003eを変更してしまってもいいと思います。\u003c/p\u003e\n\t\t\t\t\u003cp\u003e\u003cstrong\u003e/lib/ndb/local\u003c/strong\u003e, \u003cstrong\u003e/lib/ndb/external\u003c/strong\u003eは適切な値で構成しておきます。\n\t\t\t\t\u003cstrong\u003elocal\u003c/strong\u003eのほうはipnetを使ってグループにまとめられますが、\n\t\t\t\tグローバルIPアドレスはばらばらなので、個別に設定しましょう。\n\t\t\t\tだいたいこんな感じ。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"ini\"\u003esys=fs dom=fs.domain.dom\n\tether=xxxxxxxx\n\tip=133.242.aaa.aaa\n\tipgw=xxx.xxx.xxx.xxx\n\tipmask=255.255.254.0\n\tdns=133.242.0.3\n\tdns=133.242.0.4\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eサーバ構成\u003c/h3\u003e\n\t\t\t\t\u003cp\u003ebootesユーザを追加します。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003efs% con -l /srv/fscons\nprompt: uname bootes bootes\nprompt: ctl+\\\n\u0026gt;\u0026gt;\u0026gt; q\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003eファイルサーバを他のサーバからマウントできるように、\n\t\t\t\ttcp564をListenするようにfossilを変更。\n\t\t\t\t\u003cstrong\u003e/rc/bin/service/!tcp564\u003c/strong\u003eもあるけれど、こっちは使わない。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003efs% fossil/conf /dev/sdC0/fossil \u0026gt;/tmp/flproto\nfs% echo 'listen tcp!*!564' \u0026gt;\u0026gt;/tmp/flproto\nfs% fossil/conf -w /dev/sdC0/fossil /flproto\nfs% rm /tmp/flproto\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003e必要なユーザやファイルをあらかじめ作っておいて再起動。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003eprompt: uname adm +bootes\nprompt: uname adm -glenda\nprompt: uname sys -glenda\nprompt: uname adm -sys (これは好み)\nprompt: fsys main\nprompt: create /active/sys/log/cron sys sys a666\nprompt: create /active/adm/secstore adm adm d775\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003efs% fshalt\n(停止したらコントロールパネルから再起動)\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003e理由は分かりませんが、Plan 9でctl+t, ctl+t, rとリブートすると\n\t\t\t\tVPSの状態が「不明」になって、強制停止も起動もできなくなります。\n\t\t\t\tこうなると、不明から脱するには再インストールを行って\n\t\t\t\tむりやり「起動」状態に戻す必要があります。\n\t\t\t\t(「起動」になればいいので、再インストールを最後まで行う必要はありません)\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003e再起動後\u003c/h3\u003e\n\t\t\t\t\u003cp\u003e\u003cstrong\u003e9pccpuf\u003c/strong\u003eカーネルで起動したら、\n\t\t\t\t最初にbootesの情報をきかれるので入力します。\n\t\t\t\t残りのサーバにも同じものを設定する必要があります。\u003c/p\u003e\n\t\t\t\t\u003cp\u003e終わったら、\u003cstrong\u003e/sys/log\u003c/strong\u003eにエラーが出ていないか、\n\t\t\t\t必要なサービスだけになっているかを確認して終わり。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003efs# netstat | grep Listen\nfs# netstat /net.alt | grep Listen\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["plan9","doc","inst","vps-dist1"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

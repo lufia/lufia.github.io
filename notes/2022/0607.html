@@ -1,0 +1,56 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: ffmpegでHTTPリクエストにヘッダを追加する</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2022年6月7日作成</p>
+	<section>
+		<h1>ffmpegでHTTPリクエストにヘッダを追加する</h1>
+		<p>HLSをダウンロードする際に、<em>ffmpeg</em>にHTTPヘッダを指定したいことがある。
+		その場合、<em>ffmpeg</em>には<em>-headers</em>オプションがあるので、これを使うとよい。</p>
+		<pre><code class="console">$ ffmpeg -headers &#x27;User-Agent: xx&#x27; -i &#x27;https://example.com/movie.m3u8?q=xx&#x27; ...
+
+# User-Agent*の場合は`-user_agent`オプションが特別に用意されているので、
+# これで代用してもよい
+$ ffmpeg -user_agent &#x27;xx&#x27; -i &#x27;https://example.com/movie.m3u8?q=xx&#x27;</code></pre>
+		<p>ここで、複数ヘッダを指定したい場合は、<em>-headers</em>オプションの値をCRLFで区切って与えるらしい。</p>
+		<pre><code class="console">$ ffmpeg -headers $&#x27;User-Agent: xx\r\nAuth-Token: xx\r\n&#x27; -i ...</code></pre>
+		<p>ところで、<em>-headers</em>オプションと<em>-i</em>オプションを逆にすると、
+		実際のリクエストにヘッダが反映されない。</p>
+		<pre><code class="console">$ ffmpeg -i ... -headers ... # これは期待通りに動かない</code></pre>
+		<p>この理由は、<em>ffmpeg</em>には<a href="https://trac.ffmpeg.org/wiki/Concatenate">concatフィルタ</a>など、
+		複数ストリームを扱うフィルタがあって、このとき複数の<em>-i</em>オプションを
+		与えることで一時ファイルを経由せずストリームを結合できるようになっている。
+		そのため、<em>-headers</em>のようなオプション(マニュアルによるとinfile options)は、
+		「次に出現する<em>-i</em>オプション」に対して反映される。
+		上記のコマンドでは、<em>-i</em>オプションの前には<em>-headers</em>がないので
+		デフォルトのヘッダでURLにリクエストするし、
+		また、<em>-headers</em>オプションの後に<em>-i</em>オプションがないのでこれは単に無視される。</p>
+		<p>実際にどのようなリクエストを送っているかは<em>-loglevel</em>オプションで確認できる。</p>
+		<pre><code class="console">$ ffmpeg -loglevel debug ...</code></pre>
+	</section>
+</main>
+<aside>
+	<ul>
+	<li><a href="https://superuser.com/questions/1656570/packet-corruption-during-download-then-ffmpeg-hangs">Packet corruption during download, then ffmpeg hangs</a></li>
+	</ul>
+</aside>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2022/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: ffmpegでHTTPリクエストにヘッダを追加する\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2022年6月7日作成\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003effmpegでHTTPリクエストにヘッダを追加する\u003c/h1\u003e\n\t\t\u003cp\u003eHLSをダウンロードする際に、\u003cem\u003effmpeg\u003c/em\u003eにHTTPヘッダを指定したいことがある。\n\t\tその場合、\u003cem\u003effmpeg\u003c/em\u003eには\u003cem\u003e-headers\u003c/em\u003eオプションがあるので、これを使うとよい。\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e$ ffmpeg -headers 'User-Agent: xx' -i 'https://example.com/movie.m3u8?q=xx' ...\n\n# User-Agent*の場合は`-user_agent`オプションが特別に用意されているので、\n# これで代用してもよい\n$ ffmpeg -user_agent 'xx' -i 'https://example.com/movie.m3u8?q=xx'\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003cp\u003eここで、複数ヘッダを指定したい場合は、\u003cem\u003e-headers\u003c/em\u003eオプションの値をCRLFで区切って与えるらしい。\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e$ ffmpeg -headers $'User-Agent: xx\\r\\nAuth-Token: xx\\r\\n' -i ...\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003cp\u003eところで、\u003cem\u003e-headers\u003c/em\u003eオプションと\u003cem\u003e-i\u003c/em\u003eオプションを逆にすると、\n\t\t実際のリクエストにヘッダが反映されない。\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e$ ffmpeg -i ... -headers ... # これは期待通りに動かない\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003cp\u003eこの理由は、\u003cem\u003effmpeg\u003c/em\u003eには\u003ca href=\"https://trac.ffmpeg.org/wiki/Concatenate\"\u003econcatフィルタ\u003c/a\u003eなど、\n\t\t複数ストリームを扱うフィルタがあって、このとき複数の\u003cem\u003e-i\u003c/em\u003eオプションを\n\t\t与えることで一時ファイルを経由せずストリームを結合できるようになっている。\n\t\tそのため、\u003cem\u003e-headers\u003c/em\u003eのようなオプション(マニュアルによるとinfile options)は、\n\t\t「次に出現する\u003cem\u003e-i\u003c/em\u003eオプション」に対して反映される。\n\t\t上記のコマンドでは、\u003cem\u003e-i\u003c/em\u003eオプションの前には\u003cem\u003e-headers\u003c/em\u003eがないので\n\t\tデフォルトのヘッダでURLにリクエストするし、\n\t\tまた、\u003cem\u003e-headers\u003c/em\u003eオプションの後に\u003cem\u003e-i\u003c/em\u003eオプションがないのでこれは単に無視される。\u003c/p\u003e\n\t\t\u003cp\u003e実際にどのようなリクエストを送っているかは\u003cem\u003e-loglevel\u003c/em\u003eオプションで確認できる。\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e$ ffmpeg -loglevel debug ...\u003c/code\u003e\u003c/pre\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"https://superuser.com/questions/1656570/packet-corruption-during-download-then-ffmpeg-hangs\"\u003ePacket corruption during download, then ffmpeg hangs\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2022","0607"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

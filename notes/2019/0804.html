@@ -1,0 +1,148 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: Android移行メモ</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2019年8月4日作成</p>
+	<section>
+		<h1>Android移行メモ</h1>
+		<p>iPhone Xを落として画面を割ってしまって厳しいので、
+		普段持ち運ぶ端末をPixel 3にしました。
+		iPhone XもPixel 3も、どちらもSIMフリーの端末を使います。</p>
+		<section>
+			<h2>移行前に注意が必要なところ</h2>
+			<p>LINEのバックアップは、異なるプラットフォーム間では引き継げません。
+			LINEのトーク履歴などは、iPhoneではiCloud、
+			AndroidではGoogle Driveにバックアップできます。
+			ただし、AndroidからiCloudを参照したり、
+			iPhoneからGoogle Driveにバックアップや復元することはできません。
+			なのでトーク履歴の移行は諦める必要があります。</p>
+			<ul>
+			<li><a href="https://begin-simfree.com/transfer-line-account-1690.html">機種変更時にLINEを引き継ぐ方法と注意点</a></li>
+			</ul>
+			<p>AndroidからiCloudを参照できないのはサービスの特性から仕方ないとは思うものの、
+			両プラットフォームからGoogle Driveを通してバックアップできて欲しいですね。</p>
+		</section>
+		<section>
+			<h2>移行後にやったこと</h2>
+			<p>まずはAPNの設定をしないとモバイル回線に繋げないので設定します。
+			ショップで端末の更新をする場合は、APNなどもおそらく店員さんが設定してくれますが、
+			今回はもともとiPhoneで使っていたSIMをPixel 3に移し替えるので、自分でやります。</p>
+			<ol>
+			<li>モバイルネットワークをタップ</li>
+			<li>詳細設定を展開する</li>
+			<li>アクセスポイント名をタップ</li>
+			</ol>
+			<p>これでAPNの画面が開くので、新しいAPNとして以下を追加します。</p>
+			<dl>
+			<div>
+				<dt>名前</dt>
+				<dd>softbank</dd>
+			</div>
+			<div>
+				<dt>APN</dt>
+				<dd>jpspir</dd>
+			</div>
+			<div>
+				<dt>ユーザー名</dt>
+				<dd>sirobit</dd>
+			</div>
+			<div>
+				<dt>パスワード</dt>
+				<dd>amstkoi</dd>
+			</div>
+			<div>
+				<dt>MMSC</dt>
+				<dd>https://mms/</dd>
+			</div>
+			<div>
+				<dt>MMSプロキシ</dt>
+				<dd>smilemms.softbank.ne.jp</dd>
+			</div>
+			<div>
+				<dt>MMSポート</dt>
+				<dd>8080</dd>
+			</div>
+			<div>
+				<dt>MCC</dt>
+				<dd>440</dd>
+			</div>
+			<div>
+				<dt>MNC</dt>
+				<dd>20</dd>
+			</div>
+			<div>
+				<dt>認証タイプ</dt>
+				<dd>PAPまたはCHAP</dd>
+			</div>
+			<div>
+				<dt>APNタイプ</dt>
+				<dd>default,mms,supl,hipri,fota,ims,cbs</dd>
+			</div>
+			<div>
+				<dt>APNプロトコル</dt>
+				<dd>IPv4/IPv6</dd>
+			</div>
+			<div>
+				<dt>APNローミングプロトコル</dt>
+				<dd>IPv4</dd>
+			</div>
+			</dl>
+			<p>画面の流れなどは以下の記事に掲載されていました。</p>
+			<ul>
+			<li><a href="https://usedoor.jp/howto/digital/android-smartphone/softbank-iphone-sim-apn-setting/">iPhone用SIM（C2など）をAndroidスマホで使用する方法</a></li>
+			</ul>
+		</section>
+		<section>
+			<h2>他に設定したこと</h2>
+			<p>基本的にはデフォルトのまま使うので、設定したのはこの程度です。</p>
+			<ul>
+			<li>通知設定で、「ロック画面上に、プライベートな内容を表示しない」へ変更</li>
+			<li>Digital Wellbeingでおやすみモードを設定</li>
+			<li>伏せるだけでサイレントモードをon</li>
+			</ul>
+			<p>他にも便利そうな設定があるので、必要な人は以下の記事を眺めてみると良いと思います。</p>
+			<ul>
+			<li><a href="https://mobilelaby.com/blog-entry-how-to-setup-pixel-3.html">Pixel 4を買ったら設定しておきたい17のこと</a></li>
+			</ul>
+			<p>この記事、2021年現在はPixel 4の記事だけど当時はPixel 3を対象としたものでした。</p>
+		</section>
+		<section>
+			<h2>Androidの方が便利なところ</h2>
+			<ul>
+			<li>思っていたよりバックボタンは便利だった</li>
+			<li>異なるアプリ間でも、WebViewのログイン状態が残る</li>
+			<li>Face IDより指紋の方が全体的にはストレスがなかった</li>
+			<li>新しいWeb技術への対応が早い</li>
+			</ul>
+		</section>
+		<section>
+			<h2>移行した後に困ったところ </h2>
+			<ul>
+			<li>Suicaアカウントを作らないと使えない</li>
+			<li>気に入った英和辞書アプリがない(物書堂アプリが欲しい)</li>
+			<li>Thingsアプリがない</li>
+			<li>汗をかいた場合など指紋認証が反応しなくて困る</li>
+			</ul>
+		</section>
+	</section>
+</main>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2019/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: Android移行メモ\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2019年8月4日作成\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eAndroid移行メモ\u003c/h1\u003e\n\t\t\u003cp\u003eiPhone Xを落として画面を割ってしまって厳しいので、\n\t\t普段持ち運ぶ端末をPixel 3にしました。\n\t\tiPhone XもPixel 3も、どちらもSIMフリーの端末を使います。\u003c/p\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e移行前に注意が必要なところ\u003c/h2\u003e\n\t\t\t\u003cp\u003eLINEのバックアップは、異なるプラットフォーム間では引き継げません。\n\t\t\tLINEのトーク履歴などは、iPhoneではiCloud、\n\t\t\tAndroidではGoogle Driveにバックアップできます。\n\t\t\tただし、AndroidからiCloudを参照したり、\n\t\t\tiPhoneからGoogle Driveにバックアップや復元することはできません。\n\t\t\tなのでトーク履歴の移行は諦める必要があります。\u003c/p\u003e\n\t\t\t\u003cul\u003e\n\t\t\t\u003cli\u003e\u003ca href=\"https://begin-simfree.com/transfer-line-account-1690.html\"\u003e機種変更時にLINEを引き継ぐ方法と注意点\u003c/a\u003e\u003c/li\u003e\n\t\t\t\u003c/ul\u003e\n\t\t\t\u003cp\u003eAndroidからiCloudを参照できないのはサービスの特性から仕方ないとは思うものの、\n\t\t\t両プラットフォームからGoogle Driveを通してバックアップできて欲しいですね。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e移行後にやったこと\u003c/h2\u003e\n\t\t\t\u003cp\u003eまずはAPNの設定をしないとモバイル回線に繋げないので設定します。\n\t\t\tショップで端末の更新をする場合は、APNなどもおそらく店員さんが設定してくれますが、\n\t\t\t今回はもともとiPhoneで使っていたSIMをPixel 3に移し替えるので、自分でやります。\u003c/p\u003e\n\t\t\t\u003col\u003e\n\t\t\t\u003cli\u003eモバイルネットワークをタップ\u003c/li\u003e\n\t\t\t\u003cli\u003e詳細設定を展開する\u003c/li\u003e\n\t\t\t\u003cli\u003eアクセスポイント名をタップ\u003c/li\u003e\n\t\t\t\u003c/ol\u003e\n\t\t\t\u003cp\u003eこれでAPNの画面が開くので、新しいAPNとして以下を追加します。\u003c/p\u003e\n\t\t\t\u003cdl\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003e名前\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003esoftbank\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eAPN\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003ejpspir\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eユーザー名\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003esirobit\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eパスワード\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eamstkoi\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eMMSC\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003ehttps://mms/\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eMMSプロキシ\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003esmilemms.softbank.ne.jp\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eMMSポート\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003e8080\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eMCC\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003e440\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eMNC\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003e20\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003e認証タイプ\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003ePAPまたはCHAP\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eAPNタイプ\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003edefault,mms,supl,hipri,fota,ims,cbs\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eAPNプロトコル\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eIPv4/IPv6\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eAPNローミングプロトコル\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eIPv4\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003c/dl\u003e\n\t\t\t\u003cp\u003e画面の流れなどは以下の記事に掲載されていました。\u003c/p\u003e\n\t\t\t\u003cul\u003e\n\t\t\t\u003cli\u003e\u003ca href=\"https://usedoor.jp/howto/digital/android-smartphone/softbank-iphone-sim-apn-setting/\"\u003eiPhone用SIM（C2など）をAndroidスマホで使用する方法\u003c/a\u003e\u003c/li\u003e\n\t\t\t\u003c/ul\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e他に設定したこと\u003c/h2\u003e\n\t\t\t\u003cp\u003e基本的にはデフォルトのまま使うので、設定したのはこの程度です。\u003c/p\u003e\n\t\t\t\u003cul\u003e\n\t\t\t\u003cli\u003e通知設定で、「ロック画面上に、プライベートな内容を表示しない」へ変更\u003c/li\u003e\n\t\t\t\u003cli\u003eDigital Wellbeingでおやすみモードを設定\u003c/li\u003e\n\t\t\t\u003cli\u003e伏せるだけでサイレントモードをon\u003c/li\u003e\n\t\t\t\u003c/ul\u003e\n\t\t\t\u003cp\u003e他にも便利そうな設定があるので、必要な人は以下の記事を眺めてみると良いと思います。\u003c/p\u003e\n\t\t\t\u003cul\u003e\n\t\t\t\u003cli\u003e\u003ca href=\"https://mobilelaby.com/blog-entry-how-to-setup-pixel-3.html\"\u003ePixel 4を買ったら設定しておきたい17のこと\u003c/a\u003e\u003c/li\u003e\n\t\t\t\u003c/ul\u003e\n\t\t\t\u003cp\u003eこの記事、2021年現在はPixel 4の記事だけど当時はPixel 3を対象としたものでした。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eAndroidの方が便利なところ\u003c/h2\u003e\n\t\t\t\u003cul\u003e\n\t\t\t\u003cli\u003e思っていたよりバックボタンは便利だった\u003c/li\u003e\n\t\t\t\u003cli\u003e異なるアプリ間でも、WebViewのログイン状態が残る\u003c/li\u003e\n\t\t\t\u003cli\u003eFace IDより指紋の方が全体的にはストレスがなかった\u003c/li\u003e\n\t\t\t\u003cli\u003e新しいWeb技術への対応が早い\u003c/li\u003e\n\t\t\t\u003c/ul\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e移行した後に困ったところ \u003c/h2\u003e\n\t\t\t\u003cul\u003e\n\t\t\t\u003cli\u003eSuicaアカウントを作らないと使えない\u003c/li\u003e\n\t\t\t\u003cli\u003e気に入った英和辞書アプリがない(物書堂アプリが欲しい)\u003c/li\u003e\n\t\t\t\u003cli\u003eThingsアプリがない\u003c/li\u003e\n\t\t\t\u003cli\u003e汗をかいた場合など指紋認証が反応しなくて困る\u003c/li\u003e\n\t\t\t\u003c/ul\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2019","0804"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

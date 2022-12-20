@@ -1,0 +1,97 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>Plan 9: 正当な証明書を扱う</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="/plan9/doc/inst/index.html"><a>インストール</a></a></li>
+	<li><a href="/plan9/doc/guide/index.html"><a>システムの使い方</a></a></li>
+	<li><a href="/plan9/doc/devel/index.html"><a>プログラミング</a></a></li>
+	<li><a href="/plan9/doc/adm/index.html"><a>システム管理</a></a></li>
+	<li><a href="/plan9/man/index.html"><a>自作ツール集</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2014年5月2日更新</p>
+	<section>
+		<h1>正当な証明書を扱う</h1>
+		<section>
+			<h2>前置き</h2>
+			<p>正当と書いていいのか悩ましいですが、
+			いわゆる自己署名でない証明書のことです。
+			認証局に署名リクエストを出すとき、CSRが必要になりますが、
+			Plan 9には、CSRを作るためのコマンドが無さそうです。
+			<em>auth/rsa2x509</em>では自己署名になってしまうので使えません。
+			Plan 9の秘密鍵をUnixで理解できる形に変換して、
+			Unix(openssl)でCSRを作る方法も調べましたが、
+			全く情報がありませんでした。</p>
+			<p>最終的に、Unixで作った鍵をPlan 9で読み込む方法を採用しました。</p>
+		</section>
+		<section>
+			<h2>鍵の作成</h2>
+			<p>Unixで作業をします。
+			パスフレーズ付きの鍵では、どうやらPlan 9は読めない様子。
+			なので、安易だけれどパスフレーズを解除した状態で渡します。</p>
+			<pre><code class="console">unix$ openssl genrsa -aes128 2048 &gt;private.key
+unix$ openssl genrsa -aes256 4096 &gt;private.key
+Enter pass phrase:
+Verifying - Enter pass phrase:
+unix$ openssl rsa -in private.key -out u.key</code></pre>
+			<p>安全な方法で鍵をPlan 9側へコピーします。
+			ここでは<em>drawterm</em>を使いましたが実際なんでもいいです。</p>
+			<pre><code class="console">unix$ drawterm -a a.lufia.org -c c.lufia.org -u bootes
+# ramfs -p
+# cp /mnt/term/Users/lufia/u.key /tmp/u.key</code></pre>
+			<p><em>drawterm</em>を使って<strong>bootes</strong>ユーザで<em>auth/secstore</em>すると、
+			<em>drawterm</em>側ではなくcpuサーバのコンソール側(!)で
+			パスワードを待ち受けるようになって困るので、
+			以下はコンソールから作業します。</p>
+			<pre><code class="console"># cd /tmp
+# auth/pemdecode ‘RSA PRIVATE KEY’ u.key |
+&gt; auth/asn12rsa -t ‘service=tls role=client owner=*’ &gt;key
+# auth/secstore -g factotum
+# cat key &gt;&gt;factotum
+# auth/secstore -p factotum
+# rm factotum key u.key</code></pre>
+			<p>マニュアルによると、<em>asn12rsa</em>した後の出力にある<strong>!p=</strong>と<strong>!q=</strong>の値が
+			素数ペアになっているようですね。</p>
+			<p>これで、Unixのパスフレーズ無し鍵はいらなくなったので消しましょう。</p>
+			<pre><code class="console">unix$ rm u.key</code></pre>
+			<p>パスフレーズ有り版の鍵は証明書作成(更新も？)で使うので、
+			大切に保管しておきましょう。</p>
+		</section>
+		<section>
+			<h2>CSR作成と申請</h2>
+			<p>Plan 9上に秘密鍵と公開鍵が残せたので、あとはUnixでCSRを作成します。</p>
+			<pre><code class="console">unix$ openssl req -new -key private.key &gt;a.csr
+Enter pass phrase for key:</code></pre>
+			<p>この後、いくつか質問されますが、大切なところは、
+			Common Nameを証明書申請するドメイン名にすること。
+			他の項目は認証局のサイトにある説明をよく読んで入力しましょう。
+			RapidSSLでは、拡張情報・チャレンジパスワードを入力してはいけません。</p>
+			<p>CSRを作り終わったら認証局へ申請します。
+			RapidSSLの場合は、フォームに<strong>a.csr</strong>の内容をコピペして、
+			サーバの種類を選ぶ場所で「その他」を選んでおくといいでしょう。</p>
+			<p>その後「SSLサーバ証明書発行完了のお知らせ」というメールが届いたら、
+			メール本文の中ほどにある「SSLサーバ証明書(X.509形式)」の
+			<strong>BEGIN CERTIFICATE</strong>から<strong>END CERTIFICATE</strong>まで(含む)をPlan 9へ送ります。
+			秘密鍵と異なり、公開情報なので送る方法はなんでもかまいません。
+			ファイル末尾に改行がない場合、Plan 9は読んでくれないので
+			改行までをコピーするように注意してください。</p>
+			<p>最後に、所定の場所へ配置して終わり。</p>
+			<pre><code class="console"># con -l /srv/fscons
+prompt: fsys main create /active/sys/lib/tls/cert.pem sys sys 664
+# cp cert /sys/lib/tls/cert.pem</code></pre>
+		</section>
+	</section>
+</main>
+<aside>
+	<h1>参考ページ</h1>
+	<ul>
+	<li><a href="http://bearmini.hatenablog.com/entry/2014/02/05/143510">RSA 秘密鍵/公開鍵ファイルのフォーマット</a></li>
+	<li><a href="/plan9/doc/adm/lego.html"><a>legoを使った証明書更新</a></a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/plan9/doc/adm/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003ePlan 9: 正当な証明書を扱う\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/inst/index.html\"\u003eインストール\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/guide/index.html\"\u003eシステムの使い方\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/devel/index.html\"\u003eプログラミング\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/adm/index.html\"\u003eシステム管理\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/man/index.html\"\u003e自作ツール集\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2014年5月2日更新\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003e正当な証明書を扱う\u003c/h1\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e前置き\u003c/h2\u003e\n\t\t\t\u003cp\u003e正当と書いていいのか悩ましいですが、\n\t\t\tいわゆる自己署名でない証明書のことです。\n\t\t\t認証局に署名リクエストを出すとき、CSRが必要になりますが、\n\t\t\tPlan 9には、CSRを作るためのコマンドが無さそうです。\n\t\t\t\u003cem\u003eauth/rsa2x509\u003c/em\u003eでは自己署名になってしまうので使えません。\n\t\t\tPlan 9の秘密鍵をUnixで理解できる形に変換して、\n\t\t\tUnix(openssl)でCSRを作る方法も調べましたが、\n\t\t\t全く情報がありませんでした。\u003c/p\u003e\n\t\t\t\u003cp\u003e最終的に、Unixで作った鍵をPlan 9で読み込む方法を採用しました。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e鍵の作成\u003c/h2\u003e\n\t\t\t\u003cp\u003eUnixで作業をします。\n\t\t\tパスフレーズ付きの鍵では、どうやらPlan 9は読めない様子。\n\t\t\tなので、安易だけれどパスフレーズを解除した状態で渡します。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003eunix$ openssl genrsa -aes128 2048 \u0026gt;private.key\nunix$ openssl genrsa -aes256 4096 \u0026gt;private.key\nEnter pass phrase:\nVerifying - Enter pass phrase:\nunix$ openssl rsa -in private.key -out u.key\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e安全な方法で鍵をPlan 9側へコピーします。\n\t\t\tここでは\u003cem\u003edrawterm\u003c/em\u003eを使いましたが実際なんでもいいです。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003eunix$ drawterm -a a.lufia.org -c c.lufia.org -u bootes\n# ramfs -p\n# cp /mnt/term/Users/lufia/u.key /tmp/u.key\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e\u003cem\u003edrawterm\u003c/em\u003eを使って\u003cstrong\u003ebootes\u003c/strong\u003eユーザで\u003cem\u003eauth/secstore\u003c/em\u003eすると、\n\t\t\t\u003cem\u003edrawterm\u003c/em\u003e側ではなくcpuサーバのコンソール側(!)で\n\t\t\tパスワードを待ち受けるようになって困るので、\n\t\t\t以下はコンソールから作業します。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e# cd /tmp\n# auth/pemdecode ‘RSA PRIVATE KEY’ u.key |\n\u0026gt; auth/asn12rsa -t ‘service=tls role=client owner=*’ \u0026gt;key\n# auth/secstore -g factotum\n# cat key \u0026gt;\u0026gt;factotum\n# auth/secstore -p factotum\n# rm factotum key u.key\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eマニュアルによると、\u003cem\u003easn12rsa\u003c/em\u003eした後の出力にある\u003cstrong\u003e!p=\u003c/strong\u003eと\u003cstrong\u003e!q=\u003c/strong\u003eの値が\n\t\t\t素数ペアになっているようですね。\u003c/p\u003e\n\t\t\t\u003cp\u003eこれで、Unixのパスフレーズ無し鍵はいらなくなったので消しましょう。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003eunix$ rm u.key\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eパスフレーズ有り版の鍵は証明書作成(更新も？)で使うので、\n\t\t\t大切に保管しておきましょう。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eCSR作成と申請\u003c/h2\u003e\n\t\t\t\u003cp\u003ePlan 9上に秘密鍵と公開鍵が残せたので、あとはUnixでCSRを作成します。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003eunix$ openssl req -new -key private.key \u0026gt;a.csr\nEnter pass phrase for key:\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eこの後、いくつか質問されますが、大切なところは、\n\t\t\tCommon Nameを証明書申請するドメイン名にすること。\n\t\t\t他の項目は認証局のサイトにある説明をよく読んで入力しましょう。\n\t\t\tRapidSSLでは、拡張情報・チャレンジパスワードを入力してはいけません。\u003c/p\u003e\n\t\t\t\u003cp\u003eCSRを作り終わったら認証局へ申請します。\n\t\t\tRapidSSLの場合は、フォームに\u003cstrong\u003ea.csr\u003c/strong\u003eの内容をコピペして、\n\t\t\tサーバの種類を選ぶ場所で「その他」を選んでおくといいでしょう。\u003c/p\u003e\n\t\t\t\u003cp\u003eその後「SSLサーバ証明書発行完了のお知らせ」というメールが届いたら、\n\t\t\tメール本文の中ほどにある「SSLサーバ証明書(X.509形式)」の\n\t\t\t\u003cstrong\u003eBEGIN CERTIFICATE\u003c/strong\u003eから\u003cstrong\u003eEND CERTIFICATE\u003c/strong\u003eまで(含む)をPlan 9へ送ります。\n\t\t\t秘密鍵と異なり、公開情報なので送る方法はなんでもかまいません。\n\t\t\tファイル末尾に改行がない場合、Plan 9は読んでくれないので\n\t\t\t改行までをコピーするように注意してください。\u003c/p\u003e\n\t\t\t\u003cp\u003e最後に、所定の場所へ配置して終わり。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e# con -l /srv/fscons\nprompt: fsys main create /active/sys/lib/tls/cert.pem sys sys 664\n# cp cert /sys/lib/tls/cert.pem\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003e参考ページ\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"http://bearmini.hatenablog.com/entry/2014/02/05/143510\"\u003eRSA 秘密鍵/公開鍵ファイルのフォーマット\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"lego.html\"\u003elegoを使った証明書更新\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["plan9","doc","adm","certs"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

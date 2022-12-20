@@ -1,0 +1,84 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: Google WorkspaceのGmailでDMARC</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2021年12月8日作成</p>
+	<section>
+		<h1>Google WorkspaceのGmailでDMARC</h1>
+		<p>Google Workspaceアカウントで<strong>DMARC</strong>を有効にするためには、<strong>SPF</strong>と<strong>DKIM</strong>も必要。</p>
+		<section>
+			<h2>SPF(Sender Policy Framework)</h2>
+			<p>ドメインのレコードに、以下のようなTXTを追加すれば良い。</p>
+			<pre><code>@ TXT 1h &quot;v=spf1 include:_spf.google.com ~all&quot;</code></pre>
+			<p>以下のヘルプに、いくつかの具体例が掲載されている。</p>
+			<ul>
+			<li><a href="https://support.google.com/a/answer/33786">SPFについて - Google Workspace管理者ヘルプ</a></li>
+			</ul>
+			<p>それぞれのキーが意味する内容は以下が詳しい。</p>
+			<ul>
+			<li><a href="https://salt.iajapan.org/wpmu/anti_spam/admin/tech/explanation/spf/">SPF(Sender Policy Framework): 迷惑メール対策委員会</a></li>
+			</ul>
+		</section>
+		<section>
+			<h2>DKIM(DomainKeys Identified Mail)</h2>
+			<p>以下のヘルプによると、設定していない場合はデフォルトのDKIMが使われるらしい。</p>
+			<ul>
+			<li><a href="https://support.google.com/a/answer/174124">DKIMを設定してメールのなりすましを防ぐ - Google Workspace管理者ヘルプ</a></li>
+			</ul>
+			<p>Gmailで送ったメールのソースを見ると、以下のヘッダがついていた。</p>
+			<pre><code class="http">DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; ...
+Authentication-Results: mx.google.com; dkin=pass ...
+ARC-Authentication-Results: i=1; mx.google.com; dkin=pass ...</code></pre>
+		</section>
+		<section>
+			<h2>DMARC(Domain-based Message Authentication, Reporting, and Conformance)</h2>
+			<p>ドメインのレコードに以下のようなレコードを追加する。</p>
+			<pre><code>_dmarc TXT 1h &quot;v=DMARC1; p=reject; sp=none; pct=100&quot;</code></pre>
+			<p>digで設定を確認する。</p>
+			<pre><code class="console">% dig txt _dmarc.lufia.org</code></pre>
+			<p>上記を実行した結果、ANSWERセクションで以下が見られれば終わり。</p>
+			<pre><code>;; ANSWER SECTION:
+_dmarc.lufia.org. 3600 IN TXT &quot;v=DMARC1; p=reject; sp=none; pct=100&quot;</code></pre>
+			<ul>
+			<li><a href="https://support.google.com/a/answer/2466563">DMARCレコードの追加 - Google Workspace管理者ヘルプ</a></li>
+			</ul>
+			<p>それぞれのキーが意味する内容は以下が詳しい。</p>
+			<ul>
+			<li><a href="http://blog.smtps.jp/entry/2017/12/22/095814">DMARCと送信ドメイン認証を理解して、実際に設定してみよう</a></li>
+			</ul>
+		</section>
+		<section>
+			<h2>Google Domainsメモ</h2>
+			<p>TXTレコードに複数の値を設定したい場合は、編集ボタンで編集状態にして、
+			各エントリの<strong>このレコードにさらに追加</strong>ボタンを押せば追加できる。</p>
+			<p>少し古い画面では、<strong>++</strong>ボタンだけしかなくとても分かりづらいものだった。</p>
+			<ul>
+			<li><a href="https://protonmail.com/support/knowledge-base/dns-records-google-domains/">How to set up DNS records with Google Domains</a></li>
+			</ul>
+			<p>そのほか、DNSのTXTレコードに設定しておくと良いもの。</p>
+			<ul>
+			<li><a href="https://support.google.com/a/answer/2716802">TXTレコードの値 - Google Workspace管理者ヘルプ</a></li>
+			</ul>
+		</section>
+	</section>
+</main>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2021/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: Google WorkspaceのGmailでDMARC\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2021年12月8日作成\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eGoogle WorkspaceのGmailでDMARC\u003c/h1\u003e\n\t\t\u003cp\u003eGoogle Workspaceアカウントで\u003cstrong\u003eDMARC\u003c/strong\u003eを有効にするためには、\u003cstrong\u003eSPF\u003c/strong\u003eと\u003cstrong\u003eDKIM\u003c/strong\u003eも必要。\u003c/p\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eSPF(Sender Policy Framework)\u003c/h2\u003e\n\t\t\t\u003cp\u003eドメインのレコードに、以下のようなTXTを追加すれば良い。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003e@ TXT 1h \u0026quot;v=spf1 include:_spf.google.com ~all\u0026quot;\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e以下のヘルプに、いくつかの具体例が掲載されている。\u003c/p\u003e\n\t\t\t\u003cul\u003e\n\t\t\t\u003cli\u003e\u003ca href=\"https://support.google.com/a/answer/33786\"\u003eSPFについて - Google Workspace管理者ヘルプ\u003c/a\u003e\u003c/li\u003e\n\t\t\t\u003c/ul\u003e\n\t\t\t\u003cp\u003eそれぞれのキーが意味する内容は以下が詳しい。\u003c/p\u003e\n\t\t\t\u003cul\u003e\n\t\t\t\u003cli\u003e\u003ca href=\"https://salt.iajapan.org/wpmu/anti_spam/admin/tech/explanation/spf/\"\u003eSPF(Sender Policy Framework): 迷惑メール対策委員会\u003c/a\u003e\u003c/li\u003e\n\t\t\t\u003c/ul\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eDKIM(DomainKeys Identified Mail)\u003c/h2\u003e\n\t\t\t\u003cp\u003e以下のヘルプによると、設定していない場合はデフォルトのDKIMが使われるらしい。\u003c/p\u003e\n\t\t\t\u003cul\u003e\n\t\t\t\u003cli\u003e\u003ca href=\"https://support.google.com/a/answer/174124\"\u003eDKIMを設定してメールのなりすましを防ぐ - Google Workspace管理者ヘルプ\u003c/a\u003e\u003c/li\u003e\n\t\t\t\u003c/ul\u003e\n\t\t\t\u003cp\u003eGmailで送ったメールのソースを見ると、以下のヘッダがついていた。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"http\"\u003eDKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; ...\nAuthentication-Results: mx.google.com; dkin=pass ...\nARC-Authentication-Results: i=1; mx.google.com; dkin=pass ...\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eDMARC(Domain-based Message Authentication, Reporting, and Conformance)\u003c/h2\u003e\n\t\t\t\u003cp\u003eドメインのレコードに以下のようなレコードを追加する。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003e_dmarc TXT 1h \u0026quot;v=DMARC1; p=reject; sp=none; pct=100\u0026quot;\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003edigで設定を確認する。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% dig txt _dmarc.lufia.org\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e上記を実行した結果、ANSWERセクションで以下が見られれば終わり。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003e;; ANSWER SECTION:\n_dmarc.lufia.org. 3600 IN TXT \u0026quot;v=DMARC1; p=reject; sp=none; pct=100\u0026quot;\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cul\u003e\n\t\t\t\u003cli\u003e\u003ca href=\"https://support.google.com/a/answer/2466563\"\u003eDMARCレコードの追加 - Google Workspace管理者ヘルプ\u003c/a\u003e\u003c/li\u003e\n\t\t\t\u003c/ul\u003e\n\t\t\t\u003cp\u003eそれぞれのキーが意味する内容は以下が詳しい。\u003c/p\u003e\n\t\t\t\u003cul\u003e\n\t\t\t\u003cli\u003e\u003ca href=\"http://blog.smtps.jp/entry/2017/12/22/095814\"\u003eDMARCと送信ドメイン認証を理解して、実際に設定してみよう\u003c/a\u003e\u003c/li\u003e\n\t\t\t\u003c/ul\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eGoogle Domainsメモ\u003c/h2\u003e\n\t\t\t\u003cp\u003eTXTレコードに複数の値を設定したい場合は、編集ボタンで編集状態にして、\n\t\t\t各エントリの\u003cstrong\u003eこのレコードにさらに追加\u003c/strong\u003eボタンを押せば追加できる。\u003c/p\u003e\n\t\t\t\u003cp\u003e少し古い画面では、\u003cstrong\u003e++\u003c/strong\u003eボタンだけしかなくとても分かりづらいものだった。\u003c/p\u003e\n\t\t\t\u003cul\u003e\n\t\t\t\u003cli\u003e\u003ca href=\"https://protonmail.com/support/knowledge-base/dns-records-google-domains/\"\u003eHow to set up DNS records with Google Domains\u003c/a\u003e\u003c/li\u003e\n\t\t\t\u003c/ul\u003e\n\t\t\t\u003cp\u003eそのほか、DNSのTXTレコードに設定しておくと良いもの。\u003c/p\u003e\n\t\t\t\u003cul\u003e\n\t\t\t\u003cli\u003e\u003ca href=\"https://support.google.com/a/answer/2716802\"\u003eTXTレコードの値 - Google Workspace管理者ヘルプ\u003c/a\u003e\u003c/li\u003e\n\t\t\t\u003c/ul\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2021","1208"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

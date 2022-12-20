@@ -1,0 +1,122 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>Plan 9: dryad</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="/plan9/doc/inst/index.html"><a>インストール</a></a></li>
+	<li><a href="/plan9/doc/guide/index.html"><a>システムの使い方</a></a></li>
+	<li><a href="/plan9/doc/devel/index.html"><a>プログラミング</a></a></li>
+	<li><a href="/plan9/doc/adm/index.html"><a>システム管理</a></a></li>
+	<li><a href="/plan9/man/index.html"><a>自作ツール集</a></a></li>
+	</ul>
+</nav>
+<main>
+	<h1>games/map</h1>
+	<section>
+		<h2>SYNOPSIS</h2>
+		<pre><code>games/map [-v] [file ...]
+games/mapedit [-o output] [-s subject] [file ...]</code></pre>
+	</section>
+	<section>
+		<h2>DESCRIPTION</h2>
+		<p>mapは、簡単な文法のプログラムを読み込み、
+		それをpic(1)の書式に書き換え、標準出力へ書き出します。</p>
+		<p>mapeditは、グラフィックスとマウスを使って、
+		map用のプログラムを生成します。
+		通常、ファイル引数を与えなければ
+		真っ白なマップから書き始めることになりますが、
+		1つ以上与えれば、その途中から続けられます。</p>
+	</section>
+	<section>
+		<h2>OPTIONS</h2>
+		<section>
+			<h3>map</h3>
+			<dl>
+			<div>
+				<dt>v</dt>
+				<dd>行や列の番号と、補助線を表示します。</dd>
+			</div>
+			</dl>
+		</section>
+		<section>
+			<h3>mapedit</h3>
+			<dl>
+			<div>
+				<dt>o</dt>
+				<dd>生成したmapプログラムを書き出すファイル名</dd>
+				<dd>省略した場合は標準出力に</dd>
+			</div>
+			<div>
+				<dt>s</dt>
+				<dd>マップの名前を、生成後のプログラムに含めます</dd>
+			</div>
+			</dl>
+		</section>
+	</section>
+	<section>
+		<h2>LANGUAGE</h2>
+		<p>map言語は、簡単なコマンドを上から順に実行します。
+		言語と言ってはいますが、制御文などはありません。
+		座標は左上がx=1, y=1となります。</p>
+		<section>
+			<h3>floor命令</h3>
+			<pre><code>floor x y [subject]</code></pre>
+			<p>マップの大きさをxとyで指示します。
+			floor命令が無い場合、mapの-vオプションが使えません。</p>
+		</section>
+		<section>
+			<h3>line命令</h3>
+			<pre><code>line x y place</code></pre>
+			<p>指定の座標に線を引きます。
+			placeは、top, bot, left, right, bottomのどれかです。</p>
+		</section>
+		<section>
+			<h3>mark命令</h3>
+			<pre><code>mark x y string</code></pre>
+			<p>座標の中心に文字を書きます。</p>
+		</section>
+		<section>
+			<h3>move命令</h3>
+			<pre><code>move x y direction</code></pre>
+			<p>座標に矢印を描きます。
+			矢印の向きはdirectionでup, down, left, rightのうち1つです。</p>
+		</section>
+		<section>
+			<h3>fill命令</h3>
+			<pre><code>fill x y</code></pre>
+		</section>
+	</section>
+	<section>
+		<h2>INSTALL</h2>
+		<p>あとで</p>
+	</section>
+	<section>
+		<h2>EXAMPLE</h2>
+		<pre><code>floor 7 5 &quot;Past 1F-2&quot;
+
+# item
+mark 7 2 &quot;A&quot;
+
+# step
+mark 4 5 &quot;1&quot;
+mark 2 2 &quot;2&quot;
+
+line 1 2 top
+line 3 1 left
+line 5 1 right
+line 7 3 bot
+line 6 4 right
+line 1 4 right
+line 1 4 top</code></pre>
+	</section>
+	<section>
+		<h2>BUGS</h2>
+		<p>mapeditは、map言語のmove命令に対応していません。
+		また、mark命令のstringをダブルクォートで括らなければ
+		エラーになります。</p>
+	</section>
+</main>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/plan9/man/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003ePlan 9: dryad\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/inst/index.html\"\u003eインストール\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/guide/index.html\"\u003eシステムの使い方\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/devel/index.html\"\u003eプログラミング\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/adm/index.html\"\u003eシステム管理\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/man/index.html\"\u003e自作ツール集\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003ch1\u003egames/map\u003c/h1\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003eSYNOPSIS\u003c/h2\u003e\n\t\t\u003cpre\u003e\u003ccode\u003egames/map [-v] [file ...]\ngames/mapedit [-o output] [-s subject] [file ...]\u003c/code\u003e\u003c/pre\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003eDESCRIPTION\u003c/h2\u003e\n\t\t\u003cp\u003emapは、簡単な文法のプログラムを読み込み、\n\t\tそれをpic(1)の書式に書き換え、標準出力へ書き出します。\u003c/p\u003e\n\t\t\u003cp\u003emapeditは、グラフィックスとマウスを使って、\n\t\tmap用のプログラムを生成します。\n\t\t通常、ファイル引数を与えなければ\n\t\t真っ白なマップから書き始めることになりますが、\n\t\t1つ以上与えれば、その途中から続けられます。\u003c/p\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003eOPTIONS\u003c/h2\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch3\u003emap\u003c/h3\u003e\n\t\t\t\u003cdl\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003ev\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003e行や列の番号と、補助線を表示します。\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003c/dl\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch3\u003emapedit\u003c/h3\u003e\n\t\t\t\u003cdl\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eo\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003e生成したmapプログラムを書き出すファイル名\u003c/dd\u003e\n\t\t\t\t\u003cdd\u003e省略した場合は標準出力に\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003es\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eマップの名前を、生成後のプログラムに含めます\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003c/dl\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003eLANGUAGE\u003c/h2\u003e\n\t\t\u003cp\u003emap言語は、簡単なコマンドを上から順に実行します。\n\t\t言語と言ってはいますが、制御文などはありません。\n\t\t座標は左上がx=1, y=1となります。\u003c/p\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch3\u003efloor命令\u003c/h3\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003efloor x y [subject]\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eマップの大きさをxとyで指示します。\n\t\t\tfloor命令が無い場合、mapの-vオプションが使えません。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch3\u003eline命令\u003c/h3\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003eline x y place\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e指定の座標に線を引きます。\n\t\t\tplaceは、top, bot, left, right, bottomのどれかです。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch3\u003emark命令\u003c/h3\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003emark x y string\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e座標の中心に文字を書きます。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch3\u003emove命令\u003c/h3\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003emove x y direction\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e座標に矢印を描きます。\n\t\t\t矢印の向きはdirectionでup, down, left, rightのうち1つです。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch3\u003efill命令\u003c/h3\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003efill x y\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003eINSTALL\u003c/h2\u003e\n\t\t\u003cp\u003eあとで\u003c/p\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003eEXAMPLE\u003c/h2\u003e\n\t\t\u003cpre\u003e\u003ccode\u003efloor 7 5 \u0026quot;Past 1F-2\u0026quot;\n\n# item\nmark 7 2 \u0026quot;A\u0026quot;\n\n# step\nmark 4 5 \u0026quot;1\u0026quot;\nmark 2 2 \u0026quot;2\u0026quot;\n\nline 1 2 top\nline 3 1 left\nline 5 1 right\nline 7 3 bot\nline 6 4 right\nline 1 4 right\nline 1 4 top\u003c/code\u003e\u003c/pre\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003eBUGS\u003c/h2\u003e\n\t\t\u003cp\u003emapeditは、map言語のmove命令に対応していません。\n\t\tまた、mark命令のstringをダブルクォートで括らなければ\n\t\tエラーになります。\u003c/p\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["plan9","man","map"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

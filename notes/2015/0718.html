@@ -1,0 +1,131 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: HHKBを快適に使う</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2015年7月18日作成</p>
+	<section>
+		<h1>HHKBを快適に使う</h1>
+		<p>自宅と職場で、Windows(BootCamp)とMacを交互に使っていると、
+		ちょっとした違いが気になるようになったのでいろいろ変更しました。</p>
+		<section>
+			<h2>自宅環境</h2>
+			<ul>
+			<li>Windows(BootCamp) + Mac併用</li>
+			<li>どちらかというとWindowsの頻度が高い</li>
+			<li>HHKB Professional 2</li>
+			<li>ホイール付きマウス</li>
+			</ul>
+		</section>
+		<section>
+			<h2>職場環境</h2>
+			<ul>
+			<li>Windows(Remote Desktop) + Mac併用</li>
+			<li>圧倒的にMacの頻度が高い</li>
+			<li>Happy Hacking Keyboard(PS/2の古いやつ)</li>
+			<li>3ボタンマウス</li>
+			<li>トラックパッド</li>
+			</ul>
+		</section>
+		<section>
+			<h2>職場MacにHHKPS2USBDriverを入れる</h2>
+			<p>古いHayyp Hacking Keyboardは◇キーが「変換」「無変換」として扱われています。
+			Windowsの場合、キーボードドライバをkbdlk41A.dllに変更しなければ、
+			キーボードはキーコードを発してもOSがうまく扱えませんが、
+			Winキーがなくてもそれほど困りません。</p>
+			<p>ただし、Macの場合、Commandキーが無いのはとても不愉快なので、
+			「変換」「無変換」をCommandキーに置き換えるドライバを入れます。
+			OS X 10.10(Yosemite)からは、
+			適切な署名をしていないKernel Extensionをロードしませんので、<a href="https://github.com/lufia/HHKPS2USBDriver">署名済みのドライバ</a>を作成しました。</p>
+		</section>
+		<section>
+			<h2>自宅のHHKB Pro2をMacモードにする</h2>
+			<p>HHKB Pro2は<a href="http://www.pfu.fujitsu.com/hhkeyboard/leaflet/hhkb_backview.html#pro2">Macintoshモード</a>に
+			設定しなければ、◇キーをCommandキーとして扱ってくれません。
+			そのため、MacでCommandキーを扱う必要がある以上、Macintoshモードが必須です。</p>
+		</section>
+		<section>
+			<h2>職場のHappy Hacking KeyboardをMode 3にする</h2>
+			<p>上記で、HHKB Pro2をMacintoshモードに設定しましたが、
+			このモードの場合、DeleteキーをBackspaceとして扱うようになり、
+			なぜかDIP SW3をONにしても変更ができません。
+			そのため、職場環境でも同じように、DeleteをBackspaceとして、
+			Fn+DeleteをDeleteと扱うように変更します。</p>
+			<p>Backspaceなモードは2つありますが、
+			HHKBPS2USBDriverは無変換キーを取り扱う必要があるため、<a href="http://www.pfu.fujitsu.com/hhkeyboard/leaflet/hhkb_backview.html#hhkb">Mode 3</a>に
+			設定しました。</p>
+			<p class="note">Happy Hacking Keyboardの説明にあるMacは、ADBポートを使うような古いMacです。
+			Intel以降のMacは、表中の「PC(PS/2)」に該当します。</p>
+		</section>
+		<section>
+			<h2>自宅Windowsのホイールスクロールを逆向きにする</h2>
+			<p>どちらに合わせようか迷いましたが、Macデフォルトに合わせました。
+			<a href="http://blog.daichisakota.com/?p=625">余計なアプリケーションを使わずに Windows のホイールスクロール方向を逆にする</a>を参考に、以下レジストリの値を変更します。</p>
+			<pre><code>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\HID\xxxx\yyyy\Device Parameters
+	FlipFlopWheel = 1</code></pre>
+			<p>USBレシーバ等を使っている場合は、
+			レシーバ側のxxxx\yyyyに設定してあげる必要があります。</p>
+		</section>
+		<section>
+			<h2>(おまけ)HHKモードで◇キーを「変換」「無変換」と扱う</h2>
+			<p>HHKB Pro2をMacで快適に使うため、Macintoshモードが必須になったので、
+			現在この設定は入れていません。
+			HHKB Pro2をHHKモードで使う場合、
+			または、Happy Hacking KeyboardをWindowsで使う場合は便利なので
+			メモとして残しています。</p>
+			<p><a href="https://www.pfu.fujitsu.com/hhkeyboard/hhkb_support/faq_pro.html">公式のFAQ</a>から、</p>
+			<blockquote>左右◇キーを、無変換 / 変換に設定するのはどうすればいいでしょうか？</blockquote>
+			<p>の通りに実施すればOSはキーを正しく認識してくれるようになります。
+			レジストリファイルは以下の通り。</p>
+			<pre><code class="ini">Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\i8042prt\Parameters]
+&quot;PollingIterations&quot;=dword:00002ee0
+&quot;PollingIterationsMaximum&quot;=dword:00002ee0
+&quot;ResendIterations&quot;=dword:00000003
+&quot;LayerDriver JPN&quot;=&quot;kbdlk41a.dll&quot;
+&quot;LayerDriver KOR&quot;=&quot;kbd101a.dll&quot;
+&quot;OverrideKeyboardIdentifier&quot;=&quot;PCAT_101KEY&quot;
+&quot;OverrideKeyboardType&quot;=dword:00000007
+&quot;OverrideKeyboardSubtype&quot;=dword:00000000</code></pre>
+			<p>また、IMEのプロパティから、</p>
+			<ol>
+			<li>全般タブ</li>
+			<li>編集操作グループの変更</li>
+			<li>キー設定タブ</li>
+			</ol>
+			<p>を開いて、</p>
+			<table>
+			<tr><th>キー</th><th>入力/変換済み文字なし</th></tr>
+			<tr><td>無変換</td><td>IME-オフ</td></tr>
+			<tr><td>変換  </td><td>IME-オン</td></tr>
+			</table>
+			<p>とすると、便利に使えます。</p>
+		</section>
+	</section>
+</main>
+<aside>
+	<h1>関連情報</h1>
+	<ul>
+	<li><a href="/notes/2009/1223.html"><a>Mac移行まとめ</a></a></li>
+	</ul>
+</aside>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2015/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: HHKBを快適に使う\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2015年7月18日作成\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eHHKBを快適に使う\u003c/h1\u003e\n\t\t\u003cp\u003e自宅と職場で、Windows(BootCamp)とMacを交互に使っていると、\n\t\tちょっとした違いが気になるようになったのでいろいろ変更しました。\u003c/p\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e自宅環境\u003c/h2\u003e\n\t\t\t\u003cul\u003e\n\t\t\t\u003cli\u003eWindows(BootCamp) + Mac併用\u003c/li\u003e\n\t\t\t\u003cli\u003eどちらかというとWindowsの頻度が高い\u003c/li\u003e\n\t\t\t\u003cli\u003eHHKB Professional 2\u003c/li\u003e\n\t\t\t\u003cli\u003eホイール付きマウス\u003c/li\u003e\n\t\t\t\u003c/ul\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e職場環境\u003c/h2\u003e\n\t\t\t\u003cul\u003e\n\t\t\t\u003cli\u003eWindows(Remote Desktop) + Mac併用\u003c/li\u003e\n\t\t\t\u003cli\u003e圧倒的にMacの頻度が高い\u003c/li\u003e\n\t\t\t\u003cli\u003eHappy Hacking Keyboard(PS/2の古いやつ)\u003c/li\u003e\n\t\t\t\u003cli\u003e3ボタンマウス\u003c/li\u003e\n\t\t\t\u003cli\u003eトラックパッド\u003c/li\u003e\n\t\t\t\u003c/ul\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e職場MacにHHKPS2USBDriverを入れる\u003c/h2\u003e\n\t\t\t\u003cp\u003e古いHayyp Hacking Keyboardは◇キーが「変換」「無変換」として扱われています。\n\t\t\tWindowsの場合、キーボードドライバをkbdlk41A.dllに変更しなければ、\n\t\t\tキーボードはキーコードを発してもOSがうまく扱えませんが、\n\t\t\tWinキーがなくてもそれほど困りません。\u003c/p\u003e\n\t\t\t\u003cp\u003eただし、Macの場合、Commandキーが無いのはとても不愉快なので、\n\t\t\t「変換」「無変換」をCommandキーに置き換えるドライバを入れます。\n\t\t\tOS X 10.10(Yosemite)からは、\n\t\t\t適切な署名をしていないKernel Extensionをロードしませんので、\u003ca href=\"https://github.com/lufia/HHKPS2USBDriver\"\u003e署名済みのドライバ\u003c/a\u003eを作成しました。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e自宅のHHKB Pro2をMacモードにする\u003c/h2\u003e\n\t\t\t\u003cp\u003eHHKB Pro2は\u003ca href=\"http://www.pfu.fujitsu.com/hhkeyboard/leaflet/hhkb_backview.html#pro2\"\u003eMacintoshモード\u003c/a\u003eに\n\t\t\t設定しなければ、◇キーをCommandキーとして扱ってくれません。\n\t\t\tそのため、MacでCommandキーを扱う必要がある以上、Macintoshモードが必須です。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e職場のHappy Hacking KeyboardをMode 3にする\u003c/h2\u003e\n\t\t\t\u003cp\u003e上記で、HHKB Pro2をMacintoshモードに設定しましたが、\n\t\t\tこのモードの場合、DeleteキーをBackspaceとして扱うようになり、\n\t\t\tなぜかDIP SW3をONにしても変更ができません。\n\t\t\tそのため、職場環境でも同じように、DeleteをBackspaceとして、\n\t\t\tFn+DeleteをDeleteと扱うように変更します。\u003c/p\u003e\n\t\t\t\u003cp\u003eBackspaceなモードは2つありますが、\n\t\t\tHHKBPS2USBDriverは無変換キーを取り扱う必要があるため、\u003ca href=\"http://www.pfu.fujitsu.com/hhkeyboard/leaflet/hhkb_backview.html#hhkb\"\u003eMode 3\u003c/a\u003eに\n\t\t\t設定しました。\u003c/p\u003e\n\t\t\t\u003cp class=\"note\"\u003eHappy Hacking Keyboardの説明にあるMacは、ADBポートを使うような古いMacです。\n\t\t\tIntel以降のMacは、表中の「PC(PS/2)」に該当します。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e自宅Windowsのホイールスクロールを逆向きにする\u003c/h2\u003e\n\t\t\t\u003cp\u003eどちらに合わせようか迷いましたが、Macデフォルトに合わせました。\n\t\t\t\u003ca href=\"http://blog.daichisakota.com/?p=625\"\u003e余計なアプリケーションを使わずに Windows のホイールスクロール方向を逆にする\u003c/a\u003eを参考に、以下レジストリの値を変更します。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003eHKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Enum\\HID\\xxxx\\yyyy\\Device Parameters\n\tFlipFlopWheel = 1\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eUSBレシーバ等を使っている場合は、\n\t\t\tレシーバ側のxxxx\\yyyyに設定してあげる必要があります。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e(おまけ)HHKモードで◇キーを「変換」「無変換」と扱う\u003c/h2\u003e\n\t\t\t\u003cp\u003eHHKB Pro2をMacで快適に使うため、Macintoshモードが必須になったので、\n\t\t\t現在この設定は入れていません。\n\t\t\tHHKB Pro2をHHKモードで使う場合、\n\t\t\tまたは、Happy Hacking KeyboardをWindowsで使う場合は便利なので\n\t\t\tメモとして残しています。\u003c/p\u003e\n\t\t\t\u003cp\u003e\u003ca href=\"https://www.pfu.fujitsu.com/hhkeyboard/hhkb_support/faq_pro.html\"\u003e公式のFAQ\u003c/a\u003eから、\u003c/p\u003e\n\t\t\t\u003cblockquote\u003e左右◇キーを、無変換 / 変換に設定するのはどうすればいいでしょうか？\u003c/blockquote\u003e\n\t\t\t\u003cp\u003eの通りに実施すればOSはキーを正しく認識してくれるようになります。\n\t\t\tレジストリファイルは以下の通り。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"ini\"\u003eWindows Registry Editor Version 5.00\n\n[HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\i8042prt\\Parameters]\n\u0026quot;PollingIterations\u0026quot;=dword:00002ee0\n\u0026quot;PollingIterationsMaximum\u0026quot;=dword:00002ee0\n\u0026quot;ResendIterations\u0026quot;=dword:00000003\n\u0026quot;LayerDriver JPN\u0026quot;=\u0026quot;kbdlk41a.dll\u0026quot;\n\u0026quot;LayerDriver KOR\u0026quot;=\u0026quot;kbd101a.dll\u0026quot;\n\u0026quot;OverrideKeyboardIdentifier\u0026quot;=\u0026quot;PCAT_101KEY\u0026quot;\n\u0026quot;OverrideKeyboardType\u0026quot;=dword:00000007\n\u0026quot;OverrideKeyboardSubtype\u0026quot;=dword:00000000\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eまた、IMEのプロパティから、\u003c/p\u003e\n\t\t\t\u003col\u003e\n\t\t\t\u003cli\u003e全般タブ\u003c/li\u003e\n\t\t\t\u003cli\u003e編集操作グループの変更\u003c/li\u003e\n\t\t\t\u003cli\u003eキー設定タブ\u003c/li\u003e\n\t\t\t\u003c/ol\u003e\n\t\t\t\u003cp\u003eを開いて、\u003c/p\u003e\n\t\t\t\u003ctable\u003e\n\t\t\t\u003ctr\u003e\u003cth\u003eキー\u003c/th\u003e\u003cth\u003e入力/変換済み文字なし\u003c/th\u003e\u003c/tr\u003e\n\t\t\t\u003ctr\u003e\u003ctd\u003e無変換\u003c/td\u003e\u003ctd\u003eIME-オフ\u003c/td\u003e\u003c/tr\u003e\n\t\t\t\u003ctr\u003e\u003ctd\u003e変換  \u003c/td\u003e\u003ctd\u003eIME-オン\u003c/td\u003e\u003c/tr\u003e\n\t\t\t\u003c/table\u003e\n\t\t\t\u003cp\u003eとすると、便利に使えます。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003e関連情報\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"../2009/1223.html\"\u003eMac移行まとめ\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2015","0718"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>Plan 9: lufia.orgのサーバ</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="/plan9/doc/inst/index.html"><a>インストール</a></a></li>
+	<li><a href="/plan9/doc/guide/index.html"><a>システムの使い方</a></a></li>
+	<li><a href="/plan9/doc/devel/index.html"><a>プログラミング</a></a></li>
+	<li><a href="/plan9/doc/adm/index.html"><a>システム管理</a></a></li>
+	<li><a href="/plan9/man/index.html"><a>自作ツール集</a></a></li>
+	</ul>
+</nav>
+<main>
+	<h1>lufia.orgのサーバ</h1>
+	<section>
+		<h2>Google Compute Engine</h2>
+		<p>今はこれ。</p>
+	</section>
+	<section>
+		<h2>さくらVPS</h2>
+		<p>2020年夏ごろまで使っていました。</p>
+	</section>
+	<section>
+		<h2>fileserver(fs64)</h2>
+		<dl>
+		<div>
+			<dt>CPU</dt>
+			<dd>Celeron E3300 BX80571E3300</dd>
+		</div>
+		<div>
+			<dt>memory</dt>
+			<dd>W3U1333Q1G</dd>
+		</div>
+		<div>
+			<dt>motherboard</dt>
+			<dd><a href="http://www.gigabyte.co.jp/Products/Motherboard/Products_Overview.aspx?ProductID=3263">GA-G41MT-ES2L</a></dd>
+		</div>
+		<div>
+			<dt>powersupply</dt>
+			<dd><a href="http://www.links.co.jp/items/ener-power/epg500awt.html">EPG500AWT</a></dd>
+		</div>
+		<div>
+			<dt>SCSI controller</dt>
+			<dd><a href="http://www.tekram.com/product2/product_detail.asp?pid=43">DC-390U3W</a></dd>
+		</div>
+		<div>
+			<dt>disk</dt>
+			<dd>Atlas 15k2 146GB</dd>
+			<dd>IDE 256GB+<a href="http://www.unitycorp.co.jp/si/acard/bridge/bridge.html#aec7726q">AEC7726Q</a>x2</dd>
+		</div>
+		<div>
+			<dt>config</dt>
+			<dd>filsys main cw0f{w1.&lt;14-15&gt;.0}</dd>
+			<dd>filsys dump o</dd>
+		</div>
+		</dl>
+	</section>
+	<section>
+		<h2>old fileserver(fs64)</h2>
+		<dl>
+		<div>
+			<dt>CPU</dt>
+			<dd>Geode NX 1750</dd>
+		</div>
+		<div>
+			<dt>memory</dt>
+			<dd>PC2100 512MB</dd>
+		</div>
+		<div>
+			<dt>main board</dt>
+			<dd>M7VIG Pro</dd>
+		</div>
+		<div>
+			<dt>SCSI controller</dt>
+			<dd><a href="http://www.tekram.com/product2/product_detail.asp?pid=43">DC-390U3W</a></dd>
+		</div>
+		<div>
+			<dt>disk</dt>
+			<dd>Atlas 15k2 146GB</dd>
+			<dd>IDE 256GB+<a href="http://www.unitycorp.co.jp/si/acard/bridge/bridge.html#aec7726q">AEC7726Q</a>x2</dd>
+		</div>
+		<div>
+			<dt>config</dt>
+			<dd>filsys main cw0f{w14w15}</dd>
+			<dd>filsys dump o</dd>
+		</div>
+		</dl>
+	</section>
+	<section>
+		<h2>cpu+auth server</h2>
+		<dl>
+		<div>
+			<dt>CPU</dt>
+			<dd>Intel Atom</dd>
+		</div>
+		<div>
+			<dt>memory</dt>
+			<dd>2GB</dd>
+		</div>
+		<div>
+			<dt>main board</dt>
+			<dd><a href="http://www.mustardseed.co.jp/gigabyte/spec_gagc330ud.html">GA-GC330UD</a></dd>
+		</div>
+		<div>
+			<dt>NIC</dt>
+			<dd>rtl8139</dd>
+		</div>
+		</dl>
+		<p>じつはこれ、NICを追加しなくても、
+		カーネルにether8169を入れてあげれば
+		オンボードのNIC(Realtek 8102e)を認識します。</p>
+	</section>
+	<section>
+		<h2>old cpu+auth server</h2>
+		<dl>
+		<div>
+			<dt>PC</dt>
+			<dd><a href="http://www.pinon-pc.co.jp/products/sizka/classic/index.html">Sizka BASIC</a></dd>
+		</div>
+		<div>
+			<dt>memory</dt>
+			<dd>256MB</dd>
+		</div>
+		</dl>
+	</section>
+</main>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/plan9/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003ePlan 9: lufia.orgのサーバ\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/inst/index.html\"\u003eインストール\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/guide/index.html\"\u003eシステムの使い方\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/devel/index.html\"\u003eプログラミング\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/adm/index.html\"\u003eシステム管理\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/man/index.html\"\u003e自作ツール集\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003ch1\u003elufia.orgのサーバ\u003c/h1\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003eGoogle Compute Engine\u003c/h2\u003e\n\t\t\u003cp\u003e今はこれ。\u003c/p\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003eさくらVPS\u003c/h2\u003e\n\t\t\u003cp\u003e2020年夏ごろまで使っていました。\u003c/p\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003efileserver(fs64)\u003c/h2\u003e\n\t\t\u003cdl\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003eCPU\u003c/dt\u003e\n\t\t\t\u003cdd\u003eCeleron E3300 BX80571E3300\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003ememory\u003c/dt\u003e\n\t\t\t\u003cdd\u003eW3U1333Q1G\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003emotherboard\u003c/dt\u003e\n\t\t\t\u003cdd\u003e\u003ca href=\"http://www.gigabyte.co.jp/Products/Motherboard/Products_Overview.aspx?ProductID=3263\"\u003eGA-G41MT-ES2L\u003c/a\u003e\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003epowersupply\u003c/dt\u003e\n\t\t\t\u003cdd\u003e\u003ca href=\"http://www.links.co.jp/items/ener-power/epg500awt.html\"\u003eEPG500AWT\u003c/a\u003e\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003eSCSI controller\u003c/dt\u003e\n\t\t\t\u003cdd\u003e\u003ca href=\"http://www.tekram.com/product2/product_detail.asp?pid=43\"\u003eDC-390U3W\u003c/a\u003e\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003edisk\u003c/dt\u003e\n\t\t\t\u003cdd\u003eAtlas 15k2 146GB\u003c/dd\u003e\n\t\t\t\u003cdd\u003eIDE 256GB+\u003ca href=\"http://www.unitycorp.co.jp/si/acard/bridge/bridge.html#aec7726q\"\u003eAEC7726Q\u003c/a\u003ex2\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003econfig\u003c/dt\u003e\n\t\t\t\u003cdd\u003efilsys main cw0f{w1.\u0026lt;14-15\u0026gt;.0}\u003c/dd\u003e\n\t\t\t\u003cdd\u003efilsys dump o\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003c/dl\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003eold fileserver(fs64)\u003c/h2\u003e\n\t\t\u003cdl\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003eCPU\u003c/dt\u003e\n\t\t\t\u003cdd\u003eGeode NX 1750\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003ememory\u003c/dt\u003e\n\t\t\t\u003cdd\u003ePC2100 512MB\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003emain board\u003c/dt\u003e\n\t\t\t\u003cdd\u003eM7VIG Pro\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003eSCSI controller\u003c/dt\u003e\n\t\t\t\u003cdd\u003e\u003ca href=\"http://www.tekram.com/product2/product_detail.asp?pid=43\"\u003eDC-390U3W\u003c/a\u003e\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003edisk\u003c/dt\u003e\n\t\t\t\u003cdd\u003eAtlas 15k2 146GB\u003c/dd\u003e\n\t\t\t\u003cdd\u003eIDE 256GB+\u003ca href=\"http://www.unitycorp.co.jp/si/acard/bridge/bridge.html#aec7726q\"\u003eAEC7726Q\u003c/a\u003ex2\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003econfig\u003c/dt\u003e\n\t\t\t\u003cdd\u003efilsys main cw0f{w14w15}\u003c/dd\u003e\n\t\t\t\u003cdd\u003efilsys dump o\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003c/dl\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003ecpu+auth server\u003c/h2\u003e\n\t\t\u003cdl\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003eCPU\u003c/dt\u003e\n\t\t\t\u003cdd\u003eIntel Atom\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003ememory\u003c/dt\u003e\n\t\t\t\u003cdd\u003e2GB\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003emain board\u003c/dt\u003e\n\t\t\t\u003cdd\u003e\u003ca href=\"http://www.mustardseed.co.jp/gigabyte/spec_gagc330ud.html\"\u003eGA-GC330UD\u003c/a\u003e\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003eNIC\u003c/dt\u003e\n\t\t\t\u003cdd\u003ertl8139\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003c/dl\u003e\n\t\t\u003cp\u003eじつはこれ、NICを追加しなくても、\n\t\tカーネルにether8169を入れてあげれば\n\t\tオンボードのNIC(Realtek 8102e)を認識します。\u003c/p\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003eold cpu+auth server\u003c/h2\u003e\n\t\t\u003cdl\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003ePC\u003c/dt\u003e\n\t\t\t\u003cdd\u003e\u003ca href=\"http://www.pinon-pc.co.jp/products/sizka/classic/index.html\"\u003eSizka BASIC\u003c/a\u003e\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003ememory\u003c/dt\u003e\n\t\t\t\u003cdd\u003e256MB\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003c/dl\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["plan9","about"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

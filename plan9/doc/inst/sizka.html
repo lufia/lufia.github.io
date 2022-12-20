@@ -1,0 +1,109 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>Plan 9: Sizka BASICへのインストール</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="/plan9/doc/inst/index.html"><a>インストール</a></a></li>
+	<li><a href="/plan9/doc/guide/index.html"><a>システムの使い方</a></a></li>
+	<li><a href="/plan9/doc/devel/index.html"><a>プログラミング</a></a></li>
+	<li><a href="/plan9/doc/adm/index.html"><a>システム管理</a></a></li>
+	<li><a href="/plan9/man/index.html"><a>自作ツール集</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2006年9月23日更新</p>
+	<section>
+		<h1>Sizka BASICへのインストール</h1>
+		<p>若干の非力さは否めませんが、小型で無音の<a href="http://www.pinon-pc.co.jp/pc/products/barebone/sizka-basic/index.html">Sizka BASIC</a>にPlan 9をインストールしてみるページです。</p>
+		<p>結論からいえば、rioが立ち上がらないので、
+		端末として使うのはお勧めしません。
+		認証サーバにしてdrawtermするのがいいです。</p>
+		<section>
+			<h2>準備</h2>
+			<p>まず<a href="http://www.pinon-pc.co.jp/download/pc/index.htm">BIOS 1.5</a>へ
+			アップデートしておきます。</p>
+			<p>FDDもCDドライブも無いので、2.5 HDD変換アダプタなどを使って
+			別のPCからインストールし、それをSizkaへ組み込む作業が必要です。
+			以前、USB FDDやUSB CDドライブで試してみたことがありますが、
+			うまくロードできませんでした。</p>
+		</section>
+		<section>
+			<h2>別PCでインストール</h2>
+			<p>ふつうに進めていけば完了します。
+			fossilとfossil+ventiは、ファイルサーバとして使うなら
+			fossil+ventiのほうがいい気がします。</p>
+			<p>fossil+ventiの場合、インストール直後に
+			以下のようなエラーが発生して、比較的困りやすいのですが。</p>
+			<pre><code>can&#x27;t read my ip address
+venti: Err 2 ...</code></pre>
+			<p>これは、<a href="https://9p.io/wiki/plan9/Network_configuration/index.html">ベル研のWiki</a>によると、
+			IP割り当て前に<strong>/net/ipifc/0</strong>が127.1として存在するからなので、
+			<strong>termrc</strong>などから、ifの行をコメントアウトすればいいです。
+			ip/ipconfigとndb/dnsの2箇所。</p>
+			<pre><code class="sh">if(!test -e /net/ipifc/0/ctl)		# これを消す
+	ip/ipconfig</code></pre>
+		</section>
+		<section>
+			<h2>HDDをSizkaに移してブート</h2>
+			<p>通常はglendaでログインするところですが、
+			SizkaはVGAが対応していないのか、画面が真っ暗のまま固まります。
+			そこで、まずnoneでログインしVGAまわりを無効化、
+			その後glendaでログインとなります。</p>
+			<p>noneでログインした後は、以下のように<strong>plan9.ini</strong>からVGA周りを無効化。</p>
+			<pre><code class="console">% 9fat:
+% ramfs
+% ed /n/9fat/plan9.ini</code></pre>
+			<p>だいたい、次の3行をコメントにしておけば大丈夫です。</p>
+			<pre><code class="console">#mouseport=ps2
+#monitor=xga
+#vgasize=640x480x8</code></pre>
+			<p>で、ファイルシステムの停止。</p>
+			<pre><code class="console">% fshalt</code></pre>
+			<p>初回のみ、fshaltの後にしばらくHDDへアクセスがあります。
+			それが落ち着いたらリブート。</p>
+			<p>これで、glendaでログインしても固まらなくなりますが、
+			samもacmeも使えませんので、非常に不便です。。。
+			認証サーバ化してdrawtermから扱うことをおすすめします。</p>
+		</section>
+		<section>
+			<h2>トラブルシューティング</h2>
+			<section>
+				<h3>ventiがErr 2 ...というエラーを吐いている</h3>
+				<p>時間をローカルに合わせると治まるかもしれません。
+				<strong>termrc</strong>または<strong>cpurc</strong>のどこかに記述してみてください。</p>
+				<pre><code class="sh">aux/timesync -rL</code></pre>
+			</section>
+		</section>
+	</section>
+	<section>
+		<h1>Sizka BASICの認証サーバ化ヒント</h1>
+		<p>認証サーバのコンフィグレーションは、
+		他のカーネルと比べてドライバ周りがすっきりしているので、
+		そのままではSizkaのネットワークカードが認識されません。
+		<strong>/sys/src/9/pc/pcauth</strong>に以下の行を追加します。</p>
+		<pre><code>link
+	...
+	ether8139 pci
+	...</code></pre>
+	</section>
+</main>
+<aside>
+	<section>
+		<h1>関連情報</h1>
+		<ul>
+		<li><a href="/plan9/doc/adm/timezone.html"><a>時計合わせ</a></a></li>
+		<li><a href="/plan9/doc/adm/ndb.html"><a>ネットワークの設定</a></a></li>
+		<li><a href="/plan9/doc/inst/auth.html"><a>認証サーバのインストール</a></a></li>
+		</ul>
+	</section>
+	<section>
+		<h1>参考ページ</h1>
+		<ul>
+		<li><a href="https://9p.io/wiki/plan9/Installation_instructions/index.html">Installation instructions</a></li>
+		</ul>
+	</section>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/plan9/doc/inst/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003ePlan 9: Sizka BASICへのインストール\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/inst/index.html\"\u003eインストール\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/guide/index.html\"\u003eシステムの使い方\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/devel/index.html\"\u003eプログラミング\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/adm/index.html\"\u003eシステム管理\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/man/index.html\"\u003e自作ツール集\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2006年9月23日更新\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eSizka BASICへのインストール\u003c/h1\u003e\n\t\t\u003cp\u003e若干の非力さは否めませんが、小型で無音の\u003ca href=\"http://www.pinon-pc.co.jp/pc/products/barebone/sizka-basic/index.html\"\u003eSizka BASIC\u003c/a\u003eにPlan 9をインストールしてみるページです。\u003c/p\u003e\n\t\t\u003cp\u003e結論からいえば、rioが立ち上がらないので、\n\t\t端末として使うのはお勧めしません。\n\t\t認証サーバにしてdrawtermするのがいいです。\u003c/p\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e準備\u003c/h2\u003e\n\t\t\t\u003cp\u003eまず\u003ca href=\"http://www.pinon-pc.co.jp/download/pc/index.htm\"\u003eBIOS 1.5\u003c/a\u003eへ\n\t\t\tアップデートしておきます。\u003c/p\u003e\n\t\t\t\u003cp\u003eFDDもCDドライブも無いので、2.5 HDD変換アダプタなどを使って\n\t\t\t別のPCからインストールし、それをSizkaへ組み込む作業が必要です。\n\t\t\t以前、USB FDDやUSB CDドライブで試してみたことがありますが、\n\t\t\tうまくロードできませんでした。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e別PCでインストール\u003c/h2\u003e\n\t\t\t\u003cp\u003eふつうに進めていけば完了します。\n\t\t\tfossilとfossil+ventiは、ファイルサーバとして使うなら\n\t\t\tfossil+ventiのほうがいい気がします。\u003c/p\u003e\n\t\t\t\u003cp\u003efossil+ventiの場合、インストール直後に\n\t\t\t以下のようなエラーが発生して、比較的困りやすいのですが。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003ecan't read my ip address\nventi: Err 2 ...\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eこれは、\u003ca href=\"https://9p.io/wiki/plan9/Network_configuration/index.html\"\u003eベル研のWiki\u003c/a\u003eによると、\n\t\t\tIP割り当て前に\u003cstrong\u003e/net/ipifc/0\u003c/strong\u003eが127.1として存在するからなので、\n\t\t\t\u003cstrong\u003etermrc\u003c/strong\u003eなどから、ifの行をコメントアウトすればいいです。\n\t\t\tip/ipconfigとndb/dnsの2箇所。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"sh\"\u003eif(!test -e /net/ipifc/0/ctl)\t\t# これを消す\n\tip/ipconfig\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eHDDをSizkaに移してブート\u003c/h2\u003e\n\t\t\t\u003cp\u003e通常はglendaでログインするところですが、\n\t\t\tSizkaはVGAが対応していないのか、画面が真っ暗のまま固まります。\n\t\t\tそこで、まずnoneでログインしVGAまわりを無効化、\n\t\t\tその後glendaでログインとなります。\u003c/p\u003e\n\t\t\t\u003cp\u003enoneでログインした後は、以下のように\u003cstrong\u003eplan9.ini\u003c/strong\u003eからVGA周りを無効化。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% 9fat:\n% ramfs\n% ed /n/9fat/plan9.ini\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eだいたい、次の3行をコメントにしておけば大丈夫です。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e#mouseport=ps2\n#monitor=xga\n#vgasize=640x480x8\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eで、ファイルシステムの停止。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% fshalt\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e初回のみ、fshaltの後にしばらくHDDへアクセスがあります。\n\t\t\tそれが落ち着いたらリブート。\u003c/p\u003e\n\t\t\t\u003cp\u003eこれで、glendaでログインしても固まらなくなりますが、\n\t\t\tsamもacmeも使えませんので、非常に不便です。。。\n\t\t\t認証サーバ化してdrawtermから扱うことをおすすめします。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eトラブルシューティング\u003c/h2\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eventiがErr 2 ...というエラーを吐いている\u003c/h3\u003e\n\t\t\t\t\u003cp\u003e時間をローカルに合わせると治まるかもしれません。\n\t\t\t\t\u003cstrong\u003etermrc\u003c/strong\u003eまたは\u003cstrong\u003ecpurc\u003c/strong\u003eのどこかに記述してみてください。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"sh\"\u003eaux/timesync -rL\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eSizka BASICの認証サーバ化ヒント\u003c/h1\u003e\n\t\t\u003cp\u003e認証サーバのコンフィグレーションは、\n\t\t他のカーネルと比べてドライバ周りがすっきりしているので、\n\t\tそのままではSizkaのネットワークカードが認識されません。\n\t\t\u003cstrong\u003e/sys/src/9/pc/pcauth\u003c/strong\u003eに以下の行を追加します。\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode\u003elink\n\t...\n\tether8139 pci\n\t...\u003c/code\u003e\u003c/pre\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003e関連情報\u003c/h1\u003e\n\t\t\u003cul\u003e\n\t\t\u003cli\u003e\u003ca href=\"../adm/timezone.html\"\u003e時計合わせ\u003c/a\u003e\u003c/li\u003e\n\t\t\u003cli\u003e\u003ca href=\"../adm/ndb.html\"\u003eネットワークの設定\u003c/a\u003e\u003c/li\u003e\n\t\t\u003cli\u003e\u003ca href=\"auth.html\"\u003e認証サーバのインストール\u003c/a\u003e\u003c/li\u003e\n\t\t\u003c/ul\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003e参考ページ\u003c/h1\u003e\n\t\t\u003cul\u003e\n\t\t\u003cli\u003e\u003ca href=\"https://9p.io/wiki/plan9/Installation_instructions/index.html\"\u003eInstallation instructions\u003c/a\u003e\u003c/li\u003e\n\t\t\u003c/ul\u003e\n\t\u003c/section\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["plan9","doc","inst","sizka"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

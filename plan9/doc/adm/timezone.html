@@ -1,0 +1,178 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>Plan 9: 時計合わせ</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="/plan9/doc/inst/index.html"><a>インストール</a></a></li>
+	<li><a href="/plan9/doc/guide/index.html"><a>システムの使い方</a></a></li>
+	<li><a href="/plan9/doc/devel/index.html"><a>プログラミング</a></a></li>
+	<li><a href="/plan9/doc/adm/index.html"><a>システム管理</a></a></li>
+	<li><a href="/plan9/man/index.html"><a>自作ツール集</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2006年9月4日更新</p>
+	<section>
+		<h1>時計合わせ</h1>
+		<section>
+			<h2>timezoneの変更</h2>
+			<p><strong>/adm/timezone/local</strong>を、各地域のファイルで上書きします。
+			admグループの権限が必要になります。</p>
+			<pre><code class="console">% cp /adm/timezone/Japan /adm/timezone/local</code></pre>
+		</section>
+		<section>
+			<h2>sntpから時刻を受信</h2>
+			<p>aux/timesyncを使えばいいです。</p>
+			<pre><code class="sh"># ローカルの時間に合わせる場合
+aux/timesync -rL
+
+# sntpサーバを指定する場合
+aux/timesync ntp.domain.dom
+
+# ファイルサーバの時刻にあわせる場合
+aux/timesync -f</code></pre>
+			<p>fオプションとデフォルト動作の違いがいまいち分かりません。</p>
+			<div class="note">
+				<p>ファイルサーバの時刻に合わせるというのは、
+				何か特別に通信するわけではなく、
+				単純に、<strong>/</strong>を開いて、そのアクセス時刻を調べているだけです。
+				なので、ファイルサーバにあわせる場合は、
+				必ずfsカーネルのtimezoneを変更しておきます。
+				そうしないと17時間進んでしまいますし、
+				対処療法として<strong>/adm/timezone/local</strong>を-22800と変更しても、
+				メールの送信時刻が17時間ずれたままです。</p>
+				<p>これは、なぜ17時間なのかよく分かりません。
+				upas/marshalによって作られるヘッダ</p>
+				<pre><code>Date: xxxxxx -8</code></pre>
+				<p>これとtimezoneのJSTが関係してそうですが。。</p>
+			</div>
+		</section>
+		<section>
+			<h2>fsカーネルのtimezone変更</h2>
+			<p>fs64/fs64.cから、以下2つの値を変更してコンパイル。
+			これをしないと、dumpが22:00にスケジュールされてしまいます。</p>
+			<pre><code class="c">conf.minuteswest = -9*60;
+conf.dsttime = 0;</code></pre>
+			<p>ファイルサーバのRTCをGMTに調整(日本時間-9)して、
+			新しいカーネルでブート。
+			このとき、fsがすでに稼働中だったのですが、
+			新しいカーネルに切り替えてもファイルシステムの整合性が取れないといって
+			異常終了するようようなエラーは無かったです。</p>
+			<div class="note">
+				<p>時刻周りのデータと関数について調べてみました。</p>
+				<section>
+					<h2>fsカーネルのデータ構造</h2>
+					<dl>
+					<div>
+						<dt>mktime</dt>
+						<dd>カーネルのコンパイルされた時間</dd>
+						<dd>versionコマンドで表示可能</dd>
+					</div>
+					<div>
+						<dt>toytime()</dt>
+						<dd>mktime + ファイルサーバをブートしてからの時間</dd>
+					</div>
+					<div>
+						<dt>Time.bias</dt>
+						<dd>げた</dd>
+						<dd>dateコマンドで+Nとして表示される</dd>
+					</div>
+					<div>
+						<dt>Time.offset</dt>
+						<dd>コンパイル時間からブートタイムまでの差分</dd>
+						<dd>now - lasttoy</dd>
+					</div>
+					<div>
+						<dt>Time.lasttoy</dt>
+						<dd>最後に調べたtoytime()の結果</dd>
+					</div>
+					<div>
+						<dt>time()</dt>
+						<dd>Timeから計算した現在時刻を返す</dd>
+					</div>
+					<div>
+						<dt>settime(t)</dt>
+						<dd>tとtime()の差分を、bias, offsetに反映する</dd>
+					</div>
+					<div>
+						<dt>rtctime()</dt>
+						<dd>RTCの値を返す</dd>
+					</div>
+					<div>
+						<dt>setrtc(t)</dt>
+						<dd>settime()と似ている</dd>
+						<dd>RTCに保存する(BIOS時刻を更新する)</dd>
+					</div>
+					<div>
+						<dt>conf.minuteswest</dt>
+						<dd>GMTからの差分</dd>
+						<dd>fs64の初期値では、8*60となっている</dd>
+						<dd>日本時間にするには-9*60</dd>
+					</div>
+					<div>
+						<dt>conf.dsttime</dt>
+						<dd>サマータイム有無</dd>
+						<dd>fs64の初期値 = 1(あり)</dd>
+					</div>
+					<div>
+						<dt>localtime()</dt>
+						<dd>dateで表示する時刻</dd>
+						<dd>time() - conf.minuteswest*60</dd>
+					</div>
+					</dl>
+				</section>
+				<section>
+					<h2>各データ更新のタイミング</h2>
+					<dl>
+					<div>
+						<dt>ブート時</dt>
+						<dd>settime(rtctime())</dd>
+					</div>
+					<div>
+						<dt>date [+-=] xxxx</dt>
+						<dd>settime(xxxx)</dd>
+						<dd>setrtc(xxxx)</dd>
+					</div>
+					<div>
+						<dt>sntpから時刻が届いたとき</dt>
+						<dd>settime(sntp)</dd>
+						<dd>setrtc(sntp)</dd>
+					</div>
+					</dl>
+				</section>
+			</div>
+		</section>
+		<section>
+			<h2>fsカーネルのsntpサーバ設定</h2>
+			<p>configモードで、ipsntpを使います。</p>
+			<pre><code class="console">config: ipsntp xxx.xxx.xxx.xxx</code></pre>
+			<p>1時間に1回、自動的に確認を行い、
+			正しく受信すると、コンソールにログが流れます。</p>
+			<pre><code>sntp 1254076626
+sntp 1254080226
+sntp 1254083826</code></pre>
+			<p>また、sntpコマンドを使えば、手動でも動きます。</p>
+			<pre><code class="console">dryad: sntp kick
+sntp 1254076819</code></pre>
+		</section>
+		<section>
+			<h2>トラブルシューティング</h2>
+			<section>
+				<h3>timesyncが延々と終わらない</h3>
+				<p>aux/timesyncにデバッグオプションを与えた場合には、
+				timesyncはその場合に限り<a href="https://9p.io/magic/man2html/2/fork">fork(2)</a>しないので、
+				延々とカレントで実行を続ける。</p>
+			</section>
+		</section>
+	</section>
+</main>
+<aside>
+	<h1>参考ページ</h1>
+	<ul>
+	<li><a href="http://p9.nyx.link/admin/timezone.html">時刻合わせ</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/plan9/doc/adm/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003ePlan 9: 時計合わせ\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/inst/index.html\"\u003eインストール\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/guide/index.html\"\u003eシステムの使い方\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/devel/index.html\"\u003eプログラミング\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/adm/index.html\"\u003eシステム管理\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/man/index.html\"\u003e自作ツール集\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2006年9月4日更新\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003e時計合わせ\u003c/h1\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003etimezoneの変更\u003c/h2\u003e\n\t\t\t\u003cp\u003e\u003cstrong\u003e/adm/timezone/local\u003c/strong\u003eを、各地域のファイルで上書きします。\n\t\t\tadmグループの権限が必要になります。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% cp /adm/timezone/Japan /adm/timezone/local\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003esntpから時刻を受信\u003c/h2\u003e\n\t\t\t\u003cp\u003eaux/timesyncを使えばいいです。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"sh\"\u003e# ローカルの時間に合わせる場合\naux/timesync -rL\n\n# sntpサーバを指定する場合\naux/timesync ntp.domain.dom\n\n# ファイルサーバの時刻にあわせる場合\naux/timesync -f\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003efオプションとデフォルト動作の違いがいまいち分かりません。\u003c/p\u003e\n\t\t\t\u003cdiv class=\"note\"\u003e\n\t\t\t\t\u003cp\u003eファイルサーバの時刻に合わせるというのは、\n\t\t\t\t何か特別に通信するわけではなく、\n\t\t\t\t単純に、\u003cstrong\u003e/\u003c/strong\u003eを開いて、そのアクセス時刻を調べているだけです。\n\t\t\t\tなので、ファイルサーバにあわせる場合は、\n\t\t\t\t必ずfsカーネルのtimezoneを変更しておきます。\n\t\t\t\tそうしないと17時間進んでしまいますし、\n\t\t\t\t対処療法として\u003cstrong\u003e/adm/timezone/local\u003c/strong\u003eを-22800と変更しても、\n\t\t\t\tメールの送信時刻が17時間ずれたままです。\u003c/p\u003e\n\t\t\t\t\u003cp\u003eこれは、なぜ17時間なのかよく分かりません。\n\t\t\t\tupas/marshalによって作られるヘッダ\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode\u003eDate: xxxxxx -8\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003eこれとtimezoneのJSTが関係してそうですが。。\u003c/p\u003e\n\t\t\t\u003c/div\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003efsカーネルのtimezone変更\u003c/h2\u003e\n\t\t\t\u003cp\u003efs64/fs64.cから、以下2つの値を変更してコンパイル。\n\t\t\tこれをしないと、dumpが22:00にスケジュールされてしまいます。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"c\"\u003econf.minuteswest = -9*60;\nconf.dsttime = 0;\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eファイルサーバのRTCをGMTに調整(日本時間-9)して、\n\t\t\t新しいカーネルでブート。\n\t\t\tこのとき、fsがすでに稼働中だったのですが、\n\t\t\t新しいカーネルに切り替えてもファイルシステムの整合性が取れないといって\n\t\t\t異常終了するようようなエラーは無かったです。\u003c/p\u003e\n\t\t\t\u003cdiv class=\"note\"\u003e\n\t\t\t\t\u003cp\u003e時刻周りのデータと関数について調べてみました。\u003c/p\u003e\n\t\t\t\t\u003csection\u003e\n\t\t\t\t\t\u003ch2\u003efsカーネルのデータ構造\u003c/h2\u003e\n\t\t\t\t\t\u003cdl\u003e\n\t\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\t\u003cdt\u003emktime\u003c/dt\u003e\n\t\t\t\t\t\t\u003cdd\u003eカーネルのコンパイルされた時間\u003c/dd\u003e\n\t\t\t\t\t\t\u003cdd\u003eversionコマンドで表示可能\u003c/dd\u003e\n\t\t\t\t\t\u003c/div\u003e\n\t\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\t\u003cdt\u003etoytime()\u003c/dt\u003e\n\t\t\t\t\t\t\u003cdd\u003emktime + ファイルサーバをブートしてからの時間\u003c/dd\u003e\n\t\t\t\t\t\u003c/div\u003e\n\t\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\t\u003cdt\u003eTime.bias\u003c/dt\u003e\n\t\t\t\t\t\t\u003cdd\u003eげた\u003c/dd\u003e\n\t\t\t\t\t\t\u003cdd\u003edateコマンドで+Nとして表示される\u003c/dd\u003e\n\t\t\t\t\t\u003c/div\u003e\n\t\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\t\u003cdt\u003eTime.offset\u003c/dt\u003e\n\t\t\t\t\t\t\u003cdd\u003eコンパイル時間からブートタイムまでの差分\u003c/dd\u003e\n\t\t\t\t\t\t\u003cdd\u003enow - lasttoy\u003c/dd\u003e\n\t\t\t\t\t\u003c/div\u003e\n\t\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\t\u003cdt\u003eTime.lasttoy\u003c/dt\u003e\n\t\t\t\t\t\t\u003cdd\u003e最後に調べたtoytime()の結果\u003c/dd\u003e\n\t\t\t\t\t\u003c/div\u003e\n\t\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\t\u003cdt\u003etime()\u003c/dt\u003e\n\t\t\t\t\t\t\u003cdd\u003eTimeから計算した現在時刻を返す\u003c/dd\u003e\n\t\t\t\t\t\u003c/div\u003e\n\t\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\t\u003cdt\u003esettime(t)\u003c/dt\u003e\n\t\t\t\t\t\t\u003cdd\u003etとtime()の差分を、bias, offsetに反映する\u003c/dd\u003e\n\t\t\t\t\t\u003c/div\u003e\n\t\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\t\u003cdt\u003ertctime()\u003c/dt\u003e\n\t\t\t\t\t\t\u003cdd\u003eRTCの値を返す\u003c/dd\u003e\n\t\t\t\t\t\u003c/div\u003e\n\t\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\t\u003cdt\u003esetrtc(t)\u003c/dt\u003e\n\t\t\t\t\t\t\u003cdd\u003esettime()と似ている\u003c/dd\u003e\n\t\t\t\t\t\t\u003cdd\u003eRTCに保存する(BIOS時刻を更新する)\u003c/dd\u003e\n\t\t\t\t\t\u003c/div\u003e\n\t\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\t\u003cdt\u003econf.minuteswest\u003c/dt\u003e\n\t\t\t\t\t\t\u003cdd\u003eGMTからの差分\u003c/dd\u003e\n\t\t\t\t\t\t\u003cdd\u003efs64の初期値では、8*60となっている\u003c/dd\u003e\n\t\t\t\t\t\t\u003cdd\u003e日本時間にするには-9*60\u003c/dd\u003e\n\t\t\t\t\t\u003c/div\u003e\n\t\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\t\u003cdt\u003econf.dsttime\u003c/dt\u003e\n\t\t\t\t\t\t\u003cdd\u003eサマータイム有無\u003c/dd\u003e\n\t\t\t\t\t\t\u003cdd\u003efs64の初期値 = 1(あり)\u003c/dd\u003e\n\t\t\t\t\t\u003c/div\u003e\n\t\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\t\u003cdt\u003elocaltime()\u003c/dt\u003e\n\t\t\t\t\t\t\u003cdd\u003edateで表示する時刻\u003c/dd\u003e\n\t\t\t\t\t\t\u003cdd\u003etime() - conf.minuteswest*60\u003c/dd\u003e\n\t\t\t\t\t\u003c/div\u003e\n\t\t\t\t\t\u003c/dl\u003e\n\t\t\t\t\u003c/section\u003e\n\t\t\t\t\u003csection\u003e\n\t\t\t\t\t\u003ch2\u003e各データ更新のタイミング\u003c/h2\u003e\n\t\t\t\t\t\u003cdl\u003e\n\t\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\t\u003cdt\u003eブート時\u003c/dt\u003e\n\t\t\t\t\t\t\u003cdd\u003esettime(rtctime())\u003c/dd\u003e\n\t\t\t\t\t\u003c/div\u003e\n\t\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\t\u003cdt\u003edate [+-=] xxxx\u003c/dt\u003e\n\t\t\t\t\t\t\u003cdd\u003esettime(xxxx)\u003c/dd\u003e\n\t\t\t\t\t\t\u003cdd\u003esetrtc(xxxx)\u003c/dd\u003e\n\t\t\t\t\t\u003c/div\u003e\n\t\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\t\u003cdt\u003esntpから時刻が届いたとき\u003c/dt\u003e\n\t\t\t\t\t\t\u003cdd\u003esettime(sntp)\u003c/dd\u003e\n\t\t\t\t\t\t\u003cdd\u003esetrtc(sntp)\u003c/dd\u003e\n\t\t\t\t\t\u003c/div\u003e\n\t\t\t\t\t\u003c/dl\u003e\n\t\t\t\t\u003c/section\u003e\n\t\t\t\u003c/div\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003efsカーネルのsntpサーバ設定\u003c/h2\u003e\n\t\t\t\u003cp\u003econfigモードで、ipsntpを使います。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003econfig: ipsntp xxx.xxx.xxx.xxx\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e1時間に1回、自動的に確認を行い、\n\t\t\t正しく受信すると、コンソールにログが流れます。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003esntp 1254076626\nsntp 1254080226\nsntp 1254083826\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eまた、sntpコマンドを使えば、手動でも動きます。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003edryad: sntp kick\nsntp 1254076819\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eトラブルシューティング\u003c/h2\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003etimesyncが延々と終わらない\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eaux/timesyncにデバッグオプションを与えた場合には、\n\t\t\t\ttimesyncはその場合に限り\u003ca href=\"https://9p.io/magic/man2html/2/fork\"\u003efork(2)\u003c/a\u003eしないので、\n\t\t\t\t延々とカレントで実行を続ける。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003e参考ページ\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"http://p9.nyx.link/admin/timezone.html\"\u003e時刻合わせ\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["plan9","doc","adm","timezone"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

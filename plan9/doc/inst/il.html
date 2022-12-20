@@ -1,0 +1,196 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>Plan 9: カーネルにilを組み込む</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="/plan9/doc/inst/index.html"><a>インストール</a></a></li>
+	<li><a href="/plan9/doc/guide/index.html"><a>システムの使い方</a></a></li>
+	<li><a href="/plan9/doc/devel/index.html"><a>プログラミング</a></a></li>
+	<li><a href="/plan9/doc/adm/index.html"><a>システム管理</a></a></li>
+	<li><a href="/plan9/man/index.html"><a>自作ツール集</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2011年7月1日更新</p>
+	<section>
+		<h1>カーネルにilを組み込む</h1>
+		<p>カーネルからilが外されてしまったので、dumpfsを利用する場合には、
+		自分でilを組み込まなければ動きません。
+		具体的には、まず、<strong>il.c</strong>を<strong>/sys/src/9/ip/il.c</strong>にコピーします。</p>
+		<div class="note">
+			<p><a href="/plan9/src/il.c"><a>IPv6対応のIL</a></a>を書いてみました。
+			ざっと使い方を書くと、</p>
+			<pre><code class="sh">aux/listen1 il!*!9001 /bin/exportfs -r $home</code></pre>
+			<p>別のウィンドウで</p>
+			<pre><code class="sh">9fs il!::1!9001 /n/remote</code></pre>
+		</div>
+		<pre><code class="console">% 9fs sources
+% cp /n/sources/extra/il.c /sys/src/9/ip/il.c</code></pre>
+		<p>次に、<strong>/sys/src/9/ip/ip.h</strong>のLogtcp付近を以下のように変更します。</p>
+		<pre><code class="c">Logtcp=		1&lt;&lt;2,
+Logfs=		1&lt;&lt;3,
+Logil=		1&lt;&lt;4,	// 追加
+Logicmp=	1&lt;&lt;5,
+Logudp=		1&lt;&lt;6,
+Logcompress=	1&lt;&lt;7,
+Logilmsg=	1&lt;&lt;8,	// 追加
+Loggre=		1&lt;&lt;9,</code></pre>
+		<div class="note">
+			<p>これに加えて、<strong>ip/netlog.c</strong>にも追加。無くても動きますが。</p>
+			<pre><code class="c">static Netlogflag flags[] =
+{
+	{ &quot;ppp&quot;,	Logppp, },
+	{ &quot;ip&quot;,		Logip, },
+	{ &quot;fs&quot;,		Logfs, },
+	{ &quot;il&quot;,			Logil, },		// 追加
+	{ &quot;tcp&quot;,	Logtcp, },
+	{ &quot;icmp&quot;,	Logicmp, },
+	{ &quot;udp&quot;,	Logudp, },
+	{ &quot;compress&quot;,	Logcompress, },
+	{ &quot;ilmsg&quot;,		Logil|Logilmsg, },	// 追加
+	{ &quot;gre&quot;,	Loggre, },
+	{ &quot;tcpwin&quot;,	Logtcp|Logtcpwin, },
+	{ &quot;tcprxmt&quot;,	Logtcp|Logtcprxmt, },
+	{ &quot;udpmsg&quot;,	Logudp|Logudpmsg, },
+	{ &quot;ipmsg&quot;,	Logip|Logipmsg, },
+	{ &quot;esp&quot;,	Logesp, },
+	{ nil,		0, },
+};</code></pre>
+		</div>
+		<p>2010年の途中まではここまでで動きましたが、
+		2011年5月に確認してみると、いくつかコンパイルエラーが出ました。
+		そこで、若干むりやりですが、boot以下の<strong>boot.h</strong>と<strong>bootip.c</strong>に追加します。</p>
+		<section>
+			<h3>boot/boot.h</h3>
+			<pre><code class="c">extern void	configil(Method*);
+extern int	connectil(void);</code></pre>
+		</section>
+		<section>
+			<h3>boot/bootip.c</h3>
+			<pre><code class="c">void
+configil(Method*)
+{
+	configip(bargc, bargv, 1);
+	setauthaddr(&quot;il&quot;, 566);
+}
+
+int
+connectil(void)
+{
+	int fd;
+	char buf[64];
+
+	snprint(buf, sizeof buf, &quot;il!%I!17008&quot;, fsip);
+	fd = dial(buf, 0, 0, 0);
+	if(fd &lt; 0)
+		werrstr(&quot;dial %s: %r&quot;, buf);
+	return fd;
+}</code></pre>
+		</section>
+		<p>最後に、confファイルに、ilのエントリが必要になります。
+		いま使っているpcauthの場合はこんな感じ。</p>
+		<pre><code>dev
+	root
+	cons
+	arch
+	pnp		pci
+	env
+	pipe
+	proc
+	mnt
+	srv
+	dup
+	rtc
+	ssl
+	tls
+	cap
+	kprof
+	fs
+
+	ether		netif
+	ip		arp chandial ip ipv6 ipaux iproute netlog nullmedium pktmedium ptclbsum386 inferno
+
+	draw		screen vga vgax
+	mouse		mouse
+	vga
+
+	sd
+	floppy		dma
+
+	uart
+
+link
+	apm		apmjump
+	ether8139	pci
+	ether8169	pci ethermii
+	ethermedium
+	netdevmedium
+	loopbackmedium
+
+misc
+	realmode
+	archmp		mp apic
+	mtrr
+	sdata		pci sdscsi
+
+	uarti8250
+	uartpci
+
+	vgamach64xx	+cur
+	vgas3 		+cur vgasavage
+
+ip
+	il
+	tcp
+	udp
+	ipifc
+	icmp
+	icmp6
+	gre
+	ipmux
+	esp
+
+port
+	int cpuserver = 1;
+
+boot cpu boot #S/sdC0/
+	tcp
+	il
+	local
+
+bootdir
+	bootpcauth.out boot
+	/386/bin/ip/ipconfig
+	/386/bin/auth/factotum
+	/386/bin/fossil/fossil
+	/386/bin/venti/venti
+#	/386/bin/disk/kfs</code></pre>
+		<p>以前とくらべて、</p>
+		<pre><code>misc
+	arch		mp apic
+	mtrr</code></pre>
+		<p>これらがなければリンク時にエラーがでますね。</p>
+	</section>
+</main>
+<aside>
+	<section>
+		<h1>関連情報</h1>
+		<ul>
+		<li><a href="/plan9/doc/inst/fs.html"><a>ファイルサーバのインストール</a></a></li>
+		<li><a href="/plan9/doc/guide/il.html"><a>ILプロトコル</a></a></li>
+		<li><a href="/notes/2011/0618.html"><a>il.cを読む</a></a></li>
+		</ul>
+	</section>
+	<section>
+		<h1>参考ページ</h1>
+		<ul>
+		<li><a href="http://9fans.net/archive/2007/10/34">9fans: Kernel and IL</a></li>
+		<li><a href="http://9fans.net/archive/2007/10/35">Re: 9fans: Kernel and IL</a></li>
+		<li><a href="http://www.slideshare.net/oraccha/il-4020522">IL: 失われたプロトコル</a></li>
+		</ul>
+	</section>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/plan9/doc/inst/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003ePlan 9: カーネルにilを組み込む\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/inst/index.html\"\u003eインストール\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/guide/index.html\"\u003eシステムの使い方\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/devel/index.html\"\u003eプログラミング\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/adm/index.html\"\u003eシステム管理\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/man/index.html\"\u003e自作ツール集\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2011年7月1日更新\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eカーネルにilを組み込む\u003c/h1\u003e\n\t\t\u003cp\u003eカーネルからilが外されてしまったので、dumpfsを利用する場合には、\n\t\t自分でilを組み込まなければ動きません。\n\t\t具体的には、まず、\u003cstrong\u003eil.c\u003c/strong\u003eを\u003cstrong\u003e/sys/src/9/ip/il.c\u003c/strong\u003eにコピーします。\u003c/p\u003e\n\t\t\u003cdiv class=\"note\"\u003e\n\t\t\t\u003cp\u003e\u003ca href=\"../../src/il.c\"\u003eIPv6対応のIL\u003c/a\u003eを書いてみました。\n\t\t\tざっと使い方を書くと、\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"sh\"\u003eaux/listen1 il!*!9001 /bin/exportfs -r $home\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e別のウィンドウで\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"sh\"\u003e9fs il!::1!9001 /n/remote\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% 9fs sources\n% cp /n/sources/extra/il.c /sys/src/9/ip/il.c\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003cp\u003e次に、\u003cstrong\u003e/sys/src/9/ip/ip.h\u003c/strong\u003eのLogtcp付近を以下のように変更します。\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode class=\"c\"\u003eLogtcp=\t\t1\u0026lt;\u0026lt;2,\nLogfs=\t\t1\u0026lt;\u0026lt;3,\nLogil=\t\t1\u0026lt;\u0026lt;4,\t// 追加\nLogicmp=\t1\u0026lt;\u0026lt;5,\nLogudp=\t\t1\u0026lt;\u0026lt;6,\nLogcompress=\t1\u0026lt;\u0026lt;7,\nLogilmsg=\t1\u0026lt;\u0026lt;8,\t// 追加\nLoggre=\t\t1\u0026lt;\u0026lt;9,\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003cdiv class=\"note\"\u003e\n\t\t\t\u003cp\u003eこれに加えて、\u003cstrong\u003eip/netlog.c\u003c/strong\u003eにも追加。無くても動きますが。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"c\"\u003estatic Netlogflag flags[] =\n{\n\t{ \u0026quot;ppp\u0026quot;,\tLogppp, },\n\t{ \u0026quot;ip\u0026quot;,\t\tLogip, },\n\t{ \u0026quot;fs\u0026quot;,\t\tLogfs, },\n\t{ \u0026quot;il\u0026quot;,\t\t\tLogil, },\t\t// 追加\n\t{ \u0026quot;tcp\u0026quot;,\tLogtcp, },\n\t{ \u0026quot;icmp\u0026quot;,\tLogicmp, },\n\t{ \u0026quot;udp\u0026quot;,\tLogudp, },\n\t{ \u0026quot;compress\u0026quot;,\tLogcompress, },\n\t{ \u0026quot;ilmsg\u0026quot;,\t\tLogil|Logilmsg, },\t// 追加\n\t{ \u0026quot;gre\u0026quot;,\tLoggre, },\n\t{ \u0026quot;tcpwin\u0026quot;,\tLogtcp|Logtcpwin, },\n\t{ \u0026quot;tcprxmt\u0026quot;,\tLogtcp|Logtcprxmt, },\n\t{ \u0026quot;udpmsg\u0026quot;,\tLogudp|Logudpmsg, },\n\t{ \u0026quot;ipmsg\u0026quot;,\tLogip|Logipmsg, },\n\t{ \u0026quot;esp\u0026quot;,\tLogesp, },\n\t{ nil,\t\t0, },\n};\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cp\u003e2010年の途中まではここまでで動きましたが、\n\t\t2011年5月に確認してみると、いくつかコンパイルエラーが出ました。\n\t\tそこで、若干むりやりですが、boot以下の\u003cstrong\u003eboot.h\u003c/strong\u003eと\u003cstrong\u003ebootip.c\u003c/strong\u003eに追加します。\u003c/p\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch3\u003eboot/boot.h\u003c/h3\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"c\"\u003eextern void\tconfigil(Method*);\nextern int\tconnectil(void);\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch3\u003eboot/bootip.c\u003c/h3\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"c\"\u003evoid\nconfigil(Method*)\n{\n\tconfigip(bargc, bargv, 1);\n\tsetauthaddr(\u0026quot;il\u0026quot;, 566);\n}\n\nint\nconnectil(void)\n{\n\tint fd;\n\tchar buf[64];\n\n\tsnprint(buf, sizeof buf, \u0026quot;il!%I!17008\u0026quot;, fsip);\n\tfd = dial(buf, 0, 0, 0);\n\tif(fd \u0026lt; 0)\n\t\twerrstr(\u0026quot;dial %s: %r\u0026quot;, buf);\n\treturn fd;\n}\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003cp\u003e最後に、confファイルに、ilのエントリが必要になります。\n\t\tいま使っているpcauthの場合はこんな感じ。\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode\u003edev\n\troot\n\tcons\n\tarch\n\tpnp\t\tpci\n\tenv\n\tpipe\n\tproc\n\tmnt\n\tsrv\n\tdup\n\trtc\n\tssl\n\ttls\n\tcap\n\tkprof\n\tfs\n\n\tether\t\tnetif\n\tip\t\tarp chandial ip ipv6 ipaux iproute netlog nullmedium pktmedium ptclbsum386 inferno\n\n\tdraw\t\tscreen vga vgax\n\tmouse\t\tmouse\n\tvga\n\n\tsd\n\tfloppy\t\tdma\n\n\tuart\n\nlink\n\tapm\t\tapmjump\n\tether8139\tpci\n\tether8169\tpci ethermii\n\tethermedium\n\tnetdevmedium\n\tloopbackmedium\n\nmisc\n\trealmode\n\tarchmp\t\tmp apic\n\tmtrr\n\tsdata\t\tpci sdscsi\n\n\tuarti8250\n\tuartpci\n\n\tvgamach64xx\t+cur\n\tvgas3 \t\t+cur vgasavage\n\nip\n\til\n\ttcp\n\tudp\n\tipifc\n\ticmp\n\ticmp6\n\tgre\n\tipmux\n\tesp\n\nport\n\tint cpuserver = 1;\n\nboot cpu boot #S/sdC0/\n\ttcp\n\til\n\tlocal\n\nbootdir\n\tbootpcauth.out boot\n\t/386/bin/ip/ipconfig\n\t/386/bin/auth/factotum\n\t/386/bin/fossil/fossil\n\t/386/bin/venti/venti\n#\t/386/bin/disk/kfs\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003cp\u003e以前とくらべて、\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode\u003emisc\n\tarch\t\tmp apic\n\tmtrr\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003cp\u003eこれらがなければリンク時にエラーがでますね。\u003c/p\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003e関連情報\u003c/h1\u003e\n\t\t\u003cul\u003e\n\t\t\u003cli\u003e\u003ca href=\"fs.html\"\u003eファイルサーバのインストール\u003c/a\u003e\u003c/li\u003e\n\t\t\u003cli\u003e\u003ca href=\"../guide/il.html\"\u003eILプロトコル\u003c/a\u003e\u003c/li\u003e\n\t\t\u003cli\u003e\u003ca href=\"../../../notes/2011/0618.html\"\u003eil.cを読む\u003c/a\u003e\u003c/li\u003e\n\t\t\u003c/ul\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003e参考ページ\u003c/h1\u003e\n\t\t\u003cul\u003e\n\t\t\u003cli\u003e\u003ca href=\"http://9fans.net/archive/2007/10/34\"\u003e9fans: Kernel and IL\u003c/a\u003e\u003c/li\u003e\n\t\t\u003cli\u003e\u003ca href=\"http://9fans.net/archive/2007/10/35\"\u003eRe: 9fans: Kernel and IL\u003c/a\u003e\u003c/li\u003e\n\t\t\u003cli\u003e\u003ca href=\"http://www.slideshare.net/oraccha/il-4020522\"\u003eIL: 失われたプロトコル\u003c/a\u003e\u003c/li\u003e\n\t\t\u003c/ul\u003e\n\t\u003c/section\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["plan9","doc","inst","il"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

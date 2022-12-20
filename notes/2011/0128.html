@@ -1,0 +1,74 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: SproutCoreのいろいろ</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2011年1月28日作成</p>
+	<section>
+		<h1>SproutCoreのいろいろ</h1>
+		<section>
+			<h2>HTTP Proxy</h2>
+			<p>Buildfileにproxyを指定すると、
+			そのアクセスがあった場合に:toで指したホストへ切り替えてくれます。
+			テストをするときにとても便利。</p>
+			<pre><code class="js">proxy &#x27;/services/Service1.svc&#x27;, :to =&gt; &#x27;www.local&#x27;</code></pre>
+			<p>sc-serverを再起動するまでは反映しません。</p>
+		</section>
+		<section>
+			<h2>ビルド</h2>
+			<p>プロジェクトの場所に移動して、</p>
+			<pre><code class="console">$ sc-build -r [-c] [--languages=ja]</code></pre>
+			<p>これで、tmp/build以下にファイルがビルドされてます。
+			cオプションは事前にクリーン。</p>
+			<p class="note">いちど失敗しても、cオプションを外して何度か実行すると完了するみたい。
+			何が原因なのでしょうね。</p>
+		</section>
+		<section>
+			<h2>展開</h2>
+			<p>tmp/build以下のパッケージを、webサーバのルートへコピーします。
+			URLは、だいたい/$project/$application/$lang/$GUID/index.html。</p>
+			<section>
+				<h3>パッケージ名の指定</h3>
+				<p>デフォルトはstaticですが、
+				Buildfileでurl_prefixを使って設定できます。</p>
+				<pre><code>config :all, :required =&gt; :sproutcore, :url_prefix =&gt; &#x27;/path&#x27;</code></pre>
+			</section>
+			<section>
+				<h3>リダイレクト</h3>
+				<p>URLの中に、およそビルドごとに変化するGUIDが入っていますので、
+				連絡するURLを単純にしておいて、
+				なんらかの方法でリダイレクトするといいかもしれません。
+				個人的に/$project/$application/までを連絡するのがおすすめです。</p>
+			</section>
+		</section>
+		<section>
+			<h2>アプリケーションの追加</h2>
+			<pre><code class="console">$ sc-gen app AppName</code></pre>
+			<p>$project/apps以下に、新しいアプリケーションが作られます。</p>
+		</section>
+		<section>
+			<h2>ライブラリ</h2>
+			<p>SC.Enumerable.reduceMaxは数値比較(&lt;)なので、
+			DateTime型の比較には使えません。</p>
+		</section>
+	</section>
+</main>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2011/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: SproutCoreのいろいろ\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2011年1月28日作成\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eSproutCoreのいろいろ\u003c/h1\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eHTTP Proxy\u003c/h2\u003e\n\t\t\t\u003cp\u003eBuildfileにproxyを指定すると、\n\t\t\tそのアクセスがあった場合に:toで指したホストへ切り替えてくれます。\n\t\t\tテストをするときにとても便利。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003eproxy '/services/Service1.svc', :to =\u0026gt; 'www.local'\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003esc-serverを再起動するまでは反映しません。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eビルド\u003c/h2\u003e\n\t\t\t\u003cp\u003eプロジェクトの場所に移動して、\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e$ sc-build -r [-c] [--languages=ja]\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eこれで、tmp/build以下にファイルがビルドされてます。\n\t\t\tcオプションは事前にクリーン。\u003c/p\u003e\n\t\t\t\u003cp class=\"note\"\u003eいちど失敗しても、cオプションを外して何度か実行すると完了するみたい。\n\t\t\t何が原因なのでしょうね。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e展開\u003c/h2\u003e\n\t\t\t\u003cp\u003etmp/build以下のパッケージを、webサーバのルートへコピーします。\n\t\t\tURLは、だいたい/$project/$application/$lang/$GUID/index.html。\u003c/p\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eパッケージ名の指定\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eデフォルトはstaticですが、\n\t\t\t\tBuildfileでurl_prefixを使って設定できます。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode\u003econfig :all, :required =\u0026gt; :sproutcore, :url_prefix =\u0026gt; '/path'\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eリダイレクト\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eURLの中に、およそビルドごとに変化するGUIDが入っていますので、\n\t\t\t\t連絡するURLを単純にしておいて、\n\t\t\t\tなんらかの方法でリダイレクトするといいかもしれません。\n\t\t\t\t個人的に/$project/$application/までを連絡するのがおすすめです。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eアプリケーションの追加\u003c/h2\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e$ sc-gen app AppName\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e$project/apps以下に、新しいアプリケーションが作られます。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eライブラリ\u003c/h2\u003e\n\t\t\t\u003cp\u003eSC.Enumerable.reduceMaxは数値比較(\u0026lt;)なので、\n\t\t\tDateTime型の比較には使えません。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2011","0128"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>Plan 9: 64bit環境(9kカーネル)を構築する</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="/plan9/doc/inst/index.html"><a>インストール</a></a></li>
+	<li><a href="/plan9/doc/guide/index.html"><a>システムの使い方</a></a></li>
+	<li><a href="/plan9/doc/devel/index.html"><a>プログラミング</a></a></li>
+	<li><a href="/plan9/doc/adm/index.html"><a>システム管理</a></a></li>
+	<li><a href="/plan9/man/index.html"><a>自作ツール集</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2016年5月6日作成</p>
+	<section>
+		<h1>64bit環境(9kカーネル)を構築する</h1>
+		<p>Plan 9からforkしたプロジェクトがいくつかありますが、
+		ここではベル研のPlan 9と9legacyを使います。</p>
+		<section>
+			<h2>ソースコードの更新</h2>
+			<p>最初に、<a href="/plan9/doc/adm/update.html"><a>replica/pullを使って</a></a>、本家最新のソースに更新しておいてください。</p>
+			<p>2015年1月以降、本家が更新されていないので、<a href="https://9legacy.org/patch.html">9legacyのパッチ集</a>から取得します。
+			現時点で、<a href="https://github.com/lufia/9legacy-tool/blob/master/misc/patchlist">64bit環境の動作が確認できたパッチ一覧</a>です。
+			上から順番に適用すれば依存関係も解決します。
+			このリポジトリには、9legacyのパッチ管理を少し便利にする、
+			簡単なrcスクリプトも含んでいますので、よければどうぞ。</p>
+			<div class="note">
+				<p>9legacy-toolを使う場合、</p>
+				<pre><code class="console">% 9legacy/installall misc/patchlist
+% 9legacy/apply</code></pre>
+				<p>とすれば<strong>/sys</strong>以下のファイルに9legacyパッチ後のファイルをbindします。</p>
+			</div>
+			<p>また、以下の手順では<strong>/amd64</strong>以下にファイルを作成しますので、
+			作業するユーザはsysグループに属する必要があります。
+			fossilの場合は、</p>
+			<pre><code class="console">% con -l /srv/fscons
+prompt: uname sys +bootes</code></pre>
+		</section>
+		<section>
+			<h2>6cコンパイラの更新</h2>
+			<p>Runeが、2013年頃に16bitから22bitへアップデートされていますが、
+			配布物に含まれる6cコンパイラのバージョンは古いままです。
+			古いままだとコンパイル時に</p>
+			<blockquote>runebase.c:xx illegal rune string</blockquote>
+			<p>と言って怒られるので先にコンパイラの更新が必要です。
+			この時は、objtypeは現在使っている値(例えば386)のままで構いません。</p>
+			<pre><code class="console">% cd /sys/src/cmd/6c
+% mk install
+
+# 後処理
+% mk nuke
+% cd ../cc
+% mk nuke</code></pre>
+			<p>9legacyのパッチでアセンブラがサポートする命令も増えているので、
+			アセンブラとリンカも更新します。</p>
+			<pre><code class="console"># アセンブラ
+% cd /sys/src/cmd/6a
+% mk install
+% mk nuke
+
+# リンカ
+% cd /sys/src/cmd/6l
+% mk install
+% mk nuke</code></pre>
+		</section>
+		<section>
+			<h2>各種ライブラリの作成</h2>
+			<p>amd64環境のコマンド等からリンクされるライブラリを作成します。
+			ライブラリは、mk nukeすると
+			作成された<strong>/$objtype/lib/*.a</strong>ファイルも消えてしまうため、
+			コンパイル時の中間ファイルを掃除するのはmk cleanを使いましょう。</p>
+			<p class="note">objtype環境変数を切り替えると、コンパイラが生成するオブジェクトの
+			ターゲットとなるアーキテクチャを切り替えられます。</p>
+			<pre><code class="console">% cd /sys/src
+% objtype=amd64
+% mk libs  # installとcleanを実行します</code></pre>
+		</section>
+		<section>
+			<h2>APE環境の作成</h2>
+			<p>gs等、いくつかのコマンドをコンパイルする時に
+			ape/pcc等を使うので用意しておきましょう。</p>
+			<pre><code class="console"># apeライブラリ
+% mkdir /amd64/lib/ape
+% cd /sys/src/ape
+% mk lib.install
+% mk lib.clean
+
+# apeコマンド等
+% mkdir /amd64/lib/ape
+% mk cmd.install
+% mk cmd.nuke
+% mk 9src.install
+% mk 9src.nuke</code></pre>
+		</section>
+		<section>
+			<h2>acme用コマンド</h2>
+			<p>ほとんどのコマンドは<strong>/sys/src</strong>以下にソースがありますけど、
+			acme用のコマンドは<strong>/acme/*/src</strong>に配置されています。</p>
+			<pre><code class="console">% mkdir /acme/bin/amd64
+% cd /acme
+% mk install
+% mk nuke</code></pre>
+		</section>
+		<section>
+			<h2>コマンド類</h2>
+			<p>ライブラリの準備ができたので、コマンドをビルドします。
+			カーネルの内部に一部のコマンドを埋め込むため、
+			先にコマンドのインストールが必要です。</p>
+			<pre><code class="console">% mkdir -p /amd64/bin/ ^ (aux auth dial disk fossil fs ip/httpd ndb replica upas usb venti)
+% cd /sys/src/cmd
+
+# upasグループに作業ユーザを追加するか、
+# 以下2ファイルに/tmpをbindする等で書き込み可能にしておく
+# /mail/lib/gone.msg
+# /mail/lib/gone.fishing
+
+% mk install
+% mk nuke</code></pre>
+			<div class="note">
+				<p>9legacy-toolを使った場合、initだけはbind先に作成されてしまうので、
+				mk後に手動で移動させておきましょう。</p>
+				<pre><code class="console">% unmount /amd64
+% cp $home/9legacy/plan9/amd64/init /amd64/init</code></pre>
+			</div>
+		</section>
+		<section>
+			<h2>ゲーム(不要なら飛ばす)</h2>
+			<pre><code class="console">% mkdir /amd64/bin/games
+% cd /sys/src/games
+% mk install
+% mk nuke</code></pre>
+		</section>
+		<section>
+			<h2>カーネル</h2>
+			<p>ブートローダの更新が必要なら<strong>/sys/src/9k/boot</strong>にソースがありますけれど、
+			<strong>/sys/src/9</strong>以下の内容と同じなので何もしなくても構いません。</p>
+			<p>CPUサーバカーネルの場合は<strong>k10cpu</strong>コンフィグを使います。
+			ただ、<strong>k10cpu</strong>にはsdドライバが含まれていないので<strong>/dev/sd*/nvram</strong>を読めません。
+			通常それは困るため、sdドライバを入れましょう。</p>
+			<pre><code>dev +dev
+	root
+	...
+	sd		# 追加
+
+sd +dev	# 追加
+	sdata	pci sdscsi
+	sdiahci	pci sdscsi
+...
+rootdir
+	bootk10f.out boot
+	/amd64/bin/auth/factotum factotum
+	/amd64/bin/ip/ipconfig ipconfig
+#	../root/nvram nvram	# 削除</code></pre>
+			<p>最後にコンパイルして終わり。</p>
+			<pre><code class="console">% cd /sys/src/9k/k10
+% chmod +x ../mk/mkrootall
+% mk &#x27;CONF=k10cpu&#x27;
+% 9fat:
+% cp 9k10cpu /n/9fat
+% mk &#x27;CONF=k10cpu&#x27; nuke</code></pre>
+		</section>
+	</section>
+</main>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/plan9/doc/inst/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003ePlan 9: 64bit環境(9kカーネル)を構築する\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/inst/index.html\"\u003eインストール\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/guide/index.html\"\u003eシステムの使い方\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/devel/index.html\"\u003eプログラミング\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/adm/index.html\"\u003eシステム管理\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/man/index.html\"\u003e自作ツール集\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2016年5月6日作成\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003e64bit環境(9kカーネル)を構築する\u003c/h1\u003e\n\t\t\u003cp\u003ePlan 9からforkしたプロジェクトがいくつかありますが、\n\t\tここではベル研のPlan 9と9legacyを使います。\u003c/p\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eソースコードの更新\u003c/h2\u003e\n\t\t\t\u003cp\u003e最初に、\u003ca href=\"../adm/update.html\"\u003ereplica/pullを使って\u003c/a\u003e、本家最新のソースに更新しておいてください。\u003c/p\u003e\n\t\t\t\u003cp\u003e2015年1月以降、本家が更新されていないので、\u003ca href=\"https://9legacy.org/patch.html\"\u003e9legacyのパッチ集\u003c/a\u003eから取得します。\n\t\t\t現時点で、\u003ca href=\"https://github.com/lufia/9legacy-tool/blob/master/misc/patchlist\"\u003e64bit環境の動作が確認できたパッチ一覧\u003c/a\u003eです。\n\t\t\t上から順番に適用すれば依存関係も解決します。\n\t\t\tこのリポジトリには、9legacyのパッチ管理を少し便利にする、\n\t\t\t簡単なrcスクリプトも含んでいますので、よければどうぞ。\u003c/p\u003e\n\t\t\t\u003cdiv class=\"note\"\u003e\n\t\t\t\t\u003cp\u003e9legacy-toolを使う場合、\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% 9legacy/installall misc/patchlist\n% 9legacy/apply\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003eとすれば\u003cstrong\u003e/sys\u003c/strong\u003e以下のファイルに9legacyパッチ後のファイルをbindします。\u003c/p\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cp\u003eまた、以下の手順では\u003cstrong\u003e/amd64\u003c/strong\u003e以下にファイルを作成しますので、\n\t\t\t作業するユーザはsysグループに属する必要があります。\n\t\t\tfossilの場合は、\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% con -l /srv/fscons\nprompt: uname sys +bootes\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e6cコンパイラの更新\u003c/h2\u003e\n\t\t\t\u003cp\u003eRuneが、2013年頃に16bitから22bitへアップデートされていますが、\n\t\t\t配布物に含まれる6cコンパイラのバージョンは古いままです。\n\t\t\t古いままだとコンパイル時に\u003c/p\u003e\n\t\t\t\u003cblockquote\u003erunebase.c:xx illegal rune string\u003c/blockquote\u003e\n\t\t\t\u003cp\u003eと言って怒られるので先にコンパイラの更新が必要です。\n\t\t\tこの時は、objtypeは現在使っている値(例えば386)のままで構いません。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% cd /sys/src/cmd/6c\n% mk install\n\n# 後処理\n% mk nuke\n% cd ../cc\n% mk nuke\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e9legacyのパッチでアセンブラがサポートする命令も増えているので、\n\t\t\tアセンブラとリンカも更新します。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e# アセンブラ\n% cd /sys/src/cmd/6a\n% mk install\n% mk nuke\n\n# リンカ\n% cd /sys/src/cmd/6l\n% mk install\n% mk nuke\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e各種ライブラリの作成\u003c/h2\u003e\n\t\t\t\u003cp\u003eamd64環境のコマンド等からリンクされるライブラリを作成します。\n\t\t\tライブラリは、mk nukeすると\n\t\t\t作成された\u003cstrong\u003e/$objtype/lib/*.a\u003c/strong\u003eファイルも消えてしまうため、\n\t\t\tコンパイル時の中間ファイルを掃除するのはmk cleanを使いましょう。\u003c/p\u003e\n\t\t\t\u003cp class=\"note\"\u003eobjtype環境変数を切り替えると、コンパイラが生成するオブジェクトの\n\t\t\tターゲットとなるアーキテクチャを切り替えられます。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% cd /sys/src\n% objtype=amd64\n% mk libs  # installとcleanを実行します\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eAPE環境の作成\u003c/h2\u003e\n\t\t\t\u003cp\u003egs等、いくつかのコマンドをコンパイルする時に\n\t\t\tape/pcc等を使うので用意しておきましょう。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e# apeライブラリ\n% mkdir /amd64/lib/ape\n% cd /sys/src/ape\n% mk lib.install\n% mk lib.clean\n\n# apeコマンド等\n% mkdir /amd64/lib/ape\n% mk cmd.install\n% mk cmd.nuke\n% mk 9src.install\n% mk 9src.nuke\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eacme用コマンド\u003c/h2\u003e\n\t\t\t\u003cp\u003eほとんどのコマンドは\u003cstrong\u003e/sys/src\u003c/strong\u003e以下にソースがありますけど、\n\t\t\tacme用のコマンドは\u003cstrong\u003e/acme/*/src\u003c/strong\u003eに配置されています。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% mkdir /acme/bin/amd64\n% cd /acme\n% mk install\n% mk nuke\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eコマンド類\u003c/h2\u003e\n\t\t\t\u003cp\u003eライブラリの準備ができたので、コマンドをビルドします。\n\t\t\tカーネルの内部に一部のコマンドを埋め込むため、\n\t\t\t先にコマンドのインストールが必要です。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% mkdir -p /amd64/bin/ ^ (aux auth dial disk fossil fs ip/httpd ndb replica upas usb venti)\n% cd /sys/src/cmd\n\n# upasグループに作業ユーザを追加するか、\n# 以下2ファイルに/tmpをbindする等で書き込み可能にしておく\n# /mail/lib/gone.msg\n# /mail/lib/gone.fishing\n\n% mk install\n% mk nuke\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cdiv class=\"note\"\u003e\n\t\t\t\t\u003cp\u003e9legacy-toolを使った場合、initだけはbind先に作成されてしまうので、\n\t\t\t\tmk後に手動で移動させておきましょう。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% unmount /amd64\n% cp $home/9legacy/plan9/amd64/init /amd64/init\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003c/div\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eゲーム(不要なら飛ばす)\u003c/h2\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% mkdir /amd64/bin/games\n% cd /sys/src/games\n% mk install\n% mk nuke\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eカーネル\u003c/h2\u003e\n\t\t\t\u003cp\u003eブートローダの更新が必要なら\u003cstrong\u003e/sys/src/9k/boot\u003c/strong\u003eにソースがありますけれど、\n\t\t\t\u003cstrong\u003e/sys/src/9\u003c/strong\u003e以下の内容と同じなので何もしなくても構いません。\u003c/p\u003e\n\t\t\t\u003cp\u003eCPUサーバカーネルの場合は\u003cstrong\u003ek10cpu\u003c/strong\u003eコンフィグを使います。\n\t\t\tただ、\u003cstrong\u003ek10cpu\u003c/strong\u003eにはsdドライバが含まれていないので\u003cstrong\u003e/dev/sd*/nvram\u003c/strong\u003eを読めません。\n\t\t\t通常それは困るため、sdドライバを入れましょう。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003edev +dev\n\troot\n\t...\n\tsd\t\t# 追加\n\nsd +dev\t# 追加\n\tsdata\tpci sdscsi\n\tsdiahci\tpci sdscsi\n...\nrootdir\n\tbootk10f.out boot\n\t/amd64/bin/auth/factotum factotum\n\t/amd64/bin/ip/ipconfig ipconfig\n#\t../root/nvram nvram\t# 削除\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e最後にコンパイルして終わり。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% cd /sys/src/9k/k10\n% chmod +x ../mk/mkrootall\n% mk 'CONF=k10cpu'\n% 9fat:\n% cp 9k10cpu /n/9fat\n% mk 'CONF=k10cpu' nuke\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["plan9","doc","inst","9k"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: xpathコマンド</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2009年11月2日作成</p>
+	<section>
+		<h1>xpathコマンド</h1>
+		<p>Plan 9に<a href="/plan9/doc/devel/python.html"><a>移植されたPython</a></a>で、
+		XPath検索するコマンドを作りました。
+		文字コードの関係で4時間ほど悩んだことを除けば、お手軽でいい言語ですね。
+		文字コードの問題については、<a href="http://lab.hde.co.jp/2008/08/pythonunicodeencodeerror.html">PythonのUnicodeEncodeErrorを知る</a>が
+		よくまとまっている資料だと思います。</p>
+		<p>まず、以下のソースをXPath.pyとして保存。</p>
+		<pre><code>#!/bin/python
+
+import sys, codecs
+from BSXPath import BSXPathEvaluator as XPathEvaluator
+from BSXPath import XPathResult
+
+def find(xpath, fin, fname):
+	lines = fin.readlines()
+	data = &#x27;&#x27;.join(lines)
+	try:
+		doc = XPathEvaluator(data)
+		r = doc.getItemList(xpath)
+	except TypeError, e:
+		print &gt;&gt;sys.stderr, &quot;xpath: &#x27;%s&#x27; %s&quot; % (fname, e)
+		return 0
+	except ValueError, e:
+		print &gt;&gt;sys.stderr, &quot;xpath: &#x27;%s&#x27; %s&quot; % (fname, e)
+		return 0
+
+	n = len(r)
+	for i in range(n):
+		if isinstance(r[i], unicode):
+			print r[i]
+		elif &#x27;decode&#x27; not in dir(r[i]):
+			print r[i]
+		else:
+			print r[i].decode(&#x27;utf-8&#x27;)
+	return n
+
+sys.stdin = codecs.lookup(&#x27;utf_8&#x27;)[-1](sys.stdin)
+sys.stdout = codecs.lookup(&#x27;utf_8&#x27;)[-1](sys.stdout)
+argv = sys.argv[1:]
+xpath = argv[0]
+argv.pop(0)
+
+found = 0
+if len(argv) == 0:
+	found += find(xpath, sys.stdin, None)
+else:
+	for f in argv:
+		fin = open(f, &#x27;r&#x27;)
+		found += find(xpath, fin, f)
+		fin.close()
+if found == 0:
+	exit(1)</code></pre>
+		<p>以下2つのモジュールをXPath.pyと同じ場所に置きます。</p>
+		<ul>
+		<li><a href="http://www.crummy.com/software/BeautifulSoup/">BeautifulSoup.py</a></li>
+		<li><a href="http://d.hatena.ne.jp/furyu-tei/20090324">BSXPath.py</a></li>
+		</ul>
+		<p>最後にxpathを呼び出すシェルスクリプト。</p>
+		<pre><code class="sh">#!/bin/rc
+
+if(~ $#* 0){
+	echo &#x27;usage: xpath pattern [files]&#x27; &gt;[1=2]
+	exit usage
+}
+
+exec python /bin/_xpath/XPath.py $*</code></pre>
+		<p>まとめ。</p>
+		<pre><code>/bin/xpath
+/bin/_xpath/BeautifulSoup.py
+/bin/_xpath/BSXPath.py
+/bin/_xpath/XPath.py</code></pre>
+	</section>
+</main>
+<aside>
+	<h1>関連情報</h1>
+	<ul>
+	<li><a href="/notes/2009/2008/0214.html"><a>XPathすごいね</a></a></li>
+	</ul>
+</aside>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2009/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: xpathコマンド\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2009年11月2日作成\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003expathコマンド\u003c/h1\u003e\n\t\t\u003cp\u003ePlan 9に\u003ca href=\"/plan9/doc/devel/python.html\"\u003e移植されたPython\u003c/a\u003eで、\n\t\tXPath検索するコマンドを作りました。\n\t\t文字コードの関係で4時間ほど悩んだことを除けば、お手軽でいい言語ですね。\n\t\t文字コードの問題については、\u003ca href=\"http://lab.hde.co.jp/2008/08/pythonunicodeencodeerror.html\"\u003ePythonのUnicodeEncodeErrorを知る\u003c/a\u003eが\n\t\tよくまとまっている資料だと思います。\u003c/p\u003e\n\t\t\u003cp\u003eまず、以下のソースをXPath.pyとして保存。\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode\u003e#!/bin/python\n\nimport sys, codecs\nfrom BSXPath import BSXPathEvaluator as XPathEvaluator\nfrom BSXPath import XPathResult\n\ndef find(xpath, fin, fname):\n\tlines = fin.readlines()\n\tdata = ''.join(lines)\n\ttry:\n\t\tdoc = XPathEvaluator(data)\n\t\tr = doc.getItemList(xpath)\n\texcept TypeError, e:\n\t\tprint \u0026gt;\u0026gt;sys.stderr, \u0026quot;xpath: '%s' %s\u0026quot; % (fname, e)\n\t\treturn 0\n\texcept ValueError, e:\n\t\tprint \u0026gt;\u0026gt;sys.stderr, \u0026quot;xpath: '%s' %s\u0026quot; % (fname, e)\n\t\treturn 0\n\n\tn = len(r)\n\tfor i in range(n):\n\t\tif isinstance(r[i], unicode):\n\t\t\tprint r[i]\n\t\telif 'decode' not in dir(r[i]):\n\t\t\tprint r[i]\n\t\telse:\n\t\t\tprint r[i].decode('utf-8')\n\treturn n\n\nsys.stdin = codecs.lookup('utf_8')[-1](sys.stdin)\nsys.stdout = codecs.lookup('utf_8')[-1](sys.stdout)\nargv = sys.argv[1:]\nxpath = argv[0]\nargv.pop(0)\n\nfound = 0\nif len(argv) == 0:\n\tfound += find(xpath, sys.stdin, None)\nelse:\n\tfor f in argv:\n\t\tfin = open(f, 'r')\n\t\tfound += find(xpath, fin, f)\n\t\tfin.close()\nif found == 0:\n\texit(1)\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003cp\u003e以下2つのモジュールをXPath.pyと同じ場所に置きます。\u003c/p\u003e\n\t\t\u003cul\u003e\n\t\t\u003cli\u003e\u003ca href=\"http://www.crummy.com/software/BeautifulSoup/\"\u003eBeautifulSoup.py\u003c/a\u003e\u003c/li\u003e\n\t\t\u003cli\u003e\u003ca href=\"http://d.hatena.ne.jp/furyu-tei/20090324\"\u003eBSXPath.py\u003c/a\u003e\u003c/li\u003e\n\t\t\u003c/ul\u003e\n\t\t\u003cp\u003e最後にxpathを呼び出すシェルスクリプト。\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode class=\"sh\"\u003e#!/bin/rc\n\nif(~ $#* 0){\n\techo 'usage: xpath pattern [files]' \u0026gt;[1=2]\n\texit usage\n}\n\nexec python /bin/_xpath/XPath.py $*\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003cp\u003eまとめ。\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode\u003e/bin/xpath\n/bin/_xpath/BeautifulSoup.py\n/bin/_xpath/BSXPath.py\n/bin/_xpath/XPath.py\u003c/code\u003e\u003c/pre\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003e関連情報\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"2008/0214.html\"\u003eXPathすごいね\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2009","1102"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

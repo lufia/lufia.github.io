@@ -1,0 +1,74 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: Vistaのドキュメントプロパティから[[場所]]タブが消えた</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2008年8月8日作成</p>
+	<section>
+		<h1>Vistaのドキュメントプロパティから[場所]タブが消えた</h1>
+		<section>
+			<h2>前提</h2>
+			<p>Vista(XPも?)は個人フォルダ以下にあるドキュメントやピクチャフォルダを、
+			各フォルダのプロパティから[場所]タブを使うことで	
+			C:\Users\user1以下から別の場所に移動させることができるのですが、
+			このとき、誰にでも読み取り権限のある場所
+			(たとえばD:\usr\user1\Documents)を
+			ドキュメントフォルダとしてしまった場合。</p>
+			<p>移動後に共有設定をしていなくても、
+			別のユーザ(user2)の個人フォルダにuser1ドキュメントへのリンクが
+			登録される場合があります。
+			user2以下にドキュメントフォルダが2つ存在する状態。</p>
+			<p>これは、移動したuser1ルートフォルダへのアクセス権を
+			正しく設定すれば解消します。
+			また、移動する前に正しくアクセス権を設定していれば出ないと思います。</p>
+		</section>
+		<section>
+			<h2>現象</h2>
+			<p>上記症状が発生した後、
+			user2のアドレス帳のパスを別の場所にしようと思って
+			プロパティを開いたのですが、
+			ふつうは存在するはずの[場所]タブが消えていました。</p>
+			<p>いろいろ調べてみたところ、
+			レジストリのHKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders\$key
+			に、user1のアドレス帳パスが登録されていました。
+			この$keyは、対象となるフォルダによって異なります。
+			たとえばドキュメントならPersonal、
+			アドレス帳なら{xxxx-xxx..}のようなGUID。
+			具体的な一覧は、以下の参考サイトをみてください。</p>
+			<p>で、これの治し方なのですが、
+			間違って登録されてしまった$keyを削除してログオフすれば治ります。
+			ただし、治るといっても初期値に戻るだけなので、
+			すでに初期値から変更してあった場合には、
+			そちらに書き換えないとだめかもしれません。</p>
+			<p>他ユーザーのドキュメントにアクセス権を持っていると、
+			レジストリにそちらのデータが登録されて、
+			場所タブがなくなるんですかね。
+			レジストリってめんどくさい。</p>
+		</section>
+		<section>
+			<h2>参考</h2>
+			<ul>
+			<li><a href="http://pasofaq.jp/windows/mycomputer/vistausershellfolders.htm">Windows Vista のユーザーフォルダの初期値</a></li>
+			</ul>
+		</section>
+	</section>
+</main>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2008/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: Vistaのドキュメントプロパティから[[場所]]タブが消えた\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2008年8月8日作成\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eVistaのドキュメントプロパティから[場所]タブが消えた\u003c/h1\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e前提\u003c/h2\u003e\n\t\t\t\u003cp\u003eVista(XPも?)は個人フォルダ以下にあるドキュメントやピクチャフォルダを、\n\t\t\t各フォルダのプロパティから[場所]タブを使うことで\t\n\t\t\tC:\\Users\\user1以下から別の場所に移動させることができるのですが、\n\t\t\tこのとき、誰にでも読み取り権限のある場所\n\t\t\t(たとえばD:\\usr\\user1\\Documents)を\n\t\t\tドキュメントフォルダとしてしまった場合。\u003c/p\u003e\n\t\t\t\u003cp\u003e移動後に共有設定をしていなくても、\n\t\t\t別のユーザ(user2)の個人フォルダにuser1ドキュメントへのリンクが\n\t\t\t登録される場合があります。\n\t\t\tuser2以下にドキュメントフォルダが2つ存在する状態。\u003c/p\u003e\n\t\t\t\u003cp\u003eこれは、移動したuser1ルートフォルダへのアクセス権を\n\t\t\t正しく設定すれば解消します。\n\t\t\tまた、移動する前に正しくアクセス権を設定していれば出ないと思います。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e現象\u003c/h2\u003e\n\t\t\t\u003cp\u003e上記症状が発生した後、\n\t\t\tuser2のアドレス帳のパスを別の場所にしようと思って\n\t\t\tプロパティを開いたのですが、\n\t\t\tふつうは存在するはずの[場所]タブが消えていました。\u003c/p\u003e\n\t\t\t\u003cp\u003eいろいろ調べてみたところ、\n\t\t\tレジストリのHKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\\$key\n\t\t\tに、user1のアドレス帳パスが登録されていました。\n\t\t\tこの$keyは、対象となるフォルダによって異なります。\n\t\t\tたとえばドキュメントならPersonal、\n\t\t\tアドレス帳なら{xxxx-xxx..}のようなGUID。\n\t\t\t具体的な一覧は、以下の参考サイトをみてください。\u003c/p\u003e\n\t\t\t\u003cp\u003eで、これの治し方なのですが、\n\t\t\t間違って登録されてしまった$keyを削除してログオフすれば治ります。\n\t\t\tただし、治るといっても初期値に戻るだけなので、\n\t\t\tすでに初期値から変更してあった場合には、\n\t\t\tそちらに書き換えないとだめかもしれません。\u003c/p\u003e\n\t\t\t\u003cp\u003e他ユーザーのドキュメントにアクセス権を持っていると、\n\t\t\tレジストリにそちらのデータが登録されて、\n\t\t\t場所タブがなくなるんですかね。\n\t\t\tレジストリってめんどくさい。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e参考\u003c/h2\u003e\n\t\t\t\u003cul\u003e\n\t\t\t\u003cli\u003e\u003ca href=\"http://pasofaq.jp/windows/mycomputer/vistausershellfolders.htm\"\u003eWindows Vista のユーザーフォルダの初期値\u003c/a\u003e\u003c/li\u003e\n\t\t\t\u003c/ul\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2008","0808"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

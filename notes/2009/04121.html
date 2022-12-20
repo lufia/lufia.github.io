@@ -1,0 +1,55 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: Alefコンパイラのソースを読む(1)</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2009年1月11日作成</p>
+	<section>
+		<h1>Alefコンパイラのソースを読む(1)</h1>
+		<p>Google sitesを使って、<a href="http://sites.google.com/site/alefcompiler/">Alefコンパイラのソースを読み始めました</a>。
+		以前は<a href="http://tiki.is.os-omicron.org/tiki.cgi?c=v&amp;p=%A4%D2%A4%E9%A5%E1%A5%BD%A5%C3%A5%C9">ひらメソッド</a>を
+		実践しようとしていたのですが、飽きます。飽きました。途中で。
+		Wikiを使っていればまた違った感想になるのかもしれませんが、
+		コツコツがんばるのは向いていませんでした。</p>
+		<p>なので、今回は面白そうな関数だけトップダウンで読む。
+		ざっと眺めてめんどくさそうなら飛ばす、という方針で進めようと思っています。
+		全部を読まなくても、そのうちデータ構造が理解できるでしょう。きっと。</p>
+		<p>Google sitesを使っていて感じるのは、
+		どこまで読んだのか記録に残るのがいいですね。
+		逆に悪いところは、ソースを読み書きするためのものではないので、
+		メモを残しづらいです。
+		あと、関数・グローバル変数・型・ディレクトリ用の
+		ページテンプレートが欲しくなります。
+		GNU GLOBALは、手間はなさそうですが
+		どこまで読んだかが分からなくなりそうなので使いません。</p>
+		<p>今日は<a href="http://sites.google.com/site/alefcompiler/alef/port/mainc/compile">compile関数</a>の、
+		/bin/cppを実行するところまで読みました。次はlinehistかな。
+		コンパイラを読むなんて初めてなので、かなり遠回りすると思われますが、
+		ゆるく更新していきますので上記サイトのほうもよろしくお願いします。</p>
+	</section>
+</main>
+<aside>
+	<h1>自分用メモ</h1>
+	<ul>
+	<li><a href="http://i.loveruby.net/ja/misc/readingcode.html">ソースコードを読むための技術</a></li>
+	</ul>
+</aside>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2009/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: Alefコンパイラのソースを読む(1)\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2009年1月11日作成\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eAlefコンパイラのソースを読む(1)\u003c/h1\u003e\n\t\t\u003cp\u003eGoogle sitesを使って、\u003ca href=\"http://sites.google.com/site/alefcompiler/\"\u003eAlefコンパイラのソースを読み始めました\u003c/a\u003e。\n\t\t以前は\u003ca href=\"http://tiki.is.os-omicron.org/tiki.cgi?c=v\u0026amp;p=%A4%D2%A4%E9%A5%E1%A5%BD%A5%C3%A5%C9\"\u003eひらメソッド\u003c/a\u003eを\n\t\t実践しようとしていたのですが、飽きます。飽きました。途中で。\n\t\tWikiを使っていればまた違った感想になるのかもしれませんが、\n\t\tコツコツがんばるのは向いていませんでした。\u003c/p\u003e\n\t\t\u003cp\u003eなので、今回は面白そうな関数だけトップダウンで読む。\n\t\tざっと眺めてめんどくさそうなら飛ばす、という方針で進めようと思っています。\n\t\t全部を読まなくても、そのうちデータ構造が理解できるでしょう。きっと。\u003c/p\u003e\n\t\t\u003cp\u003eGoogle sitesを使っていて感じるのは、\n\t\tどこまで読んだのか記録に残るのがいいですね。\n\t\t逆に悪いところは、ソースを読み書きするためのものではないので、\n\t\tメモを残しづらいです。\n\t\tあと、関数・グローバル変数・型・ディレクトリ用の\n\t\tページテンプレートが欲しくなります。\n\t\tGNU GLOBALは、手間はなさそうですが\n\t\tどこまで読んだかが分からなくなりそうなので使いません。\u003c/p\u003e\n\t\t\u003cp\u003e今日は\u003ca href=\"http://sites.google.com/site/alefcompiler/alef/port/mainc/compile\"\u003ecompile関数\u003c/a\u003eの、\n\t\t/bin/cppを実行するところまで読みました。次はlinehistかな。\n\t\tコンパイラを読むなんて初めてなので、かなり遠回りすると思われますが、\n\t\tゆるく更新していきますので上記サイトのほうもよろしくお願いします。\u003c/p\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003e自分用メモ\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"http://i.loveruby.net/ja/misc/readingcode.html\"\u003eソースコードを読むための技術\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2009","04121"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

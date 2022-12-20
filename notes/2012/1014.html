@@ -1,0 +1,159 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: Plan 9カーネルのブートまわり自分用まとめ</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2012年10月14日作成</p>
+	<section>
+		<h1>Plan 9カーネルのブートまわり自分用まとめ</h1>
+		<p>Plan 9のブートまわりは、思ったよりいろいろな動きをしていたので、
+		調べた範囲でメモ。</p>
+		<section>
+			<h2>ブート全体の動き</h2>
+			<p>Plan 9のブートは、カーネルだけじゃなくて、
+			bootというプログラム(ソースは/sys/src/9/bootあたり)が動いています。
+			bootには引数として、plan9.iniのbootargsがbargc, bargvになって渡されます。
+			何をしているのかというと、最低限必要なファイルツリーを作ったり、
+			factotumなど必要なプロセスを立ち上げているようです。</p>
+			<p>もう少し細かくいうと、bootは、boot/boot.c:authenticate()の中で
+			factotumを実行します。このとき、カーネルコンフィグ(CONF=pcauthとか)により
+			呼び出し方法が変わります。
+			具体的には、cpu/authサーバならコンフィグにcpuflagが立つのですが、
+			cpuflagが立っていると、bootはfactotumを-Sオプション付きで実行します。
+			その結果、factotumはサーバモードになって、nvramを読むようになります。</p>
+			<p>また、bootが実行するfactotumには、条件は忘れましたが-aオプションにより
+			plan9.iniのauth=値が認証サーバのIPアドレスとして渡されます。
+			auth=がなければブート時に訪ねられます。たとえばILの場合は、
+			オプションとして&quot;-a il!xxx.xxx.xxx.xxx!566&quot;となります。</p>
+			<p>次に、bootはルートファイルシステムをマウントします。
+			ここで面白いのは、まだルートファイルシステムを得ていないのに
+			すでにbootがfactotumを実行しているのですが(もっと言えばboot自体もですね)、
+			じゃあこのfactotumはどこから持ってきたのかという話。</p>
+			<p>これは、カーネルコンフィグのbootdirセクションに挙げたファイルを、
+			カーネルが最初からもってビルドされているようです。
+			実際に/bootをみれば、ビルドした時点のファイルが入っているはずです。</p>
+			<p>ルートファイルシステムのマウントに戻すと、
+			bootは、plan9.iniのbootargsがlocal!で始まっていない場合、
+			bootargsの値を使ってipconfigを実行し、ネットワーク設定を行います。
+			次に、bootはネットワークからファイルシステムをマウントしようとします。
+			ファイルサーバのIPアドレスは、plan9.iniのfs=を使って、
+			もしfs=がなければブート時に入力を受け付けます。
+			ファイルサーバは、それが認証を必要とするなら、マウント時に接続元へ伝えます。
+			fauth()の結果が0以上なら認証が必要です。</p>
+			<div class="note">
+				<p>あまり使わないと思いますが、Ken fsの場合、
+				以下のコマンドで認証が不要になります。</p>
+				<pre><code>fs: flag authdisable</code></pre>
+				<p>再度有効にしたい場合は同じコマンドをもう一度。</p>
+			</div>
+			<p>bootは、認証が必要と分かったので、factotumを経由してp9anyプロトコルで
+			通信をはじめます。p9anyはそれ自体が認証をするわけではなく、
+			どの認証プロトコルを使って認証するかを決めるためのものです。
+			このプロトコルはとても簡単で、
+			サーバ(この場合はファイルサーバ)が理解できる認証プロトコルをリストで返して、
+			共通して使えるものをクライアント(ブート中のシステム)が選択するだけです。
+			ファイルサーバをマウントする場合はだいたいp9sk1が選ばれます。
+			p9sk1はPlan 9の共有鍵認証なのでまあ普通ですね。</p>
+			<p>具体的な認証プロトコルが決まったら、p9anyはリレー状態に入って、
+			あとはp9sk1が認証を行います。このあたりは、factotumのソースコードの
+			p9any.c, p9sk1.cあたりに書かれています。</p>
+			<p class="note">plan9.iniにfactotumopts=-dと書いておくと、bootがfactotumを起動するときに
+			引数として渡してくれているので、認証の動きが見れて楽しい。</p>
+			<p>続いて、factotumはp9sk1で共有鍵認証を開始しますが、
+			ブートしている対象(ファイルサーバからみて接続元)が認証サーバの場合、
+			ファイルサーバは認証しろと言っているのに、認証サーバが立ち上がりきっていなくて、
+			認証するための情報(/admやkeyfs)はファイルサーバにある、という状況になります。
+			具体的には、(ILの場合)il566をlistenするのはcpurcの中なので、
+			この時点ではまだlistenしていません。この場合、誰が認証するのか、という話。</p>
+			<p>答えは、認証サーバとなるサーバのfactotumが、自分で認証チケットを作っています。
+			認証サーバとなるべきサーバは、bootから-aオプションで渡されたIPアドレス(自分)と
+			通信しますが、このときlistenをしていないので、il566はrejectします。
+			なのでil.cのilrejectが呼ばれて、接続拒否されます。
+			factotumは接続拒否を受けて、かつ自分自身がブート中だと判断されれば、
+			自分でチケットを生成して、そのチケットで認証を行います。
+			チケット生成にはサーバキーを使っているんでしょうけど、詳しくは追ってません。
+			ソースコードでいうと、factotum/util.c:_authdialあたり。</p>
+			<p>その後、9dosとかinitとかを実行して、cpurcへ進みます。</p>
+		</section>
+		<section>
+			<h2>カーネルコンフィグ</h2>
+			<p>上でちょっと出たので、カーネルコンフィグについて少しメモ。</p>
+			<section>
+				<h3>dev, link, misc, ipセクション</h3>
+				<p>普通にデバイスドライバのソースコード名。
+				書けばビルド対象ファイルに含まれます。</p>
+			</section>
+			<section>
+				<h3>bootセクション</h3>
+				<p>boot/mkboot, port/mkextractを使って、Method構造体の配列を作る。
+				文字列&quot;xx&quot;, configxx, connectxx(xxはbootセクションの各行)な関数と、
+				2個目のフィールドを持つ構造体。</p>
+				<p>Method構造体の配列は、plan9.iniに書かれているbootargsと比較して、
+				bootargsの最初の&#x27;!&#x27;まで、またはMethod分だけ一致したものを使います。
+				plan9.iniにnobootpromptがあれば、bootargsの代わりに
+				nobootpromptの値を使います(boot/boot.c:rootserver())。</p>
+				<p>それと、bootセクション開始行はいくつかパターンがあり、非常にわかりづらい。</p>
+				<table>
+				<tr><th>conf</th><th>cpuflag</th><th>bootprog</th><th>bootdisk</th><th>rootdir</th></tr>
+				<tr><td>boot cpu</td><td>1</td><td>boot</td><td>#S/sdC0/</td><td>/root</td></tr>
+				<tr><td>boot cpu boot xxxx</td><td>1</td><td>boot</td><td>xxxx</td><td>/root</td></tr>
+				<tr><td>boot rootdir xxxx</td><td>0</td><td>boot</td><td>#S/sdC0/</td><td>xxxx</td></tr>
+				<tr><td>boot bboot</td><td>1</td><td>bboot</td><td>#S/sdC0/</td><td>/root</td></tr>
+				<tr><td>boot romboot</td><td>1</td><td>romboot</td><td>#S/sdC0/</td><td>/root</td></tr>
+				<tr><td>boot dosboot</td><td>1</td><td>dosboot</td><td>#S/sdC0/</td><td>/root</td></tr>
+				<tr><td>boot boot xxxx</td><td>0</td><td>boot</td><td>xxxx</td><td>/root</td></tr>
+				</table>
+				<p>cpuflagは、1ならfactotum -Sで動作します。</p>
+			</section>
+		</section>
+		<section>
+			<h2>plan9.ini</h2>
+			<p>ブートにかかわるplan9.iniのエントリ。</p>
+			<dl>
+			<div>
+				<dt>bootargs</dt>
+				<dd>ネットワーク設定と、どこからルートをマウントするかなど</dd>
+			</div>
+			<div>
+				<dt>nobootprompt</dt>
+				<dd>bootargsに代わって、プロンプトを出さない版</dd>
+			</div>
+			<div>
+				<dt>fs</dt>
+				<dd>マウントするファイルサーバのIPアドレス</dd>
+			</div>
+			<div>
+				<dt>auth</dt>
+				<dd>認証サーバのIPアドレス</dd>
+			</div>
+			<div>
+				<dt>factotumopts</dt>
+				<dd>bootが実行するfactotumに渡すオプション</dd>
+			</div>
+			<div>
+				<dt>debugboot</dt>
+				<dd>1なら、デバッグ出力を有効にする</dd>
+			</div>
+			</dl>
+		</section>
+	</section>
+</main>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2012/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: Plan 9カーネルのブートまわり自分用まとめ\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2012年10月14日作成\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003ePlan 9カーネルのブートまわり自分用まとめ\u003c/h1\u003e\n\t\t\u003cp\u003ePlan 9のブートまわりは、思ったよりいろいろな動きをしていたので、\n\t\t調べた範囲でメモ。\u003c/p\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eブート全体の動き\u003c/h2\u003e\n\t\t\t\u003cp\u003ePlan 9のブートは、カーネルだけじゃなくて、\n\t\t\tbootというプログラム(ソースは/sys/src/9/bootあたり)が動いています。\n\t\t\tbootには引数として、plan9.iniのbootargsがbargc, bargvになって渡されます。\n\t\t\t何をしているのかというと、最低限必要なファイルツリーを作ったり、\n\t\t\tfactotumなど必要なプロセスを立ち上げているようです。\u003c/p\u003e\n\t\t\t\u003cp\u003eもう少し細かくいうと、bootは、boot/boot.c:authenticate()の中で\n\t\t\tfactotumを実行します。このとき、カーネルコンフィグ(CONF=pcauthとか)により\n\t\t\t呼び出し方法が変わります。\n\t\t\t具体的には、cpu/authサーバならコンフィグにcpuflagが立つのですが、\n\t\t\tcpuflagが立っていると、bootはfactotumを-Sオプション付きで実行します。\n\t\t\tその結果、factotumはサーバモードになって、nvramを読むようになります。\u003c/p\u003e\n\t\t\t\u003cp\u003eまた、bootが実行するfactotumには、条件は忘れましたが-aオプションにより\n\t\t\tplan9.iniのauth=値が認証サーバのIPアドレスとして渡されます。\n\t\t\tauth=がなければブート時に訪ねられます。たとえばILの場合は、\n\t\t\tオプションとして\u0026quot;-a il!xxx.xxx.xxx.xxx!566\u0026quot;となります。\u003c/p\u003e\n\t\t\t\u003cp\u003e次に、bootはルートファイルシステムをマウントします。\n\t\t\tここで面白いのは、まだルートファイルシステムを得ていないのに\n\t\t\tすでにbootがfactotumを実行しているのですが(もっと言えばboot自体もですね)、\n\t\t\tじゃあこのfactotumはどこから持ってきたのかという話。\u003c/p\u003e\n\t\t\t\u003cp\u003eこれは、カーネルコンフィグのbootdirセクションに挙げたファイルを、\n\t\t\tカーネルが最初からもってビルドされているようです。\n\t\t\t実際に/bootをみれば、ビルドした時点のファイルが入っているはずです。\u003c/p\u003e\n\t\t\t\u003cp\u003eルートファイルシステムのマウントに戻すと、\n\t\t\tbootは、plan9.iniのbootargsがlocal!で始まっていない場合、\n\t\t\tbootargsの値を使ってipconfigを実行し、ネットワーク設定を行います。\n\t\t\t次に、bootはネットワークからファイルシステムをマウントしようとします。\n\t\t\tファイルサーバのIPアドレスは、plan9.iniのfs=を使って、\n\t\t\tもしfs=がなければブート時に入力を受け付けます。\n\t\t\tファイルサーバは、それが認証を必要とするなら、マウント時に接続元へ伝えます。\n\t\t\tfauth()の結果が0以上なら認証が必要です。\u003c/p\u003e\n\t\t\t\u003cdiv class=\"note\"\u003e\n\t\t\t\t\u003cp\u003eあまり使わないと思いますが、Ken fsの場合、\n\t\t\t\t以下のコマンドで認証が不要になります。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode\u003efs: flag authdisable\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003e再度有効にしたい場合は同じコマンドをもう一度。\u003c/p\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cp\u003ebootは、認証が必要と分かったので、factotumを経由してp9anyプロトコルで\n\t\t\t通信をはじめます。p9anyはそれ自体が認証をするわけではなく、\n\t\t\tどの認証プロトコルを使って認証するかを決めるためのものです。\n\t\t\tこのプロトコルはとても簡単で、\n\t\t\tサーバ(この場合はファイルサーバ)が理解できる認証プロトコルをリストで返して、\n\t\t\t共通して使えるものをクライアント(ブート中のシステム)が選択するだけです。\n\t\t\tファイルサーバをマウントする場合はだいたいp9sk1が選ばれます。\n\t\t\tp9sk1はPlan 9の共有鍵認証なのでまあ普通ですね。\u003c/p\u003e\n\t\t\t\u003cp\u003e具体的な認証プロトコルが決まったら、p9anyはリレー状態に入って、\n\t\t\tあとはp9sk1が認証を行います。このあたりは、factotumのソースコードの\n\t\t\tp9any.c, p9sk1.cあたりに書かれています。\u003c/p\u003e\n\t\t\t\u003cp class=\"note\"\u003eplan9.iniにfactotumopts=-dと書いておくと、bootがfactotumを起動するときに\n\t\t\t引数として渡してくれているので、認証の動きが見れて楽しい。\u003c/p\u003e\n\t\t\t\u003cp\u003e続いて、factotumはp9sk1で共有鍵認証を開始しますが、\n\t\t\tブートしている対象(ファイルサーバからみて接続元)が認証サーバの場合、\n\t\t\tファイルサーバは認証しろと言っているのに、認証サーバが立ち上がりきっていなくて、\n\t\t\t認証するための情報(/admやkeyfs)はファイルサーバにある、という状況になります。\n\t\t\t具体的には、(ILの場合)il566をlistenするのはcpurcの中なので、\n\t\t\tこの時点ではまだlistenしていません。この場合、誰が認証するのか、という話。\u003c/p\u003e\n\t\t\t\u003cp\u003e答えは、認証サーバとなるサーバのfactotumが、自分で認証チケットを作っています。\n\t\t\t認証サーバとなるべきサーバは、bootから-aオプションで渡されたIPアドレス(自分)と\n\t\t\t通信しますが、このときlistenをしていないので、il566はrejectします。\n\t\t\tなのでil.cのilrejectが呼ばれて、接続拒否されます。\n\t\t\tfactotumは接続拒否を受けて、かつ自分自身がブート中だと判断されれば、\n\t\t\t自分でチケットを生成して、そのチケットで認証を行います。\n\t\t\tチケット生成にはサーバキーを使っているんでしょうけど、詳しくは追ってません。\n\t\t\tソースコードでいうと、factotum/util.c:_authdialあたり。\u003c/p\u003e\n\t\t\t\u003cp\u003eその後、9dosとかinitとかを実行して、cpurcへ進みます。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eカーネルコンフィグ\u003c/h2\u003e\n\t\t\t\u003cp\u003e上でちょっと出たので、カーネルコンフィグについて少しメモ。\u003c/p\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003edev, link, misc, ipセクション\u003c/h3\u003e\n\t\t\t\t\u003cp\u003e普通にデバイスドライバのソースコード名。\n\t\t\t\t書けばビルド対象ファイルに含まれます。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003ebootセクション\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eboot/mkboot, port/mkextractを使って、Method構造体の配列を作る。\n\t\t\t\t文字列\u0026quot;xx\u0026quot;, configxx, connectxx(xxはbootセクションの各行)な関数と、\n\t\t\t\t2個目のフィールドを持つ構造体。\u003c/p\u003e\n\t\t\t\t\u003cp\u003eMethod構造体の配列は、plan9.iniに書かれているbootargsと比較して、\n\t\t\t\tbootargsの最初の'!'まで、またはMethod分だけ一致したものを使います。\n\t\t\t\tplan9.iniにnobootpromptがあれば、bootargsの代わりに\n\t\t\t\tnobootpromptの値を使います(boot/boot.c:rootserver())。\u003c/p\u003e\n\t\t\t\t\u003cp\u003eそれと、bootセクション開始行はいくつかパターンがあり、非常にわかりづらい。\u003c/p\u003e\n\t\t\t\t\u003ctable\u003e\n\t\t\t\t\u003ctr\u003e\u003cth\u003econf\u003c/th\u003e\u003cth\u003ecpuflag\u003c/th\u003e\u003cth\u003ebootprog\u003c/th\u003e\u003cth\u003ebootdisk\u003c/th\u003e\u003cth\u003erootdir\u003c/th\u003e\u003c/tr\u003e\n\t\t\t\t\u003ctr\u003e\u003ctd\u003eboot cpu\u003c/td\u003e\u003ctd\u003e1\u003c/td\u003e\u003ctd\u003eboot\u003c/td\u003e\u003ctd\u003e#S/sdC0/\u003c/td\u003e\u003ctd\u003e/root\u003c/td\u003e\u003c/tr\u003e\n\t\t\t\t\u003ctr\u003e\u003ctd\u003eboot cpu boot xxxx\u003c/td\u003e\u003ctd\u003e1\u003c/td\u003e\u003ctd\u003eboot\u003c/td\u003e\u003ctd\u003exxxx\u003c/td\u003e\u003ctd\u003e/root\u003c/td\u003e\u003c/tr\u003e\n\t\t\t\t\u003ctr\u003e\u003ctd\u003eboot rootdir xxxx\u003c/td\u003e\u003ctd\u003e0\u003c/td\u003e\u003ctd\u003eboot\u003c/td\u003e\u003ctd\u003e#S/sdC0/\u003c/td\u003e\u003ctd\u003exxxx\u003c/td\u003e\u003c/tr\u003e\n\t\t\t\t\u003ctr\u003e\u003ctd\u003eboot bboot\u003c/td\u003e\u003ctd\u003e1\u003c/td\u003e\u003ctd\u003ebboot\u003c/td\u003e\u003ctd\u003e#S/sdC0/\u003c/td\u003e\u003ctd\u003e/root\u003c/td\u003e\u003c/tr\u003e\n\t\t\t\t\u003ctr\u003e\u003ctd\u003eboot romboot\u003c/td\u003e\u003ctd\u003e1\u003c/td\u003e\u003ctd\u003eromboot\u003c/td\u003e\u003ctd\u003e#S/sdC0/\u003c/td\u003e\u003ctd\u003e/root\u003c/td\u003e\u003c/tr\u003e\n\t\t\t\t\u003ctr\u003e\u003ctd\u003eboot dosboot\u003c/td\u003e\u003ctd\u003e1\u003c/td\u003e\u003ctd\u003edosboot\u003c/td\u003e\u003ctd\u003e#S/sdC0/\u003c/td\u003e\u003ctd\u003e/root\u003c/td\u003e\u003c/tr\u003e\n\t\t\t\t\u003ctr\u003e\u003ctd\u003eboot boot xxxx\u003c/td\u003e\u003ctd\u003e0\u003c/td\u003e\u003ctd\u003eboot\u003c/td\u003e\u003ctd\u003exxxx\u003c/td\u003e\u003ctd\u003e/root\u003c/td\u003e\u003c/tr\u003e\n\t\t\t\t\u003c/table\u003e\n\t\t\t\t\u003cp\u003ecpuflagは、1ならfactotum -Sで動作します。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eplan9.ini\u003c/h2\u003e\n\t\t\t\u003cp\u003eブートにかかわるplan9.iniのエントリ。\u003c/p\u003e\n\t\t\t\u003cdl\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003ebootargs\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eネットワーク設定と、どこからルートをマウントするかなど\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003enobootprompt\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003ebootargsに代わって、プロンプトを出さない版\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003efs\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eマウントするファイルサーバのIPアドレス\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eauth\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003e認証サーバのIPアドレス\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003efactotumopts\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003ebootが実行するfactotumに渡すオプション\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003edebugboot\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003e1なら、デバッグ出力を有効にする\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003c/dl\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2012","1014"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

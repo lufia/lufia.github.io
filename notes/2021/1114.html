@@ -1,0 +1,137 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: Firefox AutoConfig</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2021年11月14日作成</p>
+	<section>
+		<h1>Firefox AutoConfig</h1>
+		<p>Firefoxにはユーザーが任意のコードを実行できるAutoConfigという仕様があります。</p>
+		<section>
+			<h2>AutoConfigを有効にする</h2>
+			<p>AutoConfigはFirefoxをインストールしたディレクトリ(ArchLinuxの場合は<strong>/usr/lib/firefox</strong>)以下の<strong>defaults/pref/autoconifg.js</strong>に</p>
+			<pre><code class="js">pref(&quot;general.config.filename&quot;, &quot;autoconfig.cfg&quot;);</code></pre>
+			<p>という設定を入れておくと、<strong>autoconfig.cfg</strong>に書いた任意のJavaScriptを
+			起動時に実行できるというものです。
+			相対パスの場合、Firefoxをインストールしたディレクトリからのパスとして扱われます。</p>
+			<ul>
+			<li><a href="https://support.mozilla.org/en-US/kb/customizing-firefox-using-autoconfig">Customizing Firefox Using AutoConfig</a></li>
+			</ul>
+		</section>
+		<section>
+			<h2>キーボードショートカットがどのように実装されているか</h2>
+			<p>Firefoxの外観、タブなどはXHTMLファイルで定義されています。
+			具体的には<strong>browser.xhtml</strong>というファイルですが、
+			これは<strong>omni.ja</strong>にまとめられているので展開してみましょう。</p>
+			<pre><code class="console">$ cp /usr/lib/firefox/browser/omni.ja .
+$ unzip omni.ja
+$ vi chrome/browser/content/browser/browser.xhtml</code></pre>
+			<p>ファイルの中には、各種ショートカットキーや履歴バーの開閉処理などが定義されています。
+			以下の定義は履歴サイドバーをトグルするショートカットです。</p>
+			<pre><code class="html">&lt;key id=&quot;key_gotoHistory&quot;
+     data-l10n-id=&quot;history-sidebar-shortcut&quot;
+     modifiers=&quot;accel&quot;
+     oncommand=&quot;SidebarUI.toggle(&#x27;viewHistorySidebar&#x27;);&quot;/&gt;</code></pre>
+			<p><em>modifier=&quot;accel&quot;</em>は、<strong>about:config</strong>で</p>
+			<pre><code>ui.key.accelKey=17(Ctrl)</code></pre>
+			<p>に設定されたキー(デフォルトではCtrl)を押した状態を表現します。</p>
+			<p>似たようなキーとして</p>
+			<pre><code>ui.key.menuAccessKey=18(Alt)
+ui.key.menuAccessKeyFocuses=true
+ui.key.generalAccessKey=-1
+ui.key.chromeAccessKey=4(Alt)
+ui.key.contentAccessKey=5(Shift+Alt)</code></pre>
+			<p>などが定義されていますが、これらはそれぞれ</p>
+			<dl>
+			<div>
+				<dt>ui.key.menuAccessKey</dt>
+				<dd>Firefoxのメニューを選択するときのキーコード</dd>
+			</div>
+			<div>
+				<dt>ui.key.menuAccessKeyFocuses</dt>
+				<dd>menuAccessKey単体でメニューを開いたままにするかどうか</dd>
+			</div>
+			<div>
+				<dt><a href="http://kb.mozillazine.org/Ui.key.generalAccessKey">ui.key.generalAccessKey</a></dt>
+				<dd>accesskey要素にアクセスするときのキー</dd>
+				<dd>値が<em>-1</em>の場合は以下の2つが有効になる</dd>
+			</div>
+			<div>
+				<dt><a href="http://kb.mozillazine.org/Ui.key.chromeAccess">ui.key.chromeAccessKey</a></dt>
+				<dd>Chrome(Firefoxのコンテンツ表示部分以外を指す)のaccesskey要素にアクセスするときのキー</dd>
+			</div>
+			<div>
+				<dt><a href="http://kb.mozillazine.org/Ui.key.contentAccess">ui.key.contentAccessKey</a></dt>
+				<dd>Contentのaccesskey要素にアクセスするときのキー</dd>
+			</div>
+			</dl>
+			<p>の目的で利用されるもので、どれも0を設定するとキーが無効になります。</p>
+			<ul>
+			<li><a href="https://cat-in-136.github.io/2020/02/xul-has-been-ported-to-web-components.html">XULがWeb Componentsになったね</a></li>
+			</ul>
+		</section>
+		<section>
+			<h2>Ctrl+Hを無効にする</h2>
+			<p>Ctrl+Hをバックスペースとして使っている癖で、履歴サイドバーが開閉してしまって
+			不愉快だったので無効にしようと試みた記録です。結局は</p>
+			<pre><code class="console">$ gsettings set org.gnome.desktop.interface gtk-key-theme Emacs</code></pre>
+			<p>が正解だったのですが、一応メモとして残しておきます。</p>
+			<p>まずは<strong>/usr/lib/firefox/defaults/pref/autoconifg.js</strong>でAutoConfigを有効にします。
+			ここで<strong>sandbox_enabled</strong>を<em>false</em>にしておかないと動作しないので注意です。</p>
+			<pre><code class="js">pref(&quot;general.config.filename&quot;, &quot;autoconfig.cfg&quot;);
+pref(&quot;general.config.vendor&quot;, &quot;autoconfig&quot;);
+pref(&quot;general.config.obscure_value&quot;, 0);
+pref(&quot;general.config.sandbox_enabled&quot;, false);</code></pre>
+			<p>次に<strong>general.config.filename</strong>で指定したファイルを作成します。
+			最初の1行目はコメントが必須です。</p>
+			<pre><code class="js">// disable ugly shortcut keys
+try {
+  let { classes, interfaces, manager } = Components;
+  const { Services } = Components.utils.import(&#x27;resource://gre/modules/Services.jsm&#x27;);
+  function ConfigJS() {
+    Services.obs.addObserver(this, &#x27;chrome-document-global-created&#x27;, false);
+  };
+  ConfigJS.prototype = {
+    observe: function(subject) {
+      subject.addEventListener(&#x27;DOMContentLoaded&#x27;, this, { once: true });
+    },
+    handleEvent: function(e) {
+      let document = e.originalTarget;
+      let window = document.defaultView;
+      let location = window.location;
+      if(/^(chrome:(?!\/\/(global\/content\/commonDialog|browser\/content\/webext-panels)\.x?html)|about:(?!blank))/i.test(location.href)) {
+        if(window._gBrowser){
+          let ctlh = window.document.getElementById(&#x27;key_gotoHistory&#x27;);
+          ctlh.remove();
+        }
+      }
+    }
+  };
+  if(!Services.appinfo.inSafeMode)
+    new ConfigJS();
+}catch(e){
+  displayError(e);
+}</code></pre>
+			<p>これでFirefoxを再起動すれば、Ctrl+Hを押してもサイドバーは開閉しなくなります。</p>
+		</section>
+	</section>
+</main>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2021/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: Firefox AutoConfig\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2021年11月14日作成\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eFirefox AutoConfig\u003c/h1\u003e\n\t\t\u003cp\u003eFirefoxにはユーザーが任意のコードを実行できるAutoConfigという仕様があります。\u003c/p\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eAutoConfigを有効にする\u003c/h2\u003e\n\t\t\t\u003cp\u003eAutoConfigはFirefoxをインストールしたディレクトリ(ArchLinuxの場合は\u003cstrong\u003e/usr/lib/firefox\u003c/strong\u003e)以下の\u003cstrong\u003edefaults/pref/autoconifg.js\u003c/strong\u003eに\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003epref(\u0026quot;general.config.filename\u0026quot;, \u0026quot;autoconfig.cfg\u0026quot;);\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eという設定を入れておくと、\u003cstrong\u003eautoconfig.cfg\u003c/strong\u003eに書いた任意のJavaScriptを\n\t\t\t起動時に実行できるというものです。\n\t\t\t相対パスの場合、Firefoxをインストールしたディレクトリからのパスとして扱われます。\u003c/p\u003e\n\t\t\t\u003cul\u003e\n\t\t\t\u003cli\u003e\u003ca href=\"https://support.mozilla.org/en-US/kb/customizing-firefox-using-autoconfig\"\u003eCustomizing Firefox Using AutoConfig\u003c/a\u003e\u003c/li\u003e\n\t\t\t\u003c/ul\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eキーボードショートカットがどのように実装されているか\u003c/h2\u003e\n\t\t\t\u003cp\u003eFirefoxの外観、タブなどはXHTMLファイルで定義されています。\n\t\t\t具体的には\u003cstrong\u003ebrowser.xhtml\u003c/strong\u003eというファイルですが、\n\t\t\tこれは\u003cstrong\u003eomni.ja\u003c/strong\u003eにまとめられているので展開してみましょう。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e$ cp /usr/lib/firefox/browser/omni.ja .\n$ unzip omni.ja\n$ vi chrome/browser/content/browser/browser.xhtml\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eファイルの中には、各種ショートカットキーや履歴バーの開閉処理などが定義されています。\n\t\t\t以下の定義は履歴サイドバーをトグルするショートカットです。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"html\"\u003e\u0026lt;key id=\u0026quot;key_gotoHistory\u0026quot;\n     data-l10n-id=\u0026quot;history-sidebar-shortcut\u0026quot;\n     modifiers=\u0026quot;accel\u0026quot;\n     oncommand=\u0026quot;SidebarUI.toggle('viewHistorySidebar');\u0026quot;/\u0026gt;\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e\u003cem\u003emodifier=\u0026quot;accel\u0026quot;\u003c/em\u003eは、\u003cstrong\u003eabout:config\u003c/strong\u003eで\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003eui.key.accelKey=17(Ctrl)\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eに設定されたキー(デフォルトではCtrl)を押した状態を表現します。\u003c/p\u003e\n\t\t\t\u003cp\u003e似たようなキーとして\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003eui.key.menuAccessKey=18(Alt)\nui.key.menuAccessKeyFocuses=true\nui.key.generalAccessKey=-1\nui.key.chromeAccessKey=4(Alt)\nui.key.contentAccessKey=5(Shift+Alt)\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eなどが定義されていますが、これらはそれぞれ\u003c/p\u003e\n\t\t\t\u003cdl\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eui.key.menuAccessKey\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eFirefoxのメニューを選択するときのキーコード\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eui.key.menuAccessKeyFocuses\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003emenuAccessKey単体でメニューを開いたままにするかどうか\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003e\u003ca href=\"http://kb.mozillazine.org/Ui.key.generalAccessKey\"\u003eui.key.generalAccessKey\u003c/a\u003e\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eaccesskey要素にアクセスするときのキー\u003c/dd\u003e\n\t\t\t\t\u003cdd\u003e値が\u003cem\u003e-1\u003c/em\u003eの場合は以下の2つが有効になる\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003e\u003ca href=\"http://kb.mozillazine.org/Ui.key.chromeAccess\"\u003eui.key.chromeAccessKey\u003c/a\u003e\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eChrome(Firefoxのコンテンツ表示部分以外を指す)のaccesskey要素にアクセスするときのキー\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003e\u003ca href=\"http://kb.mozillazine.org/Ui.key.contentAccess\"\u003eui.key.contentAccessKey\u003c/a\u003e\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eContentのaccesskey要素にアクセスするときのキー\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003c/dl\u003e\n\t\t\t\u003cp\u003eの目的で利用されるもので、どれも0を設定するとキーが無効になります。\u003c/p\u003e\n\t\t\t\u003cul\u003e\n\t\t\t\u003cli\u003e\u003ca href=\"https://cat-in-136.github.io/2020/02/xul-has-been-ported-to-web-components.html\"\u003eXULがWeb Componentsになったね\u003c/a\u003e\u003c/li\u003e\n\t\t\t\u003c/ul\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eCtrl+Hを無効にする\u003c/h2\u003e\n\t\t\t\u003cp\u003eCtrl+Hをバックスペースとして使っている癖で、履歴サイドバーが開閉してしまって\n\t\t\t不愉快だったので無効にしようと試みた記録です。結局は\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e$ gsettings set org.gnome.desktop.interface gtk-key-theme Emacs\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eが正解だったのですが、一応メモとして残しておきます。\u003c/p\u003e\n\t\t\t\u003cp\u003eまずは\u003cstrong\u003e/usr/lib/firefox/defaults/pref/autoconifg.js\u003c/strong\u003eでAutoConfigを有効にします。\n\t\t\tここで\u003cstrong\u003esandbox_enabled\u003c/strong\u003eを\u003cem\u003efalse\u003c/em\u003eにしておかないと動作しないので注意です。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003epref(\u0026quot;general.config.filename\u0026quot;, \u0026quot;autoconfig.cfg\u0026quot;);\npref(\u0026quot;general.config.vendor\u0026quot;, \u0026quot;autoconfig\u0026quot;);\npref(\u0026quot;general.config.obscure_value\u0026quot;, 0);\npref(\u0026quot;general.config.sandbox_enabled\u0026quot;, false);\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e次に\u003cstrong\u003egeneral.config.filename\u003c/strong\u003eで指定したファイルを作成します。\n\t\t\t最初の1行目はコメントが必須です。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003e// disable ugly shortcut keys\ntry {\n  let { classes, interfaces, manager } = Components;\n  const { Services } = Components.utils.import('resource://gre/modules/Services.jsm');\n  function ConfigJS() {\n    Services.obs.addObserver(this, 'chrome-document-global-created', false);\n  };\n  ConfigJS.prototype = {\n    observe: function(subject) {\n      subject.addEventListener('DOMContentLoaded', this, { once: true });\n    },\n    handleEvent: function(e) {\n      let document = e.originalTarget;\n      let window = document.defaultView;\n      let location = window.location;\n      if(/^(chrome:(?!\\/\\/(global\\/content\\/commonDialog|browser\\/content\\/webext-panels)\\.x?html)|about:(?!blank))/i.test(location.href)) {\n        if(window._gBrowser){\n          let ctlh = window.document.getElementById('key_gotoHistory');\n          ctlh.remove();\n        }\n      }\n    }\n  };\n  if(!Services.appinfo.inSafeMode)\n    new ConfigJS();\n}catch(e){\n  displayError(e);\n}\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eこれでFirefoxを再起動すれば、Ctrl+Hを押してもサイドバーは開閉しなくなります。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2021","1114"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

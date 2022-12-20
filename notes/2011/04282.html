@@ -1,0 +1,338 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: ファイルサーバのディスクレイアウト</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2011年5月13日更新</p>
+	<section>
+		<h1>ファイルサーバのディスクレイアウト</h1>
+		<section>
+			<h2>キャッシュディスク</h2>
+			<p>キャッシュディスクは、ディスクの構成、
+			データブロックとWORMアドレスをマップする領域、
+			データ領域の3つに大きく分かれます。</p>
+			<p>マップ領域とデータ領域の容量は、
+			ディスク全体容量によって自動的に構成されます。
+			それを実際に計算しているのはcacheinit()関数。</p>
+			<figure>
+				<img src="04282.png" alt="キャッシュディスクのレイアウト"/>
+				<figcaption>キャッシュディスクのレイアウト</figcaption>
+			</figure>
+			<pre><code>0:
+1:
+2: Cacheな情報が入っている; cacheinit()で設定
+3..M: マップ管理領域; Mはcaddr-1で、だいたいmaddr+msize/BKPERBLK
+N...: データ領域; Nはcaddrで、あとはだらだら続く</code></pre>
+			<p class="note">インデックス領域のタグはTbuck</p>
+			<p>Limbo風に書くと、ざっくりこんな雰囲気。</p>
+			<pre><code class="c">CacheDisk: dt
+{
+	h: Cache;
+	map: array[M] of array[BKPERBLK] of array[CEPERBK] of Centry;
+	block: array[M*BKPERBLK*CEPERBK] of Block;
+
+	get: fn(addr: big): ref Iobuf;
+}</code></pre>
+			<p>マップアルゴリズムは、対象となるWORMアドレスのハッシュを取り、
+			そのハッシュでマップ領域のブロックとBucketインデックスを決定します。
+			次に、Bucketのなかをみて、空いているCentryを探します。
+			Centryが定まれば、対応するデータ領域のアドレスは
+			単純な式で計算できます。いろいろ省略してこんな感じ。</p>
+			<pre><code class="c">h = (Cache*)getbuf(cw-&gt;cdev, CACHE_ADDR);
+bn = addr % h-&gt;msize;			// Bucketインデックス
+a1 = h-&gt;maddr + bn/BKPERBLK;		// Bucketが格納されているアドレス
+p = (Bucket*)getbuf(cw-&gt;cdev, a1)-&gt;iobuf;
+b = &amp;p[bn%BKPERBLK];
+c = getcentry(b, addr);
+a2 = bn*CEPERBK + h-&gt;caddr;		// addrのデータ領域ブロックアドレス
+a2 += c - b-&gt;entry;			// オフセットを加算して一意に
+data = getbuf(cw-&gt;cdev, a2);</code></pre>
+		</section>
+		<section>
+			<h2>WORMディスク</h2>
+			<section>
+				<h3>ディレクトリレイアウト</h3>
+				<figure>
+					<img src="04282-3.png" alt="一般的なファイル図"/>
+					<figcaption>一般的なファイル図</figcaption>
+				</figure>
+				<p>図は、一般的なファイル1つ(Dentry[2])を表現したものです。
+				このあたりはほとんどUNIXファイルシステムと同じみたい。
+				この図で、Dentry[2]がファイルの場合、
+				Block[4]とBlock[7]にはファイルの内容が格納されています。
+				または、Dentry[2]がディレクトリの場合、
+				上図と同様にDentryの束が格納されます。
+				ブロック中のDentry数は決まっているので、
+				途中でブロックをまたがることはありません。</p>
+				<p>Dentry[2]を削除すると、そのブロックから
+				DALLOCフラグが消えて未割当てな状態になります。
+				空きができますが、そのままです。詰めません。</p>
+				<p class="note">ブロックレイアウトからみれば、
+				ディレクトリの途中で空きができますが、
+				9pで読むときに、f_read関数が空きを見せないようになっています。</p>
+				<p>Dentryの左下にある数字はslotと呼ばれます。
+				これは、ブロック中の何個目にあるエントリかを表します。
+				複数ブロックにまたがるほど大きなディレクトリの場合では、
+				次のブロックになるとまた0からはじまります。</p>
+			</section>
+			<section>
+				<h3>最初の状態</h3>
+				<p>以下はream後のWORMレイアウト。</p>
+				<pre><code class="c">0:
+1:
+2: super addr(tag:Tsuper, state=Cdump)
+@Superb{
+	last = 2,
+	cwraddr = 3,
+	roraddr = 4,
+	next = 5,
+	fstart = 2,
+	fsize = 6,
+	fbuf = { nfree = 1, free = [0] }
+}
+3: cw root(tag:Tdir, state=Cdump)
+@array[DIRPERBUF] of Dentry {
+[0]	name = &quot;/&quot;,
+	slot = 0
+}
+4: ro root(tag:Tdir, state=Cdump)
+@array[DIRPERBUF] of Dentry {
+[0]	name = &quot;/&quot;,
+	slot = 0
+}
+5: next sb</code></pre>
+				<p>頭に@がついているものは、
+				キャッシュのみ変更があったということです。
+				なので、この時点ではWORMには何も書き込まれていない。</p>
+			</section>
+			<section>
+				<h3>初回dump</h3>
+				<p>これは朝5:00の定期dumpではなく、ream直後に起こります。</p>
+				<pre><code class="c">0:
+1:
+2: super addr(tag:Tsuper, state=Cread)
+Superb{
+	last = 2,
+	cwraddr = 3,
+	roraddr = 4,
+	next = 5,
+	fstart = 2,
+	fsize = 6,
+	fbuf = { nfree = 1, free = [0] }
+}
+3: cw root(tag:Tdir, state=Cread)
+array[DIRPERBUF] of Dentry {
+[0]	name = &quot;/&quot;,
+	slot = 0
+}
+4: ro root(tag:Tdir, state=Cread)
+array[DIRPERBUF] of Dentry {
+[0]	name = &quot;/&quot;,
+	slot = 0
+}
+5: next sb</code></pre>
+				<figure>
+					<img src="04282-1.png" alt="WORMのレイアウト"/>
+					<figcaption>WORMのレイアウト</figcaption>
+				</figure>
+			</section>
+			<section>
+				<h3>WORMディスクの伸長</h3>
+				<p>最初は小さいディスク(6ブロック)です。</p>
+				<p>新しいブロックが使われるときはフリーリストから取ります。
+				フリーリストがなくなればディスクのまとめて伸ばし、
+				伸びただけフリーリストを確保します。
+				また、既存のブロックが更新された場合は、
+				dumpの際にディスクを1ブロックだけ伸ばして割り当てます。
+				このとき、フリーリストが残っていても使いません。
+				使用状況に応じて、WORMディスクを拡張(grow)します。</p>
+				<p>ファイルを削除すると、そのブロックはフリーリストに戻ります。
+				メモ: Cdirtyの場合だけ?</p>
+				<p class="note">上で、freeの先頭に0が入っているのは、
+				残り0でアドレスが0なら空き無しと判断しgrowするためみたい。</p>
+			</section>
+			<section>
+				<h3>ファイルの作成</h3>
+				<p>create /adm/usersすると、新しいブロックが割り当てられて
+				ファイルが作られます。空きがなければgrowが起こります。
+				以下はgrowした後、/adm/usersを作り終わった場合。</p>
+				<pre><code class="c">0:
+1:
+2: super addr(tag:Tsuper, state=Cwrite)
+@Superb{
+	last = 2,
+	cwraddr = 3,
+	roraddr = 4,
+	next = 5,
+	fstart = 2,
+	fsize = 106,
+	fbuf = { nfree = 99, free = [0,105,104...8] }
+}
+3: cw root(tag:Tdir, state=Cwrite)
+@array[DIRPERBUF] of Dentry {
+[0]	name = &quot;/&quot;,
+	slot = 0,
+	dblock = [6]
+}
+4: ro root(tag:Tdir, state=Cread)
+array[DIRPERBUF] of Dentry {
+[0]	name = &quot;/&quot;,
+	slot = 0
+}
+5: next sb
+6: /(tag:Tdir, state=Cdirty)
+@array[] of Dentry{
+[0]	name = &quot;adm&quot;,
+	slot = 0
+	dblock = [7]
+}
+7: adm(tag:Tfile, state=Cdirty)
+@array[] of Dentry{
+[0]	name = &quot;users&quot;,
+	slot = 0
+}</code></pre>
+				<div class="note">
+					<pre><code class="console">create /adm adm adm 755 d</code></pre>
+					<p>このときのコールフロー。</p>
+					<pre><code class="c">con_create(FID2, &quot;adm&quot;, -1, -1, PDIR&amp;0755, 0)
+call9p1[Tcreate](message)
+f_create()
+dnodebuf()
+rel2abs()</code></pre>
+					<p>dnodebufのなかで呼び出されるrel2absは、
+					n個目のブロック番号を実際のアドレスへ変換し、
+					そのバッファを返す。
+					NDBLOCK以上なら間接ブロックのどこか。
+					nが未確保なブロックなら
+					bufalloc()でフリーブロックを後ろから確保。</p>
+				</div>
+				<p>そのままdumpすると、WORMに書き込まれる対象となります。
+				ここで、前回のdump時に書き込まれたブロックは
+				変更されていない点に注意です。</p>
+				<pre><code class="c">0:
+1:
+2: super addr(tag:Tsuper, state=Cread)
+Superb{
+	last = 2,
+	cwraddr = 3,
+	roraddr = 4,
+	next = 5,
+	fstart = 2,
+	fsize = 6,
+	fbuf = { nfree = 1, free = [0] }
+}
+3: cw root(tag:Tdir, state=Cread)
+array[DIRPERBUF] of Dentry {
+[0]	name = &quot;/&quot;,
+	slot = 0
+}
+4: ro root(tag:Tdir, state=Cread)
+array[DIRPERBUF] of Dentry {
+[0]	name = &quot;/&quot;,
+	slot = 0
+}
+5: super addr(tag:Tsuper, state=Cdump, ver2)
+@Superb{
+	last = 2,
+	cwraddr = 106,
+	roraddr = 107,
+	next = 108,
+	fstart = 2,
+	fsize = 109,
+	fbuf = { nfree = 97, free = [0,105,104...10] }
+}
+6: /(tag:Tdir, state=Cdump)
+@array[] of Dentry{
+[0]	name = &quot;adm&quot;,
+	slot = 0
+	dblock = [7]
+}
+7: adm(tag:Tfile, state=Cdump)
+@array[] of Dentry{
+[0]	name = &quot;users&quot;,
+	slot = 0
+}
+8: /(ro)(tag:Tdir, state=Cdump)
+@array[] of Dentry {
+[0]	name = &quot;2011&quot;
+	slot = 0
+	dblock = [9]
+}
+9: 2011(tag:Tdir, state=Cdump)
+@array[] of Dentry {
+[0]	name = &quot;0411&quot;
+	slot = 0
+	dblock = [6]		# from rba(current cw root)
+}
+106: cw root(tag:Tdir, state=Cdump, ver2)
+@array[DIRPERBUF] of Dentry {
+[0]	name = &quot;/&quot;,
+	slot = 0
+	dblock = [6]
+}
+107: ro root(tag:Tdir, state=Cdump, ver2)
+@array[] of Dentry {
+[0]	name = &quot;/&quot;,
+	slot = 0
+	dblock = [8]
+}</code></pre>
+				<p>この後、しばらくすればwcpプロセスにより
+				CdumpのものがWORMへ書き込まれます。</p>
+				<figure>
+					<img src="04282-2.png" alt="WORMのレイアウト"/>
+					<figcaption>WORMのレイアウト</figcaption>
+				</figure>
+			</section>
+			<section>
+				<h3>ファイルの更新</h3>
+				<p>ブロックの一部分だけ更新された場合、
+				変更のあったブロックだけ切り替わります。
+				以下は疑似コードですが、だいたいこんな感じ。</p>
+				<pre><code class="c">na = cwrecur(addr)
+if(na){
+	block[i] = na;
+	p-&gt;flags |= Bmod;
+}</code></pre>
+				<p>めんどくさいので図は省略。</p>
+			</section>
+			<section>
+				<h3>おまけ</h3>
+				<p>ファイルサーバのconfigは、
+				nvramとディスクの0ブロックに分かれて保存されます。
+				具体的には</p>
+				<pre><code>config w0
+service fs
+ip 192.168...</code></pre>
+				<p>この場合、w0という文字列がフロッピーのplan9.nvrに、
+				構造体でいえばNvsafe.configに保存され、
+				残りの部分はw0ディスクのブロック0に書き込まれます。
+				このとき、個々の行は改行(\n)で区切られます。</p>
+			</section>
+		</section>
+	</section>
+</main>
+<aside>
+	<h1>参考サイト</h1>
+	<ul>
+	<li><a href="http://plan9.aichi-u.ac.jp/cwfs/">cwfsの研究</a></li>
+	</ul>
+</aside>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2011/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: ファイルサーバのディスクレイアウト\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2011年5月13日更新\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eファイルサーバのディスクレイアウト\u003c/h1\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eキャッシュディスク\u003c/h2\u003e\n\t\t\t\u003cp\u003eキャッシュディスクは、ディスクの構成、\n\t\t\tデータブロックとWORMアドレスをマップする領域、\n\t\t\tデータ領域の3つに大きく分かれます。\u003c/p\u003e\n\t\t\t\u003cp\u003eマップ領域とデータ領域の容量は、\n\t\t\tディスク全体容量によって自動的に構成されます。\n\t\t\tそれを実際に計算しているのはcacheinit()関数。\u003c/p\u003e\n\t\t\t\u003cfigure\u003e\n\t\t\t\t\u003cimg src=\"04282.png\" alt=\"キャッシュディスクのレイアウト\"\u003e\n\t\t\t\t\u003cfigcaption\u003eキャッシュディスクのレイアウト\u003c/figcaption\u003e\n\t\t\t\u003c/figure\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003e0:\n1:\n2: Cacheな情報が入っている; cacheinit()で設定\n3..M: マップ管理領域; Mはcaddr-1で、だいたいmaddr+msize/BKPERBLK\nN...: データ領域; Nはcaddrで、あとはだらだら続く\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp class=\"note\"\u003eインデックス領域のタグはTbuck\u003c/p\u003e\n\t\t\t\u003cp\u003eLimbo風に書くと、ざっくりこんな雰囲気。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"c\"\u003eCacheDisk: dt\n{\n\th: Cache;\n\tmap: array[M] of array[BKPERBLK] of array[CEPERBK] of Centry;\n\tblock: array[M*BKPERBLK*CEPERBK] of Block;\n\n\tget: fn(addr: big): ref Iobuf;\n}\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eマップアルゴリズムは、対象となるWORMアドレスのハッシュを取り、\n\t\t\tそのハッシュでマップ領域のブロックとBucketインデックスを決定します。\n\t\t\t次に、Bucketのなかをみて、空いているCentryを探します。\n\t\t\tCentryが定まれば、対応するデータ領域のアドレスは\n\t\t\t単純な式で計算できます。いろいろ省略してこんな感じ。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"c\"\u003eh = (Cache*)getbuf(cw-\u0026gt;cdev, CACHE_ADDR);\nbn = addr % h-\u0026gt;msize;\t\t\t// Bucketインデックス\na1 = h-\u0026gt;maddr + bn/BKPERBLK;\t\t// Bucketが格納されているアドレス\np = (Bucket*)getbuf(cw-\u0026gt;cdev, a1)-\u0026gt;iobuf;\nb = \u0026amp;p[bn%BKPERBLK];\nc = getcentry(b, addr);\na2 = bn*CEPERBK + h-\u0026gt;caddr;\t\t// addrのデータ領域ブロックアドレス\na2 += c - b-\u0026gt;entry;\t\t\t// オフセットを加算して一意に\ndata = getbuf(cw-\u0026gt;cdev, a2);\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eWORMディスク\u003c/h2\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eディレクトリレイアウト\u003c/h3\u003e\n\t\t\t\t\u003cfigure\u003e\n\t\t\t\t\t\u003cimg src=\"04282-3.png\" alt=\"一般的なファイル図\"\u003e\n\t\t\t\t\t\u003cfigcaption\u003e一般的なファイル図\u003c/figcaption\u003e\n\t\t\t\t\u003c/figure\u003e\n\t\t\t\t\u003cp\u003e図は、一般的なファイル1つ(Dentry[2])を表現したものです。\n\t\t\t\tこのあたりはほとんどUNIXファイルシステムと同じみたい。\n\t\t\t\tこの図で、Dentry[2]がファイルの場合、\n\t\t\t\tBlock[4]とBlock[7]にはファイルの内容が格納されています。\n\t\t\t\tまたは、Dentry[2]がディレクトリの場合、\n\t\t\t\t上図と同様にDentryの束が格納されます。\n\t\t\t\tブロック中のDentry数は決まっているので、\n\t\t\t\t途中でブロックをまたがることはありません。\u003c/p\u003e\n\t\t\t\t\u003cp\u003eDentry[2]を削除すると、そのブロックから\n\t\t\t\tDALLOCフラグが消えて未割当てな状態になります。\n\t\t\t\t空きができますが、そのままです。詰めません。\u003c/p\u003e\n\t\t\t\t\u003cp class=\"note\"\u003eブロックレイアウトからみれば、\n\t\t\t\tディレクトリの途中で空きができますが、\n\t\t\t\t9pで読むときに、f_read関数が空きを見せないようになっています。\u003c/p\u003e\n\t\t\t\t\u003cp\u003eDentryの左下にある数字はslotと呼ばれます。\n\t\t\t\tこれは、ブロック中の何個目にあるエントリかを表します。\n\t\t\t\t複数ブロックにまたがるほど大きなディレクトリの場合では、\n\t\t\t\t次のブロックになるとまた0からはじまります。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003e最初の状態\u003c/h3\u003e\n\t\t\t\t\u003cp\u003e以下はream後のWORMレイアウト。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"c\"\u003e0:\n1:\n2: super addr(tag:Tsuper, state=Cdump)\n@Superb{\n\tlast = 2,\n\tcwraddr = 3,\n\troraddr = 4,\n\tnext = 5,\n\tfstart = 2,\n\tfsize = 6,\n\tfbuf = { nfree = 1, free = [0] }\n}\n3: cw root(tag:Tdir, state=Cdump)\n@array[DIRPERBUF] of Dentry {\n[0]\tname = \u0026quot;/\u0026quot;,\n\tslot = 0\n}\n4: ro root(tag:Tdir, state=Cdump)\n@array[DIRPERBUF] of Dentry {\n[0]\tname = \u0026quot;/\u0026quot;,\n\tslot = 0\n}\n5: next sb\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003e頭に@がついているものは、\n\t\t\t\tキャッシュのみ変更があったということです。\n\t\t\t\tなので、この時点ではWORMには何も書き込まれていない。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003e初回dump\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eこれは朝5:00の定期dumpではなく、ream直後に起こります。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"c\"\u003e0:\n1:\n2: super addr(tag:Tsuper, state=Cread)\nSuperb{\n\tlast = 2,\n\tcwraddr = 3,\n\troraddr = 4,\n\tnext = 5,\n\tfstart = 2,\n\tfsize = 6,\n\tfbuf = { nfree = 1, free = [0] }\n}\n3: cw root(tag:Tdir, state=Cread)\narray[DIRPERBUF] of Dentry {\n[0]\tname = \u0026quot;/\u0026quot;,\n\tslot = 0\n}\n4: ro root(tag:Tdir, state=Cread)\narray[DIRPERBUF] of Dentry {\n[0]\tname = \u0026quot;/\u0026quot;,\n\tslot = 0\n}\n5: next sb\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cfigure\u003e\n\t\t\t\t\t\u003cimg src=\"04282-1.png\" alt=\"WORMのレイアウト\"\u003e\n\t\t\t\t\t\u003cfigcaption\u003eWORMのレイアウト\u003c/figcaption\u003e\n\t\t\t\t\u003c/figure\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eWORMディスクの伸長\u003c/h3\u003e\n\t\t\t\t\u003cp\u003e最初は小さいディスク(6ブロック)です。\u003c/p\u003e\n\t\t\t\t\u003cp\u003e新しいブロックが使われるときはフリーリストから取ります。\n\t\t\t\tフリーリストがなくなればディスクのまとめて伸ばし、\n\t\t\t\t伸びただけフリーリストを確保します。\n\t\t\t\tまた、既存のブロックが更新された場合は、\n\t\t\t\tdumpの際にディスクを1ブロックだけ伸ばして割り当てます。\n\t\t\t\tこのとき、フリーリストが残っていても使いません。\n\t\t\t\t使用状況に応じて、WORMディスクを拡張(grow)します。\u003c/p\u003e\n\t\t\t\t\u003cp\u003eファイルを削除すると、そのブロックはフリーリストに戻ります。\n\t\t\t\tメモ: Cdirtyの場合だけ?\u003c/p\u003e\n\t\t\t\t\u003cp class=\"note\"\u003e上で、freeの先頭に0が入っているのは、\n\t\t\t\t残り0でアドレスが0なら空き無しと判断しgrowするためみたい。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eファイルの作成\u003c/h3\u003e\n\t\t\t\t\u003cp\u003ecreate /adm/usersすると、新しいブロックが割り当てられて\n\t\t\t\tファイルが作られます。空きがなければgrowが起こります。\n\t\t\t\t以下はgrowした後、/adm/usersを作り終わった場合。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"c\"\u003e0:\n1:\n2: super addr(tag:Tsuper, state=Cwrite)\n@Superb{\n\tlast = 2,\n\tcwraddr = 3,\n\troraddr = 4,\n\tnext = 5,\n\tfstart = 2,\n\tfsize = 106,\n\tfbuf = { nfree = 99, free = [0,105,104...8] }\n}\n3: cw root(tag:Tdir, state=Cwrite)\n@array[DIRPERBUF] of Dentry {\n[0]\tname = \u0026quot;/\u0026quot;,\n\tslot = 0,\n\tdblock = [6]\n}\n4: ro root(tag:Tdir, state=Cread)\narray[DIRPERBUF] of Dentry {\n[0]\tname = \u0026quot;/\u0026quot;,\n\tslot = 0\n}\n5: next sb\n6: /(tag:Tdir, state=Cdirty)\n@array[] of Dentry{\n[0]\tname = \u0026quot;adm\u0026quot;,\n\tslot = 0\n\tdblock = [7]\n}\n7: adm(tag:Tfile, state=Cdirty)\n@array[] of Dentry{\n[0]\tname = \u0026quot;users\u0026quot;,\n\tslot = 0\n}\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cdiv class=\"note\"\u003e\n\t\t\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003ecreate /adm adm adm 755 d\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\t\u003cp\u003eこのときのコールフロー。\u003c/p\u003e\n\t\t\t\t\t\u003cpre\u003e\u003ccode class=\"c\"\u003econ_create(FID2, \u0026quot;adm\u0026quot;, -1, -1, PDIR\u0026amp;0755, 0)\ncall9p1[Tcreate](message)\nf_create()\ndnodebuf()\nrel2abs()\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\t\u003cp\u003ednodebufのなかで呼び出されるrel2absは、\n\t\t\t\t\tn個目のブロック番号を実際のアドレスへ変換し、\n\t\t\t\t\tそのバッファを返す。\n\t\t\t\t\tNDBLOCK以上なら間接ブロックのどこか。\n\t\t\t\t\tnが未確保なブロックなら\n\t\t\t\t\tbufalloc()でフリーブロックを後ろから確保。\u003c/p\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cp\u003eそのままdumpすると、WORMに書き込まれる対象となります。\n\t\t\t\tここで、前回のdump時に書き込まれたブロックは\n\t\t\t\t変更されていない点に注意です。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"c\"\u003e0:\n1:\n2: super addr(tag:Tsuper, state=Cread)\nSuperb{\n\tlast = 2,\n\tcwraddr = 3,\n\troraddr = 4,\n\tnext = 5,\n\tfstart = 2,\n\tfsize = 6,\n\tfbuf = { nfree = 1, free = [0] }\n}\n3: cw root(tag:Tdir, state=Cread)\narray[DIRPERBUF] of Dentry {\n[0]\tname = \u0026quot;/\u0026quot;,\n\tslot = 0\n}\n4: ro root(tag:Tdir, state=Cread)\narray[DIRPERBUF] of Dentry {\n[0]\tname = \u0026quot;/\u0026quot;,\n\tslot = 0\n}\n5: super addr(tag:Tsuper, state=Cdump, ver2)\n@Superb{\n\tlast = 2,\n\tcwraddr = 106,\n\troraddr = 107,\n\tnext = 108,\n\tfstart = 2,\n\tfsize = 109,\n\tfbuf = { nfree = 97, free = [0,105,104...10] }\n}\n6: /(tag:Tdir, state=Cdump)\n@array[] of Dentry{\n[0]\tname = \u0026quot;adm\u0026quot;,\n\tslot = 0\n\tdblock = [7]\n}\n7: adm(tag:Tfile, state=Cdump)\n@array[] of Dentry{\n[0]\tname = \u0026quot;users\u0026quot;,\n\tslot = 0\n}\n8: /(ro)(tag:Tdir, state=Cdump)\n@array[] of Dentry {\n[0]\tname = \u0026quot;2011\u0026quot;\n\tslot = 0\n\tdblock = [9]\n}\n9: 2011(tag:Tdir, state=Cdump)\n@array[] of Dentry {\n[0]\tname = \u0026quot;0411\u0026quot;\n\tslot = 0\n\tdblock = [6]\t\t# from rba(current cw root)\n}\n106: cw root(tag:Tdir, state=Cdump, ver2)\n@array[DIRPERBUF] of Dentry {\n[0]\tname = \u0026quot;/\u0026quot;,\n\tslot = 0\n\tdblock = [6]\n}\n107: ro root(tag:Tdir, state=Cdump, ver2)\n@array[] of Dentry {\n[0]\tname = \u0026quot;/\u0026quot;,\n\tslot = 0\n\tdblock = [8]\n}\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003eこの後、しばらくすればwcpプロセスにより\n\t\t\t\tCdumpのものがWORMへ書き込まれます。\u003c/p\u003e\n\t\t\t\t\u003cfigure\u003e\n\t\t\t\t\t\u003cimg src=\"04282-2.png\" alt=\"WORMのレイアウト\"\u003e\n\t\t\t\t\t\u003cfigcaption\u003eWORMのレイアウト\u003c/figcaption\u003e\n\t\t\t\t\u003c/figure\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eファイルの更新\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eブロックの一部分だけ更新された場合、\n\t\t\t\t変更のあったブロックだけ切り替わります。\n\t\t\t\t以下は疑似コードですが、だいたいこんな感じ。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"c\"\u003ena = cwrecur(addr)\nif(na){\n\tblock[i] = na;\n\tp-\u0026gt;flags |= Bmod;\n}\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003eめんどくさいので図は省略。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eおまけ\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eファイルサーバのconfigは、\n\t\t\t\tnvramとディスクの0ブロックに分かれて保存されます。\n\t\t\t\t具体的には\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode\u003econfig w0\nservice fs\nip 192.168...\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003eこの場合、w0という文字列がフロッピーのplan9.nvrに、\n\t\t\t\t構造体でいえばNvsafe.configに保存され、\n\t\t\t\t残りの部分はw0ディスクのブロック0に書き込まれます。\n\t\t\t\tこのとき、個々の行は改行(\\n)で区切られます。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003e参考サイト\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"http://plan9.aichi-u.ac.jp/cwfs/\"\u003ecwfsの研究\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2011","04282"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

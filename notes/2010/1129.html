@@ -1,0 +1,221 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: WCF Data Servicesメモ</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2011年6月28日更新</p>
+	<section>
+		<h1>WCF Data Servicesメモ</h1>
+		<section>
+			<h2>WCF Data ServicesとWCF RIA Servicesの使い分け</h2>
+			<table>
+			<tr><td>WCF(ASMX Web Service)</td><td>SOAP</td></tr>
+			<tr><td>WCF Data Service</td><td>REST</td></tr>
+			<tr><td>WCF RIA Services</td><td>両方対応っぽい感じ</td></tr>
+			</table>
+			<p>結局どれを使えばいいの？ってところですけど、<a href="http://blogs.msdn.com/b/aonishi/archive/2010/05/31/10017706.aspx">MSDNのブログ</a>によると、</p>
+			<blockquote>エンティティやメタデータを利用して
+			ビジネスロジックを実装していく場合は、WCF RIA Services、
+			RESTアクセスが中心ならばWCF Data Servicesという感じです。</blockquote>
+			<p>とのことです。</p>
+		</section>
+		<section>
+			<h2>JSON形式でデータ操作</h2>
+			<p>通常はXML形式のデータが返ってきますが、
+			リクエストのAcceptヘッダをapplication/jsonにしておくと、
+			JSONで返してくれます。</p>
+			<pre><code class="console">% telnet svr 80
+GET /Service.svc/List?$top=2 HTTP/1.1
+Host: svr
+Connection: close
+Accept: application/json</code></pre>
+			<p>ここで、HTTP/1.0にすると、
+			Acceptヘッダが無視されてXML形式になるので注意です。
+			また、POSTやPUTの時は、これに加えてContent-Typeも指定しておきます。</p>
+			<pre><code class="http">Content-Type: application/json</code></pre>
+		</section>
+		<section>
+			<h2>サービス操作</h2>
+			<p>svcファイルに、WebGetかWebInvoke属性を付けたメソッドを定義して、
+			SetServiceOperationAccessRuleを使って公開します。</p>
+			<ul>
+			<li><a href="http://msdn.microsoft.com/ja-jp/library/dd744841.aspx">サービス操作を定義する</a></li>
+			</ul>
+		</section>
+		<section>
+			<h2>複数の主キー</h2>
+			<p>1つの場合は、括弧の中にそのまま値を書きますが、
+			複数ある場合は名前と値のペアを並べるようです。</p>
+			<pre><code>List(1)
+List(&#x27;ID&#x27;)
+List(Key1=&#x27;xxx&#x27;,Key2=0)</code></pre>
+		</section>
+		<section>
+			<h2>子アイテムの指定方法</h2>
+			<p>$expandや$selectに渡すプロパティ名は、/で階層を表します。</p>
+			<pre><code>$expand=Item,Item/Details</code></pre>
+		</section>
+		<section>
+			<h2>非同期ローディング</h2>
+			<p>Silverlightなどで、非同期読み込みする場合、
+			比較的便利な書き方があったのでメモ。</p>
+			<pre><code class="cs">var uri = new Uri(&quot;DataService.svc&quot;, UriKind.RelativeOrAbsolute);
+var ctxt = new DataEntities(uri);
+var binding = new DataServiceCollection&lt;Item&gt;();
+binding.LoadCompleted += (sender, e) =&gt; {
+	if(e.Error != null)
+		return;
+	if(binding.Continuation != null){
+		binding.LoadNextPartialSetAsync();
+		return;
+	}
+	// ここでデータが全部読み込み終わり
+	var q1 = from c in binding select c.xxx;
+};
+binding.LoadAsync(ctxt.Items);</code></pre>
+		</section>
+		<section>
+			<h2>ADO.NET Entity Frameworkメモ</h2>
+			<p>WCF Data Servicesとは違いますが、
+			関係も深いのでまとめてメモ。</p>
+			<section>
+				<h3>アソシエーションの使い方</h3>
+				<p>まず、ふつうに張って関係を定義します。
+				このときに、どれとどれが関係しているのかを決めるのですが、
+				ここで2種類の連結方法があります。</p>
+				<dl>
+				<div>
+					<dt>外部キーを残さないもの</dt>
+					<dd>独立アソシエーション</dd>
+				</div>
+				<div>
+					<dt>外部キーを残すもの</dt>
+					<dd>外部キーアソシエーション</dd>
+				</div>
+				</dl>
+			</section>
+			<section>
+				<h3>独立アソシエーション</h3>
+				<p>サロゲートキーなテーブルならこちら。</p>
+				<p>アソシエーションのマッピングを開いてマップします。
+				xxにマップという欄は、
+				子テーブル(<strong>0または1</strong>対<strong>多</strong>なら<strong>多</strong>のほう)を選んで、
+				マップしたプロパティを子テーブル側から削除します。</p>
+				<p class="note">キーとなるプロパティは削除できないので、
+				その場合は外部キーアソシエーションを使う？</p>
+			</section>
+			<section>
+				<h3>外部キーアソシエーション</h3>
+				<p>自然キーのテーブルはこちら。
+				.NET Framework 4.0から対応しているみたいです。</p>
+				<p>アソシエーションをダブルクリックで開いて、
+				対応するプロパティを定義します。
+				<strong>0または1</strong>対<strong>多</strong>関係の場合は、
+				親テーブル(<strong>0または1</strong>のほう)を選びます。
+				入力が終わったら、アソシエーションのマッピングを開いて、
+				そこにマッピングが残っていたら削除して終わりです。</p>
+			</section>
+			<section>
+				<h3>参考ページ</h3>
+				<ul>
+				<li><a href="http://d.hatena.ne.jp/sixpetals/20100506">外部キーアソシエーションに変更する方法</a></li>
+				</ul>
+			</section>
+		</section>
+		<section>
+			<h2>トラブルメモ</h2>
+			<section>
+				<h3>組み込み演算子が動作しない</h3>
+				<p>組み込み演算子($selectなど)はASCII文字しか認識しないのかも。
+				以下の指定はどちらも正常に動作します。</p>
+				<pre><code>List?$select=Type
+リスト(&#x27;ID&#x27;)</code></pre>
+				<p>以下の場合はエラーになります。</p>
+				<pre><code>List?$select=種類</code></pre>
+				<p>リスト名はマルチバイト文字を受け付けるのですね。
+				なんだかなあ、ださいなあ、と思います。</p>
+			</section>
+			<section>
+				<h3>datetime型の書き込みができない</h3>
+				<p>datetime型を持つレコードを、
+				JSON形式でPOSTまたはPUTすると、文法エラーが返ってきます。
+				具体的なコードは以下。</p>
+				<pre><code class="js">var data = {d: &quot;\\/Date(1291005669546)\\/&quot;}
+post(url, data)		// エラー</code></pre>
+				<p>これは、文字列としては&quot;\/Date(...)\/&quot;なのですが、
+				JSONにすると&quot;\\/Date(...)\\/&quot;になり、
+				WCF Data Servicesの想定する日付表現と異なるためです。
+				ややこしいことに、以下のように書くと、
+				今度は&quot;/Date(...)/&quot;となり、これもまたエラーになります。</p>
+				<pre><code>var data = {d: &quot;\/Date(1291005669546)\/&quot;}</code></pre>
+				<p>これ、バグじゃないかとさえ思えてくるのですが、
+				とりあえず以下のようにすると、うまく動作します。</p>
+				<pre><code>var data = {d: &quot;2010-11-29T12:00:00&quot;}</code></pre>
+			</section>
+			<section>
+				<h3>PUTするとアクセス権エラーになる</h3>
+				<p>GET, POSTはできているのにPUTがエラーになる場合、
+				Webサーバのファイルアクセス権が足りないのかもしれません。
+				関係するアクセス権は以下の通り。</p>
+				<ul>
+				<li>Webサーバ(http動詞)</li>
+				<li>Webサーバ(ファイルアクセス権)</li>
+				<li>WCF Data Services</li>
+				<li>データベース(ユーザ認証)</li>
+				<li>データベース(テーブルアクセス権)</li>
+				</ul>
+				<p>分かりにくいのはWebサーバ(ファイルアクセス権)でしょうか。
+				この場合、<a href="http://learn.iis.net/page.aspx/266/troubleshooting-failed-requests-using-tracing-in-iis-7/">Troubleshooting Failed Request Using Tracing in IIS7</a>
+				のようにログを取ると、FileAuthorizationになっていますので、
+				wwwrootまたは必要な場所でIUSRに書き込み権を与えると解消します。
+				IIS_IUSRとは違いますので注意です。</p>
+			</section>
+			<section>
+				<h3>キーを指定してデータを取得すると構文エラーになる</h3>
+				<p>WCF Data Servicesでは、&#x27;:&#x27;(コロン)を含むURLを弾くみたいです。
+				これが問題になるのはdatetime型を
+				キーにしている場合が多いかなあと思いますが、
+				時刻が全部0なら、datetime&#x27;2010-11-29&#x27;のように
+				省略すれば回避できます。</p>
+				<p>しかし、時刻部分がある場合はどうすればいいのだろう。</p>
+			</section>
+		</section>
+	</section>
+</main>
+<aside>
+	<section>
+		<h1>関連情報</h1>
+		<ul>
+		<li><a href="/notes/2010/1227.html"><a>SproutCoreとWCF Data Servicesの連携</a></a></li>
+		</ul>
+	</section>
+	<section>
+		<h1>WCF Data Services</h1>
+		<ul>
+		<li><a href="http://msdn.microsoft.com/ja-jp/library/cc668792.aspx">WCF Data Services</a></li>
+		<li><a href="http://www.odata.org/">Open Data Protocol</a></li>
+		<li><a href="http://msdn.microsoft.com/ja-jp/magazine/ff714561.aspx">実用OData</a></li>
+		<li><a href="http://msdn.microsoft.com/ja-jp/magazine/ff872392.aspx">ODataとAtomPub</a></li>
+		<li><a href="http://www.odata.org/developers/odata-sdk">OData-SDK</a></li>
+		</ul>
+	</section>
+</aside>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2010/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: WCF Data Servicesメモ\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2011年6月28日更新\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eWCF Data Servicesメモ\u003c/h1\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eWCF Data ServicesとWCF RIA Servicesの使い分け\u003c/h2\u003e\n\t\t\t\u003ctable\u003e\n\t\t\t\u003ctr\u003e\u003ctd\u003eWCF(ASMX Web Service)\u003c/td\u003e\u003ctd\u003eSOAP\u003c/td\u003e\u003c/tr\u003e\n\t\t\t\u003ctr\u003e\u003ctd\u003eWCF Data Service\u003c/td\u003e\u003ctd\u003eREST\u003c/td\u003e\u003c/tr\u003e\n\t\t\t\u003ctr\u003e\u003ctd\u003eWCF RIA Services\u003c/td\u003e\u003ctd\u003e両方対応っぽい感じ\u003c/td\u003e\u003c/tr\u003e\n\t\t\t\u003c/table\u003e\n\t\t\t\u003cp\u003e結局どれを使えばいいの？ってところですけど、\u003ca href=\"http://blogs.msdn.com/b/aonishi/archive/2010/05/31/10017706.aspx\"\u003eMSDNのブログ\u003c/a\u003eによると、\u003c/p\u003e\n\t\t\t\u003cblockquote\u003eエンティティやメタデータを利用して\n\t\t\tビジネスロジックを実装していく場合は、WCF RIA Services、\n\t\t\tRESTアクセスが中心ならばWCF Data Servicesという感じです。\u003c/blockquote\u003e\n\t\t\t\u003cp\u003eとのことです。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eJSON形式でデータ操作\u003c/h2\u003e\n\t\t\t\u003cp\u003e通常はXML形式のデータが返ってきますが、\n\t\t\tリクエストのAcceptヘッダをapplication/jsonにしておくと、\n\t\t\tJSONで返してくれます。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% telnet svr 80\nGET /Service.svc/List?$top=2 HTTP/1.1\nHost: svr\nConnection: close\nAccept: application/json\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eここで、HTTP/1.0にすると、\n\t\t\tAcceptヘッダが無視されてXML形式になるので注意です。\n\t\t\tまた、POSTやPUTの時は、これに加えてContent-Typeも指定しておきます。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"http\"\u003eContent-Type: application/json\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eサービス操作\u003c/h2\u003e\n\t\t\t\u003cp\u003esvcファイルに、WebGetかWebInvoke属性を付けたメソッドを定義して、\n\t\t\tSetServiceOperationAccessRuleを使って公開します。\u003c/p\u003e\n\t\t\t\u003cul\u003e\n\t\t\t\u003cli\u003e\u003ca href=\"http://msdn.microsoft.com/ja-jp/library/dd744841.aspx\"\u003eサービス操作を定義する\u003c/a\u003e\u003c/li\u003e\n\t\t\t\u003c/ul\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e複数の主キー\u003c/h2\u003e\n\t\t\t\u003cp\u003e1つの場合は、括弧の中にそのまま値を書きますが、\n\t\t\t複数ある場合は名前と値のペアを並べるようです。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003eList(1)\nList('ID')\nList(Key1='xxx',Key2=0)\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e子アイテムの指定方法\u003c/h2\u003e\n\t\t\t\u003cp\u003e$expandや$selectに渡すプロパティ名は、/で階層を表します。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003e$expand=Item,Item/Details\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e非同期ローディング\u003c/h2\u003e\n\t\t\t\u003cp\u003eSilverlightなどで、非同期読み込みする場合、\n\t\t\t比較的便利な書き方があったのでメモ。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"cs\"\u003evar uri = new Uri(\u0026quot;DataService.svc\u0026quot;, UriKind.RelativeOrAbsolute);\nvar ctxt = new DataEntities(uri);\nvar binding = new DataServiceCollection\u0026lt;Item\u0026gt;();\nbinding.LoadCompleted += (sender, e) =\u0026gt; {\n\tif(e.Error != null)\n\t\treturn;\n\tif(binding.Continuation != null){\n\t\tbinding.LoadNextPartialSetAsync();\n\t\treturn;\n\t}\n\t// ここでデータが全部読み込み終わり\n\tvar q1 = from c in binding select c.xxx;\n};\nbinding.LoadAsync(ctxt.Items);\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eADO.NET Entity Frameworkメモ\u003c/h2\u003e\n\t\t\t\u003cp\u003eWCF Data Servicesとは違いますが、\n\t\t\t関係も深いのでまとめてメモ。\u003c/p\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eアソシエーションの使い方\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eまず、ふつうに張って関係を定義します。\n\t\t\t\tこのときに、どれとどれが関係しているのかを決めるのですが、\n\t\t\t\tここで2種類の連結方法があります。\u003c/p\u003e\n\t\t\t\t\u003cdl\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003e外部キーを残さないもの\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e独立アソシエーション\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003e外部キーを残すもの\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e外部キーアソシエーション\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003c/dl\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003e独立アソシエーション\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eサロゲートキーなテーブルならこちら。\u003c/p\u003e\n\t\t\t\t\u003cp\u003eアソシエーションのマッピングを開いてマップします。\n\t\t\t\txxにマップという欄は、\n\t\t\t\t子テーブル(\u003cstrong\u003e0または1\u003c/strong\u003e対\u003cstrong\u003e多\u003c/strong\u003eなら\u003cstrong\u003e多\u003c/strong\u003eのほう)を選んで、\n\t\t\t\tマップしたプロパティを子テーブル側から削除します。\u003c/p\u003e\n\t\t\t\t\u003cp class=\"note\"\u003eキーとなるプロパティは削除できないので、\n\t\t\t\tその場合は外部キーアソシエーションを使う？\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003e外部キーアソシエーション\u003c/h3\u003e\n\t\t\t\t\u003cp\u003e自然キーのテーブルはこちら。\n\t\t\t\t.NET Framework 4.0から対応しているみたいです。\u003c/p\u003e\n\t\t\t\t\u003cp\u003eアソシエーションをダブルクリックで開いて、\n\t\t\t\t対応するプロパティを定義します。\n\t\t\t\t\u003cstrong\u003e0または1\u003c/strong\u003e対\u003cstrong\u003e多\u003c/strong\u003e関係の場合は、\n\t\t\t\t親テーブル(\u003cstrong\u003e0または1\u003c/strong\u003eのほう)を選びます。\n\t\t\t\t入力が終わったら、アソシエーションのマッピングを開いて、\n\t\t\t\tそこにマッピングが残っていたら削除して終わりです。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003e参考ページ\u003c/h3\u003e\n\t\t\t\t\u003cul\u003e\n\t\t\t\t\u003cli\u003e\u003ca href=\"http://d.hatena.ne.jp/sixpetals/20100506\"\u003e外部キーアソシエーションに変更する方法\u003c/a\u003e\u003c/li\u003e\n\t\t\t\t\u003c/ul\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eトラブルメモ\u003c/h2\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003e組み込み演算子が動作しない\u003c/h3\u003e\n\t\t\t\t\u003cp\u003e組み込み演算子($selectなど)はASCII文字しか認識しないのかも。\n\t\t\t\t以下の指定はどちらも正常に動作します。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode\u003eList?$select=Type\nリスト('ID')\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003e以下の場合はエラーになります。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode\u003eList?$select=種類\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003eリスト名はマルチバイト文字を受け付けるのですね。\n\t\t\t\tなんだかなあ、ださいなあ、と思います。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003edatetime型の書き込みができない\u003c/h3\u003e\n\t\t\t\t\u003cp\u003edatetime型を持つレコードを、\n\t\t\t\tJSON形式でPOSTまたはPUTすると、文法エラーが返ってきます。\n\t\t\t\t具体的なコードは以下。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003evar data = {d: \u0026quot;\\\\/Date(1291005669546)\\\\/\u0026quot;}\npost(url, data)\t\t// エラー\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003eこれは、文字列としては\u0026quot;\\/Date(...)\\/\u0026quot;なのですが、\n\t\t\t\tJSONにすると\u0026quot;\\\\/Date(...)\\\\/\u0026quot;になり、\n\t\t\t\tWCF Data Servicesの想定する日付表現と異なるためです。\n\t\t\t\tややこしいことに、以下のように書くと、\n\t\t\t\t今度は\u0026quot;/Date(...)/\u0026quot;となり、これもまたエラーになります。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode\u003evar data = {d: \u0026quot;\\/Date(1291005669546)\\/\u0026quot;}\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003eこれ、バグじゃないかとさえ思えてくるのですが、\n\t\t\t\tとりあえず以下のようにすると、うまく動作します。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode\u003evar data = {d: \u0026quot;2010-11-29T12:00:00\u0026quot;}\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003ePUTするとアクセス権エラーになる\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eGET, POSTはできているのにPUTがエラーになる場合、\n\t\t\t\tWebサーバのファイルアクセス権が足りないのかもしれません。\n\t\t\t\t関係するアクセス権は以下の通り。\u003c/p\u003e\n\t\t\t\t\u003cul\u003e\n\t\t\t\t\u003cli\u003eWebサーバ(http動詞)\u003c/li\u003e\n\t\t\t\t\u003cli\u003eWebサーバ(ファイルアクセス権)\u003c/li\u003e\n\t\t\t\t\u003cli\u003eWCF Data Services\u003c/li\u003e\n\t\t\t\t\u003cli\u003eデータベース(ユーザ認証)\u003c/li\u003e\n\t\t\t\t\u003cli\u003eデータベース(テーブルアクセス権)\u003c/li\u003e\n\t\t\t\t\u003c/ul\u003e\n\t\t\t\t\u003cp\u003e分かりにくいのはWebサーバ(ファイルアクセス権)でしょうか。\n\t\t\t\tこの場合、\u003ca href=\"http://learn.iis.net/page.aspx/266/troubleshooting-failed-requests-using-tracing-in-iis-7/\"\u003eTroubleshooting Failed Request Using Tracing in IIS7\u003c/a\u003e\n\t\t\t\tのようにログを取ると、FileAuthorizationになっていますので、\n\t\t\t\twwwrootまたは必要な場所でIUSRに書き込み権を与えると解消します。\n\t\t\t\tIIS_IUSRとは違いますので注意です。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eキーを指定してデータを取得すると構文エラーになる\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eWCF Data Servicesでは、':'(コロン)を含むURLを弾くみたいです。\n\t\t\t\tこれが問題になるのはdatetime型を\n\t\t\t\tキーにしている場合が多いかなあと思いますが、\n\t\t\t\t時刻が全部0なら、datetime'2010-11-29'のように\n\t\t\t\t省略すれば回避できます。\u003c/p\u003e\n\t\t\t\t\u003cp\u003eしかし、時刻部分がある場合はどうすればいいのだろう。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003e関連情報\u003c/h1\u003e\n\t\t\u003cul\u003e\n\t\t\u003cli\u003e\u003ca href=\"1227.html\"\u003eSproutCoreとWCF Data Servicesの連携\u003c/a\u003e\u003c/li\u003e\n\t\t\u003c/ul\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eWCF Data Services\u003c/h1\u003e\n\t\t\u003cul\u003e\n\t\t\u003cli\u003e\u003ca href=\"http://msdn.microsoft.com/ja-jp/library/cc668792.aspx\"\u003eWCF Data Services\u003c/a\u003e\u003c/li\u003e\n\t\t\u003cli\u003e\u003ca href=\"http://www.odata.org/\"\u003eOpen Data Protocol\u003c/a\u003e\u003c/li\u003e\n\t\t\u003cli\u003e\u003ca href=\"http://msdn.microsoft.com/ja-jp/magazine/ff714561.aspx\"\u003e実用OData\u003c/a\u003e\u003c/li\u003e\n\t\t\u003cli\u003e\u003ca href=\"http://msdn.microsoft.com/ja-jp/magazine/ff872392.aspx\"\u003eODataとAtomPub\u003c/a\u003e\u003c/li\u003e\n\t\t\u003cli\u003e\u003ca href=\"http://www.odata.org/developers/odata-sdk\"\u003eOData-SDK\u003c/a\u003e\u003c/li\u003e\n\t\t\u003c/ul\u003e\n\t\u003c/section\u003e\n\u003c/aside\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2010","1129"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

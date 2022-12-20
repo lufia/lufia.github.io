@@ -1,0 +1,143 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: 無線LANのセキュリティ2</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2011年7月12日作成</p>
+	<section>
+		<h1>無線LANのセキュリティ2</h1>
+		<p>Pyritにより、<a href="http://blog.hidekiy.com/2011/07/crypto-pyritlan.html">WPA2-PSKの攻撃が現実的になってきた</a>ようです。
+		詳しくは上記リンクを読んでもらいつつ、
+		さてPlan 9で強力なパスワードを作るには、ということで
+		openssl rand -base64と(おそらく)似たプログラムを書きました。
+		ふつうに/dev/randomから読んでbase64エンコードしているだけですね。</p>
+		<pre><code class="c">#include &lt;u.h&gt;
+#include &lt;libc.h&gt;
+
+#pragma varargck type &quot;B&quot; uchar*
+
+enum {
+	N = 3,
+	BITS = 6,
+	RBUFSIZE = N*8/BITS,
+};
+
+#define MASK(c, n)	((c)&amp;((1&lt;&lt;(n))-1))
+
+char map[] = &quot;ABCDEFGHIJKLMNOPQRSTUVWXYZ&quot;
+	&quot;abcdefghijklmnopqrstuvwxyz&quot;
+	&quot;0123456789+/&quot;;
+
+void
+usage(void)
+{
+	fprint(2, &quot;usage: %s [-n nbytes] [s]\n&quot;, argv0);
+	exits(&quot;usage&quot;);
+}
+
+int
+Bfmt(Fmt *fmt)
+{
+	uchar *s;
+	char *buf, *p;
+	int i, t, nbuf;
+	int n, nbits;
+
+	nbuf = (fmt-&gt;prec/N+1) * RBUFSIZE;
+	buf = malloc(nbuf+1);
+	if(buf == nil)
+		sysfatal(&quot;malloc: %r&quot;);
+	p = buf;
+
+	nbits = 0;
+	n = 0;
+	s = va_arg(fmt-&gt;args, uchar*);
+	for(i = 0; i &lt; fmt-&gt;prec; i++){
+		n = n&lt;&lt;8 | s[i];
+		nbits += 8;
+		while(nbits &gt;= BITS){
+			t = MASK(n &gt;&gt; (nbits-BITS), BITS);
+			nbits -= BITS;
+			n = MASK(n, nbits);
+			assert(t &gt;= 0 &amp;&amp; t &lt; nelem(map));
+			*p++ = map[t];
+		}
+	}
+	if(nbits &gt; 0){
+		n &lt;&lt;= BITS-nbits;
+		assert(n &gt;= 0 &amp;&amp; n &lt; nelem(map));
+		*p++ = map[n];
+	}
+
+	t = fmt-&gt;prec%N;
+	if(t &gt; 0)
+		for(i = 0; i &lt; N-(fmt-&gt;prec%N); i++)
+			*p++ = &#x27;=&#x27;;
+	*p = &#x27;\0&#x27;;
+	i = fmtprint(fmt, &quot;%s&quot;, buf);
+	free(buf);
+	return i;
+}
+
+void
+main(int argc, char *argv[])
+{
+	int fd, nbuf;
+	uchar *buf;
+
+	nbuf = 100;
+	ARGBEGIN {
+	case &#x27;n&#x27;:
+		nbuf = atoi(EARGF(usage()));
+		break;
+	default:
+		usage();
+	} ARGEND
+
+	assert(N*8 == RBUFSIZE*BITS);
+	fmtinstall(&#x27;B&#x27;, Bfmt);
+	if(argc &gt; 0)		/* for debug */
+		print(&quot;%.*B\n&quot;, strlen(argv[0]), argv[0]);
+	else{
+		buf = malloc(nbuf);
+		if(buf == nil)
+			sysfatal(&quot;malloc: %r&quot;);
+
+		fd = open(&quot;/dev/random&quot;, OREAD);
+		if(fd &lt; 0)
+			sysfatal(&quot;open: %r&quot;);
+		if(readn(fd, buf, nbuf) != nbuf)
+			sysfatal(&quot;read: %r&quot;);
+		close(fd);
+		print(&quot;%.*B\n&quot;, nbuf, buf);
+		free(buf);
+	}
+	exits(nil);
+}</code></pre>
+	</section>
+</main>
+<aside>
+	<h1>関連情報</h1>
+	<ul>
+	<li><a href="/notes/2009/1019.html"><a>無線LANのセキュリティ</a></a></li>
+	</ul>
+</aside>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2011/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: 無線LANのセキュリティ2\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2011年7月12日作成\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003e無線LANのセキュリティ2\u003c/h1\u003e\n\t\t\u003cp\u003ePyritにより、\u003ca href=\"http://blog.hidekiy.com/2011/07/crypto-pyritlan.html\"\u003eWPA2-PSKの攻撃が現実的になってきた\u003c/a\u003eようです。\n\t\t詳しくは上記リンクを読んでもらいつつ、\n\t\tさてPlan 9で強力なパスワードを作るには、ということで\n\t\topenssl rand -base64と(おそらく)似たプログラムを書きました。\n\t\tふつうに/dev/randomから読んでbase64エンコードしているだけですね。\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode class=\"c\"\u003e#include \u0026lt;u.h\u0026gt;\n#include \u0026lt;libc.h\u0026gt;\n\n#pragma varargck type \u0026quot;B\u0026quot; uchar*\n\nenum {\n\tN = 3,\n\tBITS = 6,\n\tRBUFSIZE = N*8/BITS,\n};\n\n#define MASK(c, n)\t((c)\u0026amp;((1\u0026lt;\u0026lt;(n))-1))\n\nchar map[] = \u0026quot;ABCDEFGHIJKLMNOPQRSTUVWXYZ\u0026quot;\n\t\u0026quot;abcdefghijklmnopqrstuvwxyz\u0026quot;\n\t\u0026quot;0123456789+/\u0026quot;;\n\nvoid\nusage(void)\n{\n\tfprint(2, \u0026quot;usage: %s [-n nbytes] [s]\\n\u0026quot;, argv0);\n\texits(\u0026quot;usage\u0026quot;);\n}\n\nint\nBfmt(Fmt *fmt)\n{\n\tuchar *s;\n\tchar *buf, *p;\n\tint i, t, nbuf;\n\tint n, nbits;\n\n\tnbuf = (fmt-\u0026gt;prec/N+1) * RBUFSIZE;\n\tbuf = malloc(nbuf+1);\n\tif(buf == nil)\n\t\tsysfatal(\u0026quot;malloc: %r\u0026quot;);\n\tp = buf;\n\n\tnbits = 0;\n\tn = 0;\n\ts = va_arg(fmt-\u0026gt;args, uchar*);\n\tfor(i = 0; i \u0026lt; fmt-\u0026gt;prec; i++){\n\t\tn = n\u0026lt;\u0026lt;8 | s[i];\n\t\tnbits += 8;\n\t\twhile(nbits \u0026gt;= BITS){\n\t\t\tt = MASK(n \u0026gt;\u0026gt; (nbits-BITS), BITS);\n\t\t\tnbits -= BITS;\n\t\t\tn = MASK(n, nbits);\n\t\t\tassert(t \u0026gt;= 0 \u0026amp;\u0026amp; t \u0026lt; nelem(map));\n\t\t\t*p++ = map[t];\n\t\t}\n\t}\n\tif(nbits \u0026gt; 0){\n\t\tn \u0026lt;\u0026lt;= BITS-nbits;\n\t\tassert(n \u0026gt;= 0 \u0026amp;\u0026amp; n \u0026lt; nelem(map));\n\t\t*p++ = map[n];\n\t}\n\n\tt = fmt-\u0026gt;prec%N;\n\tif(t \u0026gt; 0)\n\t\tfor(i = 0; i \u0026lt; N-(fmt-\u0026gt;prec%N); i++)\n\t\t\t*p++ = '=';\n\t*p = '\\0';\n\ti = fmtprint(fmt, \u0026quot;%s\u0026quot;, buf);\n\tfree(buf);\n\treturn i;\n}\n\nvoid\nmain(int argc, char *argv[])\n{\n\tint fd, nbuf;\n\tuchar *buf;\n\n\tnbuf = 100;\n\tARGBEGIN {\n\tcase 'n':\n\t\tnbuf = atoi(EARGF(usage()));\n\t\tbreak;\n\tdefault:\n\t\tusage();\n\t} ARGEND\n\n\tassert(N*8 == RBUFSIZE*BITS);\n\tfmtinstall('B', Bfmt);\n\tif(argc \u0026gt; 0)\t\t/* for debug */\n\t\tprint(\u0026quot;%.*B\\n\u0026quot;, strlen(argv[0]), argv[0]);\n\telse{\n\t\tbuf = malloc(nbuf);\n\t\tif(buf == nil)\n\t\t\tsysfatal(\u0026quot;malloc: %r\u0026quot;);\n\n\t\tfd = open(\u0026quot;/dev/random\u0026quot;, OREAD);\n\t\tif(fd \u0026lt; 0)\n\t\t\tsysfatal(\u0026quot;open: %r\u0026quot;);\n\t\tif(readn(fd, buf, nbuf) != nbuf)\n\t\t\tsysfatal(\u0026quot;read: %r\u0026quot;);\n\t\tclose(fd);\n\t\tprint(\u0026quot;%.*B\\n\u0026quot;, nbuf, buf);\n\t\tfree(buf);\n\t}\n\texits(nil);\n}\u003c/code\u003e\u003c/pre\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003e関連情報\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"../2009/1019.html\"\u003e無線LANのセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2011","0712"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

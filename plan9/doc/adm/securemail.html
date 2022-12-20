@@ -1,0 +1,163 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>Plan 9: メール環境の暗号化</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="/plan9/doc/inst/index.html"><a>インストール</a></a></li>
+	<li><a href="/plan9/doc/guide/index.html"><a>システムの使い方</a></a></li>
+	<li><a href="/plan9/doc/devel/index.html"><a>プログラミング</a></a></li>
+	<li><a href="/plan9/doc/adm/index.html"><a>システム管理</a></a></li>
+	<li><a href="/plan9/man/index.html"><a>自作ツール集</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2009年10月20日更新</p>
+	<section>
+		<h1>メール環境の暗号化</h1>
+		<section>
+			<h2>サーバ証明書の作成</h2>
+			<p>秘密鍵をsecstoreに、証明書を<strong>/sys/lib/tls/cert.pem</strong>に作成します。
+			中間証明書があるなら<strong>/sys/lib/tls/chain.pem</strong>に置きましょう。
+			auth/rsa2x509の引数は自分の環境にあわせて書き換えます。</p>
+			<pre><code class="console"># ramfs
+# cd /tmp
+# auth/rsagen -t &#x27;service=tls owner=*&#x27; &gt;key
+# auth/rsa2x509 &#x27;C=JP ST=Kanagawa L=Sagamihara O=lufia.org OU=9 CN=lufia&#x27; key | auth/pemencode CERTIFICATE &gt;cert</code></pre>
+			<p>証明書を自動的にfactotumへ取り込めるように、bootesのsecstoreを作成。
+			secstoreへの登録方法は<a href="/plan9/doc/guide/secstore.html"><a>secstoreの使い方</a></a>を。
+			bootesのsecstoreへ1つ以上キーが登録されているなら、
+			それと今回作成したキーを結合しないといけませんが、省略しています。</p>
+			<pre><code class="console"># auth/secuser -v bootes
+(password)
+(confirm)
+# cat key &gt;&gt;factotum
+# auth/secstore -p factotum
+# rm key factotum</code></pre>
+			<p>bootesは自分でロードしない限りsecstoreを読みにいかないので、
+			明示的にsecstoreを読み込むようcpurcを編集。
+			具体的には、auth/secstoredの下にauth/secstoreを追加。</p>
+			<pre><code class="console"># cat /cfg/$sysname/cpurc
+...
+auth/secstored
+auth/secstore -n -G factotum | read -m &gt;/mnt/factotum/ctl
+...</code></pre>
+			<p>また、<a href="/plan9/doc/adm/authinst.html"><a>初回起動時</a></a>にsecstoreのパスワードを
+			設定していない場合は、auth/wrkeyを使って再設定してください。</p>
+		</section>
+		<section>
+			<h2>証明書の配置</h2>
+			<p>IMAP4, SMTPで使うため、適当な場所に証明書を移動します。
+			<strong>cert.pem</strong>の権限は444のほうが安全ですが、管理的にめんどくさいので664。</p>
+			<p>ユーザ、グループをsysにするために、
+			あらかじめファイルサーバから<strong>cert.pem</strong>を作っておきます。</p>
+			<pre><code class="console">fs: create /sys/lib/tls/cert.pem sys sys 664
+fs: newuser sys +bootes</code></pre>
+			<pre><code class="console"># cat cert &gt;/sys/lib/tls/cert.pem
+# rm cert
+# unmount /tmp</code></pre>
+			<pre><code class="console">fs: newuser sys -bootes</code></pre>
+		</section>
+		<section>
+			<h2>IMAP4 over SSL/TLS</h2>
+			<p>上記で作成した証明書を使って、IMAP4の通信を暗号化します。
+			IMAPSのポートはtcpの993です。
+			以下ではserviceを/cfgへ移行した状態で書いています。
+			詳細は<a href="/plan9/doc/adm/authinst.html"><a>認証サーバの構築</a></a>のサービスの隔離を参照。</p>
+			<pre><code class="console">fs: create /cfg/$sysname/service/tcp993 sys sys 775
+fs: newuser sys +bootes</code></pre>
+			<p class="note">fsカーネルでは$sysnameをそのまま使うことはできないので、
+			実際のホスト名に置き換えてください。</p>
+			<pre><code class="console"># cd /cfg/$sysname/service
+# cat &gt;&gt;tcp993
+#!/bin/rc
+
+exec tlssrv -c/sys/lib/tls/cert.pem -limap4d -r`{cat $3/remote} /bin/ip/imap4d -r`{cat $3/remote}&gt;[2]/sys/log/imap4d
+^D</code></pre>
+			<p>それから、無くても動いてるようにみえるけど、これも。
+			なんだろうこれ。ルータが動いているなら、ポートの開放も忘れずに。
+			プロンプトが%の行は、一般ユーザで実行しても問題ありません。</p>
+			<pre><code class="console">% upas/fs -f /imaps/wisp		# imapsを設定するサーバへ接続
+upas/fs: opening /imaps/wisp: wisp/imaps:server certificate xxxxxxxxxxxxxxxxxxxxxxxxxxxxx not</code></pre>
+			<p>xxxxxxxxxが取得できたら、それをそのまま次に使います。</p>
+			<pre><code class="console"># echo &#x27;x509 sha1=xxxxxxxxxxxxxxxxxxxxxxxxxxxxx&#x27; &gt;/sys/lib/tls/mail</code></pre>
+			<pre><code class="console">fs: newuser sys -bootes</code></pre>
+			<p>動作確認が終われば、いらなくなったIMAP4サービスを削除します。
+			そのまま残していても困らないだろうとは思いますが、
+			有名なメールクライアントはIMAP4Sに対応しているので、
+			わざわざ残しておくことはないだろうという気がします。</p>
+			<pre><code class="console">fs: remove /cfg/wisp/service/tcp143</code></pre>
+		</section>
+		<section>
+			<h2>SMTP over SSL/TLS</h2>
+			<p>SMTPの場合、暗号化の方法は2種類あります。</p>
+			<dl>
+			<div>
+				<dt>ssmtp</dt>
+				<dd>TCPポート465</dd>
+				<dd>通信開始から暗号化されている</dd>
+			</div>
+			<div>
+				<dt>smtp+STARTTLS</dt>
+				<dd>TCPポート25</dd>
+				<dd>STARTTLSコマンドによって暗号通信が開始される</dd>
+			</div>
+			</dl>
+			<p>設定は、ssmtpはtlssrvによりupas/smtpdプロセスを開始します。
+			STARTTLS版は、upas/smtpdコマンドに-cオプションを使って証明書を与えます。
+			後者は暗号化通信が可能というだけで、
+			クライアントからSTARTTLSコマンドが発行されない限り暗号化されません。</p>
+			<p>今回はtcp587に-cオプションから証明書を与えました。</p>
+			<pre><code class="sh"># cat /cfg/wisp/service/tcp587
+#!/bin/rc
+#smtp serv net incalldir user
+
+user=`{cat /dev/user}
+exec upas/smtpd -ac/sys/lib/tls/cert.pem -g -n $3</code></pre>
+			<p>これにより、暗号化通信が開始されると
+			<strong>/sys/log/smtpd</strong>にログが記録されるようになります。</p>
+			<pre><code>started TLS with [...]</code></pre>
+			<p>ついでなので、tcp25にも-c certを追加して終了。
+			あまり意味は無いかもしれません。</p>
+		</section>
+		<section>
+			<h2>トラブルシューティング</h2>
+			<section>
+				<h3>tls reports failed</h3>
+				<p>bootesの鍵が読み込めていない場合、<strong>/sys/log/imap4d</strong>に
+				ログが記録されます。</p>
+				<pre><code>tls reports failed: tls: local factotum_rsa_open: no key matches proto=rsa service=tls role=client</code></pre>
+				<p>この場合は、以下の行をcpurcに加えてください。</p>
+				<p class="sh">auth/secstore -G factotum</p>
+			</section>
+		</section>
+	</section>
+</main>
+<aside>
+	<section>
+		<h1>関連情報</h1>
+		<ul>
+		<li><a href="/plan9/doc/adm/smtpd.html"><a>メールサーバの設定</a></a></li>
+		<li><a href="/plan9/doc/adm/iphone.html"><a>iPhoneまとめ</a></a></li>
+		</ul>
+	</section>
+	<section>
+		<h1>参考ページ</h1>
+		<ul>
+		<li><a href="https://9p.io/wiki/plan9/Mail_configuration/index.html">Mail configuration</a></li>
+		<li><a href="http://p9.nyx.link/pegasus/man-2.1/cert.html">証明書</a></li>
+		</ul>
+	</section>
+	<section>
+		<h1>参考書</h1>
+		<dl>
+		<div>
+			<dt><a href="http://www.hyuki.com/cr/">新版暗号技術入門--秘密の国のアリス</a></dt>
+			<dd>暗号全般についての入門書です。<a href="http://www.hyuki.com/cr/cr1st.html">旧版</a>を読みました。</dd>
+		</div>
+		</dl>
+	</section>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/plan9/doc/adm/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003ePlan 9: メール環境の暗号化\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/inst/index.html\"\u003eインストール\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/guide/index.html\"\u003eシステムの使い方\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/devel/index.html\"\u003eプログラミング\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/adm/index.html\"\u003eシステム管理\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/man/index.html\"\u003e自作ツール集\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2009年10月20日更新\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eメール環境の暗号化\u003c/h1\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eサーバ証明書の作成\u003c/h2\u003e\n\t\t\t\u003cp\u003e秘密鍵をsecstoreに、証明書を\u003cstrong\u003e/sys/lib/tls/cert.pem\u003c/strong\u003eに作成します。\n\t\t\t中間証明書があるなら\u003cstrong\u003e/sys/lib/tls/chain.pem\u003c/strong\u003eに置きましょう。\n\t\t\tauth/rsa2x509の引数は自分の環境にあわせて書き換えます。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e# ramfs\n# cd /tmp\n# auth/rsagen -t 'service=tls owner=*' \u0026gt;key\n# auth/rsa2x509 'C=JP ST=Kanagawa L=Sagamihara O=lufia.org OU=9 CN=lufia' key | auth/pemencode CERTIFICATE \u0026gt;cert\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e証明書を自動的にfactotumへ取り込めるように、bootesのsecstoreを作成。\n\t\t\tsecstoreへの登録方法は\u003ca href=\"../guide/secstore.html\"\u003esecstoreの使い方\u003c/a\u003eを。\n\t\t\tbootesのsecstoreへ1つ以上キーが登録されているなら、\n\t\t\tそれと今回作成したキーを結合しないといけませんが、省略しています。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e# auth/secuser -v bootes\n(password)\n(confirm)\n# cat key \u0026gt;\u0026gt;factotum\n# auth/secstore -p factotum\n# rm key factotum\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003ebootesは自分でロードしない限りsecstoreを読みにいかないので、\n\t\t\t明示的にsecstoreを読み込むようcpurcを編集。\n\t\t\t具体的には、auth/secstoredの下にauth/secstoreを追加。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e# cat /cfg/$sysname/cpurc\n...\nauth/secstored\nauth/secstore -n -G factotum | read -m \u0026gt;/mnt/factotum/ctl\n...\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eまた、\u003ca href=\"authinst.html\"\u003e初回起動時\u003c/a\u003eにsecstoreのパスワードを\n\t\t\t設定していない場合は、auth/wrkeyを使って再設定してください。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e証明書の配置\u003c/h2\u003e\n\t\t\t\u003cp\u003eIMAP4, SMTPで使うため、適当な場所に証明書を移動します。\n\t\t\t\u003cstrong\u003ecert.pem\u003c/strong\u003eの権限は444のほうが安全ですが、管理的にめんどくさいので664。\u003c/p\u003e\n\t\t\t\u003cp\u003eユーザ、グループをsysにするために、\n\t\t\tあらかじめファイルサーバから\u003cstrong\u003ecert.pem\u003c/strong\u003eを作っておきます。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003efs: create /sys/lib/tls/cert.pem sys sys 664\nfs: newuser sys +bootes\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e# cat cert \u0026gt;/sys/lib/tls/cert.pem\n# rm cert\n# unmount /tmp\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003efs: newuser sys -bootes\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eIMAP4 over SSL/TLS\u003c/h2\u003e\n\t\t\t\u003cp\u003e上記で作成した証明書を使って、IMAP4の通信を暗号化します。\n\t\t\tIMAPSのポートはtcpの993です。\n\t\t\t以下ではserviceを/cfgへ移行した状態で書いています。\n\t\t\t詳細は\u003ca href=\"authinst.html\"\u003e認証サーバの構築\u003c/a\u003eのサービスの隔離を参照。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003efs: create /cfg/$sysname/service/tcp993 sys sys 775\nfs: newuser sys +bootes\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp class=\"note\"\u003efsカーネルでは$sysnameをそのまま使うことはできないので、\n\t\t\t実際のホスト名に置き換えてください。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e# cd /cfg/$sysname/service\n# cat \u0026gt;\u0026gt;tcp993\n#!/bin/rc\n\nexec tlssrv -c/sys/lib/tls/cert.pem -limap4d -r`{cat $3/remote} /bin/ip/imap4d -r`{cat $3/remote}\u0026gt;[2]/sys/log/imap4d\n^D\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eそれから、無くても動いてるようにみえるけど、これも。\n\t\t\tなんだろうこれ。ルータが動いているなら、ポートの開放も忘れずに。\n\t\t\tプロンプトが%の行は、一般ユーザで実行しても問題ありません。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% upas/fs -f /imaps/wisp\t\t# imapsを設定するサーバへ接続\nupas/fs: opening /imaps/wisp: wisp/imaps:server certificate xxxxxxxxxxxxxxxxxxxxxxxxxxxxx not\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003exxxxxxxxxが取得できたら、それをそのまま次に使います。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e# echo 'x509 sha1=xxxxxxxxxxxxxxxxxxxxxxxxxxxxx' \u0026gt;/sys/lib/tls/mail\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003efs: newuser sys -bootes\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e動作確認が終われば、いらなくなったIMAP4サービスを削除します。\n\t\t\tそのまま残していても困らないだろうとは思いますが、\n\t\t\t有名なメールクライアントはIMAP4Sに対応しているので、\n\t\t\tわざわざ残しておくことはないだろうという気がします。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003efs: remove /cfg/wisp/service/tcp143\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eSMTP over SSL/TLS\u003c/h2\u003e\n\t\t\t\u003cp\u003eSMTPの場合、暗号化の方法は2種類あります。\u003c/p\u003e\n\t\t\t\u003cdl\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003essmtp\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eTCPポート465\u003c/dd\u003e\n\t\t\t\t\u003cdd\u003e通信開始から暗号化されている\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003esmtp+STARTTLS\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eTCPポート25\u003c/dd\u003e\n\t\t\t\t\u003cdd\u003eSTARTTLSコマンドによって暗号通信が開始される\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003c/dl\u003e\n\t\t\t\u003cp\u003e設定は、ssmtpはtlssrvによりupas/smtpdプロセスを開始します。\n\t\t\tSTARTTLS版は、upas/smtpdコマンドに-cオプションを使って証明書を与えます。\n\t\t\t後者は暗号化通信が可能というだけで、\n\t\t\tクライアントからSTARTTLSコマンドが発行されない限り暗号化されません。\u003c/p\u003e\n\t\t\t\u003cp\u003e今回はtcp587に-cオプションから証明書を与えました。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"sh\"\u003e# cat /cfg/wisp/service/tcp587\n#!/bin/rc\n#smtp serv net incalldir user\n\nuser=`{cat /dev/user}\nexec upas/smtpd -ac/sys/lib/tls/cert.pem -g -n $3\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eこれにより、暗号化通信が開始されると\n\t\t\t\u003cstrong\u003e/sys/log/smtpd\u003c/strong\u003eにログが記録されるようになります。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003estarted TLS with [...]\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eついでなので、tcp25にも-c certを追加して終了。\n\t\t\tあまり意味は無いかもしれません。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eトラブルシューティング\u003c/h2\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003etls reports failed\u003c/h3\u003e\n\t\t\t\t\u003cp\u003ebootesの鍵が読み込めていない場合、\u003cstrong\u003e/sys/log/imap4d\u003c/strong\u003eに\n\t\t\t\tログが記録されます。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode\u003etls reports failed: tls: local factotum_rsa_open: no key matches proto=rsa service=tls role=client\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003eこの場合は、以下の行をcpurcに加えてください。\u003c/p\u003e\n\t\t\t\t\u003cp class=\"sh\"\u003eauth/secstore -G factotum\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003e関連情報\u003c/h1\u003e\n\t\t\u003cul\u003e\n\t\t\u003cli\u003e\u003ca href=\"smtpd.html\"\u003eメールサーバの設定\u003c/a\u003e\u003c/li\u003e\n\t\t\u003cli\u003e\u003ca href=\"iphone.html\"\u003eiPhoneまとめ\u003c/a\u003e\u003c/li\u003e\n\t\t\u003c/ul\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003e参考ページ\u003c/h1\u003e\n\t\t\u003cul\u003e\n\t\t\u003cli\u003e\u003ca href=\"https://9p.io/wiki/plan9/Mail_configuration/index.html\"\u003eMail configuration\u003c/a\u003e\u003c/li\u003e\n\t\t\u003cli\u003e\u003ca href=\"http://p9.nyx.link/pegasus/man-2.1/cert.html\"\u003e証明書\u003c/a\u003e\u003c/li\u003e\n\t\t\u003c/ul\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003e参考書\u003c/h1\u003e\n\t\t\u003cdl\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003e\u003ca href=\"http://www.hyuki.com/cr/\"\u003e新版暗号技術入門--秘密の国のアリス\u003c/a\u003e\u003c/dt\u003e\n\t\t\t\u003cdd\u003e暗号全般についての入門書です。\u003ca href=\"http://www.hyuki.com/cr/cr1st.html\"\u003e旧版\u003c/a\u003eを読みました。\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003c/dl\u003e\n\t\u003c/section\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["plan9","doc","adm","securemail"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

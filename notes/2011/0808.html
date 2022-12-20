@@ -1,0 +1,239 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: IPv6の実装を読むよ(途中)</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2011年8月8日作成</p>
+	<section>
+		<h1>IPv6の実装を読むよ(途中)</h1>
+		<dl>
+		<div>
+			<dt>Ipselftab</dt>
+			<dt>Ipself</dt>
+			<dd>チェインハッシュで実装されたローカルアドレスのキャッシュ</dd>
+			<dd>ルーティング用らしい</dd>
+		</div>
+		<div>
+			<dt>Ipmcast</dt>
+			<dd>マルチキャストのリストらしいが使ってないと思う</dd>
+		</div>
+		<div>
+			<dt>Ipifc</dt>
+			<dd>インターフェイスカード</dd>
+			<dd>rpはルータパラメータ</dd>
+		</div>
+		<div>
+			<dt>Routerparams</dt>
+			<dd>MTUとかいろいろなパラメータ</dd>
+			<dd>ipifcra6()で設定している</dd>
+		</div>
+		</dl>
+		<section>
+			<h2>esp.c</h2>
+			<p>途中</p>
+		</section>
+		<section>
+			<h2>ipaux.c</h2>
+			<p>途中</p>
+		</section>
+		<section>
+			<h2>ipmux.c</h2>
+			<p>途中</p>
+		</section>
+		<section>
+			<h2>ipv6.c</h2>
+			<section>
+				<h3>ipoput6</h3>
+				<pre><code>if(送信元アドレスが一時アドレス)
+	ブロックを解放して終える
+if(gating){
+	いろいろ
+}
+ルート = v6lookup(送信先アドレス)
+if(ルートのタイプが(Rifc|Runi))
+	ゲート = 送信先アドレス
+else if(ルートのタイプが(Rbcast|Rmulti)){
+	ゲート = 送信先アドレス
+	sr = v6lookup(送信元アドレス)
+	if(srがユニキャストアドレス)
+		ifc = sr-&gt;ifc
+}else
+	ゲート = ルート-&gt;v6.gate
+
+ブロックのヘッダにversion, ttl, tosを設定
+if(ブロック長 &lt;= 1度に送れる容量){
+	bwrite(ブロック, V6, ゲート)
+	return 0
+}
+if(gating &amp;&amp; reassemble &lt;= 0)
+	discard
+
+for(フラグメント)
+	分割して、1つずつbwrite()</code></pre>
+				<p>bwriteはethermedium.cで定義されているetherbwriteのこと。</p>
+			</section>
+		</section>
+		<section>
+			<h2>ethermedium.c</h2>
+			<section>
+				<h3>etherbwrite</h3>
+				<pre><code>a = arpget(送信先アドレス, &amp;MACアドレス)
+if(a){
+	// ARP未解決の場合
+	bp = multicastarp(a, &amp;MACアドレス)
+	if(bp == nil){
+		versionによりsendarp(v4)かresolveaddr6(v6)を呼び出す
+		return
+	}
+}
+bp = ブロックにetherヘッダ領域を確保
+bp = ブロックのリストをひとつにまとめる
+if(bpの長さが最小転送量より小さい)
+	bp = adjustblock(bp)
+eh = bpのetherヘッダ領域
+ehに送信元/送信先のMACアドレスを設定
+switch(version){
+case V4:
+	...
+case V6:
+	eh-&gt;t[0] = 0x86
+	eh-&gt;t[1] = 0xDD
+	devtab[mchan6-&gt;type]-&gt;bwrite(bp)
+}</code></pre>
+			</section>
+			<section>
+				<h3>multicastarp</h3>
+				<pre><code>switch(ipforme(アドレス)){
+case ユニキャスト:
+	return nil
+case ブロードキャスト:
+	memset(MACアドレス, 0xff, 6)
+	return arpresolve(ARPテーブル, ARPリクエスト, MACアドレス)
+}
+switch(multicastea(MACアドレス, アドレス)){
+V6でもV4でも:
+	return arpresolve(ARPテーブル, ARPリクエスト, MACアドレス)
+}</code></pre>
+			</section>
+			<section>
+				<h3>resolveaddr6</h3>
+				<pre><code>if(ARPエントリがタイムアウト){
+	arprelease(ARPエントリ)
+	return
+}
+ARPエントリの待機リストから最後を残して削除
+ARPエントリをいろいろ設定
+if(sflag = ipv6anylocal(ipsrc))
+	icmpns(ipsrc, TARG_MULTI, MACアドレス)</code></pre>
+			</section>
+		</section>
+		<section>
+			<h2>arp.c</h2>
+			<section>
+				<h3>arpget</h3>
+				<p>指定のIPアドレスがすでに解決されていれば、
+				そのMACアドレスを引数に詰めてnilを返す。
+				なければ、newarp6を呼び出しその戻り値を返す。</p>
+				<pre><code>a = 指定のIPアドレスでarpテーブルを調べる
+if(a == nil){
+	a = newarp6(arpテーブル, V6なら1)
+	aの状態をAWAITに
+}
+a-&gt;utime = NOW
+if(aの状態がAWAIT){
+	aの待機リスト(hold)に送るつもりのブロックを追加
+	return a
+}
+引数macにarpで取得したMACアドレスを書き込む
+if(aが古いエントリなら)
+	cleanarpent(arpテーブル, a)
+return nil</code></pre>
+			</section>
+			<section>
+				<h3>newarp6</h3>
+				<pre><code>a = 最も古いARPリクエスト
+if(aがIPv4でなければ){
+	arpのドロップリストにaの待機リストを追加
+	wakeup(&amp;arp-&gt;rxmtq)
+}
+arpハッシュ(hash)からaを削除
+arpハッシュに新しくaを追加
+aのip, utime, ctime, type, rtime, etcを更新
+
+if(!ipismulticast(a-&gt;ip) &amp;&amp; version==V6){
+	再送チェイン(rxmt)に登録？
+}
+a-&gt;nextrxt = nil
+return a</code></pre>
+			</section>
+			<section>
+				<h3>arpresolve</h3>
+				<pre><code>a = ARPテーブルより調べるARPエントリを取り除く
+memmove(a-&gt;mac, mac, len)
+bp = aの待機リスト
+aのtype, state, utime, holdをリセット
+return bp</code></pre>
+			</section>
+		</section>
+		<section>
+			<h2>iproute.c</h2>
+			<p>途中</p>
+		</section>
+		<section>
+			<h2>ip.c</h2>
+			<p>ip6パラメータとかフラグメントの初期化。</p>
+			<p>ipiput4でバージョン判定してipiput6呼び出し。</p>
+		</section>
+		<section>
+			<h2>ipifc.c</h2>
+			<dl>
+			<div>
+				<dt>addselfcache</dt>
+				<dd>自分自身のIPアドレスをキャッシュに追加</dd>
+			</div>
+			<div>
+				<dt>iptentative</dt>
+				<dd>指定のアドレスが自分のものなら、それが一時的なものか調べる</dd>
+				<dd>一時的なアドレスなら1</dd>
+			</div>
+			<div>
+				<dt>ipforme</dt>
+				<dd>指定のアドレスが自分のものなら、その種類(uni, bcast, mcast)を返す</dd>
+				<dd>自分のアドレスでなければ0</dd>
+			</div>
+			<div>
+				<dt>v6addrtype</dt>
+				<dd>指定のアドレスがどのクラス(linklocalv6, globalv6)か調べる</dd>
+			</div>
+			<div>
+				<dt>findprimaryipv6</dt>
+				<dd>優先順にグローバル、リンクローカル、未指定でローカルアドレスを調べる</dd>
+				<dd>見つかれば引数localにそのアドレスが渡される</dd>
+			</div>
+			</dl>
+		</section>
+		<section>
+			<h2>icmp6.c</h2>
+			<p>途中</p>
+		</section>
+	</section>
+</main>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2011/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: IPv6の実装を読むよ(途中)\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2011年8月8日作成\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eIPv6の実装を読むよ(途中)\u003c/h1\u003e\n\t\t\u003cdl\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003eIpselftab\u003c/dt\u003e\n\t\t\t\u003cdt\u003eIpself\u003c/dt\u003e\n\t\t\t\u003cdd\u003eチェインハッシュで実装されたローカルアドレスのキャッシュ\u003c/dd\u003e\n\t\t\t\u003cdd\u003eルーティング用らしい\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003eIpmcast\u003c/dt\u003e\n\t\t\t\u003cdd\u003eマルチキャストのリストらしいが使ってないと思う\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003eIpifc\u003c/dt\u003e\n\t\t\t\u003cdd\u003eインターフェイスカード\u003c/dd\u003e\n\t\t\t\u003cdd\u003erpはルータパラメータ\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003eRouterparams\u003c/dt\u003e\n\t\t\t\u003cdd\u003eMTUとかいろいろなパラメータ\u003c/dd\u003e\n\t\t\t\u003cdd\u003eipifcra6()で設定している\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003c/dl\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eesp.c\u003c/h2\u003e\n\t\t\t\u003cp\u003e途中\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eipaux.c\u003c/h2\u003e\n\t\t\t\u003cp\u003e途中\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eipmux.c\u003c/h2\u003e\n\t\t\t\u003cp\u003e途中\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eipv6.c\u003c/h2\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eipoput6\u003c/h3\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode\u003eif(送信元アドレスが一時アドレス)\n\tブロックを解放して終える\nif(gating){\n\tいろいろ\n}\nルート = v6lookup(送信先アドレス)\nif(ルートのタイプが(Rifc|Runi))\n\tゲート = 送信先アドレス\nelse if(ルートのタイプが(Rbcast|Rmulti)){\n\tゲート = 送信先アドレス\n\tsr = v6lookup(送信元アドレス)\n\tif(srがユニキャストアドレス)\n\t\tifc = sr-\u0026gt;ifc\n}else\n\tゲート = ルート-\u0026gt;v6.gate\n\nブロックのヘッダにversion, ttl, tosを設定\nif(ブロック長 \u0026lt;= 1度に送れる容量){\n\tbwrite(ブロック, V6, ゲート)\n\treturn 0\n}\nif(gating \u0026amp;\u0026amp; reassemble \u0026lt;= 0)\n\tdiscard\n\nfor(フラグメント)\n\t分割して、1つずつbwrite()\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003ebwriteはethermedium.cで定義されているetherbwriteのこと。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eethermedium.c\u003c/h2\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eetherbwrite\u003c/h3\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode\u003ea = arpget(送信先アドレス, \u0026amp;MACアドレス)\nif(a){\n\t// ARP未解決の場合\n\tbp = multicastarp(a, \u0026amp;MACアドレス)\n\tif(bp == nil){\n\t\tversionによりsendarp(v4)かresolveaddr6(v6)を呼び出す\n\t\treturn\n\t}\n}\nbp = ブロックにetherヘッダ領域を確保\nbp = ブロックのリストをひとつにまとめる\nif(bpの長さが最小転送量より小さい)\n\tbp = adjustblock(bp)\neh = bpのetherヘッダ領域\nehに送信元/送信先のMACアドレスを設定\nswitch(version){\ncase V4:\n\t...\ncase V6:\n\teh-\u0026gt;t[0] = 0x86\n\teh-\u0026gt;t[1] = 0xDD\n\tdevtab[mchan6-\u0026gt;type]-\u0026gt;bwrite(bp)\n}\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003emulticastarp\u003c/h3\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode\u003eswitch(ipforme(アドレス)){\ncase ユニキャスト:\n\treturn nil\ncase ブロードキャスト:\n\tmemset(MACアドレス, 0xff, 6)\n\treturn arpresolve(ARPテーブル, ARPリクエスト, MACアドレス)\n}\nswitch(multicastea(MACアドレス, アドレス)){\nV6でもV4でも:\n\treturn arpresolve(ARPテーブル, ARPリクエスト, MACアドレス)\n}\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eresolveaddr6\u003c/h3\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode\u003eif(ARPエントリがタイムアウト){\n\tarprelease(ARPエントリ)\n\treturn\n}\nARPエントリの待機リストから最後を残して削除\nARPエントリをいろいろ設定\nif(sflag = ipv6anylocal(ipsrc))\n\ticmpns(ipsrc, TARG_MULTI, MACアドレス)\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003earp.c\u003c/h2\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003earpget\u003c/h3\u003e\n\t\t\t\t\u003cp\u003e指定のIPアドレスがすでに解決されていれば、\n\t\t\t\tそのMACアドレスを引数に詰めてnilを返す。\n\t\t\t\tなければ、newarp6を呼び出しその戻り値を返す。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode\u003ea = 指定のIPアドレスでarpテーブルを調べる\nif(a == nil){\n\ta = newarp6(arpテーブル, V6なら1)\n\taの状態をAWAITに\n}\na-\u0026gt;utime = NOW\nif(aの状態がAWAIT){\n\taの待機リスト(hold)に送るつもりのブロックを追加\n\treturn a\n}\n引数macにarpで取得したMACアドレスを書き込む\nif(aが古いエントリなら)\n\tcleanarpent(arpテーブル, a)\nreturn nil\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003enewarp6\u003c/h3\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode\u003ea = 最も古いARPリクエスト\nif(aがIPv4でなければ){\n\tarpのドロップリストにaの待機リストを追加\n\twakeup(\u0026amp;arp-\u0026gt;rxmtq)\n}\narpハッシュ(hash)からaを削除\narpハッシュに新しくaを追加\naのip, utime, ctime, type, rtime, etcを更新\n\nif(!ipismulticast(a-\u0026gt;ip) \u0026amp;\u0026amp; version==V6){\n\t再送チェイン(rxmt)に登録？\n}\na-\u0026gt;nextrxt = nil\nreturn a\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003earpresolve\u003c/h3\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode\u003ea = ARPテーブルより調べるARPエントリを取り除く\nmemmove(a-\u0026gt;mac, mac, len)\nbp = aの待機リスト\naのtype, state, utime, holdをリセット\nreturn bp\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eiproute.c\u003c/h2\u003e\n\t\t\t\u003cp\u003e途中\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eip.c\u003c/h2\u003e\n\t\t\t\u003cp\u003eip6パラメータとかフラグメントの初期化。\u003c/p\u003e\n\t\t\t\u003cp\u003eipiput4でバージョン判定してipiput6呼び出し。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eipifc.c\u003c/h2\u003e\n\t\t\t\u003cdl\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eaddselfcache\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003e自分自身のIPアドレスをキャッシュに追加\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eiptentative\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003e指定のアドレスが自分のものなら、それが一時的なものか調べる\u003c/dd\u003e\n\t\t\t\t\u003cdd\u003e一時的なアドレスなら1\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eipforme\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003e指定のアドレスが自分のものなら、その種類(uni, bcast, mcast)を返す\u003c/dd\u003e\n\t\t\t\t\u003cdd\u003e自分のアドレスでなければ0\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003ev6addrtype\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003e指定のアドレスがどのクラス(linklocalv6, globalv6)か調べる\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003efindprimaryipv6\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003e優先順にグローバル、リンクローカル、未指定でローカルアドレスを調べる\u003c/dd\u003e\n\t\t\t\t\u003cdd\u003e見つかれば引数localにそのアドレスが渡される\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003c/dl\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eicmp6.c\u003c/h2\u003e\n\t\t\t\u003cp\u003e途中\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2011","0808"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

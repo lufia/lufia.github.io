@@ -1,0 +1,100 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>Plan 9: DNSの設定</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="/plan9/doc/inst/index.html"><a>インストール</a></a></li>
+	<li><a href="/plan9/doc/guide/index.html"><a>システムの使い方</a></a></li>
+	<li><a href="/plan9/doc/devel/index.html"><a>プログラミング</a></a></li>
+	<li><a href="/plan9/doc/adm/index.html"><a>システム管理</a></a></li>
+	<li><a href="/plan9/man/index.html"><a>自作ツール集</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2010年9月4日更新</p>
+	<section>
+		<h1>DNSの設定</h1>
+		<p>だいたいは<a href="/plan9/doc/adm/ndb.html"><a>ネットワークの設定</a></a>と同じなので省略して。。</p>
+		<pre><code class="ini">#
+#  files comprising the database, use as many as you like, see ndb(6)
+#
+database=
+	file=/lib/ndb/local
+	file=/lib/ndb/common
+
+auth=sources.cs.bell-labs.com authdom=outside.plan9.bell-labs.com
+
+#
+#  because the public demands the name localsource
+#
+ip=127.0.0.1 sys=localhost dom=localhost
+
+dom=lufia.org soa=
+	refresh=3600 ttl=3600
+	ns=wisp.lufia.org
+	mb=lufia@lufia.org
+	mx=wisp.lufia.org pref=10
+
+dom=1.168.192.in-addr.arpa soa=
+	refresh=3600 ttl=3600
+	ns=wisp.lufia.org
+
+ipnet=home ip=192.168.1.0 ipmask=255.255.255.0
+	fs=dryad.lufia.org
+	ipgw=192.168.1.1
+	dns=wisp.lufia.org
+	dnsdomain=lufia.org
+	auth=wisp.lufia.org
+	authdom=mana.lufia.org
+	cpu=wisp.lufia.org
+
+sys=flammie dom=flammie.lufia.org
+	ip=192.168.1.1
+	ether=0021a075d28a
+
+sys=dryad dom=dryad.lufia.org
+	ip=192.168.1.23
+	proto=il
+	ether=00609580c28e
+
+sys=wisp dom=wisp.lufia.org
+	ip=192.168.1.7
+	proto=il
+	ether=00a0b0a501ff
+	dns=xxx.xxx.xxx.xxx			# プロバイダのDNS
+
+sys=jinn dom=jinn.lufia.org
+	ip=192.168.1.100
+	ether=041e6499c70a
+
+sys=luna dom=luna.lufia.org
+	ip=192.168.1.101
+	ether=002436eafb31
+
+sys=fairy dom=fairy.lufia.org
+	ip=192.168.1.102
+	ether=0023df18de16
+
+ip=192.168.1.7 dom=lufia.org</code></pre>
+		<p>基本的にはipnetの設定でdnsを与えていますが、
+		DNSサーバだけは、個別のエントリでdnsを設定しています。</p>
+		<p>次に、dom=1.168.192.in-addr.arpaのエントリは、
+		逆引きを使わないのであれば無くても問題ありません。</p>
+		<p>また、各ホストにetherの値を設定していますが、
+		これがあると<a href="https://9p.io/magic/man2html/8/dhcpd">dhcpd(8)</a>がIPアドレスを固定して割り当てます。</p>
+		<p>設定が終わったら、cpurcのndb/dns呼び出しを以下のように変更。</p>
+		<pre><code class="sh">ndb/dns -sr</code></pre>
+	</section>
+</main>
+<aside>
+	<h1>関連情報</h1>
+	<ul>
+	<li><a href="https://9p.io/magic/man2html/6/ndb">ndb(6)</a></li>
+	<li><a href="https://9p.io/magic/man2html/8/ndb">ndb(8)</a></li>
+	<li><a href="/plan9/doc/adm/ndb.html"><a>ネットワークの設定</a></a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/plan9/doc/adm/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003ePlan 9: DNSの設定\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/inst/index.html\"\u003eインストール\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/guide/index.html\"\u003eシステムの使い方\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/devel/index.html\"\u003eプログラミング\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/adm/index.html\"\u003eシステム管理\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/man/index.html\"\u003e自作ツール集\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2010年9月4日更新\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eDNSの設定\u003c/h1\u003e\n\t\t\u003cp\u003eだいたいは\u003ca href=\"ndb.html\"\u003eネットワークの設定\u003c/a\u003eと同じなので省略して。。\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode class=\"ini\"\u003e#\n#  files comprising the database, use as many as you like, see ndb(6)\n#\ndatabase=\n\tfile=/lib/ndb/local\n\tfile=/lib/ndb/common\n\nauth=sources.cs.bell-labs.com authdom=outside.plan9.bell-labs.com\n\n#\n#  because the public demands the name localsource\n#\nip=127.0.0.1 sys=localhost dom=localhost\n\ndom=lufia.org soa=\n\trefresh=3600 ttl=3600\n\tns=wisp.lufia.org\n\tmb=lufia@lufia.org\n\tmx=wisp.lufia.org pref=10\n\ndom=1.168.192.in-addr.arpa soa=\n\trefresh=3600 ttl=3600\n\tns=wisp.lufia.org\n\nipnet=home ip=192.168.1.0 ipmask=255.255.255.0\n\tfs=dryad.lufia.org\n\tipgw=192.168.1.1\n\tdns=wisp.lufia.org\n\tdnsdomain=lufia.org\n\tauth=wisp.lufia.org\n\tauthdom=mana.lufia.org\n\tcpu=wisp.lufia.org\n\nsys=flammie dom=flammie.lufia.org\n\tip=192.168.1.1\n\tether=0021a075d28a\n\nsys=dryad dom=dryad.lufia.org\n\tip=192.168.1.23\n\tproto=il\n\tether=00609580c28e\n\nsys=wisp dom=wisp.lufia.org\n\tip=192.168.1.7\n\tproto=il\n\tether=00a0b0a501ff\n\tdns=xxx.xxx.xxx.xxx\t\t\t# プロバイダのDNS\n\nsys=jinn dom=jinn.lufia.org\n\tip=192.168.1.100\n\tether=041e6499c70a\n\nsys=luna dom=luna.lufia.org\n\tip=192.168.1.101\n\tether=002436eafb31\n\nsys=fairy dom=fairy.lufia.org\n\tip=192.168.1.102\n\tether=0023df18de16\n\nip=192.168.1.7 dom=lufia.org\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003cp\u003e基本的にはipnetの設定でdnsを与えていますが、\n\t\tDNSサーバだけは、個別のエントリでdnsを設定しています。\u003c/p\u003e\n\t\t\u003cp\u003e次に、dom=1.168.192.in-addr.arpaのエントリは、\n\t\t逆引きを使わないのであれば無くても問題ありません。\u003c/p\u003e\n\t\t\u003cp\u003eまた、各ホストにetherの値を設定していますが、\n\t\tこれがあると\u003ca href=\"https://9p.io/magic/man2html/8/dhcpd\"\u003edhcpd(8)\u003c/a\u003eがIPアドレスを固定して割り当てます。\u003c/p\u003e\n\t\t\u003cp\u003e設定が終わったら、cpurcのndb/dns呼び出しを以下のように変更。\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode class=\"sh\"\u003endb/dns -sr\u003c/code\u003e\u003c/pre\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003e関連情報\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"https://9p.io/magic/man2html/6/ndb\"\u003endb(6)\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"https://9p.io/magic/man2html/8/ndb\"\u003endb(8)\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"ndb.html\"\u003eネットワークの設定\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["plan9","doc","adm","dns"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

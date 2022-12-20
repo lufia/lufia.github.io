@@ -1,0 +1,417 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: SproutCoreモデル定義</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2011年2月14日更新</p>
+	<section>
+		<h1>SproutCoreモデル定義</h1>
+		<section>
+			<h2>モデルの作成</h2>
+			<pre><code class="console">$ sc-gen model Blog.Article</code></pre>
+			<p>これで、model/article.jsが生成されます。
+			もうひとつテスト用のファイルも作られますが、
+			それについては後日。</p>
+		</section>
+		<section>
+			<h2>レコードとデータハッシュ</h2>
+			<p>SproutCoreのデータは、だいたい2種類の構成に分かれます。
+			ひとつは、SC.Recordを拡張したモデル定義部分で、
+			もうひとつは実際のデータを持ったオブジェクトです。
+			後者はデータハッシュと呼ばれます。</p>
+			<p>レコードは内部にデータハッシュを持ち、
+			get/setを使ったアクセス時には、関数プロパティを除いて
+			ほとんどがデータハッシュの値を扱います。
+			ふつうは、これらの違いを意識する必要はないと思いますが、
+			新規レコードの作成やFIXTURESの設定など、直接データハッシュを
+			扱う場合がありますので注意です。</p>
+			<p>たとえばブログ的なものの記事を定義する場合、</p>
+			<pre><code class="js">Blog.Article = SC.Record.extend({
+	subject: SC.Record.attr(String, {
+		key: &#x27;Subject&#x27;
+	}),
+	createdDate: SC.Record.attr(SC.DateTime, {
+		key: &#x27;CreatedDate&#x27;
+	})
+})</code></pre>
+			<p>FIXTURESに設定するオブジェクトは以下のようになります。
+			下のほうでも詳しく書きますが、SC.DateTime型のデータハッシュは
+			文字列になりますので注意です。</p>
+			<pre><code class="js">Blog.Article.FIXTURES = [
+{	guid: 0,
+	Subject: &#x27;article1&#x27;,
+	CreatedDate: &#x27;2010-12-03T00:00:00+09:00&#x27;
+},
+{	guid: 1,
+	Subject: &#x27;article2&#x27;,
+	CreatedDate: &#x27;2010-12-14T00:00:00+09:00&#x27;
+}
+]</code></pre>
+			<p>同様に、SC.Store#createRecordの第2引数もデータハッシュです。</p>
+		</section>
+		<section>
+			<h2>主キーのカラム名</h2>
+			<p>主キーのカラム名を変更する場合は、
+			次に書くSC.Record.attrのkeyオプションを使うのではなくて、
+			特別にSC.Record#primaryKeyプロパティを設定します。</p>
+			<pre><code>Blog.Article = SC.Record.extend({
+	primaryKey: &#x27;ID&#x27;,
+	...</code></pre>
+			<p>この場合に、article.get(&#x27;id&#x27;)はデータハッシュのIDを返しますが、
+			article.get(&#x27;guid&#x27;)はundefinedになります。
+			特別な理由が無い限り、常にget(&#x27;id&#x27;)を使ったほうが無難です。</p>
+		</section>
+		<section>
+			<h2>SC.Record.attrのオプション</h2>
+			<p>上のほうでもkeyオプションを使っていますが、
+			SC.Record.attr()の第2引数にはオプションオブジェクトを渡せます。
+			ここで使えるオプションは以下になります。</p>
+			<dl>
+			<div>
+				<dt>isRequired</dt>
+				<dd>必須ならYES</dd>
+			</div>
+			<div>
+				<dt>key</dt>
+				<dd>対応するテーブルのカラム名</dd>
+				<dd>指定しなければ同名</dd>
+			</div>
+			<div>
+				<dt>defaultValue</dt>
+				<dd>デフォルト値</dd>
+			</div>
+			<div>
+				<dt>format</dt>
+				<dd>型がSC.DateTimeの場合のみ有効</dd>
+				<dd>get/set時に、この書式を使ってparseやtoFormattedStringを呼び出す</dd>
+				<dd>指定しなければ&#x27;%Y-%m-%dT%H:%M:%S%Z&#x27;</dd>
+			</div>
+			<div>
+				<dt>useIsoDate</dt>
+				<dd>型がDateの場合のみ有効で、初期値はYES</dd>
+				<dd>用途としてはformatと同じ</dd>
+			</div>
+			</dl>
+			<p>最後のformatとuseIsoDateは分かりにくいですが、
+			データハッシュとモデルの間で変換するために使われるだけです。
+			getするとその書式で文字列が返ってくるわけではありません。
+			なので、SC.TextFieldViewなどに書式を指定してバインドする場合は、
+			これとは別にSC.Binding#dateTimeを使います。</p>
+		</section>
+		<section>
+			<h2>実験</h2>
+			<pre><code class="js">data.set(&#x27;createdDate&#x27;, SC.DateTime.create({
+	year: 2010, month: 12, day: 14, hour: 0
+})
+// 特別に、こっちでも同じ
+//data.set(&#x27;createdDate&#x27;, &#x27;2010-12-14T00:00:00+09:00&#x27;)
+
+// もちろん設定した値は同じ
+equals(data.get(&#x27;createdDate&#x27;), SC.DateTime.create({...}))
+
+// データハッシュは文字列型
+var p = Blog.store.readDataHash(data.get(&#x27;storeKey&#x27;))
+equals(p.CreatedDate, &#x27;2010-12-14T00:00:00+09:00&#x27;)</code></pre>
+			<div class="note">
+				<p>SC.DateTimeは、年月日しか明示的に指定しなかった場合、
+				時刻部分を現在時刻で設定します。
+				これはSC.DateTime.parseでも同じ動きをして、
+				以下の場合も現在時刻が設定されます。</p>
+				<pre><code>var d = SC.DateTime.parse(&#x27;2010-12-01&#x27;, &#x27;%Y-%m-%d&#x27;)</code></pre>
+				<p>時刻を0:00:00で初期化したい場合は、時間に0を設定します。</p>
+				<pre><code>var d = SC.DateTime.parse(&#x27;2010-12-01T00&#x27;, &#x27;%Y-%m-%dT%H&#x27;)
+
+// 以下でも同じ
+d = SC.DateTime.parse(&#x27;2010-12-01&#x27;, &#x27;%Y-%m-%d&#x27;)
+	.adjust({ hour: 0 })</code></pre>
+			</div>
+		</section>
+		<section>
+			<h2>DateTime型変換</h2>
+			<p>上でも書いたように、SC.DateTime型のプロパティは
+			データハッシュに文字列として保存されます。
+			これは、アプリケーション全体に適用される、
+			型とデータハッシュの変換ルールに設定されているからです。
+			通常これで困ることはありませんが、独自にルールを設定したい場合とか、
+			これが悪さをする場合には、SC.RecordAttribute.registerTransformで
+			別のルールに差し替えられるようになっています。
+			registerTransformは対象の型と変換オブジェクトを引数に取ります。</p>
+			<p class="note">SC.DateTimeに限らず、NumberやDateも
+			あらかじめ変換ルールが設定されています。</p>
+			<p>使い方は以下のような感じ。
+			この例では、データハッシュをDateにさせています。
+			個人的にmain.jsの先頭が定位置。</p>
+			<pre><code class="js">SC.RecordAttribute.registerTransform(SC.DateTime, {
+	to: function(d, attr){
+		if(SC.none(d))
+			return null
+		return SC.DateTime.create(d.valueOf())
+	},
+	from: function(s, attr){
+		if(SC.none(s) || s === &#x27;&#x27;)
+			return null
+		else if(SC.instanceOf(s, SC.DateTime))
+			return new Date(s.get(&#x27;milliseconds&#x27;))
+		else
+			return new Date(s.valueOf())
+	}
+})</code></pre>
+			<p>from関数はレコードのset呼び出し時に使われ、to関数は逆です。
+			これらは第1引数に設定する値(またはデータハッシュの値)、
+			第2引数にモデルのSC.Record.attrで設定したオブジェクトを取ります。
+			setはtoを使わないでvalueをそのまま返しますので、
+			動作テストするときには注意です。</p>
+			<pre><code class="js">// set(&#x27;key&#x27;, value)の時(だいたいこんな感じ)
+hash[key] = from(value)
+return value
+
+// get(&#x27;key&#x27;)の時(だいたいこんな感じ)
+return to(hash[key])</code></pre>
+		</section>
+		<section>
+			<h2>関数プロパティ</h2>
+			<p>英語でcomputed propertyですが、うまい訳を思いつかなかったので。</p>
+			<pre><code class="js">createdYear: function(){
+	return this.getPath(&#x27;createdDate.year&#x27;)
+}.property(&#x27;createdDate&#x27;).cacheable()</code></pre>
+			<p>ここで、Function#propertyに渡す引数は、
+			計算するときに依存するプロパティの名前です。
+			複数のプロパティに依存する場合は、第2引数、第3引数と、
+			必要なだけプロパティ名を渡します。
+			レコードのプロパティ名で、データハッシュではありません。
+			上記の場合、createdDateに対してsetを呼び出すと、
+			createdYearが更新されたことを、
+			これに依存しているオブジェクトへ通知します。</p>
+		</section>
+		<section>
+			<h2>リレーションシップ</h2>
+			<p>たとえば記事とコメントの関係は、
+			モデルで定義すると以下のようになります。
+			必要な部分だけ抜粋しつつ、まずは記事テーブルの一部。</p>
+			<table>
+			<tr><th>列名</th><th>型っぽいもの</th></tr>
+			<tr><td>ID</td><td>主キー</td></tr>
+			<tr><td>Subject</td><td>文字列</td></tr>
+			<tr><td>CreatedDate</td><td>日付</td></tr>
+			</table>
+			<p>コメントのほうはこちら。</p>
+			<table>
+			<tr><th>列名</th><th>型っぽいもの</th></tr>
+			<tr><td>ID</td><td>主キー</td></tr>
+			<tr><td>ArticleID</td><td>外部キー</td></tr>
+			<tr><td>Message</td><td>文字列</td></tr>
+			</table>
+			<p>で、モデル定義。</p>
+			<pre><code class="js">Blog.Article = SC.Record.extend({
+	primaryKey: &#x27;ID&#x27;,
+	subject: SC.Record.attr(String, {key: &#x27;Subject&#x27;}),
+	createdDate: SC.Record.attr(SC.DateTime, {key: &#x27;CreatedDate&#x27;}),
+	comments: SC.Record.toMany(&#x27;Blog.Comment&#x27;, {
+		inverse: &#x27;article&#x27;,
+		isMaster: NO
+	})
+})
+Blog.Comment = SC.Record.extend({
+	primaryKey: &#x27;ID&#x27;,
+	message: SC.Record.attr(String, {key: &#x27;Message&#x27;}),
+	article: SC.Record.toOne(&#x27;Blog.Article&#x27;, {
+		key: &#x27;ArticleID&#x27;,
+		inverse: &#x27;comments&#x27;,
+		isMaster: YES
+	})
+})</code></pre>
+			<p>何がどう対応するかは、なんとなく分かるかなあと思います。</p>
+			<p>ちょっと不思議なものはisMasterオプションで、
+			これは、リレーションの変更があった場合に
+			どちらのデータを更新するかを指示するものです。</p>
+			<pre><code class="js">var article = getArticle()
+var comment = SC.store.createRecord(Blog.Comment, {
+	Message: &#x27;...&#x27;,
+})
+comment.set(&#x27;postedDate&#x27;, SC.DateTime.create())
+comment.set(&#x27;article&#x27;, article)</code></pre>
+		</section>
+		<section>
+			<h2>モデルへのデータ格納</h2>
+			<p>サーバにないデータをモデルに格納したい場合。
+			たとえば固定的なメニューを作りたい時は、
+			SC.Store#loadRecordまたはloadRecordsを使うといいです。
+			これはデータハッシュを受け付けますので、
+			そこに作成したいモデル用のデータを渡します。</p>
+		</section>
+		<section>
+			<h2>オートナンバーなキーの場合</h2>
+			<p>作成時はnullにしておいて、データソースの
+			createRecord時に取得したロケーションなどを使って設定するっぽい。
+			詳細は<a href="/notes/2010/1225.html"><a>データストアまとめ</a></a>のほうで書きます。</p>
+		</section>
+		<section>
+			<h2>トラブルシューティング</h2>
+			<section>
+				<h3>何も変更していないのにBUSY_COMMITTING</h3>
+				<p>データストアと関連しての症状ですが、
+				データベースのデータを読み込んだだけで、
+				各レコードのステータスがBUSY_COMMITTINGになる場合。</p>
+				<p>これは、SC.Record#writeAttributeを
+				関数プロパティの中で使っていたのですが、
+				たとえモデルに定義していないプロパティへ書き込んだとしても、
+				何かを書き込んだ時点で「変更あり」扱いになるのが原因でした。</p>
+				<p>ちなみに、レコードのステータスは、
+				SC.Store#statusStringを使うと分かりやすくていいです。</p>
+			</section>
+			<section>
+				<h3>SC.DateTimeをTextFieldViewにバインドして編集するとエラー</h3>
+				<pre><code class="js">valueBinding: SC.Binding
+	.from(&#x27;Blog.articleController.createdDate&#x27;)
+	.dateTime(&#x27;%Y/%m/%d&#x27;)</code></pre>
+				<p>これを編集可能にして、実際に編集すると、
+				「オブジェクトでサポートされていないプロパティまたはメソッドです」
+				というエラーで終了します。</p>
+				<p>これは、SproutCoreの仕様なのかバグなのか、
+				はたまた使い方が間違っているのか知りませんが、
+				SC.Binding#dateTimeはSC.DateTime型を想定しています。
+				でも編集後の型は文字列になっているので、
+				String#toFormattedStringを呼び出そうとして落ちているみたいです。</p>
+				<p>同様に、デフォルトでregisterTransformされている関数も、
+				String#toFormattedStringを呼び出そうとしてエラーになります。
+				なので、この2点に修正が必要です。</p>
+				<pre><code class="js">function getFormat(attr)
+{
+	return attr.get(&#x27;format&#x27;) || SC.DateTime.recordFormat
+}
+SC.RecordAttribute.registerTransform(SC.DateTime, {
+	to: function(d, attr){
+		if(SC.none(d))
+			return null
+		var fmt = getFormat(attr)
+		return SC.DateTime.parse(d, fmt)
+	},
+	from: function(s, attr){
+		if(SC.none(s) || s === &#x27;&#x27;)
+			return null
+		if(!SC.instanceOf(s, SC.DateTime))
+			s = SC.DateTime.create({
+				milliseconds: new Date(s).valueOf()
+			})
+		var fmt = getFormat(attr)
+		return s.toFormattedString(fmt)
+	}
+})
+
+Blog.dateTimeValidator = SC.Validator.extend({
+	format: null,
+
+	validate: function(form, field){
+		var value = field.get(&#x27;fieldValue&#x27;)
+		return value ===&#x27;&#x27; || !!SC.DateTime.parse(value, this.get(&#x27;format&#x27;))
+	},
+
+	validateError: function(form, field){
+		var label = field.get(&#x27;errorLabel&#x27;) || &#x27;Field&#x27;
+		return SC.$error(&#x27;invalid date&#x27;.loc(), label)
+	}
+})
+
+Blog.DateTimeBinding = SC.Binding
+	.transform(function(d){
+		if(SC.instanceOf(d, SC.DateTime))
+			return d.toFormattedString(&#x27;%Y/%m/%d&#x27;)
+		return d				
+	})
+
+Blog.mainPage = SC.Page.design({
+	...
+	createdDateView: SC.LabelView.design({
+		isEditable: YES,
+		valueBinding: Blog.DateTimeBinding
+			.beget(&#x27;Blog.articleController.createdDate&#x27;),
+		validator: Blog.dateTimeValidator.create({
+			format: &#x27;%Y/%m/%d&#x27;
+		})
+	}),
+	...
+})</code></pre>
+				<p>ここでは、空文字列のときはnullに変換しています。
+				validatorは無くてもいいけど、あったほうが親切。</p>
+				<p>ほかは、バインド用のプロパティを介して
+				やりとりするという方法もあります。
+				個数が少ないなら、こちらのほうが楽かもしれません。</p>
+				<pre><code class="js">targetDate: function(key, value){
+	var fmt = &#x27;%Y-%m-%d&#x27;.loc()
+	if(!SC.none(value)){
+		try{
+			var newp = SC.DateTime
+				.parse(value, fmt)
+				.adjust({ hour: 0 })
+			this.set(&#x27;date&#x27;, newp)
+		}catch(e){
+			// 無視する
+		}
+	}
+	var p = this.get(&#x27;date&#x27;)
+	return p &amp;&amp; p.toFormattedString(fmt)
+}.property(&#x27;date&#x27;).cacheable(),</code></pre>
+			</section>
+			<section>
+				<h3>DateTimeBindingが1つを除いて空欄になる</h3>
+				<p>上のトラブルシューティングに関連して。</p>
+				<p>SC.Binding#fromは必要なければインスタンスを作りませんので、
+				Blog.DateTimeBindingでbegetをfromに変えると、
+				最後のものしか有効になりません。</p>
+			</section>
+			<section>
+				<h3>バインドした値が更新されない</h3>
+				<p>モデルだけでテストしようとすると、
+				バインドした値が更新されなかったりします。
+				いろいろ端折るとこんな感じ。</p>
+				<pre><code class="js">var A = SC.Object.create({ name: &#x27;aaa&#x27; })
+var B = SC.Object.create({ nameBinding: &#x27;A.name&#x27; })
+A.set(&#x27;name&#x27;, &#x27;test&#x27;)
+// B.get(&#x27;name&#x27;) == undefined
+SC.RunLoop.begin()
+SC.RunLoop.end()
+// B.get(&#x27;name&#x27;) == &#x27;test&#x27;
+B.set(&#x27;name&#x27;, &#x27;aaa&#x27;)
+// A.get(&#x27;name&#x27;) == &#x27;test&#x27;</code></pre>
+			</section>
+			<section>
+				<h3>loadRecordsで複数作成したのに1つしかない</h3>
+				<p>これはたぶん、primaryKeyとなるプロパティが無いからです。</p>
+			</section>
+		</section>
+	</section>
+</main>
+<aside>
+	<section>
+		<h1>関連情報</h1>
+		<ul>
+		<li><a href="http://lufia.org/notes/2010/1129.html">WCF Data Servicesメモ</a></li>
+		</ul>
+	</section>
+	<section>
+		<h1>参考サイト</h1>
+		<ul>
+		<li><a href="http://wiki.sproutcore.com/w/page/28716312/Showing-a-relation-as-selection-on-a-list-view">Showing a relation as selection on a list view</a></li>
+		<li><a href="http://wiki.sproutcore.com/w/page/12412887/DateTime">DateTime</a></li>
+		</ul>
+	</section>
+</aside>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2010/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: SproutCoreモデル定義\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2011年2月14日更新\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eSproutCoreモデル定義\u003c/h1\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eモデルの作成\u003c/h2\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e$ sc-gen model Blog.Article\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eこれで、model/article.jsが生成されます。\n\t\t\tもうひとつテスト用のファイルも作られますが、\n\t\t\tそれについては後日。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eレコードとデータハッシュ\u003c/h2\u003e\n\t\t\t\u003cp\u003eSproutCoreのデータは、だいたい2種類の構成に分かれます。\n\t\t\tひとつは、SC.Recordを拡張したモデル定義部分で、\n\t\t\tもうひとつは実際のデータを持ったオブジェクトです。\n\t\t\t後者はデータハッシュと呼ばれます。\u003c/p\u003e\n\t\t\t\u003cp\u003eレコードは内部にデータハッシュを持ち、\n\t\t\tget/setを使ったアクセス時には、関数プロパティを除いて\n\t\t\tほとんどがデータハッシュの値を扱います。\n\t\t\tふつうは、これらの違いを意識する必要はないと思いますが、\n\t\t\t新規レコードの作成やFIXTURESの設定など、直接データハッシュを\n\t\t\t扱う場合がありますので注意です。\u003c/p\u003e\n\t\t\t\u003cp\u003eたとえばブログ的なものの記事を定義する場合、\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003eBlog.Article = SC.Record.extend({\n\tsubject: SC.Record.attr(String, {\n\t\tkey: 'Subject'\n\t}),\n\tcreatedDate: SC.Record.attr(SC.DateTime, {\n\t\tkey: 'CreatedDate'\n\t})\n})\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eFIXTURESに設定するオブジェクトは以下のようになります。\n\t\t\t下のほうでも詳しく書きますが、SC.DateTime型のデータハッシュは\n\t\t\t文字列になりますので注意です。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003eBlog.Article.FIXTURES = [\n{\tguid: 0,\n\tSubject: 'article1',\n\tCreatedDate: '2010-12-03T00:00:00+09:00'\n},\n{\tguid: 1,\n\tSubject: 'article2',\n\tCreatedDate: '2010-12-14T00:00:00+09:00'\n}\n]\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e同様に、SC.Store#createRecordの第2引数もデータハッシュです。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e主キーのカラム名\u003c/h2\u003e\n\t\t\t\u003cp\u003e主キーのカラム名を変更する場合は、\n\t\t\t次に書くSC.Record.attrのkeyオプションを使うのではなくて、\n\t\t\t特別にSC.Record#primaryKeyプロパティを設定します。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003eBlog.Article = SC.Record.extend({\n\tprimaryKey: 'ID',\n\t...\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eこの場合に、article.get('id')はデータハッシュのIDを返しますが、\n\t\t\tarticle.get('guid')はundefinedになります。\n\t\t\t特別な理由が無い限り、常にget('id')を使ったほうが無難です。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eSC.Record.attrのオプション\u003c/h2\u003e\n\t\t\t\u003cp\u003e上のほうでもkeyオプションを使っていますが、\n\t\t\tSC.Record.attr()の第2引数にはオプションオブジェクトを渡せます。\n\t\t\tここで使えるオプションは以下になります。\u003c/p\u003e\n\t\t\t\u003cdl\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eisRequired\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003e必須ならYES\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003ekey\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003e対応するテーブルのカラム名\u003c/dd\u003e\n\t\t\t\t\u003cdd\u003e指定しなければ同名\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003edefaultValue\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eデフォルト値\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eformat\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003e型がSC.DateTimeの場合のみ有効\u003c/dd\u003e\n\t\t\t\t\u003cdd\u003eget/set時に、この書式を使ってparseやtoFormattedStringを呼び出す\u003c/dd\u003e\n\t\t\t\t\u003cdd\u003e指定しなければ'%Y-%m-%dT%H:%M:%S%Z'\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003euseIsoDate\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003e型がDateの場合のみ有効で、初期値はYES\u003c/dd\u003e\n\t\t\t\t\u003cdd\u003e用途としてはformatと同じ\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003c/dl\u003e\n\t\t\t\u003cp\u003e最後のformatとuseIsoDateは分かりにくいですが、\n\t\t\tデータハッシュとモデルの間で変換するために使われるだけです。\n\t\t\tgetするとその書式で文字列が返ってくるわけではありません。\n\t\t\tなので、SC.TextFieldViewなどに書式を指定してバインドする場合は、\n\t\t\tこれとは別にSC.Binding#dateTimeを使います。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e実験\u003c/h2\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003edata.set('createdDate', SC.DateTime.create({\n\tyear: 2010, month: 12, day: 14, hour: 0\n})\n// 特別に、こっちでも同じ\n//data.set('createdDate', '2010-12-14T00:00:00+09:00')\n\n// もちろん設定した値は同じ\nequals(data.get('createdDate'), SC.DateTime.create({...}))\n\n// データハッシュは文字列型\nvar p = Blog.store.readDataHash(data.get('storeKey'))\nequals(p.CreatedDate, '2010-12-14T00:00:00+09:00')\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cdiv class=\"note\"\u003e\n\t\t\t\t\u003cp\u003eSC.DateTimeは、年月日しか明示的に指定しなかった場合、\n\t\t\t\t時刻部分を現在時刻で設定します。\n\t\t\t\tこれはSC.DateTime.parseでも同じ動きをして、\n\t\t\t\t以下の場合も現在時刻が設定されます。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode\u003evar d = SC.DateTime.parse('2010-12-01', '%Y-%m-%d')\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003e時刻を0:00:00で初期化したい場合は、時間に0を設定します。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode\u003evar d = SC.DateTime.parse('2010-12-01T00', '%Y-%m-%dT%H')\n\n// 以下でも同じ\nd = SC.DateTime.parse('2010-12-01', '%Y-%m-%d')\n\t.adjust({ hour: 0 })\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003c/div\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eDateTime型変換\u003c/h2\u003e\n\t\t\t\u003cp\u003e上でも書いたように、SC.DateTime型のプロパティは\n\t\t\tデータハッシュに文字列として保存されます。\n\t\t\tこれは、アプリケーション全体に適用される、\n\t\t\t型とデータハッシュの変換ルールに設定されているからです。\n\t\t\t通常これで困ることはありませんが、独自にルールを設定したい場合とか、\n\t\t\tこれが悪さをする場合には、SC.RecordAttribute.registerTransformで\n\t\t\t別のルールに差し替えられるようになっています。\n\t\t\tregisterTransformは対象の型と変換オブジェクトを引数に取ります。\u003c/p\u003e\n\t\t\t\u003cp class=\"note\"\u003eSC.DateTimeに限らず、NumberやDateも\n\t\t\tあらかじめ変換ルールが設定されています。\u003c/p\u003e\n\t\t\t\u003cp\u003e使い方は以下のような感じ。\n\t\t\tこの例では、データハッシュをDateにさせています。\n\t\t\t個人的にmain.jsの先頭が定位置。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003eSC.RecordAttribute.registerTransform(SC.DateTime, {\n\tto: function(d, attr){\n\t\tif(SC.none(d))\n\t\t\treturn null\n\t\treturn SC.DateTime.create(d.valueOf())\n\t},\n\tfrom: function(s, attr){\n\t\tif(SC.none(s) || s === '')\n\t\t\treturn null\n\t\telse if(SC.instanceOf(s, SC.DateTime))\n\t\t\treturn new Date(s.get('milliseconds'))\n\t\telse\n\t\t\treturn new Date(s.valueOf())\n\t}\n})\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003efrom関数はレコードのset呼び出し時に使われ、to関数は逆です。\n\t\t\tこれらは第1引数に設定する値(またはデータハッシュの値)、\n\t\t\t第2引数にモデルのSC.Record.attrで設定したオブジェクトを取ります。\n\t\t\tsetはtoを使わないでvalueをそのまま返しますので、\n\t\t\t動作テストするときには注意です。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003e// set('key', value)の時(だいたいこんな感じ)\nhash[key] = from(value)\nreturn value\n\n// get('key')の時(だいたいこんな感じ)\nreturn to(hash[key])\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e関数プロパティ\u003c/h2\u003e\n\t\t\t\u003cp\u003e英語でcomputed propertyですが、うまい訳を思いつかなかったので。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003ecreatedYear: function(){\n\treturn this.getPath('createdDate.year')\n}.property('createdDate').cacheable()\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eここで、Function#propertyに渡す引数は、\n\t\t\t計算するときに依存するプロパティの名前です。\n\t\t\t複数のプロパティに依存する場合は、第2引数、第3引数と、\n\t\t\t必要なだけプロパティ名を渡します。\n\t\t\tレコードのプロパティ名で、データハッシュではありません。\n\t\t\t上記の場合、createdDateに対してsetを呼び出すと、\n\t\t\tcreatedYearが更新されたことを、\n\t\t\tこれに依存しているオブジェクトへ通知します。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eリレーションシップ\u003c/h2\u003e\n\t\t\t\u003cp\u003eたとえば記事とコメントの関係は、\n\t\t\tモデルで定義すると以下のようになります。\n\t\t\t必要な部分だけ抜粋しつつ、まずは記事テーブルの一部。\u003c/p\u003e\n\t\t\t\u003ctable\u003e\n\t\t\t\u003ctr\u003e\u003cth\u003e列名\u003c/th\u003e\u003cth\u003e型っぽいもの\u003c/th\u003e\u003c/tr\u003e\n\t\t\t\u003ctr\u003e\u003ctd\u003eID\u003c/td\u003e\u003ctd\u003e主キー\u003c/td\u003e\u003c/tr\u003e\n\t\t\t\u003ctr\u003e\u003ctd\u003eSubject\u003c/td\u003e\u003ctd\u003e文字列\u003c/td\u003e\u003c/tr\u003e\n\t\t\t\u003ctr\u003e\u003ctd\u003eCreatedDate\u003c/td\u003e\u003ctd\u003e日付\u003c/td\u003e\u003c/tr\u003e\n\t\t\t\u003c/table\u003e\n\t\t\t\u003cp\u003eコメントのほうはこちら。\u003c/p\u003e\n\t\t\t\u003ctable\u003e\n\t\t\t\u003ctr\u003e\u003cth\u003e列名\u003c/th\u003e\u003cth\u003e型っぽいもの\u003c/th\u003e\u003c/tr\u003e\n\t\t\t\u003ctr\u003e\u003ctd\u003eID\u003c/td\u003e\u003ctd\u003e主キー\u003c/td\u003e\u003c/tr\u003e\n\t\t\t\u003ctr\u003e\u003ctd\u003eArticleID\u003c/td\u003e\u003ctd\u003e外部キー\u003c/td\u003e\u003c/tr\u003e\n\t\t\t\u003ctr\u003e\u003ctd\u003eMessage\u003c/td\u003e\u003ctd\u003e文字列\u003c/td\u003e\u003c/tr\u003e\n\t\t\t\u003c/table\u003e\n\t\t\t\u003cp\u003eで、モデル定義。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003eBlog.Article = SC.Record.extend({\n\tprimaryKey: 'ID',\n\tsubject: SC.Record.attr(String, {key: 'Subject'}),\n\tcreatedDate: SC.Record.attr(SC.DateTime, {key: 'CreatedDate'}),\n\tcomments: SC.Record.toMany('Blog.Comment', {\n\t\tinverse: 'article',\n\t\tisMaster: NO\n\t})\n})\nBlog.Comment = SC.Record.extend({\n\tprimaryKey: 'ID',\n\tmessage: SC.Record.attr(String, {key: 'Message'}),\n\tarticle: SC.Record.toOne('Blog.Article', {\n\t\tkey: 'ArticleID',\n\t\tinverse: 'comments',\n\t\tisMaster: YES\n\t})\n})\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e何がどう対応するかは、なんとなく分かるかなあと思います。\u003c/p\u003e\n\t\t\t\u003cp\u003eちょっと不思議なものはisMasterオプションで、\n\t\t\tこれは、リレーションの変更があった場合に\n\t\t\tどちらのデータを更新するかを指示するものです。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003evar article = getArticle()\nvar comment = SC.store.createRecord(Blog.Comment, {\n\tMessage: '...',\n})\ncomment.set('postedDate', SC.DateTime.create())\ncomment.set('article', article)\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eモデルへのデータ格納\u003c/h2\u003e\n\t\t\t\u003cp\u003eサーバにないデータをモデルに格納したい場合。\n\t\t\tたとえば固定的なメニューを作りたい時は、\n\t\t\tSC.Store#loadRecordまたはloadRecordsを使うといいです。\n\t\t\tこれはデータハッシュを受け付けますので、\n\t\t\tそこに作成したいモデル用のデータを渡します。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eオートナンバーなキーの場合\u003c/h2\u003e\n\t\t\t\u003cp\u003e作成時はnullにしておいて、データソースの\n\t\t\tcreateRecord時に取得したロケーションなどを使って設定するっぽい。\n\t\t\t詳細は\u003ca href=\"1225.html\"\u003eデータストアまとめ\u003c/a\u003eのほうで書きます。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eトラブルシューティング\u003c/h2\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003e何も変更していないのにBUSY_COMMITTING\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eデータストアと関連しての症状ですが、\n\t\t\t\tデータベースのデータを読み込んだだけで、\n\t\t\t\t各レコードのステータスがBUSY_COMMITTINGになる場合。\u003c/p\u003e\n\t\t\t\t\u003cp\u003eこれは、SC.Record#writeAttributeを\n\t\t\t\t関数プロパティの中で使っていたのですが、\n\t\t\t\tたとえモデルに定義していないプロパティへ書き込んだとしても、\n\t\t\t\t何かを書き込んだ時点で「変更あり」扱いになるのが原因でした。\u003c/p\u003e\n\t\t\t\t\u003cp\u003eちなみに、レコードのステータスは、\n\t\t\t\tSC.Store#statusStringを使うと分かりやすくていいです。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eSC.DateTimeをTextFieldViewにバインドして編集するとエラー\u003c/h3\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003evalueBinding: SC.Binding\n\t.from('Blog.articleController.createdDate')\n\t.dateTime('%Y/%m/%d')\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003eこれを編集可能にして、実際に編集すると、\n\t\t\t\t「オブジェクトでサポートされていないプロパティまたはメソッドです」\n\t\t\t\tというエラーで終了します。\u003c/p\u003e\n\t\t\t\t\u003cp\u003eこれは、SproutCoreの仕様なのかバグなのか、\n\t\t\t\tはたまた使い方が間違っているのか知りませんが、\n\t\t\t\tSC.Binding#dateTimeはSC.DateTime型を想定しています。\n\t\t\t\tでも編集後の型は文字列になっているので、\n\t\t\t\tString#toFormattedStringを呼び出そうとして落ちているみたいです。\u003c/p\u003e\n\t\t\t\t\u003cp\u003e同様に、デフォルトでregisterTransformされている関数も、\n\t\t\t\tString#toFormattedStringを呼び出そうとしてエラーになります。\n\t\t\t\tなので、この2点に修正が必要です。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003efunction getFormat(attr)\n{\n\treturn attr.get('format') || SC.DateTime.recordFormat\n}\nSC.RecordAttribute.registerTransform(SC.DateTime, {\n\tto: function(d, attr){\n\t\tif(SC.none(d))\n\t\t\treturn null\n\t\tvar fmt = getFormat(attr)\n\t\treturn SC.DateTime.parse(d, fmt)\n\t},\n\tfrom: function(s, attr){\n\t\tif(SC.none(s) || s === '')\n\t\t\treturn null\n\t\tif(!SC.instanceOf(s, SC.DateTime))\n\t\t\ts = SC.DateTime.create({\n\t\t\t\tmilliseconds: new Date(s).valueOf()\n\t\t\t})\n\t\tvar fmt = getFormat(attr)\n\t\treturn s.toFormattedString(fmt)\n\t}\n})\n\nBlog.dateTimeValidator = SC.Validator.extend({\n\tformat: null,\n\n\tvalidate: function(form, field){\n\t\tvar value = field.get('fieldValue')\n\t\treturn value ==='' || !!SC.DateTime.parse(value, this.get('format'))\n\t},\n\n\tvalidateError: function(form, field){\n\t\tvar label = field.get('errorLabel') || 'Field'\n\t\treturn SC.$error('invalid date'.loc(), label)\n\t}\n})\n\nBlog.DateTimeBinding = SC.Binding\n\t.transform(function(d){\n\t\tif(SC.instanceOf(d, SC.DateTime))\n\t\t\treturn d.toFormattedString('%Y/%m/%d')\n\t\treturn d\t\t\t\t\n\t})\n\nBlog.mainPage = SC.Page.design({\n\t...\n\tcreatedDateView: SC.LabelView.design({\n\t\tisEditable: YES,\n\t\tvalueBinding: Blog.DateTimeBinding\n\t\t\t.beget('Blog.articleController.createdDate'),\n\t\tvalidator: Blog.dateTimeValidator.create({\n\t\t\tformat: '%Y/%m/%d'\n\t\t})\n\t}),\n\t...\n})\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003eここでは、空文字列のときはnullに変換しています。\n\t\t\t\tvalidatorは無くてもいいけど、あったほうが親切。\u003c/p\u003e\n\t\t\t\t\u003cp\u003eほかは、バインド用のプロパティを介して\n\t\t\t\tやりとりするという方法もあります。\n\t\t\t\t個数が少ないなら、こちらのほうが楽かもしれません。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003etargetDate: function(key, value){\n\tvar fmt = '%Y-%m-%d'.loc()\n\tif(!SC.none(value)){\n\t\ttry{\n\t\t\tvar newp = SC.DateTime\n\t\t\t\t.parse(value, fmt)\n\t\t\t\t.adjust({ hour: 0 })\n\t\t\tthis.set('date', newp)\n\t\t}catch(e){\n\t\t\t// 無視する\n\t\t}\n\t}\n\tvar p = this.get('date')\n\treturn p \u0026amp;\u0026amp; p.toFormattedString(fmt)\n}.property('date').cacheable(),\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eDateTimeBindingが1つを除いて空欄になる\u003c/h3\u003e\n\t\t\t\t\u003cp\u003e上のトラブルシューティングに関連して。\u003c/p\u003e\n\t\t\t\t\u003cp\u003eSC.Binding#fromは必要なければインスタンスを作りませんので、\n\t\t\t\tBlog.DateTimeBindingでbegetをfromに変えると、\n\t\t\t\t最後のものしか有効になりません。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eバインドした値が更新されない\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eモデルだけでテストしようとすると、\n\t\t\t\tバインドした値が更新されなかったりします。\n\t\t\t\tいろいろ端折るとこんな感じ。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003evar A = SC.Object.create({ name: 'aaa' })\nvar B = SC.Object.create({ nameBinding: 'A.name' })\nA.set('name', 'test')\n// B.get('name') == undefined\nSC.RunLoop.begin()\nSC.RunLoop.end()\n// B.get('name') == 'test'\nB.set('name', 'aaa')\n// A.get('name') == 'test'\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eloadRecordsで複数作成したのに1つしかない\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eこれはたぶん、primaryKeyとなるプロパティが無いからです。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003e関連情報\u003c/h1\u003e\n\t\t\u003cul\u003e\n\t\t\u003cli\u003e\u003ca href=\"http://lufia.org/notes/2010/1129.html\"\u003eWCF Data Servicesメモ\u003c/a\u003e\u003c/li\u003e\n\t\t\u003c/ul\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003e参考サイト\u003c/h1\u003e\n\t\t\u003cul\u003e\n\t\t\u003cli\u003e\u003ca href=\"http://wiki.sproutcore.com/w/page/28716312/Showing-a-relation-as-selection-on-a-list-view\"\u003eShowing a relation as selection on a list view\u003c/a\u003e\u003c/li\u003e\n\t\t\u003cli\u003e\u003ca href=\"http://wiki.sproutcore.com/w/page/12412887/DateTime\"\u003eDateTime\u003c/a\u003e\u003c/li\u003e\n\t\t\u003c/ul\u003e\n\t\u003c/section\u003e\n\u003c/aside\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2010","1203"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

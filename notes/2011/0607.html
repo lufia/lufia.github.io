@@ -1,0 +1,141 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: ASP.NETページ構文とHTMLヘルパ</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2011年6月7日作成</p>
+	<section>
+		<h1>ASP.NETページ構文とHTMLヘルパ</h1>
+		<section>
+			<h2>ページ構文</h2>
+			<p>ASP.NETでは&lt;% ... %&gt;と書くと、
+			その中をいろいろ処理してページを生成してくれます。
+			この機能は<a href="http://msdn.microsoft.com/ja-jp/library/fy30at8h%28v=VS.80%29.aspx">ページ構文</a>
+			と呼ぶらしいのですが、それはともかく、よく忘れるのでまとめ。</p>
+			<section>
+				<h3>&lt;% ... %&gt;</h3>
+				<p>これは、中にプログラムを書けます。
+				何か文字を書き出したい場合はResponse.Write(string)を使うらしいですが、
+				次の&lt;%= ... %&gt;をよく使うので、あまり。</p>
+				<pre><code class="xml">&lt;% for(var i = 0; i &lt; 10; i++) Response.Write(i+&quot;\n&quot;) %&gt;</code></pre>
+			</section>
+			<section>
+				<h3>&lt;%= ... %&gt;</h3>
+				<p>上記と異なり、この中はプログラム式しか書けません。
+				その代わり、Response.Write(string)を使わなくても
+				演算結果を書きだしてくれます。</p>
+				<pre><code class="xml">&lt;% for(var i = 0; i &lt; 10; i++) { %&gt;
+	&lt;%= i %&gt;
+&lt;% } %&gt;</code></pre>
+			</section>
+			<section>
+				<h3>&lt;%: ... %&gt;</h3>
+				<p>これは、&lt;%= ... %&gt;とほとんど同じですが、
+				HTMLでの特殊文字(&#x27;&lt;&#x27;とか)を文字参照(&#x27;&amp;lt;&#x27;など)に
+				変換してから書き出します。</p>
+				<p>とはいえ、これを使わなくても、
+				HTMLヘルパ関数の中ではHTML特殊文字を変換しますし、
+				これを使っても式の結果がオブジェクトなら特に何も起こらないので、
+				詳しいところはいまいち分かりません。</p>
+				<pre><code class="xml">&lt;%-- エスケープしない --%&gt;
+&lt;%= Html.ActionLink(&quot;Index&quot;, &quot;Home&quot;, new{ id=3 }) %&gt;
+
+&lt;%-- これもエスケープしないでふつうに動く --%&gt;
+&lt;%: Html.Action(&quot;Index&quot;, &quot;Home&quot;, new{ id=3 }) %&gt;</code></pre>
+			</section>
+			<section>
+				<h3>&lt;%# ... %&gt;</h3>
+				<p>データバインド式らしい。DataBind()を呼び出したときに、
+				指定したデータをバインドするとか。
+				ASP.NET MVC2では使わなくても問題ないのでよく知らない。</p>
+			</section>
+			<section>
+				<h3>&lt;%$ ... %&gt;</h3>
+				<p>設定らしい。</p>
+			</section>
+			<section>
+				<h3>&lt;%-- ... --%&gt;</h3>
+				<p>コメント。</p>
+			</section>
+		</section>
+		<section>
+			<h2>HTMLヘルパ</h2>
+			<p>Htmlオブジェクトのメソッドとして実装されています。
+			HTML要素と関数の対応リスト。</p>
+			<dl>
+			<div>
+				<dt>a</dt>
+				<dd>ActionLink</dd>
+			</div>
+			<div>
+				<dt>form</dt>
+				<dd>BeginForm</dd>
+				<dd>EndForm</dd>
+			</div>
+			<div>
+				<dt>input[type=text]</dt>
+				<dd>TextBox</dd>
+			</div>
+			<div>
+				<dt>input[type=radio]</dt>
+				<dd>RadioButton</dd>
+			</div>
+			<div>
+				<dt>input[type=hidden]</dt>
+				<dd>Hidden</dd>
+			</div>
+			<div>
+				<dt>select</dt>
+				<dd>DropDownList</dd>
+			</div>
+			<div>
+				<dt>select[multiple=multiple]</dt>
+				<dd>ListBox</dd>
+			</div>
+			</dl>
+			<pre><code class="xml">&lt;%	var options = new List&lt;SelectListItem&gt; {
+		new SelectListItem { Text = &quot;item1&quot;, Value = &quot;1&quot; },
+		new SelectListItem { Text = &quot;item2&quot;, Value = &quot;2&quot; },
+	};
+	using(Html.BeginForm(&quot;Create&quot;)){
+%&gt;
+		&lt;%= Html.DropDownList(&quot;mode&quot;, options) %&gt;
+		&lt;input type=&quot;submit&quot; value=&quot;send&quot;/&gt;
+&lt;%	} %&gt;</code></pre>
+		</section>
+	</section>
+</main>
+<aside>
+	<section>
+		<h1>関連ページ</h1>
+		<ul>
+		<li><a href="/notes/2011/0603.html"><a>ASP.NET関連のいろいろまとめ</a></a></li>
+		</ul>
+	</section>
+	<section>
+		<h1>参考サイト</h1>
+		<ul>
+		<li><a href="http://support.microsoft.com/kb/976112/en-us">Introduction to ASP.NET inline expressions</a></li>
+		<li><a href="http://d.hatena.ne.jp/shiba-yan/20110327/1301152413">HTMLヘルパーを活用</a></li>
+		</ul>
+	</section>
+</aside>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2011/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: ASP.NETページ構文とHTMLヘルパ\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2011年6月7日作成\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eASP.NETページ構文とHTMLヘルパ\u003c/h1\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eページ構文\u003c/h2\u003e\n\t\t\t\u003cp\u003eASP.NETでは\u0026lt;% ... %\u0026gt;と書くと、\n\t\t\tその中をいろいろ処理してページを生成してくれます。\n\t\t\tこの機能は\u003ca href=\"http://msdn.microsoft.com/ja-jp/library/fy30at8h%28v=VS.80%29.aspx\"\u003eページ構文\u003c/a\u003e\n\t\t\tと呼ぶらしいのですが、それはともかく、よく忘れるのでまとめ。\u003c/p\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003e\u0026lt;% ... %\u0026gt;\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eこれは、中にプログラムを書けます。\n\t\t\t\t何か文字を書き出したい場合はResponse.Write(string)を使うらしいですが、\n\t\t\t\t次の\u0026lt;%= ... %\u0026gt;をよく使うので、あまり。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"xml\"\u003e\u0026lt;% for(var i = 0; i \u0026lt; 10; i++) Response.Write(i+\u0026quot;\\n\u0026quot;) %\u0026gt;\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003e\u0026lt;%= ... %\u0026gt;\u003c/h3\u003e\n\t\t\t\t\u003cp\u003e上記と異なり、この中はプログラム式しか書けません。\n\t\t\t\tその代わり、Response.Write(string)を使わなくても\n\t\t\t\t演算結果を書きだしてくれます。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"xml\"\u003e\u0026lt;% for(var i = 0; i \u0026lt; 10; i++) { %\u0026gt;\n\t\u0026lt;%= i %\u0026gt;\n\u0026lt;% } %\u0026gt;\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003e\u0026lt;%: ... %\u0026gt;\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eこれは、\u0026lt;%= ... %\u0026gt;とほとんど同じですが、\n\t\t\t\tHTMLでの特殊文字('\u0026lt;'とか)を文字参照('\u0026amp;lt;'など)に\n\t\t\t\t変換してから書き出します。\u003c/p\u003e\n\t\t\t\t\u003cp\u003eとはいえ、これを使わなくても、\n\t\t\t\tHTMLヘルパ関数の中ではHTML特殊文字を変換しますし、\n\t\t\t\tこれを使っても式の結果がオブジェクトなら特に何も起こらないので、\n\t\t\t\t詳しいところはいまいち分かりません。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"xml\"\u003e\u0026lt;%-- エスケープしない --%\u0026gt;\n\u0026lt;%= Html.ActionLink(\u0026quot;Index\u0026quot;, \u0026quot;Home\u0026quot;, new{ id=3 }) %\u0026gt;\n\n\u0026lt;%-- これもエスケープしないでふつうに動く --%\u0026gt;\n\u0026lt;%: Html.Action(\u0026quot;Index\u0026quot;, \u0026quot;Home\u0026quot;, new{ id=3 }) %\u0026gt;\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003e\u0026lt;%# ... %\u0026gt;\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eデータバインド式らしい。DataBind()を呼び出したときに、\n\t\t\t\t指定したデータをバインドするとか。\n\t\t\t\tASP.NET MVC2では使わなくても問題ないのでよく知らない。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003e\u0026lt;%$ ... %\u0026gt;\u003c/h3\u003e\n\t\t\t\t\u003cp\u003e設定らしい。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003e\u0026lt;%-- ... --%\u0026gt;\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eコメント。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eHTMLヘルパ\u003c/h2\u003e\n\t\t\t\u003cp\u003eHtmlオブジェクトのメソッドとして実装されています。\n\t\t\tHTML要素と関数の対応リスト。\u003c/p\u003e\n\t\t\t\u003cdl\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003ea\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eActionLink\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eform\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eBeginForm\u003c/dd\u003e\n\t\t\t\t\u003cdd\u003eEndForm\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003einput[type=text]\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eTextBox\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003einput[type=radio]\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eRadioButton\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003einput[type=hidden]\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eHidden\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eselect\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eDropDownList\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eselect[multiple=multiple]\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eListBox\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003c/dl\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"xml\"\u003e\u0026lt;%\tvar options = new List\u0026lt;SelectListItem\u0026gt; {\n\t\tnew SelectListItem { Text = \u0026quot;item1\u0026quot;, Value = \u0026quot;1\u0026quot; },\n\t\tnew SelectListItem { Text = \u0026quot;item2\u0026quot;, Value = \u0026quot;2\u0026quot; },\n\t};\n\tusing(Html.BeginForm(\u0026quot;Create\u0026quot;)){\n%\u0026gt;\n\t\t\u0026lt;%= Html.DropDownList(\u0026quot;mode\u0026quot;, options) %\u0026gt;\n\t\t\u0026lt;input type=\u0026quot;submit\u0026quot; value=\u0026quot;send\u0026quot;/\u0026gt;\n\u0026lt;%\t} %\u0026gt;\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003e関連ページ\u003c/h1\u003e\n\t\t\u003cul\u003e\n\t\t\u003cli\u003e\u003ca href=\"0603.html\"\u003eASP.NET関連のいろいろまとめ\u003c/a\u003e\u003c/li\u003e\n\t\t\u003c/ul\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003e参考サイト\u003c/h1\u003e\n\t\t\u003cul\u003e\n\t\t\u003cli\u003e\u003ca href=\"http://support.microsoft.com/kb/976112/en-us\"\u003eIntroduction to ASP.NET inline expressions\u003c/a\u003e\u003c/li\u003e\n\t\t\u003cli\u003e\u003ca href=\"http://d.hatena.ne.jp/shiba-yan/20110327/1301152413\"\u003eHTMLヘルパーを活用\u003c/a\u003e\u003c/li\u003e\n\t\t\u003c/ul\u003e\n\t\u003c/section\u003e\n\u003c/aside\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2011","0607"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

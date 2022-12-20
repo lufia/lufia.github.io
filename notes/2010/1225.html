@@ -1,0 +1,163 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: SproutCoreでデータベースと接続</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2011年2月26日更新</p>
+	<section>
+		<h1>SproutCoreでデータベースと接続</h1>
+		<section>
+			<h2>データソースの作成</h2>
+			<pre><code class="console">$ sc-gen data-source Blog.articleDataSource</code></pre>
+			<p>data_sourcesにファイルが生成されます。
+			以下のうち必要な関数を書き換えるといいです。</p>
+			<dl>
+			<div>
+				<dt>fetch</dt>
+				<dd>クエリでSC.Store#findした場合などで使われる</dd>
+			</div>
+			<div>
+				<dt>retrieveRecord</dt>
+				<dd>IDを使ってSC.Store#findした場合</dd>
+			</div>
+			<div>
+				<dt>createRecord</dt>
+				<dd>SC.Store#createRecordしたとき</dd>
+			</div>
+			<div>
+				<dt>updateReocrd</dt>
+				<dd>変更</dd>
+			</div>
+			<div>
+				<dt>destroyRecord</dt>
+				<dd>削除</dd>
+			</div>
+			</dl>
+			<p>自動更新しない場合は、</p>
+			<pre><code class="js">SC.Store.create({ commitRecordsAutomatically: NO }).find(...)</code></pre>
+		</section>
+		<section>
+			<h2>ストアキー</h2>
+			<p>個々のレコードには、ストア内かな、で一意なIDが割り当てられます。
+			これをストアキーと呼ぶみたいです。
+			SC.Record#primaryKeyはモデル別に一意なのですが、
+			こちらはモデルが違っても競合することはありません。</p>
+			<pre><code class="js">var a = Blog.store.find(Blog.Article, 1)
+var c = Blog.store.find(Blog.Comment, 1)
+a.get(&#x27;id&#x27;)			// 1
+c.get(&#x27;id&#x27;)			// 1
+a.get(&#x27;storeKey&#x27;)	// 6とか、その都度いろいろ
+c.get(&#x27;storeKey&#x27;)	// 7とか</code></pre>
+		</section>
+		<section>
+			<h2>NestedStore</h2>
+			<p>NestedStoreは、別ウインドウでOKボタンを押したら
+			データをサーバへ保存する、といった場合によく使います。
+			SC.NestedStore#commitChangesで元のストアに反映されて、
+			最終的にSC.Store#commitRecordsにより保存です。
+			SC.Store#commitRecordsAutomaticallyがYESであっても
+			commitChangesで自動的に反映はしないっぽい。</p>
+			<ul>
+			<li><a href="http://wiki.sproutcore.com/w/page/12412873/DataStore-NestedStores">DataStore NestedStores</a></li>
+			</ul>
+		</section>
+		<section>
+			<h2>クエリ</h2>
+			<section>
+				<h3>クエリの種類</h3>
+				<p>大きく、ローカルクエリとリモートクエリの2種類あります。
+				リモートクエリはサーバと通信して
+				データをメモリに読み込むことを目的としていて、
+				検索条件や並び替えなどは無視されます。
+				ローカルクエリはメモリに読み込んだデータを扱い、
+				検索条件や並び替えといった機能が有効になっています。</p>
+				<p>例外的に、ローカルクエリであっても最初の呼び出し時だけは
+				サーバと通信してデータをメモリに読み込みます。</p>
+			</section>
+			<section>
+				<h3>ローカルクエリ</h3>
+				<p>並び替え</p>
+				<pre><code class="js">SC.Query.local(Blog.Article, { orderBy: &#x27;createdDate DESC&#x27; })</code></pre>
+				<p>または、パラメータ(SCQL)を使う場合</p>
+				<pre><code class="js">SC.Query.local(Blog.Comment, &#x27;article = {article}&#x27;, {
+	article: this
+})</code></pre>
+				<p>いわゆるwhereとorderbyを同時に設定するクエリを書くには、
+				SC.Query#localは使えません。以下のようにします。</p>
+				<pre><code class="js">SC.Query.create({
+	recordType: Blog.Article,
+	conditions: &#x27;category={target}&#x27;,
+	parameters: { target: value },
+	orderBy: &#x27;createdDate DESC&#x27;
+})</code></pre>
+				<p>また、SC.Query#localと違って、
+				recordTypeを文字列にできません。</p>
+			</section>
+		</section>
+		<section>
+			<h2>トラブルシューティング</h2>
+			<section>
+				<h3>SC.Query作成時に型が無いとエラーになる</h3>
+				<p>型を参照する前にsc_requireを使うと、
+				回避できるかもしれません。</p>
+				<pre><code class="js">sc_require(&#x27;models/article&#x27;)
+Blog.ARTICLE_QUERY = SC.Query.local(&#x27;Blog.Article&#x27;, {
+	orderBy: &#x27;createdDate DESC&#x27;
+})</code></pre>
+			</section>
+			<section>
+				<h3>IEでputすると、HTTPステータスコードが1223で失敗する</h3>
+				<p>これはIEの不具合で、204を受け取るとなぜか1223となるみたい。
+				SproutCore 1.4.1ではまだ対応されていないですし、
+				対応するのかも分かりませんが、
+				とりあえず以下のコードで回避できます。
+				ちょっと強引ですけどね。</p>
+				<pre><code class="js">didUpdateRecord: function(r, store, storeKey){
+	if(SC.ok(r) || (SC.browser.msie &amp;&amp; r.get(&#x27;status&#x27;) == 1223)
+		// success
+	else
+		// error
+}</code></pre>
+				<p>ちなみに、SC.browser.msieにはバージョンが入っています。
+				IE8の場合は&quot;8.0&quot;という文字列。</p>
+			</section>
+			<section>
+				<h3>新規レコードのIDがundefinedになる</h3>
+				<p>レコード作成時に、SC.Store#dataSourceDidCompleteの
+				第3引数でIDを設定した場合、データハッシュのIDは変わっていません。
+				なので、ストアキーからIDを調べる場合は、
+				常にSC.Store#idForを使ったほうがいいと思います。</p>
+			</section>
+			<section>
+				<h3>createRecordしたのにデータソースへ処理が移らない</h3>
+				<p>ストアのcommitRecordsAutomaticallyがNOの場合、
+				commitRecordするといいかもしれないです。</p>
+			</section>
+		</section>
+	</section>
+</main>
+<aside>
+	<ul>
+	<li><a href="/notes/2010/1203.html"><a>SproutCoreのモデル定義</a></a></li>
+	<li><a href="http://wiki.sproutcore.com/w/page/12413058/Todos%2007-Hooking%20Up%20to%20the%20Backend">Hooking Up to the Backend</a></li>
+	</ul>
+</aside>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2010/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: SproutCoreでデータベースと接続\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2011年2月26日更新\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eSproutCoreでデータベースと接続\u003c/h1\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eデータソースの作成\u003c/h2\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e$ sc-gen data-source Blog.articleDataSource\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003edata_sourcesにファイルが生成されます。\n\t\t\t以下のうち必要な関数を書き換えるといいです。\u003c/p\u003e\n\t\t\t\u003cdl\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003efetch\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eクエリでSC.Store#findした場合などで使われる\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eretrieveRecord\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eIDを使ってSC.Store#findした場合\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003ecreateRecord\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eSC.Store#createRecordしたとき\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eupdateReocrd\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003e変更\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003edestroyRecord\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003e削除\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003c/dl\u003e\n\t\t\t\u003cp\u003e自動更新しない場合は、\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003eSC.Store.create({ commitRecordsAutomatically: NO }).find(...)\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eストアキー\u003c/h2\u003e\n\t\t\t\u003cp\u003e個々のレコードには、ストア内かな、で一意なIDが割り当てられます。\n\t\t\tこれをストアキーと呼ぶみたいです。\n\t\t\tSC.Record#primaryKeyはモデル別に一意なのですが、\n\t\t\tこちらはモデルが違っても競合することはありません。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003evar a = Blog.store.find(Blog.Article, 1)\nvar c = Blog.store.find(Blog.Comment, 1)\na.get('id')\t\t\t// 1\nc.get('id')\t\t\t// 1\na.get('storeKey')\t// 6とか、その都度いろいろ\nc.get('storeKey')\t// 7とか\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eNestedStore\u003c/h2\u003e\n\t\t\t\u003cp\u003eNestedStoreは、別ウインドウでOKボタンを押したら\n\t\t\tデータをサーバへ保存する、といった場合によく使います。\n\t\t\tSC.NestedStore#commitChangesで元のストアに反映されて、\n\t\t\t最終的にSC.Store#commitRecordsにより保存です。\n\t\t\tSC.Store#commitRecordsAutomaticallyがYESであっても\n\t\t\tcommitChangesで自動的に反映はしないっぽい。\u003c/p\u003e\n\t\t\t\u003cul\u003e\n\t\t\t\u003cli\u003e\u003ca href=\"http://wiki.sproutcore.com/w/page/12412873/DataStore-NestedStores\"\u003eDataStore NestedStores\u003c/a\u003e\u003c/li\u003e\n\t\t\t\u003c/ul\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eクエリ\u003c/h2\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eクエリの種類\u003c/h3\u003e\n\t\t\t\t\u003cp\u003e大きく、ローカルクエリとリモートクエリの2種類あります。\n\t\t\t\tリモートクエリはサーバと通信して\n\t\t\t\tデータをメモリに読み込むことを目的としていて、\n\t\t\t\t検索条件や並び替えなどは無視されます。\n\t\t\t\tローカルクエリはメモリに読み込んだデータを扱い、\n\t\t\t\t検索条件や並び替えといった機能が有効になっています。\u003c/p\u003e\n\t\t\t\t\u003cp\u003e例外的に、ローカルクエリであっても最初の呼び出し時だけは\n\t\t\t\tサーバと通信してデータをメモリに読み込みます。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eローカルクエリ\u003c/h3\u003e\n\t\t\t\t\u003cp\u003e並び替え\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003eSC.Query.local(Blog.Article, { orderBy: 'createdDate DESC' })\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003eまたは、パラメータ(SCQL)を使う場合\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003eSC.Query.local(Blog.Comment, 'article = {article}', {\n\tarticle: this\n})\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003eいわゆるwhereとorderbyを同時に設定するクエリを書くには、\n\t\t\t\tSC.Query#localは使えません。以下のようにします。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003eSC.Query.create({\n\trecordType: Blog.Article,\n\tconditions: 'category={target}',\n\tparameters: { target: value },\n\torderBy: 'createdDate DESC'\n})\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003eまた、SC.Query#localと違って、\n\t\t\t\trecordTypeを文字列にできません。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eトラブルシューティング\u003c/h2\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eSC.Query作成時に型が無いとエラーになる\u003c/h3\u003e\n\t\t\t\t\u003cp\u003e型を参照する前にsc_requireを使うと、\n\t\t\t\t回避できるかもしれません。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003esc_require('models/article')\nBlog.ARTICLE_QUERY = SC.Query.local('Blog.Article', {\n\torderBy: 'createdDate DESC'\n})\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eIEでputすると、HTTPステータスコードが1223で失敗する\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eこれはIEの不具合で、204を受け取るとなぜか1223となるみたい。\n\t\t\t\tSproutCore 1.4.1ではまだ対応されていないですし、\n\t\t\t\t対応するのかも分かりませんが、\n\t\t\t\tとりあえず以下のコードで回避できます。\n\t\t\t\tちょっと強引ですけどね。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003edidUpdateRecord: function(r, store, storeKey){\n\tif(SC.ok(r) || (SC.browser.msie \u0026amp;\u0026amp; r.get('status') == 1223)\n\t\t// success\n\telse\n\t\t// error\n}\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003eちなみに、SC.browser.msieにはバージョンが入っています。\n\t\t\t\tIE8の場合は\u0026quot;8.0\u0026quot;という文字列。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003e新規レコードのIDがundefinedになる\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eレコード作成時に、SC.Store#dataSourceDidCompleteの\n\t\t\t\t第3引数でIDを設定した場合、データハッシュのIDは変わっていません。\n\t\t\t\tなので、ストアキーからIDを調べる場合は、\n\t\t\t\t常にSC.Store#idForを使ったほうがいいと思います。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003ecreateRecordしたのにデータソースへ処理が移らない\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eストアのcommitRecordsAutomaticallyがNOの場合、\n\t\t\t\tcommitRecordするといいかもしれないです。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"1203.html\"\u003eSproutCoreのモデル定義\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://wiki.sproutcore.com/w/page/12413058/Todos%2007-Hooking%20Up%20to%20the%20Backend\"\u003eHooking Up to the Backend\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2010","1225"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: AJAXSLTを使ってみた</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2009年7月6日作成</p>
+	<section>
+		<h1>AJAXSLTを使ってみた</h1>
+		<p><a href="http://goog-ajaxslt.sourceforge.net/">AJAXSLT</a>は、
+		全部JavaScriptで書かれたXSLTライブラリです。
+		JavaScriptからXSLTプロセッサを呼べないSafariやOperaにも
+		対応しているとあったので、使ってみたのですが。。。</p>
+		<p>XMLの名前空間をよく理解していないのもあるので、
+		そう感じただけなのかもしれませんが、
+		AJAXSLTの動作に理不尽なものを感じたのでもう使わないです。
+		たぶん、根本的な原因はIEにあるのでしょうけど。</p>
+		<p>以下やってみたこと。淡々といきます。</p>
+		<section>
+			<h2>文字列からxmlParseを使ってデータを作る場合</h2>
+			<p>データはAtomを使うことにするので、
+			名前空間とルートノードは次のようになる。</p>
+			<pre><code class="js">atom = &#x27;&lt;feed xmlns=&quot;http://www.w3.org/2005/Atom&quot;&gt;&#x27; +
+	&#x27;&lt;/feed&gt;&#x27;</code></pre>
+			<p>次に、XSLTの中で、Atom名前空間をatomとする。</p>
+			<pre><code class="js">xslt = &#x27;&lt;xsl:stylesheet version=&quot;1.0&quot;&#x27; +
+	&#x27;	xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;&#x27;
+	&#x27;	xmlns:atom=&quot;http://www.w3.org/2005/Atom&quot;&#x27;</code></pre>
+			<p>この条件で、Atomのfeed要素にマッチさせるには、
+			IEやFirefoxのXSLTプロセッサでは以下のように書く。</p>
+			<pre><code class="xml">&lt;xsl:template match=&quot;atom:feed&quot;&gt;</code></pre>
+			<p>ここの名前空間は省略できない。XSLTで使うXPathは、
+			名前空間を省略した場合にはデフォルトではなく、
+			名前空間無しとして扱われるため。</p>
+			<p>AJAXSLTでは、上記の書き方ではマッチしない。
+			次の書き方になる。</p>
+			<pre><code class="xml">&lt;xsl:template match=&quot;feed&quot;&gt;</code></pre>
+		</section>
+		<section>
+			<h2>外部ファイルから読み込む場合</h2>
+			<p>上記のデータをそのまま使い、atom.xmlを作成する。
+			サーバから返すcontent-typeはapplication/xml。</p>
+			<pre><code class="xml">&lt;feed xmlns=&quot;http://www.w3.org/2005/Atom&quot;&gt;
+&lt;/feed&gt;</code></pre>
+			<p>次にindex.xslt。これもapplication/xml。
+			もちろんmatchで使うXPathには、名前空間を書いてはいけない。</p>
+			<pre><code class="xml">&lt;xsl:stylesheet version=&quot;1.0&quot;
+	xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;
+	xmlns:atom=&quot;http://www.w3.org/2005/Atom&quot;</code></pre>
+			<p>これらのデータを、jQuery.getを使って読み込み、
+			xsltProcessに渡すと、Safari4では期待通り動作するが、
+			IE8ではxsltProcessの結果が空文字列となり、うまくいかない。
+			jQuery.getの第4引数を使うと、読み込むフォーマットを
+			文字列やXML、JSON等から選べるので、
+			取得形式を文字列(text)に変更。
+			その文字列からxmlParse、xsltProcessを使っても結果は変わらず。
+			特にエラーが出ているわけでもないので原因不明。</p>
+		</section>
+	</section>
+</main>
+<aside>
+	<h1>参考ページ</h1>
+	<ul>
+	<li><a href="http://www.asahi-net.or.jp/~ps8a-okzk/xml/memo/hint_xslt.html">Hints for XSLT Troubles</a></li>
+	</ul>
+</aside>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2009/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: AJAXSLTを使ってみた\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2009年7月6日作成\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eAJAXSLTを使ってみた\u003c/h1\u003e\n\t\t\u003cp\u003e\u003ca href=\"http://goog-ajaxslt.sourceforge.net/\"\u003eAJAXSLT\u003c/a\u003eは、\n\t\t全部JavaScriptで書かれたXSLTライブラリです。\n\t\tJavaScriptからXSLTプロセッサを呼べないSafariやOperaにも\n\t\t対応しているとあったので、使ってみたのですが。。。\u003c/p\u003e\n\t\t\u003cp\u003eXMLの名前空間をよく理解していないのもあるので、\n\t\tそう感じただけなのかもしれませんが、\n\t\tAJAXSLTの動作に理不尽なものを感じたのでもう使わないです。\n\t\tたぶん、根本的な原因はIEにあるのでしょうけど。\u003c/p\u003e\n\t\t\u003cp\u003e以下やってみたこと。淡々といきます。\u003c/p\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e文字列からxmlParseを使ってデータを作る場合\u003c/h2\u003e\n\t\t\t\u003cp\u003eデータはAtomを使うことにするので、\n\t\t\t名前空間とルートノードは次のようになる。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003eatom = '\u0026lt;feed xmlns=\u0026quot;http://www.w3.org/2005/Atom\u0026quot;\u0026gt;' +\n\t'\u0026lt;/feed\u0026gt;'\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e次に、XSLTの中で、Atom名前空間をatomとする。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003exslt = '\u0026lt;xsl:stylesheet version=\u0026quot;1.0\u0026quot;' +\n\t'\txmlns:xsl=\u0026quot;http://www.w3.org/1999/XSL/Transform\u0026quot;'\n\t'\txmlns:atom=\u0026quot;http://www.w3.org/2005/Atom\u0026quot;'\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eこの条件で、Atomのfeed要素にマッチさせるには、\n\t\t\tIEやFirefoxのXSLTプロセッサでは以下のように書く。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"xml\"\u003e\u0026lt;xsl:template match=\u0026quot;atom:feed\u0026quot;\u0026gt;\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eここの名前空間は省略できない。XSLTで使うXPathは、\n\t\t\t名前空間を省略した場合にはデフォルトではなく、\n\t\t\t名前空間無しとして扱われるため。\u003c/p\u003e\n\t\t\t\u003cp\u003eAJAXSLTでは、上記の書き方ではマッチしない。\n\t\t\t次の書き方になる。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"xml\"\u003e\u0026lt;xsl:template match=\u0026quot;feed\u0026quot;\u0026gt;\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e外部ファイルから読み込む場合\u003c/h2\u003e\n\t\t\t\u003cp\u003e上記のデータをそのまま使い、atom.xmlを作成する。\n\t\t\tサーバから返すcontent-typeはapplication/xml。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"xml\"\u003e\u0026lt;feed xmlns=\u0026quot;http://www.w3.org/2005/Atom\u0026quot;\u0026gt;\n\u0026lt;/feed\u0026gt;\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e次にindex.xslt。これもapplication/xml。\n\t\t\tもちろんmatchで使うXPathには、名前空間を書いてはいけない。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"xml\"\u003e\u0026lt;xsl:stylesheet version=\u0026quot;1.0\u0026quot;\n\txmlns:xsl=\u0026quot;http://www.w3.org/1999/XSL/Transform\u0026quot;\n\txmlns:atom=\u0026quot;http://www.w3.org/2005/Atom\u0026quot;\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eこれらのデータを、jQuery.getを使って読み込み、\n\t\t\txsltProcessに渡すと、Safari4では期待通り動作するが、\n\t\t\tIE8ではxsltProcessの結果が空文字列となり、うまくいかない。\n\t\t\tjQuery.getの第4引数を使うと、読み込むフォーマットを\n\t\t\t文字列やXML、JSON等から選べるので、\n\t\t\t取得形式を文字列(text)に変更。\n\t\t\tその文字列からxmlParse、xsltProcessを使っても結果は変わらず。\n\t\t\t特にエラーが出ているわけでもないので原因不明。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003e参考ページ\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"http://www.asahi-net.or.jp/~ps8a-okzk/xml/memo/hint_xslt.html\"\u003eHints for XSLT Troubles\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2009","0706"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

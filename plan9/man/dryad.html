@@ -1,0 +1,95 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>Plan 9: dryad</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="/plan9/doc/inst/index.html"><a>インストール</a></a></li>
+	<li><a href="/plan9/doc/guide/index.html"><a>システムの使い方</a></a></li>
+	<li><a href="/plan9/doc/devel/index.html"><a>プログラミング</a></a></li>
+	<li><a href="/plan9/doc/adm/index.html"><a>システム管理</a></a></li>
+	<li><a href="/plan9/man/index.html"><a>自作ツール集</a></a></li>
+	</ul>
+</nav>
+<main>
+	<h1>dryad</h1>
+	<p>Cのライブラリまたは関数をテストするためのコードを自動生成します。</p>
+	<section>
+		<h2>SYNOPSIS</h2>
+		<pre><code>dryad [file ...]</code></pre>
+	</section>
+	<section>
+		<h2>DESCRIPTION</h2>
+		<p>Cのライブラリをテストするためのコードを作成します。</p>
+		<section>
+			<h3>基本フォーマット</h3>
+			<pre><code>%{
+(必要なら)Cの宣言など
+%}
+定数や処理内容の定義
+%%
+テストデータ1
+テストデータ2</code></pre>
+			<p>%{から%}の間には、#includeや宣言文などを書きます。
+			省略するとu.h, libc.h, regexp.hがincludeされますが、
+			それ以外では指定しない限り、何も仮定しません。</p>
+			<p>%}以降から%%までの間には、テストのためのコードや、
+			入力データのフォーマットを定義します。
+			例えば入力データが:で区切られている場合には、
+			%setを使って次のように定義します。</p>
+			<pre><code>%set FS &quot;:&quot;</code></pre>
+			<p>FSは変数名で、その次の&quot;&quot;に囲まれたものが値です。
+			また、%setできる変数は以下のものだけです。
+			どちらもAwkのそれと同じルールです。</p>
+			<dl>
+			<div>
+				<dt>FS</dt>
+				<dd>field separator</dd>
+			</div>
+			<div>
+				<dt>RS</dt>
+				<dd>record separator</dd>
+			</div>
+			</dl>
+			<p>テストのためのコードは、%try {}文を使って定義します。
+			{}の中にCのコードを書きます。{は%tryと同じ行になければいけません。
+			そして}は、必ずそれだけの行に書いてください。</p>
+			<p>%tryの中では、$1,$2,...のような引数が使えます。例えば
+			$1は最初の入力データに対応し、それらのどれもchar*型です。
+			それらを使ってdrycheckを呼んでください。
+			この関数は、<a href="https://9p.io/magic/man2html/2/print">print(2)</a>と同じ書式を扱い、
+			xpとfmtの結果が違えばエラーを報告します。</p>
+			<pre><code>drycheck(char *xp, char *fmt, ...)</code></pre>
+			<p>%tryの他にも、%begin,%endという文もあります。
+			それらは%tryの前または後に実行し、引数はありません。</p>
+			<p>%%以降は入力データが続きます。</p>
+		</section>
+		<section>
+			<h3>例外処理</h3>
+			<p>たとえばsysfatal(2)で終了した場合は、%rescueブロックを使えば
+			調べることが可能です。エラー文字列は%rで表し、%tryと同様に、
+			drycheckや$1, $2等が使えます。</p>
+		</section>
+	</section>
+	<section>
+		<h2>EXAMPLE</h2>
+		<pre><code>%set FS &quot;,&quot;
+%set RS &quot;\n&quot;
+%try {
+	drycheck($2, &quot;%x&quot;, atoi($1));
+}
+%%
+32,20
+17,11</code></pre>
+	</section>
+	<section>
+		<h2>SEE ALSO</h2>
+		<ul>
+		<li><a href="https://9p.io/magic/man2html/1/awk">awk(1)</a></li>
+		<li><a href="https://9p.io/magic/man2html/6/regexp">regexp(6)</a></li>
+		</ul>
+	</section>
+</main>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/plan9/man/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003ePlan 9: dryad\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/inst/index.html\"\u003eインストール\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/guide/index.html\"\u003eシステムの使い方\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/devel/index.html\"\u003eプログラミング\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/adm/index.html\"\u003eシステム管理\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/man/index.html\"\u003e自作ツール集\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003ch1\u003edryad\u003c/h1\u003e\n\t\u003cp\u003eCのライブラリまたは関数をテストするためのコードを自動生成します。\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003eSYNOPSIS\u003c/h2\u003e\n\t\t\u003cpre\u003e\u003ccode\u003edryad [file ...]\u003c/code\u003e\u003c/pre\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003eDESCRIPTION\u003c/h2\u003e\n\t\t\u003cp\u003eCのライブラリをテストするためのコードを作成します。\u003c/p\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch3\u003e基本フォーマット\u003c/h3\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003e%{\n(必要なら)Cの宣言など\n%}\n定数や処理内容の定義\n%%\nテストデータ1\nテストデータ2\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e%{から%}の間には、#includeや宣言文などを書きます。\n\t\t\t省略するとu.h, libc.h, regexp.hがincludeされますが、\n\t\t\tそれ以外では指定しない限り、何も仮定しません。\u003c/p\u003e\n\t\t\t\u003cp\u003e%}以降から%%までの間には、テストのためのコードや、\n\t\t\t入力データのフォーマットを定義します。\n\t\t\t例えば入力データが:で区切られている場合には、\n\t\t\t%setを使って次のように定義します。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003e%set FS \u0026quot;:\u0026quot;\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eFSは変数名で、その次の\u0026quot;\u0026quot;に囲まれたものが値です。\n\t\t\tまた、%setできる変数は以下のものだけです。\n\t\t\tどちらもAwkのそれと同じルールです。\u003c/p\u003e\n\t\t\t\u003cdl\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eFS\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003efield separator\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eRS\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003erecord separator\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003c/dl\u003e\n\t\t\t\u003cp\u003eテストのためのコードは、%try {}文を使って定義します。\n\t\t\t{}の中にCのコードを書きます。{は%tryと同じ行になければいけません。\n\t\t\tそして}は、必ずそれだけの行に書いてください。\u003c/p\u003e\n\t\t\t\u003cp\u003e%tryの中では、$1,$2,...のような引数が使えます。例えば\n\t\t\t$1は最初の入力データに対応し、それらのどれもchar*型です。\n\t\t\tそれらを使ってdrycheckを呼んでください。\n\t\t\tこの関数は、\u003ca href=\"https://9p.io/magic/man2html/2/print\"\u003eprint(2)\u003c/a\u003eと同じ書式を扱い、\n\t\t\txpとfmtの結果が違えばエラーを報告します。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003edrycheck(char *xp, char *fmt, ...)\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e%tryの他にも、%begin,%endという文もあります。\n\t\t\tそれらは%tryの前または後に実行し、引数はありません。\u003c/p\u003e\n\t\t\t\u003cp\u003e%%以降は入力データが続きます。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch3\u003e例外処理\u003c/h3\u003e\n\t\t\t\u003cp\u003eたとえばsysfatal(2)で終了した場合は、%rescueブロックを使えば\n\t\t\t調べることが可能です。エラー文字列は%rで表し、%tryと同様に、\n\t\t\tdrycheckや$1, $2等が使えます。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003eEXAMPLE\u003c/h2\u003e\n\t\t\u003cpre\u003e\u003ccode\u003e%set FS \u0026quot;,\u0026quot;\n%set RS \u0026quot;\\n\u0026quot;\n%try {\n\tdrycheck($2, \u0026quot;%x\u0026quot;, atoi($1));\n}\n%%\n32,20\n17,11\u003c/code\u003e\u003c/pre\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003eSEE ALSO\u003c/h2\u003e\n\t\t\u003cul\u003e\n\t\t\u003cli\u003e\u003ca href=\"https://9p.io/magic/man2html/1/awk\"\u003eawk(1)\u003c/a\u003e\u003c/li\u003e\n\t\t\u003cli\u003e\u003ca href=\"https://9p.io/magic/man2html/6/regexp\"\u003eregexp(6)\u003c/a\u003e\u003c/li\u003e\n\t\t\u003c/ul\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["plan9","man","dryad"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

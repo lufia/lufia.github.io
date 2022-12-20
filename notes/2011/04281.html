@@ -1,0 +1,640 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: ファイルサーバを読む</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2011年5月17日更新</p>
+	<section>
+		<h1>ファイルサーバを読む</h1>
+		<section>
+			<h2>ブロック</h2>
+			<p>以下でいうブロックとは論理ブロックで、
+			特定の場合を除いて、ディスクの物理ブロックとは異なります。
+			キャッシュもWORMも同じ大きさで8KB。</p>
+		</section>
+		<section>
+			<h2>チャネル</h2>
+			<p>ファイルサーバに9pで接続しているコネクション。
+			ファイルサーバのコンソールも含みます。</p>
+		</section>
+		<section>
+			<h2>バッファ</h2>
+			<p>ディスクブロックにアクセスする際、
+			ファイルサーバは必ずバッファを通して読み書きします。
+			getbufはデバイスとアドレスを取り、
+			それのバッファを用意してロックします。
+			putbufはその逆です。</p>
+			<p>Cache-WORMデバイスの場合は、
+			キャッシュディスクにWORMのデータを読み込んだり、
+			dumpの時にキャッシュのデータをWORMへ反映したりします。
+			バッファの詳細は下のほうで。</p>
+		</section>
+		<section>
+			<h2>デバイス</h2>
+			<dl>
+			<div>
+				<dt>Cache-WORM(cw)</dt>
+				<dd>キャッシュとWORMを両方持つデバイス</dd>
+			</div>
+			<div>
+				<dt>dump(ro)</dt>
+				<dd>9fs dumpしたときに見えるデバイス(2011/0411とか)</dd>
+				<dd>リードオンリー</dd>
+			</div>
+			<div>
+				<dt>Cache(c)</dt>
+				<dd>キャッシュ</dd>
+			</div>
+			<div>
+				<dt>WORM(w)</dt>
+				<dd>WORM</dd>
+				<dd>だいたいCache-WORMの一部分</dd>
+			</div>
+			</dl>
+			<p>別の記事で<a href="/notes/2010/0705.html"><a>fsバックアップメモ</a></a>も参考に。</p>
+		</section>
+		<section>
+			<h2>アドレス</h2>
+			<p>ファイルサーバのなかで管理しているアドレスは、
+			デバイスごとに違うものとして扱われます。
+			なので、getbuf(cw, 2)をマップした結果、
+			そのキャッシュブロックアドレスが10としても、
+			それとgetbuf(c, 10)は異なるアドレスとして扱われます。</p>
+		</section>
+		<section>
+			<h2>アドレス変換</h2>
+			<p>Cache-WORMデバイスを扱う場合は、
+			WORMアドレスからキャッシュのデータブロックへマップするため、
+			アドレス変換が発生します。
+			このとき、getbufに与えるアドレスはWORMアドレスです。</p>
+			<p>詳細は<a href="/notes/2011/04282.html"><a>ファイルサーバのディスクレイアウト</a></a>に。</p>
+		</section>
+		<section>
+			<h2>データ構造</h2>
+			<section>
+				<h3>ブロックアドレス関連の定数</h3>
+				<dl>
+				<div>
+					<dt>CACHE_ADDR</dt>
+					<dd>Cacheディスク構成情報などが配置されるブロックアドレス</dd>
+					<dd>2</dd>
+				</div>
+				<div>
+					<dt>SUPER_ADDR</dt>
+					<dd>WORMにある最初のスーパーブロックアドレス</dd>
+					<dd>2</dd>
+				</div>
+				<div>
+					<dt>ROOT_ADDR</dt>
+					<dd>WORMのルートブロックアドレス</dd>
+				</div>
+				<div>
+					<dt>RBUFSIZE</dt>
+					<dd>論理ブロックの大きさ</dd>
+					<dd>具体的には8KB(8192)</dd>
+				</div>
+				<div>
+					<dt>BUFSIZE</dt>
+					<dd>RBUFSIZEからタグのぶんを除いた、データを持てる大きさ</dd>
+					<dd>BUFSIZE+sizeof(Tag) == RBUFSIZE</dd>
+				</div>
+				<div>
+					<dt>BKPERBLK</dt>
+					<dd>1つのブロックに含まれるBucket数</dd>
+					<dd>10</dd>
+				</div>
+				<div>
+					<dt>CEPERBK</dt>
+					<dd>Bucketに含まれるCentry数</dd>
+					<dd>だいたい50</dd>
+				</div>
+				<div>
+					<dt>ADDFREE</dt>
+					<dd>grow時に増えるWORMブロック数</dd>
+					<dd>100</dd>
+				</div>
+				<div>
+					<dt>DIRPERBUF</dt>
+					<dd>1論理ブロックに保存できるDentry数</dd>
+				</div>
+				</dl>
+			</section>
+			<section>
+				<h3>ブロックの種類</h3>
+				<dl>
+				<div>
+					<dt>Tfile</dt>
+					<dd>ファイル</dd>
+				</div>
+				<div>
+					<dt>Tdir</dt>
+					<dd>ディレクトリ</dd>
+				</div>
+				<div>
+					<dt>Tsuper</dt>
+					<dd>WORMのスーパーブロック</dd>
+				</div>
+				<div>
+					<dt>Tind1</dt>
+					<dd>1段目の間接参照ブロック</dd>
+					<dd>2段目、3段目はTind1+1, Tind1+2となる</dd>
+				</div>
+				<div>
+					<dt>Tfree</dt>
+					<dd>フリーリスト</dd>
+				</div>
+				<div>
+					<dt>Tbuck</dt>
+					<dd>キャッシュディスクのマップブロック</dd>
+				</div>
+				</dl>
+			</section>
+			<section>
+				<h3>ブロックの状態</h3>
+				<dl>
+				<div>
+					<dt>Cread</dt>
+					<dd>WORMに書き込み後、変更がまだないブロック</dd>
+				</div>
+				<div>
+					<dt>Cwrite</dt>
+					<dd>WORMに書き込み後、変更のあったブロック</dd>
+				</div>
+				<div>
+					<dt>Cdirty</dt>
+					<dd>新しく確保されたブロックで、WORMにもない</dd>
+				</div>
+				<div>
+					<dt>Cdump</dt>
+					<dd>dumpキューに入っているブロック</dd>
+				</div>
+				<div>
+					<dt>Cdump1</dt>
+					<dd>dumpエラーのブロック?</dd>
+				</div>
+				<div>
+					<dt>Cnone</dt>
+					<dd>未確保</dd>
+				</div>
+				</dl>
+			</section>
+			<section>
+				<h3>Centry</h3>
+				<p>WORMアドレスとキャッシュディスクのブロックを関連付けするもの。
+				詳細は下のほうに。</p>
+				<dl>
+				<div>
+					<dt>waddr</dt>
+					<dd>WORMブロックのアドレス</dd>
+				</div>
+				<div>
+					<dt>state</dt>
+					<dd>ブロックの状態</dd>
+				</div>
+				</dl>
+			</section>
+			<section>
+				<h3>Bucket</h3>
+				<p>Centryの配列を持つ。
+				これが1ブロックにBKPERBLK個数格納される。
+				このあたりは<a href="/notes/2011/04282.html"><a>ファイルサーバのディスクレイアウト</a></a>を参照。</p>
+			</section>
+			<section>
+				<h3>Cache</h3>
+				<p>キャッシュの状態と、一部、WORMの状態を持つ。
+				常にキャッシュディスクのCACHE_ADDRに置かれる。</p>
+				<dl>
+				<div>
+					<dt>msize</dt>
+					<dd>Bucket数</dd>
+					<dd>msizeとなっているがブロック数ではない</dd>
+				</div>
+				<div>
+					<dt>maddr</dt>
+					<dd>マップ領域(Bucket)の開始アドレス</dd>
+					<dd>常にCACHE_ADDR+1 = 3</dd>
+				</div>
+				<div>
+					<dt>caddr</dt>
+					<dd>データ領域の先頭ブロックアドレス</dd>
+				</div>
+				<div>
+					<dt>csize</dt>
+					<dd>キャッシュディスクの使用可能なfs論理ブロック数</dd>
+					<dd>マップ領域分(msize/BKPERBLK)は含まない</dd>
+				</div>
+				<div>
+					<dt>sbaddr</dt>
+					<dt>cwraddr</dt>
+					<dt>roraddr</dt>
+					<dt>next</dt>
+					<dt>fsize</dt>
+					<dt>wsize</dt>
+					<dd>これらはSuperbの同名変数と同じ値を維持している</dd>
+				</div>
+				</dl>
+			</section>
+			<section>
+				<h3>Superb</h3>
+				<p>WORMに保存されるスーパーブロック。</p>
+				<dl>
+				<div>
+					<dt>last</dt>
+					<dd>そのSuperbからみて前回のスーパーブロックアドレス</dd>
+					<dd>最初は2</dd>
+				</div>
+				<div>
+					<dt>cwraddr</dt>
+					<dd>ルートブロックのアドレス</dd>
+					<dd>最初は3</dd>
+				</div>
+				<div>
+					<dt>roraddr</dt>
+					<dd>dumpデバイスのルートアドレス</dd>
+					<dd>最初は4</dd>
+				</div>
+				<div>
+					<dt>next</dt>
+					<dd>次のスーパーブロックアドレス</dd>
+					<dd>最初は5</dd>
+				</div>
+				<div>
+					<dt>fstart</dt>
+					<dd>2</dd>
+				</div>
+				<div>
+					<dt>fsize</dt>
+					<dd>使用中WORMブロック数</dd>
+					<dd>最初は6</dd>
+					<dd>fsgrow()のときにADDFREEだけまとめて増える</dd>
+					<dd>dumpのときにもCwriteブロックの場合に1増える</dd>
+				</div>
+				<div>
+					<dt>wsize</dt>
+					<dd>WORMブロック数</dd>
+				</div>
+				<div>
+					<dt>fbuf</dt>
+					<dd>フリーブロック</dd>
+				</div>
+				</dl>
+			</section>
+			<section>
+				<h3>Fbuf</h3>
+				<p>フリーブロックアドレスの配列。
+				新しいブロックが割り当てられる(Cdirty)時に後ろから使われる。</p>
+				<p>これがFEPERBUFを超えると、超えたFbufをブロックへ書き、
+				新しいフリーブロックの先頭に書きこんだアドレスを設定する。
+				このため、間接参照みたいな扱いになる。
+				このときのtagはTfree。</p>
+				<dl>
+				<div>
+					<dt>nfree</dt>
+					<dd>ブロックの個数</dd>
+				</div>
+				<div>
+					<dt>free</dt>
+					<dd>フリーブロックのアドレス配列</dd>
+					<dd>0のみ特別</dd>
+				</div>
+				</dl>
+			</section>
+			<section>
+				<h3>Cw</h3>
+				<p>キャッシュWORM</p>
+				<dl>
+				<div>
+					<dt>fsize</dt>
+					<dd>dumpのときに共有変数っぽく使う</dd>
+					<dd>意味はCacheなどのそれと同じ</dd>
+				</div>
+				<div>
+					<dt>daddr</dt>
+					<dd>dump対象となったブロックアドレスっぽい</dd>
+				</div>
+				</dl>
+			</section>
+			<section>
+				<h3>Wren</h3>
+				<p>物理的な磁気ディスク。</p>
+				<dl>
+				<div>
+					<dt>nblock</dt>
+					<dd>SCSI論理ブロック数</dd>
+				</div>
+				<div>
+					<dt>block</dt>
+					<dd>SCSIブロック長</dd>
+					<dd>単位はバイト</dd>
+				</div>
+				<div>
+					<dt>mult</dt>
+					<dd>RBUFSIZEを確保するのに必要なSCSI論理ブロック数</dd>
+				</div>
+				<div>
+					<dt>max</dt>
+					<dd>最大ブロック数</dd>
+					<dd>ブロックのサイズはRBUFSIZE</dd>
+				</div>
+				</dl>
+			</section>
+			<section>
+				<h3>Iobuf</h3>
+				<p>各種ブロック操作を行うときに使うバッファ。
+				getbufにより空いているバッファがロックされ使用中になり、
+				putbufによってロック解除され未使用状態に戻る。</p>
+				<dl>
+				<div>
+					<dt>addr</dt>
+					<dd>WORMアドレス</dd>
+				</div>
+				<div>
+					<dt>dev</dt>
+					<dd>デバイス</dd>
+				</div>
+				<div>
+					<dt>flags</dt>
+					<dd>BmodとかBreadとかのフラグ</dd>
+					<dd>これはputbufで処理(キャッシュに書き込むなど)</dd>
+				</div>
+				<div>
+					<dt>iobuf</dt>
+					<dd>各種操作を行うためのバッファ</dd>
+					<dd>Iobufが使われていない場合はnilになっている</dd>
+					<dd>read/writeなどで使う</dd>
+				</div>
+				<div>
+					<dt>xiobuf</dt>
+					<dd>実際のバッファ</dd>
+					<dd>事前にメモリを確保していて、iobufmapによりこれをiobufへ設定</dd>
+				</div>
+				</dl>
+			</section>
+			<section>
+				<h3>Dentry</h3>
+				<p>ディレクトリエントリ。
+				直接ブロック6個、間接ブロック4個などの情報が保存されている。
+				fs64の場合、1つのブロックに47個入るらしい。</p>
+				<p>ディレクトリがブロックをまたいで分断されることはない。
+				なので(mode&amp;DDIR)なら、
+				dblock[0]もdblock[1]もgetdir(block, i)が使える。</p>
+				<dl>
+				<div>
+					<dt>mode</dt>
+					<dd>パーミッション</dd>
+				</div>
+				<div>
+					<dt>dblock</dt>
+					<dd>直接ブロックのアドレス配列</dd>
+				</div>
+				<div>
+					<dt>iblocks</dt>
+					<dd>間接ブロックのアドレス配列</dd>
+				</div>
+				<div>
+					<dt>slot</dt>
+					<dd>バッファ中のインデックス</dd>
+					<dd>同じ親ディレクトリでも、ブロックが異なればまた0からはじまる</dd>
+				</div>
+				</dl>
+			</section>
+			<section>
+				<h3>File</h3>
+				<p>オープンファイル。
+				詳細は<a href="/notes/2011/0516.html"><a>fsオープンファイルの管理</a></a>を参照。</p>
+				<dl>
+				<div>
+					<dt>cp</dt>
+					<dd>ファイルを扱っているチャネル</dd>
+					<dd>未使用ならnil</dd>
+				</div>
+				<div>
+					<dt>wpath</dt>
+					<dd>親ディレクトリを指すリスト</dd>
+				</div>
+				<div>
+					<dt>addr</dt>
+					<dd>ファイルのDentryが保存されているブロックアドレス</dd>
+				</div>
+				<div>
+					<dt>slot</dt>
+					<dd>ファイルのDentry中で、何番目のDentryかを指すオフセット</dd>
+				</div>
+				</dl>
+			</section>
+			<section>
+				<h3>Wpath</h3>
+				<p>オープンファイルについて、その親ディレクトリを指す。</p>
+				<dl>
+				<div>
+					<dt>up</dt>
+					<dd>さらに上位ディレクトリ</dd>
+					<dd>Wpathが/の場合はnil</dd>
+				</div>
+				<div>
+					<dt>refs</dt>
+					<dd>参照カウント</dd>
+				</div>
+				<div>
+					<dt>addr</dt>
+					<dt>slot</dt>
+					<dd>Fileのそれと同じ</dd>
+				</div>
+				</dl>
+			</section>
+			<section>
+				<h3>グローバル変数</h3>
+				<dl>
+				<div>
+					<dt>flist</dt>
+					<dd>オープンファイルのリスト</dd>
+				</div>
+				<div>
+					<dt>sdevs</dt>
+					<dd>たぶんディスクコントローラ</dd>
+				</div>
+				</dl>
+			</section>
+		</section>
+		<section>
+			<h2>各種操作</h2>
+			<section>
+				<h3>バッファ</h3>
+				<p>ファイルサーバは、ディスクのブロックにアクセスする場合、
+				getbufとputbufを使って、必ずバッファを通して扱います。</p>
+				<pre><code class="c">getbuf(dev, addr)</code></pre>
+				<p>単純にするため引数を一部省略していますが、getbufは、
+				デバイスとWORMアドレスを使ってバッファを使用可能にします。
+				必要ならWORMからバッファへ読み込んだりもします。
+				次のはあくまで疑似コード。実際は全然違うけど雰囲気だけ。</p>
+				<pre><code class="c">mem: array of list of ref Iobuf
+
+getbuf(dev: ref Device, addr: Off): ref Iobuf
+{
+	list = mem[hash(addr)].find(a =&gt; !a.used);
+	c = list.find(a =&gt; a.dev == dev &amp;&amp; a.addr == addr);
+	if(c == nil)
+		c = list.last;
+	lock(c);
+	c.dev = dev;
+	c.addr = addr;
+	必要なデータの準備(c);
+	return c;
+}</code></pre>
+				<p>必要なデータの準備のところで、
+				実際にブロックへ読み書きをします。
+				Cache-WORMデバイスの場合は以下のように呼び出しします。</p>
+				<pre><code class="c">getbuf(cw-&gt;dev, up-&gt;addr, Bread|Bmod)
+devread(cw-&gt;dev, up-&gt;addr, buf)	# 0なら正常終了
+cwread(cw-&gt;dev, up-&gt;addr, buf)
+cwio(cw-&gt;dev, up-&gt;addr, buf, Oread)</code></pre>
+				<p>ここから下はふつうにSCSIコマンド。</p>
+			</section>
+			<section>
+				<h3>ream</h3>
+				<p>Cache, Superb, 2つのルート(cwとro)を設定します。
+				これも<a href="/notes/2010/0705.html"><a>fsバックアップメモ</a></a>のほうに。</p>
+			</section>
+			<section>
+				<h3>grow</h3>
+				<p>必要に応じてWORMの容量を増加させます。
+				増加したブロックは、フリーブロックリストに移ります。</p>
+				<pre><code class="c">cwgrow: fn(dev: ref Device, sb: ref Superb, uid: int): int
+{
+	h: ref Cache;
+	h = getbuf(CDEV(dev), CACHE_ADDR, ...);
+	h.fsize += ADDFREE;
+	if(h.fsize &gt;= h.wsize)
+		h.fsize = h.wsize;
+
+	sb-&gt;fsize = h.fsize;
+	for(waddr in 増えたブロックについて){
+		cwio(dev, waddr, 0, Ogrow);
+		addfree(dev, waddr, sb);
+	}
+}</code></pre>
+			</section>
+			<section>
+				<h3>remove</h3>
+				<p>ファイルを削除したとき、
+				そのファイルが使用しているブロックをみて、
+				それがCdirtyならフリーリストへ戻します。
+				Cwriteなどの場合は再利用すると整合性が取れなくなるので、
+				フリーリストへは戻しません。</p>
+			</section>
+			<section>
+				<h3>recover</h3>
+				<p>いちばん新しいdumpの状態に戻します。
+				実際の動きは<a href="/notes/2010/0705.html"><a>fsバックアップメモ</a></a>を参照。</p>
+			</section>
+			<section>
+				<h3>dump(queue)</h3>
+				<p>ファイルサーバは朝5:00に、
+				その時点のバックアップをWORMへ書き込むのですが、
+				それは変更のあったブロックをdumpキューへ入れる部分と、
+				キューのブロックを実際に書き込む部分に分かれています。
+				ここではキューに入れるところについて。</p>
+				<p>まず、ファイルサーバは、ファイルの操作ができないように
+				全体をロックします。
+				変更のあったブロックは必ずキャッシュに残っているので、
+				キャッシュディスクから変更のあったブロックをみて、
+				その状態をCdumpに書き換えます。
+				ここで、実際はデータ領域ではなくマップ領域をみて、
+				そのブロックが変更されていなければ飛ばします。</p>
+				<p>変更のあったブロックで、その状態がCwriteの場合、
+				新しいブロックアドレスを割り当てます。
+				これはフリーブロックを使いません。
+				WORMディスクの容量(fsize)を増やしながら割り当てます。</p>
+				<pre><code class="c">na = cw-&gt;fsize++
+cwio(cw-&gt;dev, na, 0, Ogrow)
+cwio(cw-&gt;dev, na, p-&gt;iobuf, Owrite)
+cwio(cw-&gt;dev, na, 0, Odump)
+cwio(cw-&gt;dev, addr, 0, Orele)</code></pre>
+				<p>Cdirtyの場合はまだ未使用なのでそのままです。</p>
+				<pre><code>cwio(cw-&gt;dev, addr, 0, Odump)</code></pre>
+				<p>この再割り当てはcwrecur関数が処理しています。
+				これは深さ優先で探索するので、
+				深い場所のほうが小さいアドレスになるみたい。
+				で、どこかに変更があった場合はrootがwriteになっているので、
+				最後の戻り値が新しいルートの値(最大アドレス)となっている。
+				ちなみに、cwrecurの戻り値は、変更がなければ0。</p>
+				<p>アドレスの再割り当てが終わったら、
+				rewalk関数により、オープンファイルが
+				持っているアドレスを新しいアドレスに更新して、
+				サーバの処理を再開します。</p>
+				<div class="note">
+					<p>OreleとOfreeの違いは、</p>
+					<dl>
+					<div>
+						<dt>rele</dt>
+						<dd>writeならnoneに</dd>
+					</div>
+					<div>
+						<dt>free</dt>
+						<dd>writeまたはreadならnone</dd>
+					</div>
+					</dl>
+				</div>
+			</section>
+			<section>
+				<h3>dump(copy)</h3>
+				<p>キューに入れられたブロックについて、
+				その内容をWORMに書き込むプロセスをwcpといいます。
+				これは朝5:00に限らず動いていて、
+				ブロックの状態がCdumpのものを
+				小さいアドレスから順に探して書き込みます。
+				その処理はdumpblock関数あたり。</p>
+				<p>全部処理が終われば、cw-&gt;nodump = 1として停止。
+				次にdumpキューへ入れられればまたnodump = 0となり
+				プロセスが活性化します。</p>
+			</section>
+		</section>
+		<section>
+			<h2>メモ</h2>
+			<section>
+				<h3>SCSIドライバのロード</h3>
+				<p>pc/scsi.cに、名前と関数(reset)を登録するテーブルがある。
+				これをpc/scsi.c:scsiinitから調べて、
+				一致すれば関数の戻り値をコントローラ構造体のioに入れる。
+				関数(reset)は、scsiの入出力を処理する関数(Scsiio)を
+				返すようになっているので、
+				デバイスドライバ依存の処理は全部これを通して扱うみたい。
+				ちなみに同名の関数がいくつかあるけど、#ifdef FSのものが有効。</p>
+			</section>
+		</section>
+	</section>
+</main>
+<aside>
+	<section>
+		<h1>関連ページ</h1>
+		<ul>
+		<li><a href="/notes/2011/04282.html"><a>ファイルサーバのディスクレイアウト</a></a></li>
+		<li><a href="/notes/2010/0705.html"><a>fsバックアップメモ</a></a></li>
+		</ul>
+	</section>
+	<section>
+		<h1>参考サイト</h1>
+		<ul>
+		<li><a href="http://plan9.aichi-u.ac.jp/cwfs/">cwfsの研究</a></li>
+		</ul>
+	</section>
+</aside>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2011/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: ファイルサーバを読む\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2011年5月17日更新\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eファイルサーバを読む\u003c/h1\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eブロック\u003c/h2\u003e\n\t\t\t\u003cp\u003e以下でいうブロックとは論理ブロックで、\n\t\t\t特定の場合を除いて、ディスクの物理ブロックとは異なります。\n\t\t\tキャッシュもWORMも同じ大きさで8KB。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eチャネル\u003c/h2\u003e\n\t\t\t\u003cp\u003eファイルサーバに9pで接続しているコネクション。\n\t\t\tファイルサーバのコンソールも含みます。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eバッファ\u003c/h2\u003e\n\t\t\t\u003cp\u003eディスクブロックにアクセスする際、\n\t\t\tファイルサーバは必ずバッファを通して読み書きします。\n\t\t\tgetbufはデバイスとアドレスを取り、\n\t\t\tそれのバッファを用意してロックします。\n\t\t\tputbufはその逆です。\u003c/p\u003e\n\t\t\t\u003cp\u003eCache-WORMデバイスの場合は、\n\t\t\tキャッシュディスクにWORMのデータを読み込んだり、\n\t\t\tdumpの時にキャッシュのデータをWORMへ反映したりします。\n\t\t\tバッファの詳細は下のほうで。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eデバイス\u003c/h2\u003e\n\t\t\t\u003cdl\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eCache-WORM(cw)\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eキャッシュとWORMを両方持つデバイス\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003edump(ro)\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003e9fs dumpしたときに見えるデバイス(2011/0411とか)\u003c/dd\u003e\n\t\t\t\t\u003cdd\u003eリードオンリー\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eCache(c)\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eキャッシュ\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eWORM(w)\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eWORM\u003c/dd\u003e\n\t\t\t\t\u003cdd\u003eだいたいCache-WORMの一部分\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003c/dl\u003e\n\t\t\t\u003cp\u003e別の記事で\u003ca href=\"../2010/0705.html\"\u003efsバックアップメモ\u003c/a\u003eも参考に。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eアドレス\u003c/h2\u003e\n\t\t\t\u003cp\u003eファイルサーバのなかで管理しているアドレスは、\n\t\t\tデバイスごとに違うものとして扱われます。\n\t\t\tなので、getbuf(cw, 2)をマップした結果、\n\t\t\tそのキャッシュブロックアドレスが10としても、\n\t\t\tそれとgetbuf(c, 10)は異なるアドレスとして扱われます。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eアドレス変換\u003c/h2\u003e\n\t\t\t\u003cp\u003eCache-WORMデバイスを扱う場合は、\n\t\t\tWORMアドレスからキャッシュのデータブロックへマップするため、\n\t\t\tアドレス変換が発生します。\n\t\t\tこのとき、getbufに与えるアドレスはWORMアドレスです。\u003c/p\u003e\n\t\t\t\u003cp\u003e詳細は\u003ca href=\"04282.html\"\u003eファイルサーバのディスクレイアウト\u003c/a\u003eに。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eデータ構造\u003c/h2\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eブロックアドレス関連の定数\u003c/h3\u003e\n\t\t\t\t\u003cdl\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eCACHE_ADDR\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eCacheディスク構成情報などが配置されるブロックアドレス\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003e2\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eSUPER_ADDR\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eWORMにある最初のスーパーブロックアドレス\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003e2\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eROOT_ADDR\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eWORMのルートブロックアドレス\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eRBUFSIZE\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e論理ブロックの大きさ\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003e具体的には8KB(8192)\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eBUFSIZE\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eRBUFSIZEからタグのぶんを除いた、データを持てる大きさ\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003eBUFSIZE+sizeof(Tag) == RBUFSIZE\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eBKPERBLK\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e1つのブロックに含まれるBucket数\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003e10\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eCEPERBK\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eBucketに含まれるCentry数\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003eだいたい50\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eADDFREE\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003egrow時に増えるWORMブロック数\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003e100\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eDIRPERBUF\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e1論理ブロックに保存できるDentry数\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003c/dl\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eブロックの種類\u003c/h3\u003e\n\t\t\t\t\u003cdl\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eTfile\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eファイル\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eTdir\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eディレクトリ\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eTsuper\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eWORMのスーパーブロック\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eTind1\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e1段目の間接参照ブロック\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003e2段目、3段目はTind1+1, Tind1+2となる\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eTfree\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eフリーリスト\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eTbuck\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eキャッシュディスクのマップブロック\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003c/dl\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eブロックの状態\u003c/h3\u003e\n\t\t\t\t\u003cdl\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eCread\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eWORMに書き込み後、変更がまだないブロック\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eCwrite\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eWORMに書き込み後、変更のあったブロック\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eCdirty\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e新しく確保されたブロックで、WORMにもない\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eCdump\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003edumpキューに入っているブロック\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eCdump1\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003edumpエラーのブロック?\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eCnone\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e未確保\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003c/dl\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eCentry\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eWORMアドレスとキャッシュディスクのブロックを関連付けするもの。\n\t\t\t\t詳細は下のほうに。\u003c/p\u003e\n\t\t\t\t\u003cdl\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003ewaddr\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eWORMブロックのアドレス\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003estate\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eブロックの状態\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003c/dl\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eBucket\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eCentryの配列を持つ。\n\t\t\t\tこれが1ブロックにBKPERBLK個数格納される。\n\t\t\t\tこのあたりは\u003ca href=\"04282.html\"\u003eファイルサーバのディスクレイアウト\u003c/a\u003eを参照。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eCache\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eキャッシュの状態と、一部、WORMの状態を持つ。\n\t\t\t\t常にキャッシュディスクのCACHE_ADDRに置かれる。\u003c/p\u003e\n\t\t\t\t\u003cdl\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003emsize\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eBucket数\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003emsizeとなっているがブロック数ではない\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003emaddr\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eマップ領域(Bucket)の開始アドレス\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003e常にCACHE_ADDR+1 = 3\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003ecaddr\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eデータ領域の先頭ブロックアドレス\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003ecsize\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eキャッシュディスクの使用可能なfs論理ブロック数\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003eマップ領域分(msize/BKPERBLK)は含まない\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003esbaddr\u003c/dt\u003e\n\t\t\t\t\t\u003cdt\u003ecwraddr\u003c/dt\u003e\n\t\t\t\t\t\u003cdt\u003eroraddr\u003c/dt\u003e\n\t\t\t\t\t\u003cdt\u003enext\u003c/dt\u003e\n\t\t\t\t\t\u003cdt\u003efsize\u003c/dt\u003e\n\t\t\t\t\t\u003cdt\u003ewsize\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eこれらはSuperbの同名変数と同じ値を維持している\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003c/dl\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eSuperb\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eWORMに保存されるスーパーブロック。\u003c/p\u003e\n\t\t\t\t\u003cdl\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003elast\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eそのSuperbからみて前回のスーパーブロックアドレス\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003e最初は2\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003ecwraddr\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eルートブロックのアドレス\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003e最初は3\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eroraddr\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003edumpデバイスのルートアドレス\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003e最初は4\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003enext\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e次のスーパーブロックアドレス\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003e最初は5\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003efstart\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e2\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003efsize\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e使用中WORMブロック数\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003e最初は6\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003efsgrow()のときにADDFREEだけまとめて増える\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003edumpのときにもCwriteブロックの場合に1増える\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003ewsize\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eWORMブロック数\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003efbuf\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eフリーブロック\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003c/dl\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eFbuf\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eフリーブロックアドレスの配列。\n\t\t\t\t新しいブロックが割り当てられる(Cdirty)時に後ろから使われる。\u003c/p\u003e\n\t\t\t\t\u003cp\u003eこれがFEPERBUFを超えると、超えたFbufをブロックへ書き、\n\t\t\t\t新しいフリーブロックの先頭に書きこんだアドレスを設定する。\n\t\t\t\tこのため、間接参照みたいな扱いになる。\n\t\t\t\tこのときのtagはTfree。\u003c/p\u003e\n\t\t\t\t\u003cdl\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003enfree\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eブロックの個数\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003efree\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eフリーブロックのアドレス配列\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003e0のみ特別\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003c/dl\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eCw\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eキャッシュWORM\u003c/p\u003e\n\t\t\t\t\u003cdl\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003efsize\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003edumpのときに共有変数っぽく使う\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003e意味はCacheなどのそれと同じ\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003edaddr\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003edump対象となったブロックアドレスっぽい\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003c/dl\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eWren\u003c/h3\u003e\n\t\t\t\t\u003cp\u003e物理的な磁気ディスク。\u003c/p\u003e\n\t\t\t\t\u003cdl\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003enblock\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eSCSI論理ブロック数\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eblock\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eSCSIブロック長\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003e単位はバイト\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003emult\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eRBUFSIZEを確保するのに必要なSCSI論理ブロック数\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003emax\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e最大ブロック数\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003eブロックのサイズはRBUFSIZE\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003c/dl\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eIobuf\u003c/h3\u003e\n\t\t\t\t\u003cp\u003e各種ブロック操作を行うときに使うバッファ。\n\t\t\t\tgetbufにより空いているバッファがロックされ使用中になり、\n\t\t\t\tputbufによってロック解除され未使用状態に戻る。\u003c/p\u003e\n\t\t\t\t\u003cdl\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eaddr\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eWORMアドレス\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003edev\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eデバイス\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eflags\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eBmodとかBreadとかのフラグ\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003eこれはputbufで処理(キャッシュに書き込むなど)\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eiobuf\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e各種操作を行うためのバッファ\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003eIobufが使われていない場合はnilになっている\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003eread/writeなどで使う\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003exiobuf\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e実際のバッファ\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003e事前にメモリを確保していて、iobufmapによりこれをiobufへ設定\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003c/dl\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eDentry\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eディレクトリエントリ。\n\t\t\t\t直接ブロック6個、間接ブロック4個などの情報が保存されている。\n\t\t\t\tfs64の場合、1つのブロックに47個入るらしい。\u003c/p\u003e\n\t\t\t\t\u003cp\u003eディレクトリがブロックをまたいで分断されることはない。\n\t\t\t\tなので(mode\u0026amp;DDIR)なら、\n\t\t\t\tdblock[0]もdblock[1]もgetdir(block, i)が使える。\u003c/p\u003e\n\t\t\t\t\u003cdl\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003emode\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eパーミッション\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003edblock\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e直接ブロックのアドレス配列\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eiblocks\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e間接ブロックのアドレス配列\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eslot\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eバッファ中のインデックス\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003e同じ親ディレクトリでも、ブロックが異なればまた0からはじまる\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003c/dl\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eFile\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eオープンファイル。\n\t\t\t\t詳細は\u003ca href=\"0516.html\"\u003efsオープンファイルの管理\u003c/a\u003eを参照。\u003c/p\u003e\n\t\t\t\t\u003cdl\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003ecp\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eファイルを扱っているチャネル\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003e未使用ならnil\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003ewpath\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e親ディレクトリを指すリスト\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eaddr\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eファイルのDentryが保存されているブロックアドレス\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eslot\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eファイルのDentry中で、何番目のDentryかを指すオフセット\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003c/dl\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eWpath\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eオープンファイルについて、その親ディレクトリを指す。\u003c/p\u003e\n\t\t\t\t\u003cdl\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eup\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eさらに上位ディレクトリ\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003eWpathが/の場合はnil\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003erefs\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e参照カウント\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eaddr\u003c/dt\u003e\n\t\t\t\t\t\u003cdt\u003eslot\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eFileのそれと同じ\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003c/dl\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eグローバル変数\u003c/h3\u003e\n\t\t\t\t\u003cdl\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eflist\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eオープンファイルのリスト\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003esdevs\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eたぶんディスクコントローラ\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003c/dl\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e各種操作\u003c/h2\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eバッファ\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eファイルサーバは、ディスクのブロックにアクセスする場合、\n\t\t\t\tgetbufとputbufを使って、必ずバッファを通して扱います。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"c\"\u003egetbuf(dev, addr)\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003e単純にするため引数を一部省略していますが、getbufは、\n\t\t\t\tデバイスとWORMアドレスを使ってバッファを使用可能にします。\n\t\t\t\t必要ならWORMからバッファへ読み込んだりもします。\n\t\t\t\t次のはあくまで疑似コード。実際は全然違うけど雰囲気だけ。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"c\"\u003emem: array of list of ref Iobuf\n\ngetbuf(dev: ref Device, addr: Off): ref Iobuf\n{\n\tlist = mem[hash(addr)].find(a =\u0026gt; !a.used);\n\tc = list.find(a =\u0026gt; a.dev == dev \u0026amp;\u0026amp; a.addr == addr);\n\tif(c == nil)\n\t\tc = list.last;\n\tlock(c);\n\tc.dev = dev;\n\tc.addr = addr;\n\t必要なデータの準備(c);\n\treturn c;\n}\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003e必要なデータの準備のところで、\n\t\t\t\t実際にブロックへ読み書きをします。\n\t\t\t\tCache-WORMデバイスの場合は以下のように呼び出しします。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"c\"\u003egetbuf(cw-\u0026gt;dev, up-\u0026gt;addr, Bread|Bmod)\ndevread(cw-\u0026gt;dev, up-\u0026gt;addr, buf)\t# 0なら正常終了\ncwread(cw-\u0026gt;dev, up-\u0026gt;addr, buf)\ncwio(cw-\u0026gt;dev, up-\u0026gt;addr, buf, Oread)\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003eここから下はふつうにSCSIコマンド。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eream\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eCache, Superb, 2つのルート(cwとro)を設定します。\n\t\t\t\tこれも\u003ca href=\"../2010/0705.html\"\u003efsバックアップメモ\u003c/a\u003eのほうに。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003egrow\u003c/h3\u003e\n\t\t\t\t\u003cp\u003e必要に応じてWORMの容量を増加させます。\n\t\t\t\t増加したブロックは、フリーブロックリストに移ります。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"c\"\u003ecwgrow: fn(dev: ref Device, sb: ref Superb, uid: int): int\n{\n\th: ref Cache;\n\th = getbuf(CDEV(dev), CACHE_ADDR, ...);\n\th.fsize += ADDFREE;\n\tif(h.fsize \u0026gt;= h.wsize)\n\t\th.fsize = h.wsize;\n\n\tsb-\u0026gt;fsize = h.fsize;\n\tfor(waddr in 増えたブロックについて){\n\t\tcwio(dev, waddr, 0, Ogrow);\n\t\taddfree(dev, waddr, sb);\n\t}\n}\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eremove\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eファイルを削除したとき、\n\t\t\t\tそのファイルが使用しているブロックをみて、\n\t\t\t\tそれがCdirtyならフリーリストへ戻します。\n\t\t\t\tCwriteなどの場合は再利用すると整合性が取れなくなるので、\n\t\t\t\tフリーリストへは戻しません。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003erecover\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eいちばん新しいdumpの状態に戻します。\n\t\t\t\t実際の動きは\u003ca href=\"../2010/0705.html\"\u003efsバックアップメモ\u003c/a\u003eを参照。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003edump(queue)\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eファイルサーバは朝5:00に、\n\t\t\t\tその時点のバックアップをWORMへ書き込むのですが、\n\t\t\t\tそれは変更のあったブロックをdumpキューへ入れる部分と、\n\t\t\t\tキューのブロックを実際に書き込む部分に分かれています。\n\t\t\t\tここではキューに入れるところについて。\u003c/p\u003e\n\t\t\t\t\u003cp\u003eまず、ファイルサーバは、ファイルの操作ができないように\n\t\t\t\t全体をロックします。\n\t\t\t\t変更のあったブロックは必ずキャッシュに残っているので、\n\t\t\t\tキャッシュディスクから変更のあったブロックをみて、\n\t\t\t\tその状態をCdumpに書き換えます。\n\t\t\t\tここで、実際はデータ領域ではなくマップ領域をみて、\n\t\t\t\tそのブロックが変更されていなければ飛ばします。\u003c/p\u003e\n\t\t\t\t\u003cp\u003e変更のあったブロックで、その状態がCwriteの場合、\n\t\t\t\t新しいブロックアドレスを割り当てます。\n\t\t\t\tこれはフリーブロックを使いません。\n\t\t\t\tWORMディスクの容量(fsize)を増やしながら割り当てます。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"c\"\u003ena = cw-\u0026gt;fsize++\ncwio(cw-\u0026gt;dev, na, 0, Ogrow)\ncwio(cw-\u0026gt;dev, na, p-\u0026gt;iobuf, Owrite)\ncwio(cw-\u0026gt;dev, na, 0, Odump)\ncwio(cw-\u0026gt;dev, addr, 0, Orele)\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003eCdirtyの場合はまだ未使用なのでそのままです。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode\u003ecwio(cw-\u0026gt;dev, addr, 0, Odump)\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003eこの再割り当てはcwrecur関数が処理しています。\n\t\t\t\tこれは深さ優先で探索するので、\n\t\t\t\t深い場所のほうが小さいアドレスになるみたい。\n\t\t\t\tで、どこかに変更があった場合はrootがwriteになっているので、\n\t\t\t\t最後の戻り値が新しいルートの値(最大アドレス)となっている。\n\t\t\t\tちなみに、cwrecurの戻り値は、変更がなければ0。\u003c/p\u003e\n\t\t\t\t\u003cp\u003eアドレスの再割り当てが終わったら、\n\t\t\t\trewalk関数により、オープンファイルが\n\t\t\t\t持っているアドレスを新しいアドレスに更新して、\n\t\t\t\tサーバの処理を再開します。\u003c/p\u003e\n\t\t\t\t\u003cdiv class=\"note\"\u003e\n\t\t\t\t\t\u003cp\u003eOreleとOfreeの違いは、\u003c/p\u003e\n\t\t\t\t\t\u003cdl\u003e\n\t\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\t\u003cdt\u003erele\u003c/dt\u003e\n\t\t\t\t\t\t\u003cdd\u003ewriteならnoneに\u003c/dd\u003e\n\t\t\t\t\t\u003c/div\u003e\n\t\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\t\u003cdt\u003efree\u003c/dt\u003e\n\t\t\t\t\t\t\u003cdd\u003ewriteまたはreadならnone\u003c/dd\u003e\n\t\t\t\t\t\u003c/div\u003e\n\t\t\t\t\t\u003c/dl\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003edump(copy)\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eキューに入れられたブロックについて、\n\t\t\t\tその内容をWORMに書き込むプロセスをwcpといいます。\n\t\t\t\tこれは朝5:00に限らず動いていて、\n\t\t\t\tブロックの状態がCdumpのものを\n\t\t\t\t小さいアドレスから順に探して書き込みます。\n\t\t\t\tその処理はdumpblock関数あたり。\u003c/p\u003e\n\t\t\t\t\u003cp\u003e全部処理が終われば、cw-\u0026gt;nodump = 1として停止。\n\t\t\t\t次にdumpキューへ入れられればまたnodump = 0となり\n\t\t\t\tプロセスが活性化します。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eメモ\u003c/h2\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eSCSIドライバのロード\u003c/h3\u003e\n\t\t\t\t\u003cp\u003epc/scsi.cに、名前と関数(reset)を登録するテーブルがある。\n\t\t\t\tこれをpc/scsi.c:scsiinitから調べて、\n\t\t\t\t一致すれば関数の戻り値をコントローラ構造体のioに入れる。\n\t\t\t\t関数(reset)は、scsiの入出力を処理する関数(Scsiio)を\n\t\t\t\t返すようになっているので、\n\t\t\t\tデバイスドライバ依存の処理は全部これを通して扱うみたい。\n\t\t\t\tちなみに同名の関数がいくつかあるけど、#ifdef FSのものが有効。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003e関連ページ\u003c/h1\u003e\n\t\t\u003cul\u003e\n\t\t\u003cli\u003e\u003ca href=\"04282.html\"\u003eファイルサーバのディスクレイアウト\u003c/a\u003e\u003c/li\u003e\n\t\t\u003cli\u003e\u003ca href=\"../2010/0705.html\"\u003efsバックアップメモ\u003c/a\u003e\u003c/li\u003e\n\t\t\u003c/ul\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003e参考サイト\u003c/h1\u003e\n\t\t\u003cul\u003e\n\t\t\u003cli\u003e\u003ca href=\"http://plan9.aichi-u.ac.jp/cwfs/\"\u003ecwfsの研究\u003c/a\u003e\u003c/li\u003e\n\t\t\u003c/ul\u003e\n\t\u003c/section\u003e\n\u003c/aside\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2011","04281"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: Syleraの設定ファイルを移行する</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2006年9月15日作成</p>
+	<section>
+		<h1>Syleraの設定ファイルを移行する</h1>
+		<p>アップグレードではなく、別のPC(ユーザ)に設定ファイルをコピーする場合。
+		C:\Documents and Settings\ユーザ名\Application Data\sylera(以下$syroot)を
+		単純にコピーすると起動しなくなります。
+		原因はたぶん以下のどれかまたは全部。</p>
+		<ul>
+		<li>$syroot\registry.datが違う</li>
+		<li>$syroot\Profiles\default\<strong>ID</strong>.sltのIDが違う</li>
+		</ul>
+		<p>とりあえずは、$syroot\Profiles\default\(UID1).slt\に含まれるファイルを
+		新しいPCの$syroot\Profiles\default\(UID2).slt\にコピーすれば動きます。
+		移行する前にいちどSyleraを立ち上げておかないと、
+		新しい環境の(UID2).sltが見つからないかもしれません。
+		非常にめんどくさい。</p>
+	</section>
+</main>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2006/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: Syleraの設定ファイルを移行する\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2006年9月15日作成\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eSyleraの設定ファイルを移行する\u003c/h1\u003e\n\t\t\u003cp\u003eアップグレードではなく、別のPC(ユーザ)に設定ファイルをコピーする場合。\n\t\tC:\\Documents and Settings\\ユーザ名\\Application Data\\sylera(以下$syroot)を\n\t\t単純にコピーすると起動しなくなります。\n\t\t原因はたぶん以下のどれかまたは全部。\u003c/p\u003e\n\t\t\u003cul\u003e\n\t\t\u003cli\u003e$syroot\\registry.datが違う\u003c/li\u003e\n\t\t\u003cli\u003e$syroot\\Profiles\\default\\\u003cstrong\u003eID\u003c/strong\u003e.sltのIDが違う\u003c/li\u003e\n\t\t\u003c/ul\u003e\n\t\t\u003cp\u003eとりあえずは、$syroot\\Profiles\\default\\(UID1).slt\\に含まれるファイルを\n\t\t新しいPCの$syroot\\Profiles\\default\\(UID2).slt\\にコピーすれば動きます。\n\t\t移行する前にいちどSyleraを立ち上げておかないと、\n\t\t新しい環境の(UID2).sltが見つからないかもしれません。\n\t\t非常にめんどくさい。\u003c/p\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2006","0915"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

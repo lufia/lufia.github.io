@@ -1,0 +1,99 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: ウイルス対策</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2009年10月1日更新</p>
+	<section>
+		<h1>ウイルス対策</h1>
+		<p>すこし前のニュースで<a href="http://www.computerworld.jp/news/sec/127569.html">OneCareが販売中止</a>
+		になってしまったので、今後どうしようかなあと検討していたのですが、
+		この際ウイルス対策ツール未導入もありなんじゃないかと思いつきまして。</p>
+		<p>で、ちょっと調べて検討した結果、感染率を落とすという意味で
+		ウイルス対策ツールを導入したほうがいい、という、
+		まったく普通で面白くない結論になってしまったので、
+		今後、回り道しないようにメモしておきます。</p>
+		<p>ウイルス対策ツールはいろいろな機能が集まっていますが、
+		今回調べたのはファイルスキャンの機能だけです。
+		他の機能は、あればあるで便利かもしれませんが、
+		無ければ、それはそれで困らないと思っています。
+		Vista以降なら、ファイアウォールもOS標準のもので充分ですしね。</p>
+		<p>以下ウイルスの感染経路ごとに書きます。</p>
+		<section>
+			<h2>メールやwebを閲覧するだけで感染するタイプ</h2>
+			<p>これらはプログラムのバグが原因なので、
+			セキュリティアップデートを当てていれば問題ありません。
+			散々猛威をふるったといわれるBlasterもこれ。経路はRPCだけど。</p>
+			<p>まだアップデートが出ていない場合は、どうにもならないですね。
+			この場合はウイルス対策していてもいなくても変わらないので、
+			判断材料としては無視してもいいんじゃないかなあ。</p>
+		</section>
+		<section>
+			<h2>CD-ROMやUSBメモリ等を入れただけで感染するタイプ</h2>
+			<p>これは自動起動を無効にすればいいだけなので、どうでもいいですね。</p>
+		</section>
+		<section>
+			<h2>ダウンロードしたプログラムから感染するタイプ</h2>
+			<p>たとえば、接続先のサーバ(または送信者のPC)が感染していたり、
+			DNS汚染によって悪意のあるサイトに接続させられたり。
+			メールの添付ファイルもこれ。</p>
+			<p>ウイルス対策ツールを使わずに検出する方法としては以下2つ。</p>
+			<ul>
+			<li>ハッシュ値を比較する</li>
+			<li>サーバからダウンロードする時はhttpsを使い、証明書を確認する</li>
+			</ul>
+			<p>ハッシュはあまり見かけないし、相手が用意していない場合は使えません。
+			そもそもハッシュ値が改ざんされていても困りますね。</p>
+			<p>httpsはサーバの話なので自分でどうにかできる問題じゃないですし、
+			サーバそのものが感染していたり、サーバは無事でも
+			ファイルが感染している場合には防げません。</p>
+		</section>
+		<p>他にもあるかもしれませんが、目立つのはこんなところかと。</p>
+		<p>最後のタイプだけは、気をつけたところでどうにもならないですので、
+		ウイルス対策ツールを導入したほうがいいのかなあという、
+		まったく普通で面白くない結論になりました。
+		ただ、対策をしていても感染確率が0になることはないので、
+		結局のところ感染する確率を減らしているだけにすぎないのですけど。</p>
+		<p>さてさて、OneCareのライセンスが今年12月で切れてしまうのですが、
+		Morroはそれまでにリリースされるのですかね。
+		ZDNetによると<a href="http://japan.zdnet.com/sp/feature/07microsoft/story/0,3800083079,20395187,00.htm">一部情報がリークした</a>
+		ようですが、どうなることやら。</p>
+		<p class="note">2009年9月29日、Microsoft Security Essentialsとして公開されました。
+		とりあえず<a href="http://japan.cnet.com/news/sec/story/0,2000056024,20400786,00.htm">CNETの記事</a>。</p>
+	</section>
+	<section>
+		<h1>余談</h1>
+		<ul>
+		<li><a href="http://q.hatena.ne.jp/1182168711">アンチウイルスソフトって不要ですよね？</a></li>
+		</ul>
+		<p>他人に迷惑をかけないためにウイルス対策ツールを入れるという回答は、
+		導入/未導入にかかわらず、迷惑かけるときはかけてしまうので、
+		これは的外れだと思うなあ。
+		近いところで<a href="/notes/2009/05/19/211747.html"><a>GENOウイルス</a></a>とか。</p>
+	</section>
+</main>
+<aside>
+	<h1>参考</h1>
+	<ul>
+	<li><a href="http://motivate.jp/archives/2005/02/dns.html">DNSポイゾニングに関するメモ</a></li>
+	</ul>
+</aside>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2009/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: ウイルス対策\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2009年10月1日更新\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eウイルス対策\u003c/h1\u003e\n\t\t\u003cp\u003eすこし前のニュースで\u003ca href=\"http://www.computerworld.jp/news/sec/127569.html\"\u003eOneCareが販売中止\u003c/a\u003e\n\t\tになってしまったので、今後どうしようかなあと検討していたのですが、\n\t\tこの際ウイルス対策ツール未導入もありなんじゃないかと思いつきまして。\u003c/p\u003e\n\t\t\u003cp\u003eで、ちょっと調べて検討した結果、感染率を落とすという意味で\n\t\tウイルス対策ツールを導入したほうがいい、という、\n\t\tまったく普通で面白くない結論になってしまったので、\n\t\t今後、回り道しないようにメモしておきます。\u003c/p\u003e\n\t\t\u003cp\u003eウイルス対策ツールはいろいろな機能が集まっていますが、\n\t\t今回調べたのはファイルスキャンの機能だけです。\n\t\t他の機能は、あればあるで便利かもしれませんが、\n\t\t無ければ、それはそれで困らないと思っています。\n\t\tVista以降なら、ファイアウォールもOS標準のもので充分ですしね。\u003c/p\u003e\n\t\t\u003cp\u003e以下ウイルスの感染経路ごとに書きます。\u003c/p\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eメールやwebを閲覧するだけで感染するタイプ\u003c/h2\u003e\n\t\t\t\u003cp\u003eこれらはプログラムのバグが原因なので、\n\t\t\tセキュリティアップデートを当てていれば問題ありません。\n\t\t\t散々猛威をふるったといわれるBlasterもこれ。経路はRPCだけど。\u003c/p\u003e\n\t\t\t\u003cp\u003eまだアップデートが出ていない場合は、どうにもならないですね。\n\t\t\tこの場合はウイルス対策していてもいなくても変わらないので、\n\t\t\t判断材料としては無視してもいいんじゃないかなあ。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eCD-ROMやUSBメモリ等を入れただけで感染するタイプ\u003c/h2\u003e\n\t\t\t\u003cp\u003eこれは自動起動を無効にすればいいだけなので、どうでもいいですね。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eダウンロードしたプログラムから感染するタイプ\u003c/h2\u003e\n\t\t\t\u003cp\u003eたとえば、接続先のサーバ(または送信者のPC)が感染していたり、\n\t\t\tDNS汚染によって悪意のあるサイトに接続させられたり。\n\t\t\tメールの添付ファイルもこれ。\u003c/p\u003e\n\t\t\t\u003cp\u003eウイルス対策ツールを使わずに検出する方法としては以下2つ。\u003c/p\u003e\n\t\t\t\u003cul\u003e\n\t\t\t\u003cli\u003eハッシュ値を比較する\u003c/li\u003e\n\t\t\t\u003cli\u003eサーバからダウンロードする時はhttpsを使い、証明書を確認する\u003c/li\u003e\n\t\t\t\u003c/ul\u003e\n\t\t\t\u003cp\u003eハッシュはあまり見かけないし、相手が用意していない場合は使えません。\n\t\t\tそもそもハッシュ値が改ざんされていても困りますね。\u003c/p\u003e\n\t\t\t\u003cp\u003ehttpsはサーバの話なので自分でどうにかできる問題じゃないですし、\n\t\t\tサーバそのものが感染していたり、サーバは無事でも\n\t\t\tファイルが感染している場合には防げません。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003cp\u003e他にもあるかもしれませんが、目立つのはこんなところかと。\u003c/p\u003e\n\t\t\u003cp\u003e最後のタイプだけは、気をつけたところでどうにもならないですので、\n\t\tウイルス対策ツールを導入したほうがいいのかなあという、\n\t\tまったく普通で面白くない結論になりました。\n\t\tただ、対策をしていても感染確率が0になることはないので、\n\t\t結局のところ感染する確率を減らしているだけにすぎないのですけど。\u003c/p\u003e\n\t\t\u003cp\u003eさてさて、OneCareのライセンスが今年12月で切れてしまうのですが、\n\t\tMorroはそれまでにリリースされるのですかね。\n\t\tZDNetによると\u003ca href=\"http://japan.zdnet.com/sp/feature/07microsoft/story/0,3800083079,20395187,00.htm\"\u003e一部情報がリークした\u003c/a\u003e\n\t\tようですが、どうなることやら。\u003c/p\u003e\n\t\t\u003cp class=\"note\"\u003e2009年9月29日、Microsoft Security Essentialsとして公開されました。\n\t\tとりあえず\u003ca href=\"http://japan.cnet.com/news/sec/story/0,2000056024,20400786,00.htm\"\u003eCNETの記事\u003c/a\u003e。\u003c/p\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003e余談\u003c/h1\u003e\n\t\t\u003cul\u003e\n\t\t\u003cli\u003e\u003ca href=\"http://q.hatena.ne.jp/1182168711\"\u003eアンチウイルスソフトって不要ですよね？\u003c/a\u003e\u003c/li\u003e\n\t\t\u003c/ul\u003e\n\t\t\u003cp\u003e他人に迷惑をかけないためにウイルス対策ツールを入れるという回答は、\n\t\t導入/未導入にかかわらず、迷惑かけるときはかけてしまうので、\n\t\tこれは的外れだと思うなあ。\n\t\t近いところで\u003ca href=\"/notes/2009/05/19/211747.html\"\u003eGENOウイルス\u003c/a\u003eとか。\u003c/p\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003e参考\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"http://motivate.jp/archives/2005/02/dns.html\"\u003eDNSポイゾニングに関するメモ\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2009","0626"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

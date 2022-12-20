@@ -1,0 +1,103 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: Alefコンパイラの中で出てくる型</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2009年4月21日作成</p>
+	<section>
+		<h1>Alefコンパイラの中で出てくる型</h1>
+		<p>いろんなところに出てくる以下の型についてのメモ。</p>
+		<ul>
+		<li><a href="http://sites.google.com/site/alefcompiler/alef/port/parlh/node">Node</a></li>
+		<li><a href="http://sites.google.com/site/alefcompiler/alef/port/parlh/type">Type</a></li>
+		<li><a href="http://sites.google.com/site/alefcompiler/alef/port/parlh/sym">Sym</a></li>
+		</ul>
+		<section>
+			<h2>定数の名前規則</h2>
+			<dl>
+			<div>
+				<dt><a href="http://sites.google.com/site/alefcompiler/alef/port/parlh/txxx">TXXX系</a></dt>
+				<dd>TINT, TADTなど、Tで開始するすべて大文字の定数は型(Type)が扱います。</dd>
+			</div>
+			<div>
+				<dt><a href="http://sites.google.com/site/alefcompiler/alef/port/parlh/oadd">OXXX系</a></dt>
+				<dd>OADD, OINDなど、Oで開始するすべて大文字の定数はノード(Node)が扱います。</dd>
+			</div>
+			<div>
+				<dt><a href="http://sites.google.com/site/alefcompiler/alef/port/parl-y">Txxx系</a></dt>
+				<dd>Tint, Tstorageなど、Tで開始し残りは小文字の定数は、文法的な意味型です。</dd>
+				<dd>これをもとにyaccが解析します。</dd>
+			</div>
+			</dl>
+		</section>
+		<section>
+			<h2>Node</h2>
+			<p>Nodeは構文木です。
+			Alef言語のプログラムを、主にtype, left, rightというメンバー変数で扱います。
+			たとえば、1+1という式の場合、およそ下記のイメージ。</p>
+			<pre><code class="c">Node = {
+	.type = OADD
+	.left = {
+		.type = OCONST
+		.ival = 1
+	}
+	.right = {
+		.type = OCONST
+		.ival = 1
+	}</code></pre>
+			<p>式だけではなく、ifやforなどの文、adtの宣言などもすべてNodeで表します。</p>
+		</section>
+		<section>
+			<h2>Type</h2>
+			<p>Typeはプログラムに現れる型。
+			基本型の場合は単体で完結した型となります(nextがnil)。
+			派生型の場合は、まずポインタ(type=TIND)、配列(type=TARRAY)などで表現し、
+			nextにおいてその具体的な型を指します。adtなども同様。</p>
+			<p>int*の場合。</p>
+			<pre><code class="c">Type = {
+	.type = TIND
+	.next = {
+		.type = TINT
+		.next = nil
+	}
+}</code></pre>
+		</section>
+		<section>
+			<h2>Sym</h2>
+			<p>プログラムで現れるすべてのシンボルです。
+			たとえば、変数名、関数名、型名、ifやforなどの予約語。gotoラベルなど。
+			それぞれの違いは、lexvalメンバー変数で区別します。
+			変数の場合はTid, 型名はTtypename, ほか予約語ならTintやTif。</p>
+			<p>すべてシンボルテーブルに格納され、同じ名前は1つしか存在しません。
+			ブロック内変数の扱いは次回。
+			Sym.instanceと<a href="http://sites.google.com/site/alefcompiler/alef/port/parlh/tinfo">Tinfo</a>を
+			うまく扱うことで実現しています。</p>
+			<pre><code class="c">{
+	int i, j;
+
+	{
+		int i;		/* ここでiはブロック外のiとは別の変数 */
+	}
+}</code></pre>
+		</section>
+	</section>
+</main>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2009/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: Alefコンパイラの中で出てくる型\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2009年4月21日作成\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eAlefコンパイラの中で出てくる型\u003c/h1\u003e\n\t\t\u003cp\u003eいろんなところに出てくる以下の型についてのメモ。\u003c/p\u003e\n\t\t\u003cul\u003e\n\t\t\u003cli\u003e\u003ca href=\"http://sites.google.com/site/alefcompiler/alef/port/parlh/node\"\u003eNode\u003c/a\u003e\u003c/li\u003e\n\t\t\u003cli\u003e\u003ca href=\"http://sites.google.com/site/alefcompiler/alef/port/parlh/type\"\u003eType\u003c/a\u003e\u003c/li\u003e\n\t\t\u003cli\u003e\u003ca href=\"http://sites.google.com/site/alefcompiler/alef/port/parlh/sym\"\u003eSym\u003c/a\u003e\u003c/li\u003e\n\t\t\u003c/ul\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e定数の名前規則\u003c/h2\u003e\n\t\t\t\u003cdl\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003e\u003ca href=\"http://sites.google.com/site/alefcompiler/alef/port/parlh/txxx\"\u003eTXXX系\u003c/a\u003e\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eTINT, TADTなど、Tで開始するすべて大文字の定数は型(Type)が扱います。\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003e\u003ca href=\"http://sites.google.com/site/alefcompiler/alef/port/parlh/oadd\"\u003eOXXX系\u003c/a\u003e\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eOADD, OINDなど、Oで開始するすべて大文字の定数はノード(Node)が扱います。\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003e\u003ca href=\"http://sites.google.com/site/alefcompiler/alef/port/parl-y\"\u003eTxxx系\u003c/a\u003e\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eTint, Tstorageなど、Tで開始し残りは小文字の定数は、文法的な意味型です。\u003c/dd\u003e\n\t\t\t\t\u003cdd\u003eこれをもとにyaccが解析します。\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003c/dl\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eNode\u003c/h2\u003e\n\t\t\t\u003cp\u003eNodeは構文木です。\n\t\t\tAlef言語のプログラムを、主にtype, left, rightというメンバー変数で扱います。\n\t\t\tたとえば、1+1という式の場合、およそ下記のイメージ。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"c\"\u003eNode = {\n\t.type = OADD\n\t.left = {\n\t\t.type = OCONST\n\t\t.ival = 1\n\t}\n\t.right = {\n\t\t.type = OCONST\n\t\t.ival = 1\n\t}\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e式だけではなく、ifやforなどの文、adtの宣言などもすべてNodeで表します。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eType\u003c/h2\u003e\n\t\t\t\u003cp\u003eTypeはプログラムに現れる型。\n\t\t\t基本型の場合は単体で完結した型となります(nextがnil)。\n\t\t\t派生型の場合は、まずポインタ(type=TIND)、配列(type=TARRAY)などで表現し、\n\t\t\tnextにおいてその具体的な型を指します。adtなども同様。\u003c/p\u003e\n\t\t\t\u003cp\u003eint*の場合。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"c\"\u003eType = {\n\t.type = TIND\n\t.next = {\n\t\t.type = TINT\n\t\t.next = nil\n\t}\n}\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eSym\u003c/h2\u003e\n\t\t\t\u003cp\u003eプログラムで現れるすべてのシンボルです。\n\t\t\tたとえば、変数名、関数名、型名、ifやforなどの予約語。gotoラベルなど。\n\t\t\tそれぞれの違いは、lexvalメンバー変数で区別します。\n\t\t\t変数の場合はTid, 型名はTtypename, ほか予約語ならTintやTif。\u003c/p\u003e\n\t\t\t\u003cp\u003eすべてシンボルテーブルに格納され、同じ名前は1つしか存在しません。\n\t\t\tブロック内変数の扱いは次回。\n\t\t\tSym.instanceと\u003ca href=\"http://sites.google.com/site/alefcompiler/alef/port/parlh/tinfo\"\u003eTinfo\u003c/a\u003eを\n\t\t\tうまく扱うことで実現しています。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"c\"\u003e{\n\tint i, j;\n\n\t{\n\t\tint i;\t\t/* ここでiはブロック外のiとは別の変数 */\n\t}\n}\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2009","0421"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: rewalk</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2011年7月19日作成</p>
+	<section>
+		<h1>rewalk</h1>
+		<p>ファイルサーバはdumpするとき、変更のあったブロックを上書きしません。
+		代わりに、新しいブロックを割り当てて、
+		そのアドレスでDir構造体(ファイルインデックスのようなもの)を更新します。
+		このとき、アドレス変更のあったブロックがopenされている場合、
+		オープンファイルに持っているアドレスは古いアドレスを指していますので、
+		新しいものに置き換えないと整合性が取れません。
+		この動きをdev/cw.cで定義されているrewalkで処理します。
+		このあたりは<a href="/notes/2011/0516.html"><a>fsオープンファイルの管理</a></a>も参照。</p>
+		<pre><code>cfsdump(Filsys *fs)
+	rewalk(Cw *cw)
+		rewalk1(Cw *cw, Off addr, int slot, Wpath *up)</code></pre>
+		<p>rewalk1ともうひとつrewalk2がありますが、
+		これはmainツリー(cw, /adm/users等)の場合にrewalk1が使われ、
+		dumpツリー(ro, /n/dump/2011/等)ではrewalk2が使われます。
+		違いは、ブロックに書き込む処理の有無みたい。</p>
+		<section>
+			<h2>rewalk1 1</h2>
+			<p>dumpしている最中、ファイルサーバコンソールに</p>
+			<pre><code>rewalk1 1
+rewalk1 1
+rewalk1 1
+...</code></pre>
+			<p>と、大量のメッセージが書き込まれることが数回ありました。
+			これが起こると、以降のdumpでも必ず発生するようになり、
+			ファイルサーバをリブートすれば治まります。
+			このメッセージの出所はrewalk1で、具体的には、
+			オープンファイルからルートへ辿り、
+			新しいアドレスのルートから順にアドレスを解決していくとき、
+			ディレクトリがおかしい場合にプリントされているっぽい。
+			なにはともあれ、rewalk1のソースを一部引用。</p>
+			<pre><code class="c">// 親ディレクトリの新アドレスを解決
+up-&gt;addr = rewalk1(cw, up-&gt;addr, up-&gt;slot, up-&gt;up);
+// 親ディレクトリ(Dentry)を取得
+p = getbuf(cw-&gt;dev, up-&gt;addr, Bread|Bmod);
+d = getdir(p, up-&gt;slot);
+if(!d || !(d-&gt;mode &amp; DALLOC)) {
+	print(&quot;rewalk1 1\n&quot;);
+	if(p)
+		putbuf(p);
+	return addr;
+}
+p1 = dnodebuf(p, d, slot/DIRPERBUF, 0, 0);</code></pre>
+			<p>ここで、cwは、dump対象となったcwデバイスです。
+			で、addrとslotは対象となったファイルの、upはその親ディレクトリ。
+			また、rewalk1はcfsdumpの最中に呼ばれます。
+			そのためWORM中の新しいアドレスはまだ空ですが、
+			cw.c:splitによりキャッシュには書き込まれています。</p>
+			<p>さてさて、この前提でソースを読むと、
+			どうやら新しい親ディレクトリから該当ファイルが辿れなかった場合、
+			または途中のどこかで途切れた場合にrewalk1 1が起こるみたい。
+			分かりにくいところでは以下の式</p>
+			<pre><code class="c">!(d-&gt;mode &amp; DALLOC)</code></pre>
+			<p>これは、Dir構造体が使われていないときに真となります。
+			詳しくは<a href="/notes/2011/04282.html"><a>ファイルサーバのディスクレイアウト</a></a>に書きましたが、
+			ファイルを削除したときにDir配列を詰めないので、このようになっています。</p>
+			<p>問題はここからで、理由はなんとなく分かるものの、
+			それが起こる原因がいまいち分かりません。
+			splitによりキャッシュにある新しいブロックはCdumpになっているので
+			キャッシュ落ちしないはずだし、
+			ファイルを開いた状態で削除したなら起こりえますが、
+			それだけで56行もrewalk1 1が出てくるのは理解できないし。
+			splitでの書き込み時にcwio()の戻り値をみていないので
+			これが失敗したのかと予想を立ててみるものの、
+			エラーになった場合は</p>
+			<pre><code>cwio: write induced dump error ...</code></pre>
+			<p>こんなエラーが出るはずなのでたぶん違う。
+			split以外ではざっとみた限り戻り値みてるしなあ。。</p>
+			<p class="note">DMEXCL(<a href="https://9p.io/magic/man2html/2/stat">stat(2)</a>)ビットが立っているファイルは開いたまま削除できません。
+			立ってなければファイルを開いた状態で削除できますが、
+			それを読み書きするとエラーになります。fossil等は知らない。</p>
+			<p>/mail/grey/tmp/*が怪しいなあと思いましたが、
+			ふつうにOEXCL(<a href="https://9p.io/magic/man2html/2/open">open(2)</a>)が立ってた。
+			でもこれ、ファイルがすでにあれば弾くフラグなので関係ないか。</p>
+		</section>
+	</section>
+</main>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2011/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: rewalk\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2011年7月19日作成\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003erewalk\u003c/h1\u003e\n\t\t\u003cp\u003eファイルサーバはdumpするとき、変更のあったブロックを上書きしません。\n\t\t代わりに、新しいブロックを割り当てて、\n\t\tそのアドレスでDir構造体(ファイルインデックスのようなもの)を更新します。\n\t\tこのとき、アドレス変更のあったブロックがopenされている場合、\n\t\tオープンファイルに持っているアドレスは古いアドレスを指していますので、\n\t\t新しいものに置き換えないと整合性が取れません。\n\t\tこの動きをdev/cw.cで定義されているrewalkで処理します。\n\t\tこのあたりは\u003ca href=\"0516.html\"\u003efsオープンファイルの管理\u003c/a\u003eも参照。\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode\u003ecfsdump(Filsys *fs)\n\trewalk(Cw *cw)\n\t\trewalk1(Cw *cw, Off addr, int slot, Wpath *up)\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003cp\u003erewalk1ともうひとつrewalk2がありますが、\n\t\tこれはmainツリー(cw, /adm/users等)の場合にrewalk1が使われ、\n\t\tdumpツリー(ro, /n/dump/2011/等)ではrewalk2が使われます。\n\t\t違いは、ブロックに書き込む処理の有無みたい。\u003c/p\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003erewalk1 1\u003c/h2\u003e\n\t\t\t\u003cp\u003edumpしている最中、ファイルサーバコンソールに\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003erewalk1 1\nrewalk1 1\nrewalk1 1\n...\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eと、大量のメッセージが書き込まれることが数回ありました。\n\t\t\tこれが起こると、以降のdumpでも必ず発生するようになり、\n\t\t\tファイルサーバをリブートすれば治まります。\n\t\t\tこのメッセージの出所はrewalk1で、具体的には、\n\t\t\tオープンファイルからルートへ辿り、\n\t\t\t新しいアドレスのルートから順にアドレスを解決していくとき、\n\t\t\tディレクトリがおかしい場合にプリントされているっぽい。\n\t\t\tなにはともあれ、rewalk1のソースを一部引用。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"c\"\u003e// 親ディレクトリの新アドレスを解決\nup-\u0026gt;addr = rewalk1(cw, up-\u0026gt;addr, up-\u0026gt;slot, up-\u0026gt;up);\n// 親ディレクトリ(Dentry)を取得\np = getbuf(cw-\u0026gt;dev, up-\u0026gt;addr, Bread|Bmod);\nd = getdir(p, up-\u0026gt;slot);\nif(!d || !(d-\u0026gt;mode \u0026amp; DALLOC)) {\n\tprint(\u0026quot;rewalk1 1\\n\u0026quot;);\n\tif(p)\n\t\tputbuf(p);\n\treturn addr;\n}\np1 = dnodebuf(p, d, slot/DIRPERBUF, 0, 0);\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eここで、cwは、dump対象となったcwデバイスです。\n\t\t\tで、addrとslotは対象となったファイルの、upはその親ディレクトリ。\n\t\t\tまた、rewalk1はcfsdumpの最中に呼ばれます。\n\t\t\tそのためWORM中の新しいアドレスはまだ空ですが、\n\t\t\tcw.c:splitによりキャッシュには書き込まれています。\u003c/p\u003e\n\t\t\t\u003cp\u003eさてさて、この前提でソースを読むと、\n\t\t\tどうやら新しい親ディレクトリから該当ファイルが辿れなかった場合、\n\t\t\tまたは途中のどこかで途切れた場合にrewalk1 1が起こるみたい。\n\t\t\t分かりにくいところでは以下の式\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"c\"\u003e!(d-\u0026gt;mode \u0026amp; DALLOC)\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eこれは、Dir構造体が使われていないときに真となります。\n\t\t\t詳しくは\u003ca href=\"04282.html\"\u003eファイルサーバのディスクレイアウト\u003c/a\u003eに書きましたが、\n\t\t\tファイルを削除したときにDir配列を詰めないので、このようになっています。\u003c/p\u003e\n\t\t\t\u003cp\u003e問題はここからで、理由はなんとなく分かるものの、\n\t\t\tそれが起こる原因がいまいち分かりません。\n\t\t\tsplitによりキャッシュにある新しいブロックはCdumpになっているので\n\t\t\tキャッシュ落ちしないはずだし、\n\t\t\tファイルを開いた状態で削除したなら起こりえますが、\n\t\t\tそれだけで56行もrewalk1 1が出てくるのは理解できないし。\n\t\t\tsplitでの書き込み時にcwio()の戻り値をみていないので\n\t\t\tこれが失敗したのかと予想を立ててみるものの、\n\t\t\tエラーになった場合は\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003ecwio: write induced dump error ...\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eこんなエラーが出るはずなのでたぶん違う。\n\t\t\tsplit以外ではざっとみた限り戻り値みてるしなあ。。\u003c/p\u003e\n\t\t\t\u003cp class=\"note\"\u003eDMEXCL(\u003ca href=\"https://9p.io/magic/man2html/2/stat\"\u003estat(2)\u003c/a\u003e)ビットが立っているファイルは開いたまま削除できません。\n\t\t\t立ってなければファイルを開いた状態で削除できますが、\n\t\t\tそれを読み書きするとエラーになります。fossil等は知らない。\u003c/p\u003e\n\t\t\t\u003cp\u003e/mail/grey/tmp/*が怪しいなあと思いましたが、\n\t\t\tふつうにOEXCL(\u003ca href=\"https://9p.io/magic/man2html/2/open\"\u003eopen(2)\u003c/a\u003e)が立ってた。\n\t\t\tでもこれ、ファイルがすでにあれば弾くフラグなので関係ないか。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2011","0719"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

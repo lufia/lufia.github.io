@@ -1,0 +1,163 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: VMware ESXiの導入</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2012年9月9日作成</p>
+	<section>
+		<h1>VMware ESXiの導入</h1>
+		<p>だいぶ前に、ESXi 5.0を導入したので、
+		その上でPlan 9サーバ群を動かすまでのメモをまとめました。
+		Plan 9側のトラブルメモは別の記事にまとめるつもりです。こっちはESXi。</p>
+		<section>
+			<h2>インストール</h2>
+			<p>なにはともあれ普通にインストール。
+			MegaRAID 9240-4iに繋げたSSDにインストールしようと思ったら、
+			インストールはできるけどブートできないという、よくわからない現象に。。
+			同じハードウェア構成でWindowsを入れた時はふつうにブートしたので、
+			何か分からないけどESXi側の問題な気がするなあ。</p>
+			<p>とはいえ解決できなかったので、あきらめてUSBメモリを買ってきてそこへインストール。
+			ESXi4の頃は、いろいろ設定しないとだめっぽい記事があったけど、
+			ESXi5では普通のインストーラでも認識してくれるみたい。</p>
+			<p class="note">MegaRAIDのWebBIOSは、2chのRAIDカードスレによると、
+			WebBIOSブート用のBIOSだけをメモリに置いておいて、
+			ブート時には&quot;WebBIOSが入った仮想ディスク&quot;から起動するようです。
+			なので、別のデバイスが優先になっているとWebBIOSに入れないとかなんとか。</p>
+			<p>インストールが終わったら、コンソールからIPアドレスやらなにやらを設定。
+			あとついでにSSHも有効にしておきます。</p>
+		</section>
+		<section>
+			<h2>LSI Providerのインストール</h2>
+			<p>LSI 9240-4iを使っているので、せっかくだからとLSIProviderを入れてみます。
+			ふつうに、VMwareのサイトからVMW-ESX-5.0.0-LSIProvider-xxxx.zipを
+			ダウンロードしてきて展開、vibファイルだけをsshでESXiホストへ送ります。
+			で、以下のコマンド実行。</p>
+			<pre><code class="console">$ esxcli software vib install -v /vmware-esx-provider-LSIProvider.vib</code></pre>
+			<p class="note">esxcliに渡すvibファイルは、ルートからのフルパスでないとエラーになります。</p>
+			<p>MegaCLIのESXi版はLSIのサイトから落とせるけれど、ESXi5にはlibstorelib.soが
+			見つからなくて動きません。libstorelibを過去のESXiから拾っておくと動くけど、
+			そこまでしなくてもいい気がしているので入れない方向でいます。</p>
+		</section>
+		<section>
+			<h2>vSphere Clientをインストール</h2>
+			<p>ESXiとは別のWindowsマシンに、クライアントツールを入れます。
+			ESXiホストにhttpで繋げばダウンロードできるので、ここは別に書くことない。。</p>
+		</section>
+		<section>
+			<h2>VMwareの仮想ドライバパフォーマンス</h2>
+			<p>疑問だったのですけど、ESXiホストのネットワーク速度が1Gbで、
+			仮想マシンのドライバがvlance(これは10Mb)の場合、どっちが有効なのかなあ、と。
+			検索しても、同じハードウェアで物理と仮想のベンチマーク比較はいっぱいあるけれど、
+			古い物理マシンをそのまま新しいハードウェアの仮想へもってきたとき、
+			パフォーマンスが上がるのかはあまり見つからない。</p>
+			<p>もし仮想デバイスの速度に制限されるなら、<a href="http://sourceforge.net/projects/open-vm-tools/files/open-vm-tools/">Open Virtual Machine Tools</a>を
+			移植するか、fsカーネルのe1000ドライバをまともな速度にするか、どちらかしないといけなくて
+			めんどくさいなあと思っていたのですね。</p>
+			<p>でも<a href="http://www-06.ibm.com/systems/jp/saiteki/pdf/esx_server3.pdf">ESX Server 3のパフォーマンスチューニングドキュメント</a>によると、</p>
+			<blockquote>たとえば、ESX ServerがエミュレートするAMD PCnetカードが定義により
+			10Mbpsであるため、サーバ上の物理カードが100Mbpsまたは1Gbpsであっても、
+			仮想マシン上のvlanceゲストドライバは10Mbpsの速度を報告します。
+			ただし、ESX Serverは10Mbpsには制限されず、物理サーバマシン上のリソースが
+			許すかぎり高速にネットワークパケットを転送します。</blockquote>
+			<p>とあるので、若干の劣化はあるでしょうけど今の使い方なら問題ない範囲かな。</p>
+		</section>
+		<section>
+			<h2>VMDK</h2>
+			<p>クライアントからみると1つのvmdkにみえますが、
+			sshからアクセスしてみたらじつは2つのファイルになっています。
+			disk.vmdkというもろもろの設定を書いたテキストファイルと、
+			disk-flat.vmdkというディスクファイル本体です。</p>
+			<p>クライアントのストレージブラウザからはvmdkファイルの名前が変更できませんが、
+			sshからなら普通に変更できるので、guest_1.vmdkみたいな名前がいやな人は、
+			この2つのファイルをmvして、vmdkファイルに書かれている
+			flat.vmdkファイルへの参照も変更すればいいです。</p>
+		</section>
+		<section>
+			<h2>ゲスト間のシリアルポート接続</h2>
+			<p>物理にあったPlan 9システムは、fsカーネルのコンソールを、
+			認証サーバがシリアルポート経由でログに記録していたので、
+			どうにかしてゲスト間をシリアルポートで繋ぐ必要がありました。
+			UPSみたいな外部機器とゲストを接続する記事はいくつかありましたが、
+			ゲスト間をつなぐ記事は見つからなかったのでメモ。</p>
+			<p>ゲストの構成からシリアルポートを追加します。
+			このとき、名前付きパイプを選んで、名前は適当に(console0など)入力。
+			無償版のライセンスでは、Ethernetを使った方法は使えないので無視します。</p>
+			<p>で、接続先の設定はよく分かっていませんが、
+			データを受け取る側を「サーバ」、送る側を「クライアント」にしました。
+			具体的にはfs側は「クライアント」で、認証サーバが「サーバ」。
+			接続先はどちらも「仮想マシン」。プロセスとの違いは分からない。</p>
+		</section>
+		<section>
+			<h2>ブートフロッピーの作成</h2>
+			<p>これは普通に、Plan 9からpc/bootfloppyで作ればいいです。
+			できたらvSphere Clientのファイルブラウザでアップロード。</p>
+		</section>
+		<section>
+			<h2>過去のデータをvmdkに変換</h2>
+			<p>VMwareのConverterはBootCDが見つからなかったので、
+			今回はvirt-p2vを使いました。</p>
+			<p>まずはvirt-p2vをどうにかしてDVDに焼きます。
+			できたら普通にブート。sshなどの設定をしていくのですが、
+			仮想ディスクに変換するHDDを選ぶところで、Plan 9 fsのWORMディスクを
+			選ぶと、何度やってもエラーになります。
+			なのであきらめて、virt-p2vでエラーがでた画面から
+			Fnキ(たしかF2)を押してシェルを実行。そのままシェルを使ってddしました。</p>
+			<pre><code class="console"># fdisk -l
+(エラーが出るけど無視、容量だけ確認してターゲットを選ぶ)
+# dd if=/dev/sdb | gzip -9 -c | ssh $user@$host &quot;gzip -dc | dd bs=8192 of=/path/vmdisk/fworm.img&quot;</code></pre>
+			<p>sshで接続するホストは、virt-p2vでssh設定テストした場所にすると楽です。</p>
+			<p>ここからしばらく待てば、fworm.imgファイルができているはずです。
+			HDDの速度やらネットワークやらに依存しますが、250GBを転送するのに
+			だいたい2時間かかりました。</p>
+			<p>次に、生のディスクファイルからvmdkへコンバートします。
+			このときはqemu-imgを使いました。</p>
+			<pre><code>$ qemu-img convert -f raw fworm.img fworm-flat.vmdk</code></pre>
+			<p>よく記事になっているコマンドでは、-f raw fowrm.img -O vmdk fworm.vmdkのように
+			オプションでコンバート後の種類を指定していますが、
+			なぜかこのオプションが効かずに、&quot;-O&quot;というファイル名になったりしました。
+			たぶんfworm.imgの前にオプションを全部置けば動いたのでしょうけど、
+			べつにわざわざ使わなくても判定してくれるので外してます。</p>
+			<p>vmdkファイルが完成したら、それをESXiへ転送します。scpを使うよりは、
+			gzipして転送したほうが早い気がするので、ddのときに使ったコマンドを
+			そのまま使いました。</p>
+			<pre><code class="console">$ gzip -9 -c fworm-flat.vmdk | ssh $user@$esxihost &quot;gzip -dc &gt;/vmfs/volumes/disk1/plan9fs/fworm-flat.vmdk&quot;</code></pre>
+			<p>必要なら、flatじゃないほうのvmdkファイルを修正して完成です。</p>
+			<p>Plan 9ファイルサーバカーネルの場合、WORMだけ持ってくればいいのですが、
+			そうすると、Cacheにある情報との齟齬でSuperblockが読めない系のエラーがでます。
+			そのときはrecover mainすれば直前のdumpから普通に使えるようになります。</p>
+		</section>
+		<section>
+			<h2>トラブルシューティング</h2>
+			<section>
+				<h3>健全性ステータスが全部、”不明”になった</h3>
+				<p>原因はよく分かりませんが、ESXiコンソールのTroubleshooting Optionsから、
+				Restart Management Agentsで一部機能を再起動させると治りました。</p>
+			</section>
+			<section>
+				<h3>LSI MegaRAID 9240-4iのバッテリに警告が出る</h3>
+				<p>健全性ステータスをみると、警告が出ていますが、
+				もともと9240-4iはエントリモデルでBBUは付いていないので、
+				そういうものらしいです。</p>
+			</section>
+		</section>
+	</section>
+</main>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2012/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: VMware ESXiの導入\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2012年9月9日作成\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eVMware ESXiの導入\u003c/h1\u003e\n\t\t\u003cp\u003eだいぶ前に、ESXi 5.0を導入したので、\n\t\tその上でPlan 9サーバ群を動かすまでのメモをまとめました。\n\t\tPlan 9側のトラブルメモは別の記事にまとめるつもりです。こっちはESXi。\u003c/p\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eインストール\u003c/h2\u003e\n\t\t\t\u003cp\u003eなにはともあれ普通にインストール。\n\t\t\tMegaRAID 9240-4iに繋げたSSDにインストールしようと思ったら、\n\t\t\tインストールはできるけどブートできないという、よくわからない現象に。。\n\t\t\t同じハードウェア構成でWindowsを入れた時はふつうにブートしたので、\n\t\t\t何か分からないけどESXi側の問題な気がするなあ。\u003c/p\u003e\n\t\t\t\u003cp\u003eとはいえ解決できなかったので、あきらめてUSBメモリを買ってきてそこへインストール。\n\t\t\tESXi4の頃は、いろいろ設定しないとだめっぽい記事があったけど、\n\t\t\tESXi5では普通のインストーラでも認識してくれるみたい。\u003c/p\u003e\n\t\t\t\u003cp class=\"note\"\u003eMegaRAIDのWebBIOSは、2chのRAIDカードスレによると、\n\t\t\tWebBIOSブート用のBIOSだけをメモリに置いておいて、\n\t\t\tブート時には\u0026quot;WebBIOSが入った仮想ディスク\u0026quot;から起動するようです。\n\t\t\tなので、別のデバイスが優先になっているとWebBIOSに入れないとかなんとか。\u003c/p\u003e\n\t\t\t\u003cp\u003eインストールが終わったら、コンソールからIPアドレスやらなにやらを設定。\n\t\t\tあとついでにSSHも有効にしておきます。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eLSI Providerのインストール\u003c/h2\u003e\n\t\t\t\u003cp\u003eLSI 9240-4iを使っているので、せっかくだからとLSIProviderを入れてみます。\n\t\t\tふつうに、VMwareのサイトからVMW-ESX-5.0.0-LSIProvider-xxxx.zipを\n\t\t\tダウンロードしてきて展開、vibファイルだけをsshでESXiホストへ送ります。\n\t\t\tで、以下のコマンド実行。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e$ esxcli software vib install -v /vmware-esx-provider-LSIProvider.vib\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp class=\"note\"\u003eesxcliに渡すvibファイルは、ルートからのフルパスでないとエラーになります。\u003c/p\u003e\n\t\t\t\u003cp\u003eMegaCLIのESXi版はLSIのサイトから落とせるけれど、ESXi5にはlibstorelib.soが\n\t\t\t見つからなくて動きません。libstorelibを過去のESXiから拾っておくと動くけど、\n\t\t\tそこまでしなくてもいい気がしているので入れない方向でいます。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003evSphere Clientをインストール\u003c/h2\u003e\n\t\t\t\u003cp\u003eESXiとは別のWindowsマシンに、クライアントツールを入れます。\n\t\t\tESXiホストにhttpで繋げばダウンロードできるので、ここは別に書くことない。。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eVMwareの仮想ドライバパフォーマンス\u003c/h2\u003e\n\t\t\t\u003cp\u003e疑問だったのですけど、ESXiホストのネットワーク速度が1Gbで、\n\t\t\t仮想マシンのドライバがvlance(これは10Mb)の場合、どっちが有効なのかなあ、と。\n\t\t\t検索しても、同じハードウェアで物理と仮想のベンチマーク比較はいっぱいあるけれど、\n\t\t\t古い物理マシンをそのまま新しいハードウェアの仮想へもってきたとき、\n\t\t\tパフォーマンスが上がるのかはあまり見つからない。\u003c/p\u003e\n\t\t\t\u003cp\u003eもし仮想デバイスの速度に制限されるなら、\u003ca href=\"http://sourceforge.net/projects/open-vm-tools/files/open-vm-tools/\"\u003eOpen Virtual Machine Tools\u003c/a\u003eを\n\t\t\t移植するか、fsカーネルのe1000ドライバをまともな速度にするか、どちらかしないといけなくて\n\t\t\tめんどくさいなあと思っていたのですね。\u003c/p\u003e\n\t\t\t\u003cp\u003eでも\u003ca href=\"http://www-06.ibm.com/systems/jp/saiteki/pdf/esx_server3.pdf\"\u003eESX Server 3のパフォーマンスチューニングドキュメント\u003c/a\u003eによると、\u003c/p\u003e\n\t\t\t\u003cblockquote\u003eたとえば、ESX ServerがエミュレートするAMD PCnetカードが定義により\n\t\t\t10Mbpsであるため、サーバ上の物理カードが100Mbpsまたは1Gbpsであっても、\n\t\t\t仮想マシン上のvlanceゲストドライバは10Mbpsの速度を報告します。\n\t\t\tただし、ESX Serverは10Mbpsには制限されず、物理サーバマシン上のリソースが\n\t\t\t許すかぎり高速にネットワークパケットを転送します。\u003c/blockquote\u003e\n\t\t\t\u003cp\u003eとあるので、若干の劣化はあるでしょうけど今の使い方なら問題ない範囲かな。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eVMDK\u003c/h2\u003e\n\t\t\t\u003cp\u003eクライアントからみると1つのvmdkにみえますが、\n\t\t\tsshからアクセスしてみたらじつは2つのファイルになっています。\n\t\t\tdisk.vmdkというもろもろの設定を書いたテキストファイルと、\n\t\t\tdisk-flat.vmdkというディスクファイル本体です。\u003c/p\u003e\n\t\t\t\u003cp\u003eクライアントのストレージブラウザからはvmdkファイルの名前が変更できませんが、\n\t\t\tsshからなら普通に変更できるので、guest_1.vmdkみたいな名前がいやな人は、\n\t\t\tこの2つのファイルをmvして、vmdkファイルに書かれている\n\t\t\tflat.vmdkファイルへの参照も変更すればいいです。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eゲスト間のシリアルポート接続\u003c/h2\u003e\n\t\t\t\u003cp\u003e物理にあったPlan 9システムは、fsカーネルのコンソールを、\n\t\t\t認証サーバがシリアルポート経由でログに記録していたので、\n\t\t\tどうにかしてゲスト間をシリアルポートで繋ぐ必要がありました。\n\t\t\tUPSみたいな外部機器とゲストを接続する記事はいくつかありましたが、\n\t\t\tゲスト間をつなぐ記事は見つからなかったのでメモ。\u003c/p\u003e\n\t\t\t\u003cp\u003eゲストの構成からシリアルポートを追加します。\n\t\t\tこのとき、名前付きパイプを選んで、名前は適当に(console0など)入力。\n\t\t\t無償版のライセンスでは、Ethernetを使った方法は使えないので無視します。\u003c/p\u003e\n\t\t\t\u003cp\u003eで、接続先の設定はよく分かっていませんが、\n\t\t\tデータを受け取る側を「サーバ」、送る側を「クライアント」にしました。\n\t\t\t具体的にはfs側は「クライアント」で、認証サーバが「サーバ」。\n\t\t\t接続先はどちらも「仮想マシン」。プロセスとの違いは分からない。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eブートフロッピーの作成\u003c/h2\u003e\n\t\t\t\u003cp\u003eこれは普通に、Plan 9からpc/bootfloppyで作ればいいです。\n\t\t\tできたらvSphere Clientのファイルブラウザでアップロード。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e過去のデータをvmdkに変換\u003c/h2\u003e\n\t\t\t\u003cp\u003eVMwareのConverterはBootCDが見つからなかったので、\n\t\t\t今回はvirt-p2vを使いました。\u003c/p\u003e\n\t\t\t\u003cp\u003eまずはvirt-p2vをどうにかしてDVDに焼きます。\n\t\t\tできたら普通にブート。sshなどの設定をしていくのですが、\n\t\t\t仮想ディスクに変換するHDDを選ぶところで、Plan 9 fsのWORMディスクを\n\t\t\t選ぶと、何度やってもエラーになります。\n\t\t\tなのであきらめて、virt-p2vでエラーがでた画面から\n\t\t\tFnキ(たしかF2)を押してシェルを実行。そのままシェルを使ってddしました。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e# fdisk -l\n(エラーが出るけど無視、容量だけ確認してターゲットを選ぶ)\n# dd if=/dev/sdb | gzip -9 -c | ssh $user@$host \u0026quot;gzip -dc | dd bs=8192 of=/path/vmdisk/fworm.img\u0026quot;\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003esshで接続するホストは、virt-p2vでssh設定テストした場所にすると楽です。\u003c/p\u003e\n\t\t\t\u003cp\u003eここからしばらく待てば、fworm.imgファイルができているはずです。\n\t\t\tHDDの速度やらネットワークやらに依存しますが、250GBを転送するのに\n\t\t\tだいたい2時間かかりました。\u003c/p\u003e\n\t\t\t\u003cp\u003e次に、生のディスクファイルからvmdkへコンバートします。\n\t\t\tこのときはqemu-imgを使いました。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003e$ qemu-img convert -f raw fworm.img fworm-flat.vmdk\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eよく記事になっているコマンドでは、-f raw fowrm.img -O vmdk fworm.vmdkのように\n\t\t\tオプションでコンバート後の種類を指定していますが、\n\t\t\tなぜかこのオプションが効かずに、\u0026quot;-O\u0026quot;というファイル名になったりしました。\n\t\t\tたぶんfworm.imgの前にオプションを全部置けば動いたのでしょうけど、\n\t\t\tべつにわざわざ使わなくても判定してくれるので外してます。\u003c/p\u003e\n\t\t\t\u003cp\u003evmdkファイルが完成したら、それをESXiへ転送します。scpを使うよりは、\n\t\t\tgzipして転送したほうが早い気がするので、ddのときに使ったコマンドを\n\t\t\tそのまま使いました。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e$ gzip -9 -c fworm-flat.vmdk | ssh $user@$esxihost \u0026quot;gzip -dc \u0026gt;/vmfs/volumes/disk1/plan9fs/fworm-flat.vmdk\u0026quot;\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e必要なら、flatじゃないほうのvmdkファイルを修正して完成です。\u003c/p\u003e\n\t\t\t\u003cp\u003ePlan 9ファイルサーバカーネルの場合、WORMだけ持ってくればいいのですが、\n\t\t\tそうすると、Cacheにある情報との齟齬でSuperblockが読めない系のエラーがでます。\n\t\t\tそのときはrecover mainすれば直前のdumpから普通に使えるようになります。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eトラブルシューティング\u003c/h2\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003e健全性ステータスが全部、”不明”になった\u003c/h3\u003e\n\t\t\t\t\u003cp\u003e原因はよく分かりませんが、ESXiコンソールのTroubleshooting Optionsから、\n\t\t\t\tRestart Management Agentsで一部機能を再起動させると治りました。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eLSI MegaRAID 9240-4iのバッテリに警告が出る\u003c/h3\u003e\n\t\t\t\t\u003cp\u003e健全性ステータスをみると、警告が出ていますが、\n\t\t\t\tもともと9240-4iはエントリモデルでBBUは付いていないので、\n\t\t\t\tそういうものらしいです。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2012","0909"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

@@ -1,0 +1,521 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: SproutCoreのGUIデザイン</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2011年2月26日更新</p>
+	<section>
+		<h1>SproutCoreのGUIデザイン</h1>
+		<section>
+			<h2>アプリケーションタイトルの変更</h2>
+			<p>main.jsなどから、document.titleに設定します。</p>
+			<pre><code class="js">document.title = &#x27;blog&#x27;.loc()</code></pre>
+		</section>
+		<section>
+			<h2>ビューの作成</h2>
+			<p>プロジェクトディレクトリに移動して、以下を実行すると、
+			views/以下にそのファイルが作成されます。</p>
+			<pre><code class="console">$ sc-gen view Blog.CategoryView</code></pre>
+			<p>でもだいたいmain_page.jsで事足りますので、
+			あまり使う機会はないかも。</p>
+			<section>
+				<h3>参考</h3>
+				<ul>
+				<li><a href="http://frozencanuck.wordpress.com/2009/08/16/creating-a-simple-custom-view-in-sproutcore-part2/">Creating a Simple Custom View</a></li>
+				</ul>
+			</section>
+		</section>
+		<section>
+			<h2>ボタン</h2>
+			<pre><code class="js">postView: SC.ButtonView.design({
+	title: &#x27;post&#x27;,
+	isEnabled: YES,
+	isDefault: YES
+	target: &#x27;Blog.articleController&#x27;,
+	action: &#x27;createArticle&#x27;
+})</code></pre>
+			<p>ボタンを押したときに、
+			Blog.articleController.createArticle()を実行します。
+			アイコンボタンを作る場合はtitleをnullにして、
+			iconプロパティに特定の名前を設定します。</p>
+			<p>isDefaultをYESにすると、Enterキーを押したときに
+			実行されるボタンになります。</p>
+		</section>
+		<section>
+			<h2>リスト</h2>
+			<figure>
+				<img src="1206.jpg" alt="SourceListViewとListViewの違い"/>
+				<figcaption>SourceListViewとListViewの違い</figcaption>
+			</figure>
+			<pre><code class="js">categoriesView: SC.ScrollView.design({
+	contentView: SC.SourceListView.design({
+		exampleView: Blog.CategoryView
+	})
+})
+articlesView: SC.ScrollView.design({
+	contentView: SC.ListView.design({
+	})
+})</code></pre>
+			<p>上記画像の左側がSourceListViewで、右が普通のListViewです。</p>
+			<p>2行で表示する、とか、そういうCSSで対応できないような範囲で
+			個々の見た目を変えたければ、SC.ListItemViewを拡張した型を作って、
+			SC.ListView#exampleViewに設定します。</p>
+			<section>
+				<h3>参考</h3>
+				<ul>
+				<li><a href="http://frozencanuck.wordpress.com/2009/09/06/creating-a-simple-custom-list-item-view-part-1/">Creating a Simple Custom List View</a></li>
+				</ul>
+			</section>
+		</section>
+		<section>
+			<h2>ドロップダウンメニュー</h2>
+			<pre><code class="js">selectionView: SC.SelectButtonView.design({
+	title: &#x27;title&#x27;,
+	objects: [
+		{ name: &#x27;PC等&#x27;, value: &#x27;pc&#x27; },
+		{ name: &#x27;Web製作&#x27;, value: &#x27;web&#x27; }
+	],
+	value: &#x27;pc&#x27;,
+	theme: &#x27;square&#x27;,
+	nameKey: &#x27;name&#x27;,
+	valueKey: &#x27;value&#x27;
+})</code></pre>
+			<p>nameKeyを省略したときは、objects[i].toString()の値を使います。
+			同様に、valueKeyを省略したときは、objects[i]を使います。</p>
+			<p>valueの値がobjectsに含まれていない場合、
+			titleの値がボタンのタイトルに使われます。
+			このとき、valueの比較は===演算子により行われますので注意です。</p>
+			<div class="note">
+				<p>調べると、SC.SelectViewがSC.SelectButtonViewに代わるようです。
+				ですが使ってみると、ドロップダウンから選択すると、
+				parentMenuがnullまたはundefinedだというエラーで停止します。
+				SproutCoreのメーリングリストで2010年2月頃に<a href="http://markmail.org/thread/cydb4g23lc35rltx">話題に挙がり</a>、
+				修正もされているような記述がありましたが、
+				SproutCoreの1.4.5でもまだバグが残っている状態です。</p>
+			</div>
+		</section>
+		<section>
+			<h2>タブ</h2>
+			<p>nowShowingをnullにすると、どのタブも選択されていない状態になります。</p>
+			<pre><code class="js">middle: SC.View.design({
+	layout: { top: 75, bottom: 115, left: 0, right: 0 },
+	childViews: &#x27;tab&#x27;.w(),
+
+	tab: SC.TabView.design({
+		nowShowing: &#x27;Blog.publicPage.mainView&#x27;,
+		items: [
+			{	title: &#x27;public&#x27;.loc(),
+				value: &#x27;Blog.publicPage.mainView&#x27;
+			},
+			{	title: &#x27;acquisition&#x27;.loc(),
+				value: &#x27;Blog.privatePage.mainView&#x27;
+			}
+		],
+		itemTitleKey: &#x27;title&#x27;,
+		itemValueKey: &#x27;value&#x27;
+	})
+})</code></pre>
+			<p>ここで、valueのパスはSC.Pageの名前で、
+			それはふつうに書いてもいいですし、sc-genを使ってもいいです。</p>
+			<pre><code class="console">$ sc-gen design Blog.publicPage</code></pre>
+		</section>
+		<section>
+			<h2>並び替え</h2>
+			<p>まずはSC.Query等のクエリで対応するのが正解かなあと思いますが、
+			使えない場合は、SC.ArrayController#orderByが便利かもしれません。</p>
+			<pre><code class="js">Blog.articlesController = SC.ArrayController.create({
+	orderBy: &#x27;createdDate DESC, ...&#x27;
+})</code></pre>
+		</section>
+		<section>
+			<h2>テーブル</h2>
+			<p>使う前に、Buildfileへsproutcore/tableを追加しておきます。</p>
+			<pre><code class="js">required =&gt; [:sproutcore, &#x27;sproutcore/table&#x27;]</code></pre>
+			<p class="note">テーブルもスクロールさせる場合は、
+			ListViewと同じようにScrollViewに含めるといいです。</p>
+			<section>
+				<h3>フォーマット</h3>
+				<p>TableViewでフォーマットするには、
+				TableColumnのオプションにformatterを渡します。
+				これが関数なら、その戻り値をテーブルデータに表示します。
+				以下はSC.DateTimeを表示する場合。一部抜粋。</p>
+				<pre><code class="js">tableView: SC.TableView.design({
+	columns: [
+		SC.TableColumn.create({
+			label: &#x27;created date&#x27;,
+			key: &#x27;createdDate&#x27;,
+			formatter: function(d){
+				return d.toFormattedString(&#x27;%Y/%m/%d&#x27;)
+			}
+		}),
+		...
+	],
+	contentBinding: &#x27;Blog.articlesController.arrangedObjects&#x27;,
+	selectionBinding: &#x27;Blog.articlesController.selection&#x27;,
+	selectOnMouseDown: YES,
+	exampleView: SC.TableRowView
+})</code></pre>
+			</section>
+		</section>
+		<section>
+			<h2>多言語対応</h2>
+			<p>ビューとはちょっと違うかもしれませんが、まあ見た目なので。
+			まず言語ファイルを作成するには、以下のようにします。</p>
+			<pre><code class="console">$ sc-gen language Blog Japanese</code></pre>
+			<p>sc-genのヘルプでは、</p>
+			<pre><code class="console"># エラーが出るよ
+$ sc-gen language Language</code></pre>
+			<p>となっていますが、実際は違うので注意です。いちおう<a href="http://wiki.sproutcore.com/w/page/12413070/Todos%2008-Localizing">Wiki</a>
+			では修正されているみたいですが。。</p>
+			<p>あとは生成した言語ファイルを修正して、String#locを呼び出すだけです。
+			個人的によく使うのは、</p>
+			<pre><code class="js">&#x27;%Y-%m-%d&#x27;: &#x27;%Y/%m/%d&#x27;</code></pre>
+			<p>と定義しておいて、&#x27;%Y-%m-%d&#x27;.loc()とか。
+			置換パラメータを持っている場合は、</p>
+			<pre><code class="js">&#x27;post failed[code=%@]&#x27;: &#x27;書き込みに失敗しました[コード=%@]&#x27;</code></pre>
+			<p>で、locに引数を渡します。</p>
+			<pre><code class="js">throw &#x27;post failed[code=%@]&#x27;.loc(statusCode)</code></pre>
+			<p>こうしておくと、未対応の言語でも最低限の表示ができますので。</p>
+		</section>
+		<section>
+			<h2>ドラッグアンドドロップ(並び替え)</h2>
+			<p>コントローラと連携して対応するっぽいです。
+			まず、コントローラをSC.CollectionViewDelegateで拡張します。</p>
+			<pre><code class="js">Blog.articlesController = SC.ArrayController.create(
+	SC.CollectionViewDelegate, {
+	...
+})</code></pre>
+			<p>次に、View側でcanReorderContentとisEditableをYESに設定します。
+			一部抜粋。</p>
+			<pre><code class="js">articlesView: SC.ScrollView.design({
+	contentView: SC.ListView.design({
+		contentBinding: &#x27;Blog.articlesController.arrangedObjects&#x27;,
+		selectionBinding: &#x27;Blog.articlesController.selection&#x27;,
+		canReorderContent: YES,
+		isEditable: YES
+	})
+})</code></pre>
+			<p>こうすると、該当するビュー内で、ドラッグアンドドロップを使った
+			並び替えができるようになります。あとは必要に応じて、
+			以下の関数を実装すれば終わりです。</p>
+			<dl>
+			<div>
+				<dt>collectionViewDragDataTypes(view)</dt>
+				<dd>ドラッグ開始時に実行される</dd>
+			</div>
+			<div>
+				<dt>collectionViewDragDataForType(view, drag, dataType)</dt>
+				<dd>上記が成功したとき</dd>
+			</div>
+			<div>
+				<dt>collectionViewPerformDragOperation(view, drag, op, i, p)</dt>
+				<dd>ドロップ時に発生</dd>
+			</div>
+			</dl>
+			<section>
+				<h3>参考ページ</h3>
+				<ul>
+				<li><a href="http://www.veebsbraindump.com/2010/11/sproutcore-tutorial-custom-listview-with-reordering/">Custom ListView with Reordering</a></li>
+				</ul>
+			</section>
+		</section>
+		<section>
+			<h2>ドラッグアンドドロップ(他のリストへドロップ)</h2>
+			<p>並び替えとは少し違う形になります。</p>
+			<section>
+				<h3>ドラッグ対象側のリスト</h3>
+				<pre><code class="js">contentView: SC.ListView.design({
+	dragDataTypes: [Blog.Article]
+})</code></pre>
+			</section>
+			<section>
+				<h3>ドロップされる側のリスト</h3>
+				<pre><code class="js">contentView: SC.ListView.design({
+	isDropTarget: YES,
+	computeDragOperation: function(drag, e){
+		return SC.DRAG_ANY
+	},
+	acceptDragOperation: function(drag, op){
+		...
+	}
+})</code></pre>
+			</section>
+			<p>ドロップしたときの動作は、acceptDragOperationに記述します。</p>
+		</section>
+		<section>
+			<h2>ドラッグアンドドロップ(他リスト中のアイテムへドロップ)</h2>
+			<p>ドロップ先となるアイテムのビューをsc-genで新しく作り、
+			それをSC.ListItemViewで拡張したものに置き換えます。
+			で、他のリストへドロップする場合と同じように、
+			作成したリストへプロパティを追加すればいいです。
+			以下ではdragEnteredとdragExitedも実装していますが、
+			これはあってもなくてもいいです。
+			また、performDragOperationでは、thisはドロップ先のアイテムです。</p>
+			<pre><code class="js">Blog.CategoryView = SC.ListItemView.extend({
+	isDropTarget: YES,
+	computeDragOperations: function(drag, e){
+		return SC.DRAG_ANY
+	},
+	acceptDragOperation: function(drag, op){
+		var ctlr = drag.get(&#x27;source&#x27;)
+		var article = ctlr.get(&#x27;selection&#x27;).firstObject()
+		article.set(&#x27;category&#x27;, this.get(&#x27;content&#x27;))
+		return YES
+	},
+	dragEntered: function(drag, e){
+		this.$().addClass(&#x27;drop-target&#x27;)
+	},
+	dragExited: function(drag, e){
+		this.$().removeClass(&#x27;drop-target&#x27;)
+	}
+});</code></pre>
+			<p>最後に、上記で作成したビューを
+			ドロップ先のSC.ListView#exampleViewに設定します。</p>
+			<pre><code class="js">categoriesView: SC.ScrollView.design({
+	contentView: SC.SourceListView.design({
+		exampleView: Blog.CategoryView
+	})
+})</code></pre>
+		</section>
+		<section>
+			<h2>Validator</h2>
+			<p>詳しく調べていないのでざっくりと。
+			validatorはSC.Validatorを拡張して作ります。
+			sc-genを使えないので、自分で作らなければいけません。
+			とりあえず、main_page.jsの先頭に書くようにしています。</p>
+			<pre><code class="js">Blog.dateTimeValidator = SC.Validator.extend({
+	...
+})</code></pre>
+			<dl>
+			<div>
+				<dt>validate(form, field): bool</dt>
+				<dd>変更時に実行される</dd>
+				<dd>変更時とはchange, submit, partialのこと; partial?</dd>
+				<dd>違反している場合はfalseを返すように作る</dd>
+			</div>
+			<div>
+				<dt>validateError(form, field)</dt>
+				<dd>validate()がfalseの時</dd>
+			</div>
+			<div>
+				<dt>fieldValueForObject(obj, form, field)</dt>
+				<dt>objectForFieldValue(value, form, field)</dt>
+				<dd>いろいろ</dd>
+				<dd>イメージ的にはkeydownイベントで発生してるっぽい</dd>
+			</div>
+			</dl>
+			<p>ビューへ適用するには、validatorに設定します。</p>
+			<pre><code class="js">createdDateView: SC.LabelView.design({
+	validator: Blog.dateTimeValidator.create({...})
+})</code></pre>
+			<p>メールアドレスやクレジットカードなど、一般的なものは
+			SC.Validator以下に最初から用意されています。</p>
+			<ul>
+			<li><a href="http://docs.sproutcore.com/symbols/SC.Validator.Email.html">SC.Validator.Email</a></li>
+			<li><a href="http://docs.sproutcore.com/symbols/SC.Validator.Date.html">SC.Validator.Date</a></li>
+			</ul>
+		</section>
+		<section>
+			<h2>observes式</h2>
+			<p>ほぼメモ。あとで清書。</p>
+			<dl>
+			<div>
+				<dt>observes(&#x27;a&#x27;)のような名前だけ</dt>
+				<dd>自分自身のaプロパティが変更されたら通知</dd>
+			</div>
+			<div>
+				<dt>observes(&#x27;.a&#x27;)またはobserves(&#x27;this.a&#x27;)</dt>
+				<dd>同上</dd>
+			</div>
+			<div>
+				<dt>observes(&#x27;a.b.c&#x27;)</dt>
+				<dd>グローバル変数aのプロパティbから、cが変更されたら通知</dd>
+			</div>
+			<div>
+				<dt>observes(&#x27;*a.b&#x27;)</dt>
+				<dd>自分自身の、aまたはa.bのどちらかが変更されたら通知</dd>
+				<dd>おそらく*で開始した場合のみ自分自身を起点とする</dd>
+			</div>
+			<div>
+				<dt>observes(&#x27;a.b*c.d&#x27;)</dt>
+				<dd>グローバル変数aのプロパティbを起点として、cかc.dに変更があれば通知</dd>
+			</div>
+			</dl>
+			<p>こんなのも書けるっぽい。</p>
+			<pre><code class="js">function(){}.observes(&#x27;this&#x27;)</code></pre>
+		</section>
+		<section>
+			<h2>トラブルシューティング</h2>
+			<section>
+				<h3>selectObjectしても関連データが更新されていない</h3>
+				<p>SC.ArrayController#selectObjectの直後、
+				関連するSC.Bindingが更新されるわけではないようです。</p>
+				<pre><code class="js">Blog.articleController = SC.ObjectController.create({
+	contentBinding: SC.Binding
+		.single(&#x27;Blog.articlesController.selection&#x27;)
+})</code></pre>
+				<p>ここで、</p>
+				<pre><code class="js">Blog.articlesController.selectObject(article)
+var p = Blog.articleController.get(&#x27;content&#x27;)</code></pre>
+				<p>pの値は直前に選んでいた記事か、
+				選んでいなければnullが設定されます。
+				正しく動かすには、invoke系関数を使います。</p>
+				<pre><code class="js">Blog.articlesController.selectObject(article)
+Blog.articlesController.invokeLater(function(){
+	var p = Blog.articleController.get(&#x27;content&#x27;)
+})</code></pre>
+				<p>または、自分でSC.RunLoop.beginとSC.RunLoop.endを
+				呼び出して処理してもいいのかも。</p>
+			</section>
+			<section>
+				<h3>追加や削除してもリストに反映されない</h3>
+				<p>リレーションを張った状態で、
+				多側の内容をコントローラに設定、
+				それをリストにバインドしていると、
+				ビューの更新がされません。具体的に書くと、</p>
+				<pre><code class="js">contentBinding: SC.Binding
+	.single(&#x27;Blog.categoriesController.selection&#x27;)
+	.transform(function(value, binding){
+		return value ? value.get(&#x27;articles&#x27;) : null
+	})</code></pre>
+				<p>ここで、contentはSC.ManyArray型になります。
+				この場合は変更が通知されません。
+				ちなみに、ビューが更新されないだけで、
+				内部のデータは変更されています。</p>
+				<p>次に、</p>
+				<pre><code class="js">contentBinding: SC.Binding
+	.single(&#x27;Blog.categoriesController.selection&#x27;)
+	.transform(function(value, binding){
+		var q = SC.Query.local(Blog.Article, &#x27;category = {target}&#x27;, {
+			target: value
+		})
+		return Blog.store.find(q)
+	})</code></pre>
+				<p>この場合は、contentがSC.RecordArray型になり、
+				変更を反映するようになります。</p>
+			</section>
+			<section>
+				<h3>変更していないけど変更したことにしたい</h3>
+				<pre><code class="js">obj.propertyDidChange(&#x27;name&#x27;)</code></pre>
+				<p>enumerableContentDidChangeも気になります。</p>
+			</section>
+			<section>
+				<h3>SC.DropTargetがundefined</h3>
+				<p>SC.DropTargetを拡張してドラッグアンドドロップを実装していると、
+				sc-serverで動かすぶんには普通に動くのですが、
+				sc-buildして展開した際に、</p>
+				<blockquote>Uncaught SC.Object.extend expects a non-null value.
+				Did you forget to &#x27;sc_require&#x27; something?
+				Or were you passing a Protocol to extend() as if it were a mixin?</blockquote>
+				<p>というエラーが出るみたいです。
+				あきらめてisDropTarget版を作り直してください。</p>
+			</section>
+			<section>
+				<h3>SC.SelectButtonViewの表示がvalueの値にならない</h3>
+				<p>SC.SelectButtonViewの比較は===演算子なので、
+				オブジェクトのアドレスが異なれば違うものとして扱われます。</p>
+				<pre><code class="js">SC.SelectButtonView.design({
+	objectsBinding: &#x27;Blog.categoriesController.arrangedObjects&#x27;,
+	valueBinding: &#x27;Blog.articleController.category&#x27;,
+	theme: &#x27;square&#x27;
+})</code></pre>
+				<p>これで通常は、valueの値にあわせて切り替わりますが、
+				SC.NestedStoreが関係する場合は混乱するかもしれません。
+				というのも、オリジナルのオブジェクトとNestedStoreから再取得した
+				オブジェクトは異なるアドレスを持つので、
+				同じ値は無いというように扱われてしまうのですね。</p>
+				<p>なので、割と適当な回避策として、objectsのほうもNestedStoreから
+				再取得したものでバインドしてあげると期待通りに動きます。一部抜粋。</p>
+				<pre><code class="js">SC.SelectButtonView.design({
+	objectsBinding: &#x27;Blog.altCategoriesController.arrangedObjects&#x27;
+	valueBinding: &#x27;Blog.articleController.category&#x27;
+})</code></pre>
+				<p>呼び出す場所では以下のように。</p>
+				<pre><code class="js">var nstore = Blog.store.chain()
+var q = SC.Query.local(&#x27;Blog.Category&#x27;)
+Blog.altCategoriesController.set(&#x27;content&#x27;, nstore.find(q))
+Blog.articleController.set(&#x27;content&#x27;, nstore.find(article))</code></pre>
+			</section>
+			<section>
+				<h3>SC.Validator.Numberのバグ</h3>
+				<p>Validator.Numberはplacesで小数点以下の桁数を指定できます。</p>
+				<pre><code>validator: SC.Validator.Number.extend({ places: 1 })</code></pre>
+				<p>ですが、2011年2月時点でバグがあり、文字が一切入力できません。
+				仕方がないのでバグの部分だけを置き換えたものを作ります。</p>
+				<pre><code class="js">Vacations.DaysValidator = SC.Validator.Number.extend({
+
+	places: 1,
+
+	objectForFieldValue: function(value, form, field){
+		switch(SC.typeOf(value)){
+		case SC.T_STRING:
+			value = SC.uniJapaneseConvert(value)
+			value = value.replace(/,/g, &#x27;&#x27;)
+			if(value.length === 0 || value.match(/^-$/))
+				value = null
+			else if(this.get(&#x27;places&#x27;) &gt; 0)
+				value = parseFloat(value)
+			else
+				value = parseInt(value, 0)
+			if(isNaN(value))
+				value = &#x27;&#x27;
+			return value
+		case SC.T_NULL:
+		case SC.T_UNDEFINED:
+		default:
+			return null
+		}
+	},
+
+	validateKeyDown: function(form, field, charStr){
+		var text = field.$input().val()
+		if(!text)
+			text = &#x27;&#x27;
+		text += charStr
+		var pass = charStr.length === 0 || charStr === &#x27;-&#x27; || charStr === &#x27;.&#x27;
+		if(this.get(&#x27;places&#x27;) === 0){
+			if(pass)
+				return true
+			else{
+				var a = text.match(/^[\-{0,1}]?[0-9,\0]*/)
+				return a &amp;&amp; a[0] === text
+			}
+		}else{
+			if(pass)
+				return true
+			else{
+				var a = text.match(/^[\-{0,1}]?[0-9,\0]*\.?[0-9\0]+/)
+				return a &amp;&amp; a[0] === text
+			}
+		}
+	}
+}</code></pre>
+				<p>で、これをvalidatorに設定するとうまく動きます。</p>
+			</section>
+		</section>
+	</section>
+</main>
+<aside>
+	<ul>
+	<li><a href="/notes/2010/1203.html"><a>SproutCoreのモデル定義</a></a></li>
+	</ul>
+</aside>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2010/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: SproutCoreのGUIデザイン\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2011年2月26日更新\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eSproutCoreのGUIデザイン\u003c/h1\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eアプリケーションタイトルの変更\u003c/h2\u003e\n\t\t\t\u003cp\u003emain.jsなどから、document.titleに設定します。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003edocument.title = 'blog'.loc()\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eビューの作成\u003c/h2\u003e\n\t\t\t\u003cp\u003eプロジェクトディレクトリに移動して、以下を実行すると、\n\t\t\tviews/以下にそのファイルが作成されます。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e$ sc-gen view Blog.CategoryView\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eでもだいたいmain_page.jsで事足りますので、\n\t\t\tあまり使う機会はないかも。\u003c/p\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003e参考\u003c/h3\u003e\n\t\t\t\t\u003cul\u003e\n\t\t\t\t\u003cli\u003e\u003ca href=\"http://frozencanuck.wordpress.com/2009/08/16/creating-a-simple-custom-view-in-sproutcore-part2/\"\u003eCreating a Simple Custom View\u003c/a\u003e\u003c/li\u003e\n\t\t\t\t\u003c/ul\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eボタン\u003c/h2\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003epostView: SC.ButtonView.design({\n\ttitle: 'post',\n\tisEnabled: YES,\n\tisDefault: YES\n\ttarget: 'Blog.articleController',\n\taction: 'createArticle'\n})\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eボタンを押したときに、\n\t\t\tBlog.articleController.createArticle()を実行します。\n\t\t\tアイコンボタンを作る場合はtitleをnullにして、\n\t\t\ticonプロパティに特定の名前を設定します。\u003c/p\u003e\n\t\t\t\u003cp\u003eisDefaultをYESにすると、Enterキーを押したときに\n\t\t\t実行されるボタンになります。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eリスト\u003c/h2\u003e\n\t\t\t\u003cfigure\u003e\n\t\t\t\t\u003cimg src=\"1206.jpg\" alt=\"SourceListViewとListViewの違い\"\u003e\n\t\t\t\t\u003cfigcaption\u003eSourceListViewとListViewの違い\u003c/figcaption\u003e\n\t\t\t\u003c/figure\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003ecategoriesView: SC.ScrollView.design({\n\tcontentView: SC.SourceListView.design({\n\t\texampleView: Blog.CategoryView\n\t})\n})\narticlesView: SC.ScrollView.design({\n\tcontentView: SC.ListView.design({\n\t})\n})\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e上記画像の左側がSourceListViewで、右が普通のListViewです。\u003c/p\u003e\n\t\t\t\u003cp\u003e2行で表示する、とか、そういうCSSで対応できないような範囲で\n\t\t\t個々の見た目を変えたければ、SC.ListItemViewを拡張した型を作って、\n\t\t\tSC.ListView#exampleViewに設定します。\u003c/p\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003e参考\u003c/h3\u003e\n\t\t\t\t\u003cul\u003e\n\t\t\t\t\u003cli\u003e\u003ca href=\"http://frozencanuck.wordpress.com/2009/09/06/creating-a-simple-custom-list-item-view-part-1/\"\u003eCreating a Simple Custom List View\u003c/a\u003e\u003c/li\u003e\n\t\t\t\t\u003c/ul\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eドロップダウンメニュー\u003c/h2\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003eselectionView: SC.SelectButtonView.design({\n\ttitle: 'title',\n\tobjects: [\n\t\t{ name: 'PC等', value: 'pc' },\n\t\t{ name: 'Web製作', value: 'web' }\n\t],\n\tvalue: 'pc',\n\ttheme: 'square',\n\tnameKey: 'name',\n\tvalueKey: 'value'\n})\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003enameKeyを省略したときは、objects[i].toString()の値を使います。\n\t\t\t同様に、valueKeyを省略したときは、objects[i]を使います。\u003c/p\u003e\n\t\t\t\u003cp\u003evalueの値がobjectsに含まれていない場合、\n\t\t\ttitleの値がボタンのタイトルに使われます。\n\t\t\tこのとき、valueの比較は===演算子により行われますので注意です。\u003c/p\u003e\n\t\t\t\u003cdiv class=\"note\"\u003e\n\t\t\t\t\u003cp\u003e調べると、SC.SelectViewがSC.SelectButtonViewに代わるようです。\n\t\t\t\tですが使ってみると、ドロップダウンから選択すると、\n\t\t\t\tparentMenuがnullまたはundefinedだというエラーで停止します。\n\t\t\t\tSproutCoreのメーリングリストで2010年2月頃に\u003ca href=\"http://markmail.org/thread/cydb4g23lc35rltx\"\u003e話題に挙がり\u003c/a\u003e、\n\t\t\t\t修正もされているような記述がありましたが、\n\t\t\t\tSproutCoreの1.4.5でもまだバグが残っている状態です。\u003c/p\u003e\n\t\t\t\u003c/div\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eタブ\u003c/h2\u003e\n\t\t\t\u003cp\u003enowShowingをnullにすると、どのタブも選択されていない状態になります。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003emiddle: SC.View.design({\n\tlayout: { top: 75, bottom: 115, left: 0, right: 0 },\n\tchildViews: 'tab'.w(),\n\n\ttab: SC.TabView.design({\n\t\tnowShowing: 'Blog.publicPage.mainView',\n\t\titems: [\n\t\t\t{\ttitle: 'public'.loc(),\n\t\t\t\tvalue: 'Blog.publicPage.mainView'\n\t\t\t},\n\t\t\t{\ttitle: 'acquisition'.loc(),\n\t\t\t\tvalue: 'Blog.privatePage.mainView'\n\t\t\t}\n\t\t],\n\t\titemTitleKey: 'title',\n\t\titemValueKey: 'value'\n\t})\n})\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eここで、valueのパスはSC.Pageの名前で、\n\t\t\tそれはふつうに書いてもいいですし、sc-genを使ってもいいです。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e$ sc-gen design Blog.publicPage\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e並び替え\u003c/h2\u003e\n\t\t\t\u003cp\u003eまずはSC.Query等のクエリで対応するのが正解かなあと思いますが、\n\t\t\t使えない場合は、SC.ArrayController#orderByが便利かもしれません。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003eBlog.articlesController = SC.ArrayController.create({\n\torderBy: 'createdDate DESC, ...'\n})\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eテーブル\u003c/h2\u003e\n\t\t\t\u003cp\u003e使う前に、Buildfileへsproutcore/tableを追加しておきます。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003erequired =\u0026gt; [:sproutcore, 'sproutcore/table']\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp class=\"note\"\u003eテーブルもスクロールさせる場合は、\n\t\t\tListViewと同じようにScrollViewに含めるといいです。\u003c/p\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eフォーマット\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eTableViewでフォーマットするには、\n\t\t\t\tTableColumnのオプションにformatterを渡します。\n\t\t\t\tこれが関数なら、その戻り値をテーブルデータに表示します。\n\t\t\t\t以下はSC.DateTimeを表示する場合。一部抜粋。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003etableView: SC.TableView.design({\n\tcolumns: [\n\t\tSC.TableColumn.create({\n\t\t\tlabel: 'created date',\n\t\t\tkey: 'createdDate',\n\t\t\tformatter: function(d){\n\t\t\t\treturn d.toFormattedString('%Y/%m/%d')\n\t\t\t}\n\t\t}),\n\t\t...\n\t],\n\tcontentBinding: 'Blog.articlesController.arrangedObjects',\n\tselectionBinding: 'Blog.articlesController.selection',\n\tselectOnMouseDown: YES,\n\texampleView: SC.TableRowView\n})\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e多言語対応\u003c/h2\u003e\n\t\t\t\u003cp\u003eビューとはちょっと違うかもしれませんが、まあ見た目なので。\n\t\t\tまず言語ファイルを作成するには、以下のようにします。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e$ sc-gen language Blog Japanese\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003esc-genのヘルプでは、\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e# エラーが出るよ\n$ sc-gen language Language\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eとなっていますが、実際は違うので注意です。いちおう\u003ca href=\"http://wiki.sproutcore.com/w/page/12413070/Todos%2008-Localizing\"\u003eWiki\u003c/a\u003e\n\t\t\tでは修正されているみたいですが。。\u003c/p\u003e\n\t\t\t\u003cp\u003eあとは生成した言語ファイルを修正して、String#locを呼び出すだけです。\n\t\t\t個人的によく使うのは、\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003e'%Y-%m-%d': '%Y/%m/%d'\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eと定義しておいて、'%Y-%m-%d'.loc()とか。\n\t\t\t置換パラメータを持っている場合は、\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003e'post failed[code=%@]': '書き込みに失敗しました[コード=%@]'\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eで、locに引数を渡します。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003ethrow 'post failed[code=%@]'.loc(statusCode)\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eこうしておくと、未対応の言語でも最低限の表示ができますので。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eドラッグアンドドロップ(並び替え)\u003c/h2\u003e\n\t\t\t\u003cp\u003eコントローラと連携して対応するっぽいです。\n\t\t\tまず、コントローラをSC.CollectionViewDelegateで拡張します。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003eBlog.articlesController = SC.ArrayController.create(\n\tSC.CollectionViewDelegate, {\n\t...\n})\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e次に、View側でcanReorderContentとisEditableをYESに設定します。\n\t\t\t一部抜粋。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003earticlesView: SC.ScrollView.design({\n\tcontentView: SC.ListView.design({\n\t\tcontentBinding: 'Blog.articlesController.arrangedObjects',\n\t\tselectionBinding: 'Blog.articlesController.selection',\n\t\tcanReorderContent: YES,\n\t\tisEditable: YES\n\t})\n})\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eこうすると、該当するビュー内で、ドラッグアンドドロップを使った\n\t\t\t並び替えができるようになります。あとは必要に応じて、\n\t\t\t以下の関数を実装すれば終わりです。\u003c/p\u003e\n\t\t\t\u003cdl\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003ecollectionViewDragDataTypes(view)\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eドラッグ開始時に実行される\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003ecollectionViewDragDataForType(view, drag, dataType)\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003e上記が成功したとき\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003ecollectionViewPerformDragOperation(view, drag, op, i, p)\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eドロップ時に発生\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003c/dl\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003e参考ページ\u003c/h3\u003e\n\t\t\t\t\u003cul\u003e\n\t\t\t\t\u003cli\u003e\u003ca href=\"http://www.veebsbraindump.com/2010/11/sproutcore-tutorial-custom-listview-with-reordering/\"\u003eCustom ListView with Reordering\u003c/a\u003e\u003c/li\u003e\n\t\t\t\t\u003c/ul\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eドラッグアンドドロップ(他のリストへドロップ)\u003c/h2\u003e\n\t\t\t\u003cp\u003e並び替えとは少し違う形になります。\u003c/p\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eドラッグ対象側のリスト\u003c/h3\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003econtentView: SC.ListView.design({\n\tdragDataTypes: [Blog.Article]\n})\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eドロップされる側のリスト\u003c/h3\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003econtentView: SC.ListView.design({\n\tisDropTarget: YES,\n\tcomputeDragOperation: function(drag, e){\n\t\treturn SC.DRAG_ANY\n\t},\n\tacceptDragOperation: function(drag, op){\n\t\t...\n\t}\n})\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003cp\u003eドロップしたときの動作は、acceptDragOperationに記述します。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eドラッグアンドドロップ(他リスト中のアイテムへドロップ)\u003c/h2\u003e\n\t\t\t\u003cp\u003eドロップ先となるアイテムのビューをsc-genで新しく作り、\n\t\t\tそれをSC.ListItemViewで拡張したものに置き換えます。\n\t\t\tで、他のリストへドロップする場合と同じように、\n\t\t\t作成したリストへプロパティを追加すればいいです。\n\t\t\t以下ではdragEnteredとdragExitedも実装していますが、\n\t\t\tこれはあってもなくてもいいです。\n\t\t\tまた、performDragOperationでは、thisはドロップ先のアイテムです。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003eBlog.CategoryView = SC.ListItemView.extend({\n\tisDropTarget: YES,\n\tcomputeDragOperations: function(drag, e){\n\t\treturn SC.DRAG_ANY\n\t},\n\tacceptDragOperation: function(drag, op){\n\t\tvar ctlr = drag.get('source')\n\t\tvar article = ctlr.get('selection').firstObject()\n\t\tarticle.set('category', this.get('content'))\n\t\treturn YES\n\t},\n\tdragEntered: function(drag, e){\n\t\tthis.$().addClass('drop-target')\n\t},\n\tdragExited: function(drag, e){\n\t\tthis.$().removeClass('drop-target')\n\t}\n});\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e最後に、上記で作成したビューを\n\t\t\tドロップ先のSC.ListView#exampleViewに設定します。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003ecategoriesView: SC.ScrollView.design({\n\tcontentView: SC.SourceListView.design({\n\t\texampleView: Blog.CategoryView\n\t})\n})\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eValidator\u003c/h2\u003e\n\t\t\t\u003cp\u003e詳しく調べていないのでざっくりと。\n\t\t\tvalidatorはSC.Validatorを拡張して作ります。\n\t\t\tsc-genを使えないので、自分で作らなければいけません。\n\t\t\tとりあえず、main_page.jsの先頭に書くようにしています。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003eBlog.dateTimeValidator = SC.Validator.extend({\n\t...\n})\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cdl\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003evalidate(form, field): bool\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003e変更時に実行される\u003c/dd\u003e\n\t\t\t\t\u003cdd\u003e変更時とはchange, submit, partialのこと; partial?\u003c/dd\u003e\n\t\t\t\t\u003cdd\u003e違反している場合はfalseを返すように作る\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003evalidateError(form, field)\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003evalidate()がfalseの時\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003efieldValueForObject(obj, form, field)\u003c/dt\u003e\n\t\t\t\t\u003cdt\u003eobjectForFieldValue(value, form, field)\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eいろいろ\u003c/dd\u003e\n\t\t\t\t\u003cdd\u003eイメージ的にはkeydownイベントで発生してるっぽい\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003c/dl\u003e\n\t\t\t\u003cp\u003eビューへ適用するには、validatorに設定します。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003ecreatedDateView: SC.LabelView.design({\n\tvalidator: Blog.dateTimeValidator.create({...})\n})\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eメールアドレスやクレジットカードなど、一般的なものは\n\t\t\tSC.Validator以下に最初から用意されています。\u003c/p\u003e\n\t\t\t\u003cul\u003e\n\t\t\t\u003cli\u003e\u003ca href=\"http://docs.sproutcore.com/symbols/SC.Validator.Email.html\"\u003eSC.Validator.Email\u003c/a\u003e\u003c/li\u003e\n\t\t\t\u003cli\u003e\u003ca href=\"http://docs.sproutcore.com/symbols/SC.Validator.Date.html\"\u003eSC.Validator.Date\u003c/a\u003e\u003c/li\u003e\n\t\t\t\u003c/ul\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eobserves式\u003c/h2\u003e\n\t\t\t\u003cp\u003eほぼメモ。あとで清書。\u003c/p\u003e\n\t\t\t\u003cdl\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eobserves('a')のような名前だけ\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003e自分自身のaプロパティが変更されたら通知\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eobserves('.a')またはobserves('this.a')\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003e同上\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eobserves('a.b.c')\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eグローバル変数aのプロパティbから、cが変更されたら通知\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eobserves('*a.b')\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003e自分自身の、aまたはa.bのどちらかが変更されたら通知\u003c/dd\u003e\n\t\t\t\t\u003cdd\u003eおそらく*で開始した場合のみ自分自身を起点とする\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eobserves('a.b*c.d')\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eグローバル変数aのプロパティbを起点として、cかc.dに変更があれば通知\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003c/dl\u003e\n\t\t\t\u003cp\u003eこんなのも書けるっぽい。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003efunction(){}.observes('this')\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eトラブルシューティング\u003c/h2\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eselectObjectしても関連データが更新されていない\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eSC.ArrayController#selectObjectの直後、\n\t\t\t\t関連するSC.Bindingが更新されるわけではないようです。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003eBlog.articleController = SC.ObjectController.create({\n\tcontentBinding: SC.Binding\n\t\t.single('Blog.articlesController.selection')\n})\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003eここで、\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003eBlog.articlesController.selectObject(article)\nvar p = Blog.articleController.get('content')\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003epの値は直前に選んでいた記事か、\n\t\t\t\t選んでいなければnullが設定されます。\n\t\t\t\t正しく動かすには、invoke系関数を使います。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003eBlog.articlesController.selectObject(article)\nBlog.articlesController.invokeLater(function(){\n\tvar p = Blog.articleController.get('content')\n})\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003eまたは、自分でSC.RunLoop.beginとSC.RunLoop.endを\n\t\t\t\t呼び出して処理してもいいのかも。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003e追加や削除してもリストに反映されない\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eリレーションを張った状態で、\n\t\t\t\t多側の内容をコントローラに設定、\n\t\t\t\tそれをリストにバインドしていると、\n\t\t\t\tビューの更新がされません。具体的に書くと、\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003econtentBinding: SC.Binding\n\t.single('Blog.categoriesController.selection')\n\t.transform(function(value, binding){\n\t\treturn value ? value.get('articles') : null\n\t})\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003eここで、contentはSC.ManyArray型になります。\n\t\t\t\tこの場合は変更が通知されません。\n\t\t\t\tちなみに、ビューが更新されないだけで、\n\t\t\t\t内部のデータは変更されています。\u003c/p\u003e\n\t\t\t\t\u003cp\u003e次に、\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003econtentBinding: SC.Binding\n\t.single('Blog.categoriesController.selection')\n\t.transform(function(value, binding){\n\t\tvar q = SC.Query.local(Blog.Article, 'category = {target}', {\n\t\t\ttarget: value\n\t\t})\n\t\treturn Blog.store.find(q)\n\t})\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003eこの場合は、contentがSC.RecordArray型になり、\n\t\t\t\t変更を反映するようになります。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003e変更していないけど変更したことにしたい\u003c/h3\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003eobj.propertyDidChange('name')\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003eenumerableContentDidChangeも気になります。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eSC.DropTargetがundefined\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eSC.DropTargetを拡張してドラッグアンドドロップを実装していると、\n\t\t\t\tsc-serverで動かすぶんには普通に動くのですが、\n\t\t\t\tsc-buildして展開した際に、\u003c/p\u003e\n\t\t\t\t\u003cblockquote\u003eUncaught SC.Object.extend expects a non-null value.\n\t\t\t\tDid you forget to 'sc_require' something?\n\t\t\t\tOr were you passing a Protocol to extend() as if it were a mixin?\u003c/blockquote\u003e\n\t\t\t\t\u003cp\u003eというエラーが出るみたいです。\n\t\t\t\tあきらめてisDropTarget版を作り直してください。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eSC.SelectButtonViewの表示がvalueの値にならない\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eSC.SelectButtonViewの比較は===演算子なので、\n\t\t\t\tオブジェクトのアドレスが異なれば違うものとして扱われます。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003eSC.SelectButtonView.design({\n\tobjectsBinding: 'Blog.categoriesController.arrangedObjects',\n\tvalueBinding: 'Blog.articleController.category',\n\ttheme: 'square'\n})\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003eこれで通常は、valueの値にあわせて切り替わりますが、\n\t\t\t\tSC.NestedStoreが関係する場合は混乱するかもしれません。\n\t\t\t\tというのも、オリジナルのオブジェクトとNestedStoreから再取得した\n\t\t\t\tオブジェクトは異なるアドレスを持つので、\n\t\t\t\t同じ値は無いというように扱われてしまうのですね。\u003c/p\u003e\n\t\t\t\t\u003cp\u003eなので、割と適当な回避策として、objectsのほうもNestedStoreから\n\t\t\t\t再取得したものでバインドしてあげると期待通りに動きます。一部抜粋。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003eSC.SelectButtonView.design({\n\tobjectsBinding: 'Blog.altCategoriesController.arrangedObjects'\n\tvalueBinding: 'Blog.articleController.category'\n})\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003e呼び出す場所では以下のように。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003evar nstore = Blog.store.chain()\nvar q = SC.Query.local('Blog.Category')\nBlog.altCategoriesController.set('content', nstore.find(q))\nBlog.articleController.set('content', nstore.find(article))\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eSC.Validator.Numberのバグ\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eValidator.Numberはplacesで小数点以下の桁数を指定できます。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode\u003evalidator: SC.Validator.Number.extend({ places: 1 })\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003eですが、2011年2月時点でバグがあり、文字が一切入力できません。\n\t\t\t\t仕方がないのでバグの部分だけを置き換えたものを作ります。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"js\"\u003eVacations.DaysValidator = SC.Validator.Number.extend({\n\n\tplaces: 1,\n\n\tobjectForFieldValue: function(value, form, field){\n\t\tswitch(SC.typeOf(value)){\n\t\tcase SC.T_STRING:\n\t\t\tvalue = SC.uniJapaneseConvert(value)\n\t\t\tvalue = value.replace(/,/g, '')\n\t\t\tif(value.length === 0 || value.match(/^-$/))\n\t\t\t\tvalue = null\n\t\t\telse if(this.get('places') \u0026gt; 0)\n\t\t\t\tvalue = parseFloat(value)\n\t\t\telse\n\t\t\t\tvalue = parseInt(value, 0)\n\t\t\tif(isNaN(value))\n\t\t\t\tvalue = ''\n\t\t\treturn value\n\t\tcase SC.T_NULL:\n\t\tcase SC.T_UNDEFINED:\n\t\tdefault:\n\t\t\treturn null\n\t\t}\n\t},\n\n\tvalidateKeyDown: function(form, field, charStr){\n\t\tvar text = field.$input().val()\n\t\tif(!text)\n\t\t\ttext = ''\n\t\ttext += charStr\n\t\tvar pass = charStr.length === 0 || charStr === '-' || charStr === '.'\n\t\tif(this.get('places') === 0){\n\t\t\tif(pass)\n\t\t\t\treturn true\n\t\t\telse{\n\t\t\t\tvar a = text.match(/^[\\-{0,1}]?[0-9,\\0]*/)\n\t\t\t\treturn a \u0026amp;\u0026amp; a[0] === text\n\t\t\t}\n\t\t}else{\n\t\t\tif(pass)\n\t\t\t\treturn true\n\t\t\telse{\n\t\t\t\tvar a = text.match(/^[\\-{0,1}]?[0-9,\\0]*\\.?[0-9\\0]+/)\n\t\t\t\treturn a \u0026amp;\u0026amp; a[0] === text\n\t\t\t}\n\t\t}\n\t}\n}\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003eで、これをvalidatorに設定するとうまく動きます。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"1203.html\"\u003eSproutCoreのモデル定義\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2010","1206"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

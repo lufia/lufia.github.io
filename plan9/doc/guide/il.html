@@ -1,0 +1,401 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>Plan 9: ILプロトコル</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="/plan9/doc/inst/index.html"><a>インストール</a></a></li>
+	<li><a href="/plan9/doc/guide/index.html"><a>システムの使い方</a></a></li>
+	<li><a href="/plan9/doc/devel/index.html"><a>プログラミング</a></a></li>
+	<li><a href="/plan9/doc/adm/index.html"><a>システム管理</a></a></li>
+	<li><a href="/plan9/man/index.html"><a>自作ツール集</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p>ILの論文をおおよそ意訳でやってみました。
+	それと、いろいろコメントやらリンクやらを張っていますが、
+	これらは勝手につけたものだったり、未訳だったりです。</p>
+	<p class="revision">2011年6月17日作成</p>
+	<section>
+		<h1>ILプロトコル</h1>
+		<p>Plan 9ファイルシステムプロトコル9PのRPCメッセージを転送するため、
+		ILと呼ぶ新しいネットワークプロトコルを実装しました。
+		これはコネクション型のプロトコルで、
+		IPによってカプセル化されたデータグラムを運ぶ軽量なプロトコルです。
+		ILは消失したパケットの再送と順序通りの配達を提供しますが、<a href="http://net-juku.org/tcpip/tcpip102.html">フロー制御</a>と暗黙的な再送はしません。</p>
+		<p class="note">暗黙的な再送はおそらく、tcpでの<a href="http://www.7key.jp/nw/tcpip/tcp/tcp2.html">再送依頼を受けたらそれ以降を再送</a>するところかな。
+		ILはstateで受けたackの次にあるデータしか再送しないです。</p>
+		<section>
+			<h2>導入</h2>
+			<p>Plan 9は、RPCリクエストとレスポンスメッセージに、
+			メッセージ区切りがあり、順序保証を要求するプロトコル(9P)を使います。
+			標準IPプロトコルのどれも、9Pメッセージの転送に適切ではありません。
+			TCPは高いオーバーヘッドがあり、メッセージの区切りがありません。
+			UDPは、単純でメッセージ区切りを持つとはいえ、順序保証がありません。
+			我々は自分たちのシステムにIP, TCP, UDPを実装していたとき、
+			9Pに適したプロトコルを選別しようとしました。
+			要求する性質は:</p>
+			<ul>
+			<li>信頼性のあるデータグラムサービス</li>
+			<li>順番通りの配達</li>
+			<li>IPネットワーク</li>
+			<li>シンプルで高パフォーマンス</li>
+			<li>柔軟なタイムアウト</li>
+			</ul>
+			<p>標準プロトコルには上記を満たすものが無かったので、
+			IL(Internet Link)と呼ばれる新しいプロトコルを設計しました。</p>
+			<p>ILは軽量な、IPの上位プロトコルです。
+			これはコネクション指向で、メッセージの到着順を保証します。
+			クライアントサーバ間でRPCメッセージを転送するために設計されたので、
+			フロー制御はなく、構造は固有のフロー制約を含みます。</p>
+			<div class="note">
+				<p>未解決メッセージ用の小さい窓は、多すぎる受信を防ぐ,
+				バッファされつつあるところからの;</p>
+			</div>
+			<p>ウインドウからあふれたメッセージは捨てられ、再送されなければなりません。
+			コネクションの確立時に接続の両端でシーケンス番号の初期値を生成するため、
+			2wayハンドシェイクを使います; 続くデータメッセージは、
+			受信側でバラバラになったメッセージを再並べ替えできるようにするため、
+			シーケンス番号をインクリメントします。
+			他のプロトコルとは対照的に、ILは暗黙的な再送が無効です。
+			これは混雑したネットワークにおいて、
+			暗黙的な再送によってより混雑させるのを防ぎます。
+			TCPに似て、ILは往復時間によってタイムアウトを決定しますので、
+			インターネットとローカルイーサネットのどちらでも上手に動きます。
+			ネットワーク速度に適した肯定応答と再送の時間を見積もるために、
+			往復時間(RTT; round-trip timer)を使います。</p>
+		</section>
+		<section>
+			<h2>コネクション</h2>
+			<p>ILコネクションは接続している端から端へデータストリームを運びます。
+			コネクションが維持されている間、
+			片側に入ったデータは入れた順に逆側へ送られます。
+			図1は、状態(円)とその変遷(弧)で
+			コネクションの機能を描いたステートマシンです。
+			それぞれの変遷は、水平線の上が変化の原因となったイベントで、
+			下には、このときに受信または送信するメッセージを表しています。
+			この論文の残りは、このステートマシンについて議論します。</p>
+			<p>&lt;図1&gt;, 原文をみてください。</p>
+			<div class="note">
+				<p>snd(packet)は相手側へpacketを送信する。
+				rcv(packet)は受信。</p>
+				<p>packetはtype(seq, ack)かな？typeはsyncとかdataとか。</p>
+			</div>
+			<dl>
+			<div>
+				<dt>ackok</dt>
+				<dd>any sequence number between id0 and next inclusive</dd>
+			</div>
+			<div>
+				<dt>!x</dt>
+				<dd>xを除くなんらかの値</dd>
+			</div>
+			<div>
+				<dt>-</dt>
+				<dd>なんらかの値</dd>
+			</div>
+			</dl>
+			<p>ILステートマシンには、Closed, Syncer, Syncee,
+			Established, Closingという5つの状態があります。
+			コネクションは両端のIPアドレスとポート番号によって識別されます。
+			アドレスはIPプロトコルヘッダにあり、
+			ポート番号は18バイトのILヘッダにあります。
+			コネクションごとに固有の変数は:</p>
+			<dl>
+			<div>
+				<dt>state</dt>
+				<dd>Closed, Syncer, Syncee, Established, Closingのどれか</dd>
+			</div>
+			<div>
+				<dt>laddr</dt>
+				<dd>32bitローカルIPアドレス</dd>
+			</div>
+			<div>
+				<dt>lport</dt>
+				<dd>16bitローカルILポート番号</dd>
+			</div>
+			<div>
+				<dt>raddr</dt>
+				<dd>32bitリモートIPアドレス</dd>
+			</div>
+			<div>
+				<dt>rport</dt>
+				<dd>16bitリモートILポート番号</dd>
+			</div>
+			<div>
+				<dt>id0</dt>
+				<dd>32bitシーケンス番号(ローカル側)</dd>
+			</div>
+			<div>
+				<dt>rid0</dt>
+				<dd>32bitシーケンス番号(リモート側)</dd>
+			</div>
+			<div>
+				<dt>next</dt>
+				<dd>ローカル側から送られる次のシーケンス番号</dd>
+			</div>
+			<div>
+				<dt>rcvd</dt>
+				<dd>正常に受信した最後のリモート側番号</dd>
+			</div>
+			<div>
+				<dt>unacked</dt>
+				<dd>まだACKを受け取っていない最初のシーケンス番号(ローカル側)</dd>
+			</div>
+			</dl>
+			<p>接続は最初、未割当アドレスでClosedになっています。
+			まだ接続されていないコネクションへメッセージが届くか、
+			またはユーザが明確に接続すると、コネクションをオープンします。
+			最初の場合、メッセージの送信元アドレスとポートがリモート側のそれになり、
+			送信先はローカル側として処理します。
+			このとき、コネクションの状態はSynceeです。2つ目の場合は、
+			ユーザがローカルとリモート両方のアドレスとポートを明示します。
+			コネクションの状態はSyncerになり、
+			syncメッセージがリモート側に送られます。
+			ローカルアドレスの正当な値はIPの実装によります。</p>
+		</section>
+		<section>
+			<h2>シーケンス番号</h2>
+			<p>ILはデータメッセージを運びます。
+			各メッセージはOSからのwrite命令1回分に対応し、
+			それは32bitシーケンス番号により識別されます。
+			コネクション両側の初期シーケンス番号はランダムで、
+			最初のsyncメッセージで伝えます。
+			番号は、続くデータメッセージごとにインクリメントされます。
+			再送されたメッセージのシーケンス番号は、最初に送った番号です。</p>
+		</section>
+		<section>
+			<h2>送信/再送</h2>
+			<div class="note">
+				<dl>
+				<div>
+					<dt>acknowledgement</dt>
+					<dd>受信確認</dd>
+				</div>
+				<div>
+					<dt>acknowledge</dt>
+					<dd>承認</dd>
+				</div>
+				</dl>
+			</div>
+			<p>各メッセージは識別子(ID)と受信確認(ACK)という
+			2つのシーケンス番号を持ちます。ACKは、
+			リモート側で順序正しく受信を確認したシーケンス番号の最大値です。
+			dataとdataqueryメッセージの場合、IDはそのシーケンス番号です。
+			sync, ack, query, state, closeといったコントロールメッセージでは、
+			IDは送ったデータメッセージの最大シーケンス番号より1大きい。</p>
+			<div class="note">
+				<p>よく分かっていないけど、
+				data(201, -)で送った後にsync, ackと続く場合、
+				どちらもIDは202になるということなのかな。
+				で、その後に送られるdataもIDは202ですが、
+				おそらくここでインクリメント。次からIDは203になる。</p>
+				<p>ソースを読むと、ilackq関数でunackedに追加するのですが、
+				これはilkick関数(データの送信)からしか呼び出していないので
+				たぶんあってる。nextを増やしているのもilkickだけだし、
+				コントロールメッセージは受信したらすぐ応答しているし。</p>
+			</div>
+			<p>送信者はデータメッセージをdata型として送ります。
+			ACKが返送メッセージに含まれています。
+			データを受信してから200msec以内に返送していない場合、
+			ackメッセージが送られるでしょう。</p>
+			<p>IPでは、順序が入れ違ったり、混雑により消失したり、
+			失敗したりするかもしれません。これを克服し、かつネットワークを
+			混雑させないために、ILは改良した<a href="http://otsubo.info/contents/network/network06.html">go back nプロトコル</a>を使います。
+			平均RTT(round trip time)は、メッセージの送信と
+			そのACKを受け取った遅延を計測することによって保たれます。
+			いちども承認を受信していなければ、平均RTTを100msecだと仮定します。
+			受信確認がまだされていないメッセージでいちばん古いものについて、
+			RTTを4回過ぎても受信確認がない場合(図1ではrexmit timeout)は、
+			ILはメッセージか受信確認のどちらかが消失したと判断します。
+			このとき、送信者は最初の未承認メッセージだけをdataquery型で再送します。
+			受信者はdataqueryを受信すると、順番に受信したデータメッセージの
+			最大ACKをstateメッセージで応答します。
+			これはたぶん、再送されたメッセージのシーケンス番号、または
+			(受信者が今までにため込んでいるメッセージの順序が狂ったなら)
+			より大きい正常に受信したシーケンス番号でしょう。
+			受信者が、順序が狂ったメッセージを保存するかどうかは実装によります。
+			我々の実装では前方向に10パケットため込みます。
+			送信者はstateメッセージを受信したとき、
+			すぐに次の未承認なメッセージをdataquery型で再送します。
+			これは全てのメッセージが承認されるまで続けられます。</p>
+			<div class="note">
+				<dl>
+				<div>
+					<dt>sync</dt>
+					<dd>最初の2wayハンドシェイク</dd>
+				</div>
+				<div>
+					<dt>data</dt>
+					<dd>ふつうのデータパケット</dd>
+				</div>
+				<div>
+					<dt>dataquery</dt>
+					<dd>ひとつのシーケンス番号だけ再送要求</dd>
+					<dd>stateを返す</dd>
+				</div>
+				<div>
+					<dt>ack</dt>
+					<dd>ack</dd>
+				</div>
+				<div>
+					<dt>query</dt>
+					<dd>データを持たないdataquery</dd>
+				</div>
+				<div>
+					<dt>state</dt>
+					<dd>正常受信した最大シーケンス番号パケット</dd>
+					<dd>未承認パケットがあればdataqueryを返す</dd>
+				</div>
+				<div>
+					<dt>close</dt>
+					<dd>close</dd>
+				</div>
+				</dl>
+			</div>
+			<p>もし、dataqueryの後にACKが届かないなら、
+			タイムアウトの後、送信者はdataqueryメッセージの再送を続けます。
+			再送の間隔は指数関数的に増大します。
+			最後に受信してから300秒経過した後(図1のdeath timeout)、
+			送信者はあきらめて接続が切れたと判断します。</p>
+			<p>再送は、Syncer, Syncee, Close状態でも起こります。
+			その再送間隔はデータメッセージと同等です。</p>
+		</section>
+		<section>
+			<h2>Keep Alive</h2>
+			<p>切れた接続は発見され、リソースを消費しないように取り壊さなければなりません。
+			生きているシステムだとしても、これ以上データも受信確認も送らないなら、
+			今までに述べたプロトコルは、これらの接続を発見しません。</p>
+			<div class="note">
+				<p>このあたり翻訳があやしい。</p>
+			</div>
+			<p>したがって、Established状態において、最後に送信してから6秒間、
+			他にメッセージが無いなら、queryを送ります。
+			受信者はいつでも、stateメッセージでqueryに応答します。
+			もし最後に受信してから30秒間メッセージが届かなければ、
+			接続は閉じられます。これは図1に描かれていません。</p>
+		</section>
+		<section>
+			<h2>バイトオーダー</h2>
+			<p>すべての32bitと16bit数は<a href="http://www.atmarkit.co.jp/icd/root/72/116970472.html">ネットワークバイトオーダー</a>です。</p>
+		</section>
+		<section>
+			<h2>フォーマット</h2>
+			<p>以下は、IPオプションを無いものとして、
+			C言語で記述したIP+ILヘッダです。</p>
+			<pre><code class="c">typedef unsigned char byte;
+struct IPIL
+{
+	byte vihl;	/* バージョンとヘッダ長 */
+	byte tos;	/* type of service */
+	byte length[2];	/* パケット長 */
+	byte id[2];	/* Identification */
+	byte frag[2];	/* フラグメント情報 */
+	byte ttl;	/* Time to live */
+	byte proto;	/* プロトコル */
+	byte cksum[2];	/* ヘッダのチェックサム */
+	byte src[4];	/* IP送信元 */
+	byte dst[4];	/* IP送信先 */
+	byte ilsum[2];	/* ヘッダを含めたチェックサム */
+	byte illen[2];	/* パケット長 */
+	byte iltype;	/* パケットタイプ */
+	byte ilspec;	/* special */
+	byte ilsrc[2];	/* 送信元ポート番号 */
+	byte ildst[2];	/* 送信先ポート番号 */
+	byte ilid[4];	/* シーケンス番号 */
+	byte ilack[4];	/* ACK */
+};</code></pre>
+			<p>データはヘッダのすぐ下です。
+			ilspecは将来のために予約されているフィールドです。</p>
+			<p>チェックサムはilsumとilspecを0にしたうえで計算されます。
+			これは標準IPチェックサムで、
+			that is, the 16-bit one&#x27;s complement of the one&#x27;s complement sum of
+			all 16 bit words in the header and text.
+			もしメッセージのヘッダとテキストのバイト数が奇数なら、
+			上位バイトを0で詰めた16bit数として扱います。</p>
+			<p>チェックサムはcksumからデータの終わりまでをカバーします。</p>
+			<p>有効なiltype値は:</p>
+			<pre><code class="c">enum {
+	sync=		0,
+	data=		1,
+	dataquery=	2,
+	ack=		3,
+	query=		4,
+	state=		5,
+	close=		6,
+};</code></pre>
+			<p>illenフィールドはILヘッダとデータのバイト数です。</p>
+		</section>
+		<section>
+			<h2>Numbers</h2>
+			<p>IL用のIPプロトコル番号は40。
+			割り当てられたILポート番号:</p>
+			<dl>
+			<div>
+				<dt>7</dt>
+				<dd>echo all input to output</dd>
+			</div>
+			<div>
+				<dt>9</dt>
+				<dd>discard input</dd>
+			</div>
+			<div>
+				<dt>19</dt>
+				<dd>send a standard pattern to output</dd>
+			</div>
+			<div>
+				<dt>565</dt>
+				<dd>send IP addresses of caller and callee to output</dd>
+			</div>
+			<div>
+				<dt>566</dt>
+				<dd>Plan 9認証プロトコル</dd>
+			</div>
+			<div>
+				<dt>17005</dt>
+				<dd>Plan 9 CPUサービス, データ</dd>
+			</div>
+			<div>
+				<dt>17006</dt>
+				<dd>Plan 9 CPUサービス, notes(シグナルのようなもの)</dd>
+			</div>
+			<div>
+				<dt>17007</dt>
+				<dd>Plan 9 exported file systems</dd>
+			</div>
+			<div>
+				<dt>17008</dt>
+				<dd>Plan 9ファイルサービス</dd>
+			</div>
+			<div>
+				<dt>17009</dt>
+				<dd>Plan 9 remote execution</dd>
+			</div>
+			<div>
+				<dt>17030</dt>
+				<dd>Alef Name Server</dd>
+			</div>
+			</dl>
+		</section>
+		<section>
+			<h2>参照</h2>
+			<ul>
+			<li>The Use of Name Spaces in Plan 9</li>
+			<li>RFC791, Internet Protocol</li>
+			<li>RFC793, Transmission Control Protocol</li>
+			<li>RFC768, RFC768, User Datagram Protocol</li>
+			</ul>
+		</section>
+	</section>
+</main>
+<aside>
+	<h1>関連情報</h1>
+	<ul>
+	<li><a href="https://9p.io/sys/doc/il/il.pdf">原文(PDF)</a></li>
+	<li><a href="/notes/2011/0618.html"><a>il.cを読む</a></a></li>
+	<li><a href="/plan9/doc/inst/il.html"><a>カーネルにilを組み込む</a></a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/plan9/doc/guide/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003ePlan 9: ILプロトコル\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/inst/index.html\"\u003eインストール\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/guide/index.html\"\u003eシステムの使い方\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/devel/index.html\"\u003eプログラミング\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/adm/index.html\"\u003eシステム管理\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/man/index.html\"\u003e自作ツール集\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp\u003eILの論文をおおよそ意訳でやってみました。\n\tそれと、いろいろコメントやらリンクやらを張っていますが、\n\tこれらは勝手につけたものだったり、未訳だったりです。\u003c/p\u003e\n\t\u003cp class=\"revision\"\u003e2011年6月17日作成\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eILプロトコル\u003c/h1\u003e\n\t\t\u003cp\u003ePlan 9ファイルシステムプロトコル9PのRPCメッセージを転送するため、\n\t\tILと呼ぶ新しいネットワークプロトコルを実装しました。\n\t\tこれはコネクション型のプロトコルで、\n\t\tIPによってカプセル化されたデータグラムを運ぶ軽量なプロトコルです。\n\t\tILは消失したパケットの再送と順序通りの配達を提供しますが、\u003ca href=\"http://net-juku.org/tcpip/tcpip102.html\"\u003eフロー制御\u003c/a\u003eと暗黙的な再送はしません。\u003c/p\u003e\n\t\t\u003cp class=\"note\"\u003e暗黙的な再送はおそらく、tcpでの\u003ca href=\"http://www.7key.jp/nw/tcpip/tcp/tcp2.html\"\u003e再送依頼を受けたらそれ以降を再送\u003c/a\u003eするところかな。\n\t\tILはstateで受けたackの次にあるデータしか再送しないです。\u003c/p\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e導入\u003c/h2\u003e\n\t\t\t\u003cp\u003ePlan 9は、RPCリクエストとレスポンスメッセージに、\n\t\t\tメッセージ区切りがあり、順序保証を要求するプロトコル(9P)を使います。\n\t\t\t標準IPプロトコルのどれも、9Pメッセージの転送に適切ではありません。\n\t\t\tTCPは高いオーバーヘッドがあり、メッセージの区切りがありません。\n\t\t\tUDPは、単純でメッセージ区切りを持つとはいえ、順序保証がありません。\n\t\t\t我々は自分たちのシステムにIP, TCP, UDPを実装していたとき、\n\t\t\t9Pに適したプロトコルを選別しようとしました。\n\t\t\t要求する性質は:\u003c/p\u003e\n\t\t\t\u003cul\u003e\n\t\t\t\u003cli\u003e信頼性のあるデータグラムサービス\u003c/li\u003e\n\t\t\t\u003cli\u003e順番通りの配達\u003c/li\u003e\n\t\t\t\u003cli\u003eIPネットワーク\u003c/li\u003e\n\t\t\t\u003cli\u003eシンプルで高パフォーマンス\u003c/li\u003e\n\t\t\t\u003cli\u003e柔軟なタイムアウト\u003c/li\u003e\n\t\t\t\u003c/ul\u003e\n\t\t\t\u003cp\u003e標準プロトコルには上記を満たすものが無かったので、\n\t\t\tIL(Internet Link)と呼ばれる新しいプロトコルを設計しました。\u003c/p\u003e\n\t\t\t\u003cp\u003eILは軽量な、IPの上位プロトコルです。\n\t\t\tこれはコネクション指向で、メッセージの到着順を保証します。\n\t\t\tクライアントサーバ間でRPCメッセージを転送するために設計されたので、\n\t\t\tフロー制御はなく、構造は固有のフロー制約を含みます。\u003c/p\u003e\n\t\t\t\u003cdiv class=\"note\"\u003e\n\t\t\t\t\u003cp\u003e未解決メッセージ用の小さい窓は、多すぎる受信を防ぐ,\n\t\t\t\tバッファされつつあるところからの;\u003c/p\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cp\u003eウインドウからあふれたメッセージは捨てられ、再送されなければなりません。\n\t\t\tコネクションの確立時に接続の両端でシーケンス番号の初期値を生成するため、\n\t\t\t2wayハンドシェイクを使います; 続くデータメッセージは、\n\t\t\t受信側でバラバラになったメッセージを再並べ替えできるようにするため、\n\t\t\tシーケンス番号をインクリメントします。\n\t\t\t他のプロトコルとは対照的に、ILは暗黙的な再送が無効です。\n\t\t\tこれは混雑したネットワークにおいて、\n\t\t\t暗黙的な再送によってより混雑させるのを防ぎます。\n\t\t\tTCPに似て、ILは往復時間によってタイムアウトを決定しますので、\n\t\t\tインターネットとローカルイーサネットのどちらでも上手に動きます。\n\t\t\tネットワーク速度に適した肯定応答と再送の時間を見積もるために、\n\t\t\t往復時間(RTT; round-trip timer)を使います。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eコネクション\u003c/h2\u003e\n\t\t\t\u003cp\u003eILコネクションは接続している端から端へデータストリームを運びます。\n\t\t\tコネクションが維持されている間、\n\t\t\t片側に入ったデータは入れた順に逆側へ送られます。\n\t\t\t図1は、状態(円)とその変遷(弧)で\n\t\t\tコネクションの機能を描いたステートマシンです。\n\t\t\tそれぞれの変遷は、水平線の上が変化の原因となったイベントで、\n\t\t\t下には、このときに受信または送信するメッセージを表しています。\n\t\t\tこの論文の残りは、このステートマシンについて議論します。\u003c/p\u003e\n\t\t\t\u003cp\u003e\u0026lt;図1\u0026gt;, 原文をみてください。\u003c/p\u003e\n\t\t\t\u003cdiv class=\"note\"\u003e\n\t\t\t\t\u003cp\u003esnd(packet)は相手側へpacketを送信する。\n\t\t\t\trcv(packet)は受信。\u003c/p\u003e\n\t\t\t\t\u003cp\u003epacketはtype(seq, ack)かな？typeはsyncとかdataとか。\u003c/p\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdl\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eackok\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eany sequence number between id0 and next inclusive\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003e!x\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003exを除くなんらかの値\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003e-\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eなんらかの値\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003c/dl\u003e\n\t\t\t\u003cp\u003eILステートマシンには、Closed, Syncer, Syncee,\n\t\t\tEstablished, Closingという5つの状態があります。\n\t\t\tコネクションは両端のIPアドレスとポート番号によって識別されます。\n\t\t\tアドレスはIPプロトコルヘッダにあり、\n\t\t\tポート番号は18バイトのILヘッダにあります。\n\t\t\tコネクションごとに固有の変数は:\u003c/p\u003e\n\t\t\t\u003cdl\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003estate\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eClosed, Syncer, Syncee, Established, Closingのどれか\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eladdr\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003e32bitローカルIPアドレス\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003elport\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003e16bitローカルILポート番号\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eraddr\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003e32bitリモートIPアドレス\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003erport\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003e16bitリモートILポート番号\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eid0\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003e32bitシーケンス番号(ローカル側)\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003erid0\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003e32bitシーケンス番号(リモート側)\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003enext\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eローカル側から送られる次のシーケンス番号\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003ercvd\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003e正常に受信した最後のリモート側番号\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eunacked\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eまだACKを受け取っていない最初のシーケンス番号(ローカル側)\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003c/dl\u003e\n\t\t\t\u003cp\u003e接続は最初、未割当アドレスでClosedになっています。\n\t\t\tまだ接続されていないコネクションへメッセージが届くか、\n\t\t\tまたはユーザが明確に接続すると、コネクションをオープンします。\n\t\t\t最初の場合、メッセージの送信元アドレスとポートがリモート側のそれになり、\n\t\t\t送信先はローカル側として処理します。\n\t\t\tこのとき、コネクションの状態はSynceeです。2つ目の場合は、\n\t\t\tユーザがローカルとリモート両方のアドレスとポートを明示します。\n\t\t\tコネクションの状態はSyncerになり、\n\t\t\tsyncメッセージがリモート側に送られます。\n\t\t\tローカルアドレスの正当な値はIPの実装によります。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eシーケンス番号\u003c/h2\u003e\n\t\t\t\u003cp\u003eILはデータメッセージを運びます。\n\t\t\t各メッセージはOSからのwrite命令1回分に対応し、\n\t\t\tそれは32bitシーケンス番号により識別されます。\n\t\t\tコネクション両側の初期シーケンス番号はランダムで、\n\t\t\t最初のsyncメッセージで伝えます。\n\t\t\t番号は、続くデータメッセージごとにインクリメントされます。\n\t\t\t再送されたメッセージのシーケンス番号は、最初に送った番号です。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e送信/再送\u003c/h2\u003e\n\t\t\t\u003cdiv class=\"note\"\u003e\n\t\t\t\t\u003cdl\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eacknowledgement\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e受信確認\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eacknowledge\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e承認\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003c/dl\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cp\u003e各メッセージは識別子(ID)と受信確認(ACK)という\n\t\t\t2つのシーケンス番号を持ちます。ACKは、\n\t\t\tリモート側で順序正しく受信を確認したシーケンス番号の最大値です。\n\t\t\tdataとdataqueryメッセージの場合、IDはそのシーケンス番号です。\n\t\t\tsync, ack, query, state, closeといったコントロールメッセージでは、\n\t\t\tIDは送ったデータメッセージの最大シーケンス番号より1大きい。\u003c/p\u003e\n\t\t\t\u003cdiv class=\"note\"\u003e\n\t\t\t\t\u003cp\u003eよく分かっていないけど、\n\t\t\t\tdata(201, -)で送った後にsync, ackと続く場合、\n\t\t\t\tどちらもIDは202になるということなのかな。\n\t\t\t\tで、その後に送られるdataもIDは202ですが、\n\t\t\t\tおそらくここでインクリメント。次からIDは203になる。\u003c/p\u003e\n\t\t\t\t\u003cp\u003eソースを読むと、ilackq関数でunackedに追加するのですが、\n\t\t\t\tこれはilkick関数(データの送信)からしか呼び出していないので\n\t\t\t\tたぶんあってる。nextを増やしているのもilkickだけだし、\n\t\t\t\tコントロールメッセージは受信したらすぐ応答しているし。\u003c/p\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cp\u003e送信者はデータメッセージをdata型として送ります。\n\t\t\tACKが返送メッセージに含まれています。\n\t\t\tデータを受信してから200msec以内に返送していない場合、\n\t\t\tackメッセージが送られるでしょう。\u003c/p\u003e\n\t\t\t\u003cp\u003eIPでは、順序が入れ違ったり、混雑により消失したり、\n\t\t\t失敗したりするかもしれません。これを克服し、かつネットワークを\n\t\t\t混雑させないために、ILは改良した\u003ca href=\"http://otsubo.info/contents/network/network06.html\"\u003ego back nプロトコル\u003c/a\u003eを使います。\n\t\t\t平均RTT(round trip time)は、メッセージの送信と\n\t\t\tそのACKを受け取った遅延を計測することによって保たれます。\n\t\t\tいちども承認を受信していなければ、平均RTTを100msecだと仮定します。\n\t\t\t受信確認がまだされていないメッセージでいちばん古いものについて、\n\t\t\tRTTを4回過ぎても受信確認がない場合(図1ではrexmit timeout)は、\n\t\t\tILはメッセージか受信確認のどちらかが消失したと判断します。\n\t\t\tこのとき、送信者は最初の未承認メッセージだけをdataquery型で再送します。\n\t\t\t受信者はdataqueryを受信すると、順番に受信したデータメッセージの\n\t\t\t最大ACKをstateメッセージで応答します。\n\t\t\tこれはたぶん、再送されたメッセージのシーケンス番号、または\n\t\t\t(受信者が今までにため込んでいるメッセージの順序が狂ったなら)\n\t\t\tより大きい正常に受信したシーケンス番号でしょう。\n\t\t\t受信者が、順序が狂ったメッセージを保存するかどうかは実装によります。\n\t\t\t我々の実装では前方向に10パケットため込みます。\n\t\t\t送信者はstateメッセージを受信したとき、\n\t\t\tすぐに次の未承認なメッセージをdataquery型で再送します。\n\t\t\tこれは全てのメッセージが承認されるまで続けられます。\u003c/p\u003e\n\t\t\t\u003cdiv class=\"note\"\u003e\n\t\t\t\t\u003cdl\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003esync\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e最初の2wayハンドシェイク\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003edata\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eふつうのデータパケット\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003edataquery\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eひとつのシーケンス番号だけ再送要求\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003estateを返す\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eack\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eack\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003equery\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eデータを持たないdataquery\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003estate\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e正常受信した最大シーケンス番号パケット\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003e未承認パケットがあればdataqueryを返す\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eclose\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eclose\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003c/dl\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cp\u003eもし、dataqueryの後にACKが届かないなら、\n\t\t\tタイムアウトの後、送信者はdataqueryメッセージの再送を続けます。\n\t\t\t再送の間隔は指数関数的に増大します。\n\t\t\t最後に受信してから300秒経過した後(図1のdeath timeout)、\n\t\t\t送信者はあきらめて接続が切れたと判断します。\u003c/p\u003e\n\t\t\t\u003cp\u003e再送は、Syncer, Syncee, Close状態でも起こります。\n\t\t\tその再送間隔はデータメッセージと同等です。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eKeep Alive\u003c/h2\u003e\n\t\t\t\u003cp\u003e切れた接続は発見され、リソースを消費しないように取り壊さなければなりません。\n\t\t\t生きているシステムだとしても、これ以上データも受信確認も送らないなら、\n\t\t\t今までに述べたプロトコルは、これらの接続を発見しません。\u003c/p\u003e\n\t\t\t\u003cdiv class=\"note\"\u003e\n\t\t\t\t\u003cp\u003eこのあたり翻訳があやしい。\u003c/p\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cp\u003eしたがって、Established状態において、最後に送信してから6秒間、\n\t\t\t他にメッセージが無いなら、queryを送ります。\n\t\t\t受信者はいつでも、stateメッセージでqueryに応答します。\n\t\t\tもし最後に受信してから30秒間メッセージが届かなければ、\n\t\t\t接続は閉じられます。これは図1に描かれていません。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eバイトオーダー\u003c/h2\u003e\n\t\t\t\u003cp\u003eすべての32bitと16bit数は\u003ca href=\"http://www.atmarkit.co.jp/icd/root/72/116970472.html\"\u003eネットワークバイトオーダー\u003c/a\u003eです。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eフォーマット\u003c/h2\u003e\n\t\t\t\u003cp\u003e以下は、IPオプションを無いものとして、\n\t\t\tC言語で記述したIP+ILヘッダです。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"c\"\u003etypedef unsigned char byte;\nstruct IPIL\n{\n\tbyte vihl;\t/* バージョンとヘッダ長 */\n\tbyte tos;\t/* type of service */\n\tbyte length[2];\t/* パケット長 */\n\tbyte id[2];\t/* Identification */\n\tbyte frag[2];\t/* フラグメント情報 */\n\tbyte ttl;\t/* Time to live */\n\tbyte proto;\t/* プロトコル */\n\tbyte cksum[2];\t/* ヘッダのチェックサム */\n\tbyte src[4];\t/* IP送信元 */\n\tbyte dst[4];\t/* IP送信先 */\n\tbyte ilsum[2];\t/* ヘッダを含めたチェックサム */\n\tbyte illen[2];\t/* パケット長 */\n\tbyte iltype;\t/* パケットタイプ */\n\tbyte ilspec;\t/* special */\n\tbyte ilsrc[2];\t/* 送信元ポート番号 */\n\tbyte ildst[2];\t/* 送信先ポート番号 */\n\tbyte ilid[4];\t/* シーケンス番号 */\n\tbyte ilack[4];\t/* ACK */\n};\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eデータはヘッダのすぐ下です。\n\t\t\tilspecは将来のために予約されているフィールドです。\u003c/p\u003e\n\t\t\t\u003cp\u003eチェックサムはilsumとilspecを0にしたうえで計算されます。\n\t\t\tこれは標準IPチェックサムで、\n\t\t\tthat is, the 16-bit one's complement of the one's complement sum of\n\t\t\tall 16 bit words in the header and text.\n\t\t\tもしメッセージのヘッダとテキストのバイト数が奇数なら、\n\t\t\t上位バイトを0で詰めた16bit数として扱います。\u003c/p\u003e\n\t\t\t\u003cp\u003eチェックサムはcksumからデータの終わりまでをカバーします。\u003c/p\u003e\n\t\t\t\u003cp\u003e有効なiltype値は:\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"c\"\u003eenum {\n\tsync=\t\t0,\n\tdata=\t\t1,\n\tdataquery=\t2,\n\tack=\t\t3,\n\tquery=\t\t4,\n\tstate=\t\t5,\n\tclose=\t\t6,\n};\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eillenフィールドはILヘッダとデータのバイト数です。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eNumbers\u003c/h2\u003e\n\t\t\t\u003cp\u003eIL用のIPプロトコル番号は40。\n\t\t\t割り当てられたILポート番号:\u003c/p\u003e\n\t\t\t\u003cdl\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003e7\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eecho all input to output\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003e9\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003ediscard input\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003e19\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003esend a standard pattern to output\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003e565\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003esend IP addresses of caller and callee to output\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003e566\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003ePlan 9認証プロトコル\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003e17005\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003ePlan 9 CPUサービス, データ\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003e17006\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003ePlan 9 CPUサービス, notes(シグナルのようなもの)\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003e17007\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003ePlan 9 exported file systems\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003e17008\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003ePlan 9ファイルサービス\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003e17009\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003ePlan 9 remote execution\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003e17030\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eAlef Name Server\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003c/dl\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e参照\u003c/h2\u003e\n\t\t\t\u003cul\u003e\n\t\t\t\u003cli\u003eThe Use of Name Spaces in Plan 9\u003c/li\u003e\n\t\t\t\u003cli\u003eRFC791, Internet Protocol\u003c/li\u003e\n\t\t\t\u003cli\u003eRFC793, Transmission Control Protocol\u003c/li\u003e\n\t\t\t\u003cli\u003eRFC768, RFC768, User Datagram Protocol\u003c/li\u003e\n\t\t\t\u003c/ul\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003e関連情報\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"https://9p.io/sys/doc/il/il.pdf\"\u003e原文(PDF)\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"../../../notes/2011/0618.html\"\u003eil.cを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"../inst/il.html\"\u003eカーネルにilを組み込む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["plan9","doc","guide","il"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

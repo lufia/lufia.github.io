@@ -1,0 +1,138 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>Plan 9: さくらVPSでPlan 9ネットワークを構成してみた</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="/plan9/doc/inst/index.html"><a>インストール</a></a></li>
+	<li><a href="/plan9/doc/guide/index.html"><a>システムの使い方</a></a></li>
+	<li><a href="/plan9/doc/devel/index.html"><a>プログラミング</a></a></li>
+	<li><a href="/plan9/doc/adm/index.html"><a>システム管理</a></a></li>
+	<li><a href="/plan9/man/index.html"><a>自作ツール集</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2014年5月5日作成</p>
+	<section>
+		<h1>さくらVPSでPlan 9ネットワークを構成してみた</h1>
+		<section>
+			<h2>認証サーバの構成</h2>
+			<section>
+				<h3>カーネルのインストール</h3>
+				<p>まずはpcauthカーネルのインストール。
+				ですが、標準のpcauthはetherigbeを含んでいないので、
+				自分で足してからコンパイルが必要です。
+				pcfカーネルあたりを真似て、etherigbeの行をpcauthへ足しましょう。</p>
+				<pre><code class="console">auth% cd /sys/src/9/pc
+auth% mk &#x27;CONF=pcauth&#x27;
+auth% 9fat:
+auth% mv 9pcauth /n/9fat/</code></pre>
+				<p>いつものように<strong>plan9.ini</strong>へ追加します。</p>
+				<pre><code class="ini">bootargs=tcp ether /net/ether1 add 192.168.1.7 255.255.255.0
+sysname=auth
+fs=192.168.1.3
+auth=192.168.1.7
+console=0 b115200 b8 pn s1</code></pre>
+			</section>
+			<section>
+				<h3>サービス準備</h3>
+				<p>次に<strong>/cfg/auth/cpurc</strong>です。
+				認証サーバなのでauth/keyfs等を動作させます。</p>
+				<pre><code class="sh">ip/ipconfig -x.alt -g $ipgw /net.alt/ether0 add 133.242.bbb.bbb 255.255.254.0
+aux/timesync -f
+
+ndb/dns -r
+auth/keyfs -wp -m /mnt/keys /adm/keys &gt;/dev/null &gt;[2=1]
+auth/cron &gt;&gt;/sys/log/cron &gt;[2=1] &amp;amp;
+auth/secstored
+aux/listen -q -t /cfg/$sysname/service.auth -d /cfg/$sysname/service tcp
+
+ndb/cs -x.alt -f /lib/ndb/external
+ndb/dns -rx.alt -f /lib/ndb/external
+aux/listen -q -t /cfg/$sysname/service.alt.auth /net.alt/tcp
+sleep 3</code></pre>
+				<p><strong>service.auth</strong>と<strong>service.alt.auth</strong>に<strong>tcp567</strong>をコピーしておきます。</p>
+				<p>namespaceはファイルサーバと同じ。authファイルの更新も。</p>
+				<pre><code class="console">auth% cat /cfg/auth/namespace
+bind -a #l0 /net.alt
+bind -a #I1 /net.alt
+auth% cat /lib/ndb/auth
+hostid=bootes
+	uid=!sys uid=!adm uid=*</code></pre>
+				<p>終わったらコントロールパネルから再起動。</p>
+			</section>
+			<section>
+				<h3>IPプロトコルスタックについて(余談)</h3>
+				<p>Plan 9はIPプロトコルスタックを分ける事ができます。
+				プロトコルスタックはカーネルデバイス#I0から#I15まで存在します。
+				今回構成しているサーバは<strong>/net</strong>と<strong>/net.alt</strong>を分けて使っています。
+				これは内部からのみアクセスするサービス(<strong>/net</strong>)と
+				外部からのアクセス(<strong>/net.alt</strong>)を分ける事が目的です。
+				さくらVPSはルータやファイアウォールがありませんので、このようにしています。</p>
+				<p>このプロトコルスタックを使い分ける時は、
+				通常tcp!host!portとするところを、/net.alt/tcp!host!portとします。
+				アドレスが/からはじまらない場合は/net/が使われます。
+				アドレスのルールは<a href="https://9p.io/magic/man2html/2/announce">announce(2)</a>に記述されています。</p>
+				<p>最後に<strong>plan9.ini</strong>のbootargsエントリとip/ipconfigは、
+				若干-xオプションの挙動が異なります。
+				ip/ipconfigは、以下どちらも同じように<strong>/net.alt</strong>を使います。</p>
+				<pre><code class="sh">ip/ipconfig -x .alt
+ip/ipconfig -x /net.alt</code></pre>
+				<p>これは<a href="https://9p.io/magic/man2html/2/setnetmtpt">setnetmtpt(2)</a>の動作で、/からはじまらない名前は
+				/netという文字列を名前の先頭に加えるからです。
+				しかしbootargsエントリは、</p>
+				<pre><code class="ini">bootargs=tcp -x .alt ...
+bootargs=tcp -x /net.alt ...</code></pre>
+				<p>なぜかカーネルの中で、無条件に/netを先頭へ追加していました。
+				なので上の例は動作しますが、下の例では<strong>/net/net.alt</strong>が無いのでこけます。</p>
+			</section>
+			<section>
+				<h3>再起動とユーザ登録</h3>
+				<p>VPSコントロールパネルから再起動させて、<strong>9pcauth</strong>カーネルで起動させます。
+				ファイルサーバと同じ内容でbootesのパスワードなどを設定して、
+				認証サーバ上にもユーザを作成して終わり。</p>
+				<pre><code class="console">auth# auth/changeuser -p bootes</code></pre>
+				<p>secstoreも使うなら、secstoreユーザの登録も忘れずに。</p>
+				<pre><code class="console">auth# auth/secuser -v bootes</code></pre>
+			</section>
+		</section>
+		<section>
+			<h2>CPUサーバの構成</h2>
+			<p>だいたい他のサーバと同じですが、CPUサーバの場合は
+			内部だけで閉じたいサービスが無いので、
+			両方のNICを/netにまとめて使うようにします。</p>
+			<section>
+				<h3>カーネルのインストール</h3>
+				<p>コンフィグが違う以外はだいたい同じ。</p>
+				<pre><code class="console">cpu% mk &#x27;CONF=pccpu&#x27;
+cpu% mv 9pccpu /n/9fat/</code></pre>
+				<p><strong>plan9.ini</strong>に以下を追加。</p>
+				<pre><code class="ini">bootfile=sdC0!9fat!9pccpu
+bootargs=tcp -g $ipgw ether /net/ether1 add 192.168.1.23 255.255.255.0
+sysname=cpu
+fs=192.168.1.3
+auth=192.168.1.7</code></pre>
+				<p><strong>namespace</strong>は<strong>/net</strong>しか使わないのでシンプルです。</p>
+				<pre><code class="console">cpu% cat /cfg/cpu/namespace
+bind -a #l /net</code></pre>
+				<p><strong>cpurc</strong>も同じように<strong>/net</strong>しか使いません。</p>
+				<pre><code class="console">cpu% cat /cfg/cpu/cpurc
+ip/ipconfig ether /net/ether0 add 133.242.ccc.ccc 255.255.254.0
+aux/timesync -f
+ndb/dns -r
+aux/listen -q -d /cfg/$sysname/service tcp
+sleep 3</code></pre>
+				<p>cpuサービスを実行させるために、<strong>tcp17010</strong>を<strong>/cfg/$sysname/service</strong>へコピー。</p>
+				<pre><code class="console">cpu% cp /rc/bin/service/tcp17010 /cfg/$sysname/service/</code></pre>
+			</section>
+			<section>
+				<h3>再起動</h3>
+				<p>コントロールパネルから再起動して、bootesを登録したら終わりです。
+				これでdrawtermからアクセスすれば動作するはず。</p>
+			</section>
+		</section>
+	</section>
+</main>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/plan9/doc/inst/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003ePlan 9: さくらVPSでPlan 9ネットワークを構成してみた\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/inst/index.html\"\u003eインストール\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/guide/index.html\"\u003eシステムの使い方\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/devel/index.html\"\u003eプログラミング\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/adm/index.html\"\u003eシステム管理\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/man/index.html\"\u003e自作ツール集\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2014年5月5日作成\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eさくらVPSでPlan 9ネットワークを構成してみた\u003c/h1\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e認証サーバの構成\u003c/h2\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eカーネルのインストール\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eまずはpcauthカーネルのインストール。\n\t\t\t\tですが、標準のpcauthはetherigbeを含んでいないので、\n\t\t\t\t自分で足してからコンパイルが必要です。\n\t\t\t\tpcfカーネルあたりを真似て、etherigbeの行をpcauthへ足しましょう。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003eauth% cd /sys/src/9/pc\nauth% mk 'CONF=pcauth'\nauth% 9fat:\nauth% mv 9pcauth /n/9fat/\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003eいつものように\u003cstrong\u003eplan9.ini\u003c/strong\u003eへ追加します。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"ini\"\u003ebootargs=tcp ether /net/ether1 add 192.168.1.7 255.255.255.0\nsysname=auth\nfs=192.168.1.3\nauth=192.168.1.7\nconsole=0 b115200 b8 pn s1\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eサービス準備\u003c/h3\u003e\n\t\t\t\t\u003cp\u003e次に\u003cstrong\u003e/cfg/auth/cpurc\u003c/strong\u003eです。\n\t\t\t\t認証サーバなのでauth/keyfs等を動作させます。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"sh\"\u003eip/ipconfig -x.alt -g $ipgw /net.alt/ether0 add 133.242.bbb.bbb 255.255.254.0\naux/timesync -f\n\nndb/dns -r\nauth/keyfs -wp -m /mnt/keys /adm/keys \u0026gt;/dev/null \u0026gt;[2=1]\nauth/cron \u0026gt;\u0026gt;/sys/log/cron \u0026gt;[2=1] \u0026amp;amp;\nauth/secstored\naux/listen -q -t /cfg/$sysname/service.auth -d /cfg/$sysname/service tcp\n\nndb/cs -x.alt -f /lib/ndb/external\nndb/dns -rx.alt -f /lib/ndb/external\naux/listen -q -t /cfg/$sysname/service.alt.auth /net.alt/tcp\nsleep 3\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003e\u003cstrong\u003eservice.auth\u003c/strong\u003eと\u003cstrong\u003eservice.alt.auth\u003c/strong\u003eに\u003cstrong\u003etcp567\u003c/strong\u003eをコピーしておきます。\u003c/p\u003e\n\t\t\t\t\u003cp\u003enamespaceはファイルサーバと同じ。authファイルの更新も。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003eauth% cat /cfg/auth/namespace\nbind -a #l0 /net.alt\nbind -a #I1 /net.alt\nauth% cat /lib/ndb/auth\nhostid=bootes\n\tuid=!sys uid=!adm uid=*\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003e終わったらコントロールパネルから再起動。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eIPプロトコルスタックについて(余談)\u003c/h3\u003e\n\t\t\t\t\u003cp\u003ePlan 9はIPプロトコルスタックを分ける事ができます。\n\t\t\t\tプロトコルスタックはカーネルデバイス#I0から#I15まで存在します。\n\t\t\t\t今回構成しているサーバは\u003cstrong\u003e/net\u003c/strong\u003eと\u003cstrong\u003e/net.alt\u003c/strong\u003eを分けて使っています。\n\t\t\t\tこれは内部からのみアクセスするサービス(\u003cstrong\u003e/net\u003c/strong\u003e)と\n\t\t\t\t外部からのアクセス(\u003cstrong\u003e/net.alt\u003c/strong\u003e)を分ける事が目的です。\n\t\t\t\tさくらVPSはルータやファイアウォールがありませんので、このようにしています。\u003c/p\u003e\n\t\t\t\t\u003cp\u003eこのプロトコルスタックを使い分ける時は、\n\t\t\t\t通常tcp!host!portとするところを、/net.alt/tcp!host!portとします。\n\t\t\t\tアドレスが/からはじまらない場合は/net/が使われます。\n\t\t\t\tアドレスのルールは\u003ca href=\"https://9p.io/magic/man2html/2/announce\"\u003eannounce(2)\u003c/a\u003eに記述されています。\u003c/p\u003e\n\t\t\t\t\u003cp\u003e最後に\u003cstrong\u003eplan9.ini\u003c/strong\u003eのbootargsエントリとip/ipconfigは、\n\t\t\t\t若干-xオプションの挙動が異なります。\n\t\t\t\tip/ipconfigは、以下どちらも同じように\u003cstrong\u003e/net.alt\u003c/strong\u003eを使います。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"sh\"\u003eip/ipconfig -x .alt\nip/ipconfig -x /net.alt\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003eこれは\u003ca href=\"https://9p.io/magic/man2html/2/setnetmtpt\"\u003esetnetmtpt(2)\u003c/a\u003eの動作で、/からはじまらない名前は\n\t\t\t\t/netという文字列を名前の先頭に加えるからです。\n\t\t\t\tしかしbootargsエントリは、\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"ini\"\u003ebootargs=tcp -x .alt ...\nbootargs=tcp -x /net.alt ...\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003eなぜかカーネルの中で、無条件に/netを先頭へ追加していました。\n\t\t\t\tなので上の例は動作しますが、下の例では\u003cstrong\u003e/net/net.alt\u003c/strong\u003eが無いのでこけます。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003e再起動とユーザ登録\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eVPSコントロールパネルから再起動させて、\u003cstrong\u003e9pcauth\u003c/strong\u003eカーネルで起動させます。\n\t\t\t\tファイルサーバと同じ内容でbootesのパスワードなどを設定して、\n\t\t\t\t認証サーバ上にもユーザを作成して終わり。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003eauth# auth/changeuser -p bootes\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003esecstoreも使うなら、secstoreユーザの登録も忘れずに。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003eauth# auth/secuser -v bootes\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eCPUサーバの構成\u003c/h2\u003e\n\t\t\t\u003cp\u003eだいたい他のサーバと同じですが、CPUサーバの場合は\n\t\t\t内部だけで閉じたいサービスが無いので、\n\t\t\t両方のNICを/netにまとめて使うようにします。\u003c/p\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eカーネルのインストール\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eコンフィグが違う以外はだいたい同じ。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003ecpu% mk 'CONF=pccpu'\ncpu% mv 9pccpu /n/9fat/\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003e\u003cstrong\u003eplan9.ini\u003c/strong\u003eに以下を追加。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"ini\"\u003ebootfile=sdC0!9fat!9pccpu\nbootargs=tcp -g $ipgw ether /net/ether1 add 192.168.1.23 255.255.255.0\nsysname=cpu\nfs=192.168.1.3\nauth=192.168.1.7\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003e\u003cstrong\u003enamespace\u003c/strong\u003eは\u003cstrong\u003e/net\u003c/strong\u003eしか使わないのでシンプルです。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003ecpu% cat /cfg/cpu/namespace\nbind -a #l /net\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003e\u003cstrong\u003ecpurc\u003c/strong\u003eも同じように\u003cstrong\u003e/net\u003c/strong\u003eしか使いません。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003ecpu% cat /cfg/cpu/cpurc\nip/ipconfig ether /net/ether0 add 133.242.ccc.ccc 255.255.254.0\naux/timesync -f\nndb/dns -r\naux/listen -q -d /cfg/$sysname/service tcp\nsleep 3\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003ecpuサービスを実行させるために、\u003cstrong\u003etcp17010\u003c/strong\u003eを\u003cstrong\u003e/cfg/$sysname/service\u003c/strong\u003eへコピー。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003ecpu% cp /rc/bin/service/tcp17010 /cfg/$sysname/service/\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003e再起動\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eコントロールパネルから再起動して、bootesを登録したら終わりです。\n\t\t\t\tこれでdrawtermからアクセスすれば動作するはず。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["plan9","doc","inst","vps-dist2"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>Plan 9: lib9p tips</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="/plan9/doc/inst/index.html"><a>インストール</a></a></li>
+	<li><a href="/plan9/doc/guide/index.html"><a>システムの使い方</a></a></li>
+	<li><a href="/plan9/doc/devel/index.html"><a>プログラミング</a></a></li>
+	<li><a href="/plan9/doc/adm/index.html"><a>システム管理</a></a></li>
+	<li><a href="/plan9/man/index.html"><a>自作ツール集</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2004年11月7日更新</p>
+	<section>
+		<h1>lib9p tips</h1>
+		<section>
+			<h2>トラブルシューティング</h2>
+			<section>
+				<h3>walk in non-directory</h3>
+				<p>((mode&amp;DMDIR) != 0)なのに、cdできない場合。
+				忘れがちですが、attachでは以下2つのqidをセットすること。</p>
+				<ul class="c">
+				<li>r-&gt;fid-&gt;qid</li>
+				<li>r-&gt;ofcall.qid</li>
+				</ul>
+			</section>
+			<section>
+				<h3>printでsuicide</h3>
+				<p>9pライブラリを使うとき、%D, %Fはライブラリから
+				すでに使われているので、それ以外で選ばなければいけない。
+				スタックトレースを取ったときに、
+				utflenで落ちる場合はそれかもしれない。
+				例えば以下のような。</p>
+				<pre><code class="console">acid: stk()
+utflen(s=0xfefefefe)+0xf /sys/src/libc/port/utflen.c:13
+fmtstrcpy(f=0x4f194,s=0xfefefefe)+0xa9 /sys/src/libc/fmt/dofmt.c:251
+_strfmt(f=0x4f194)+0x1d /sys/src/libc/fmt/dofmt.c:261
+_fmtdispatch(isrunes=0x0,f=0x4f194,fmt=0x30590)+0x94 /sys/src/libc/fmt/fmt.c:196
+dofmt(fmt=0x3058e,f=0x4f194)+0x75 /sys/src/libc/fmt/dofmt.c:62
+vseprint(e=0x4f308,buf=0x4f268,args=0x4f1f8,fmt=0x3057e)+0x5d /sys/src/libc/fmt/vseprint.c:20
+seprint(fmt=0x3057e,buf=0x4f268,e=0x4f308)+0x2b /sys/src/libc/fmt/seprint.c:13
+fdirconv(d=0x4f4fc,buf=0x4f268,e=0x4f308)+0xaa /sys/src/libc/9sys/fcallfmt.c:181
+dirfmt(fmt=0x4f480)+0x32 /sys/src/libc/9sys/fcallfmt.c:173
+_fmtdispatch(isrunes=0x0,f=0x4f480,fmt=0x32d3b)+0x94 /sys/src/libc/fmt/fmt.c:196
+dofmt(fmt=0x32d39,f=0x4f480)+0x75 /sys/src/libc/fmt/dofmt.c:62
+vfprint(fd=0x2,args=0x4f4dc,fmt=0x32d30)+0x59 /sys/src/libc/fmt/vfprint.c:30
+fprint(fmt=0x32d30,fd=0x2)+0x23 /sys/src/libc/fmt/fprint.c:13
+nsproc()+0x5f7 /sys/src/cmd/msnfs/proto.c:338
+launcher386(arg=0x0,f=0x262b)+0x10 /sys/src/libthread/386.c:10</code></pre>
+			</section>
+		</section>
+	</section>
+</main>
+<aside>
+	<h1>関連情報</h1>
+	<ul>
+	<li><a href="https://9p.io/magic/man2html/2/9p">9p(2)</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/plan9/doc/devel/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003ePlan 9: lib9p tips\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/inst/index.html\"\u003eインストール\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/guide/index.html\"\u003eシステムの使い方\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/devel/index.html\"\u003eプログラミング\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/adm/index.html\"\u003eシステム管理\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/man/index.html\"\u003e自作ツール集\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2004年11月7日更新\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003elib9p tips\u003c/h1\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eトラブルシューティング\u003c/h2\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003ewalk in non-directory\u003c/h3\u003e\n\t\t\t\t\u003cp\u003e((mode\u0026amp;DMDIR) != 0)なのに、cdできない場合。\n\t\t\t\t忘れがちですが、attachでは以下2つのqidをセットすること。\u003c/p\u003e\n\t\t\t\t\u003cul class=\"c\"\u003e\n\t\t\t\t\u003cli\u003er-\u0026gt;fid-\u0026gt;qid\u003c/li\u003e\n\t\t\t\t\u003cli\u003er-\u0026gt;ofcall.qid\u003c/li\u003e\n\t\t\t\t\u003c/ul\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eprintでsuicide\u003c/h3\u003e\n\t\t\t\t\u003cp\u003e9pライブラリを使うとき、%D, %Fはライブラリから\n\t\t\t\tすでに使われているので、それ以外で選ばなければいけない。\n\t\t\t\tスタックトレースを取ったときに、\n\t\t\t\tutflenで落ちる場合はそれかもしれない。\n\t\t\t\t例えば以下のような。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003eacid: stk()\nutflen(s=0xfefefefe)+0xf /sys/src/libc/port/utflen.c:13\nfmtstrcpy(f=0x4f194,s=0xfefefefe)+0xa9 /sys/src/libc/fmt/dofmt.c:251\n_strfmt(f=0x4f194)+0x1d /sys/src/libc/fmt/dofmt.c:261\n_fmtdispatch(isrunes=0x0,f=0x4f194,fmt=0x30590)+0x94 /sys/src/libc/fmt/fmt.c:196\ndofmt(fmt=0x3058e,f=0x4f194)+0x75 /sys/src/libc/fmt/dofmt.c:62\nvseprint(e=0x4f308,buf=0x4f268,args=0x4f1f8,fmt=0x3057e)+0x5d /sys/src/libc/fmt/vseprint.c:20\nseprint(fmt=0x3057e,buf=0x4f268,e=0x4f308)+0x2b /sys/src/libc/fmt/seprint.c:13\nfdirconv(d=0x4f4fc,buf=0x4f268,e=0x4f308)+0xaa /sys/src/libc/9sys/fcallfmt.c:181\ndirfmt(fmt=0x4f480)+0x32 /sys/src/libc/9sys/fcallfmt.c:173\n_fmtdispatch(isrunes=0x0,f=0x4f480,fmt=0x32d3b)+0x94 /sys/src/libc/fmt/fmt.c:196\ndofmt(fmt=0x32d39,f=0x4f480)+0x75 /sys/src/libc/fmt/dofmt.c:62\nvfprint(fd=0x2,args=0x4f4dc,fmt=0x32d30)+0x59 /sys/src/libc/fmt/vfprint.c:30\nfprint(fmt=0x32d30,fd=0x2)+0x23 /sys/src/libc/fmt/fprint.c:13\nnsproc()+0x5f7 /sys/src/cmd/msnfs/proto.c:338\nlauncher386(arg=0x0,f=0x262b)+0x10 /sys/src/libthread/386.c:10\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003e関連情報\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"https://9p.io/magic/man2html/2/9p\"\u003e9p(2)\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["plan9","doc","devel","lib9p"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

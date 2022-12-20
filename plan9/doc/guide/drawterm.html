@@ -1,0 +1,81 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>Plan 9: drawterm</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="/plan9/doc/inst/index.html"><a>インストール</a></a></li>
+	<li><a href="/plan9/doc/guide/index.html"><a>システムの使い方</a></a></li>
+	<li><a href="/plan9/doc/devel/index.html"><a>プログラミング</a></a></li>
+	<li><a href="/plan9/doc/adm/index.html"><a>システム管理</a></a></li>
+	<li><a href="/plan9/man/index.html"><a>自作ツール集</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2009年11月4日更新</p>
+	<section>
+		<h1>drawterm</h1>
+		<section>
+			<h2>使い方</h2>
+			<pre><code class="sh">drawterm -a authsrv -c cpusrv</code></pre>
+			<p>その他のオプションは<a href="https://9p.io/magic/man2html/8/drawterm">drawterm(8)</a>。</p>
+		</section>
+		<section>
+			<h2>ポート</h2>
+			<p>drawtermで使うポートは、古いバージョンと
+			drawterm2000以降では異なります。
+			従来のバージョンでは、tcp567とtcp17013を使っていましたが、
+			現在はtcp567とtcp17010を利用します。</p>
+		</section>
+		<section>
+			<h2>日本語入力</h2>
+			<p>Windows版のdrawterm2000は、
+			IMEから入力すると文字化けを起こしていましたが、
+			2009年9月現在の最新版では、特に問題なく入力可能です。</p>
+			<p>Mac版では、Carbon/X11共に使えていません。
+			そのため、Plan 9からktransやskkを使うしかありません。</p>
+		</section>
+		<section>
+			<h2>ローカルファイルの参照</h2>
+			<p>drawtermは、ベースとなっているcpuと同じように、
+			ローカルファイルを/mnt/termから参照できます。
+			ただし、Windows版drawtermの最新版では、
+			ファイルのリストが取れません。読み書きはできるので、
+			ローカルからファイルサーバにコピーなんてことはできます。</p>
+			<p>不思議なことに、前バージョンのdrawterm2000では
+			ファイルのリストが取れます。何か問題があったのでしょうか。</p>
+		</section>
+		<section>
+			<h2>DrawtermのApp化</h2>
+			<p>MacでDockに登録するために、<a href="https://oraccha.hatenadiary.org/entry/20080209/1202565776">Drawterm.app</a>を
+			参考にしたのですが、なぜかこのままでは動きませんでした。
+			具体的に言えば、Carbon/X11共に、パスワードを入力した直後、
+			mountとbindがエラーになってしまいます。</p>
+			<pre><code>secstore password:
+usage: mount [-a|-b] [-cnq] [-k keypattern] /srv/service dir [spec]
+usage: bind [-b|-a|-c|-bc|-ac] new old
+usage: bind [-b|-a|-c|-bc|-ac] new old
+usage: bind [-b|-a|-c|-bc|-ac] new old
+mount: can&#x27;t open /srv/net: &#x27;/srv/net&#x27; file does not exist
+/lib/namespace.local: rc: .: can&#x27;t open: &#x27;/lib/namespace.local&#x27; does not exist</code></pre>
+			<p>ターミナルからcore.shを実行させた場合は問題ありませんが、
+			Drawterm.appをダブルクリックした場合に限り、このエラーになります。
+			環境の問題なのでしょうか。Leopard, Snow Leopard共にだめでした。</p>
+			<p>そこで、core.shを以下のように書き換えました。</p>
+			<pre><code class="sh">#!/bin/sh
+
+cd ~ &amp;&amp; /Applications/Drawterm.app/Contents/MacOS/drawterm -a auth -c cpu &amp;
+exit 0</code></pre>
+		</section>
+	</section>
+</main>
+<aside>
+	<h1>参考ページ</h1>
+	<ul>
+	<li><a href="http://swtch.com/drawterm/">Drawterm</a></li>
+	<li><a href="https://oraccha.hatenadiary.org/entry/20090211/1234354600">Plan 9初心者ガイド - Plan9日記</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/plan9/doc/guide/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003ePlan 9: drawterm\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/inst/index.html\"\u003eインストール\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/guide/index.html\"\u003eシステムの使い方\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/devel/index.html\"\u003eプログラミング\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/adm/index.html\"\u003eシステム管理\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/man/index.html\"\u003e自作ツール集\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2009年11月4日更新\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003edrawterm\u003c/h1\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e使い方\u003c/h2\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"sh\"\u003edrawterm -a authsrv -c cpusrv\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eその他のオプションは\u003ca href=\"https://9p.io/magic/man2html/8/drawterm\"\u003edrawterm(8)\u003c/a\u003e。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eポート\u003c/h2\u003e\n\t\t\t\u003cp\u003edrawtermで使うポートは、古いバージョンと\n\t\t\tdrawterm2000以降では異なります。\n\t\t\t従来のバージョンでは、tcp567とtcp17013を使っていましたが、\n\t\t\t現在はtcp567とtcp17010を利用します。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e日本語入力\u003c/h2\u003e\n\t\t\t\u003cp\u003eWindows版のdrawterm2000は、\n\t\t\tIMEから入力すると文字化けを起こしていましたが、\n\t\t\t2009年9月現在の最新版では、特に問題なく入力可能です。\u003c/p\u003e\n\t\t\t\u003cp\u003eMac版では、Carbon/X11共に使えていません。\n\t\t\tそのため、Plan 9からktransやskkを使うしかありません。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eローカルファイルの参照\u003c/h2\u003e\n\t\t\t\u003cp\u003edrawtermは、ベースとなっているcpuと同じように、\n\t\t\tローカルファイルを/mnt/termから参照できます。\n\t\t\tただし、Windows版drawtermの最新版では、\n\t\t\tファイルのリストが取れません。読み書きはできるので、\n\t\t\tローカルからファイルサーバにコピーなんてことはできます。\u003c/p\u003e\n\t\t\t\u003cp\u003e不思議なことに、前バージョンのdrawterm2000では\n\t\t\tファイルのリストが取れます。何か問題があったのでしょうか。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eDrawtermのApp化\u003c/h2\u003e\n\t\t\t\u003cp\u003eMacでDockに登録するために、\u003ca href=\"https://oraccha.hatenadiary.org/entry/20080209/1202565776\"\u003eDrawterm.app\u003c/a\u003eを\n\t\t\t参考にしたのですが、なぜかこのままでは動きませんでした。\n\t\t\t具体的に言えば、Carbon/X11共に、パスワードを入力した直後、\n\t\t\tmountとbindがエラーになってしまいます。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003esecstore password:\nusage: mount [-a|-b] [-cnq] [-k keypattern] /srv/service dir [spec]\nusage: bind [-b|-a|-c|-bc|-ac] new old\nusage: bind [-b|-a|-c|-bc|-ac] new old\nusage: bind [-b|-a|-c|-bc|-ac] new old\nmount: can't open /srv/net: '/srv/net' file does not exist\n/lib/namespace.local: rc: .: can't open: '/lib/namespace.local' does not exist\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eターミナルからcore.shを実行させた場合は問題ありませんが、\n\t\t\tDrawterm.appをダブルクリックした場合に限り、このエラーになります。\n\t\t\t環境の問題なのでしょうか。Leopard, Snow Leopard共にだめでした。\u003c/p\u003e\n\t\t\t\u003cp\u003eそこで、core.shを以下のように書き換えました。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"sh\"\u003e#!/bin/sh\n\ncd ~ \u0026amp;\u0026amp; /Applications/Drawterm.app/Contents/MacOS/drawterm -a auth -c cpu \u0026amp;\nexit 0\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003e参考ページ\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"http://swtch.com/drawterm/\"\u003eDrawterm\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"https://oraccha.hatenadiary.org/entry/20090211/1234354600\"\u003ePlan 9初心者ガイド - Plan9日記\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["plan9","doc","guide","drawterm"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

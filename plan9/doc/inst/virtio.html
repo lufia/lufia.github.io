@@ -1,0 +1,129 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>Plan 9: VirtIOを使う</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="/plan9/doc/inst/index.html"><a>インストール</a></a></li>
+	<li><a href="/plan9/doc/guide/index.html"><a>システムの使い方</a></a></li>
+	<li><a href="/plan9/doc/devel/index.html"><a>プログラミング</a></a></li>
+	<li><a href="/plan9/doc/adm/index.html"><a>システム管理</a></a></li>
+	<li><a href="/plan9/man/index.html"><a>自作ツール集</a></a></li>
+	</ul>
+</nav>
+<main>
+	<h1>VirtIOを使う</h1>
+	<section>
+		<h2>VirtIOのインストール</h2>
+		<section>
+			<h3>パッチを当てる</h3>
+			<p>VirtIOはPlan 9の標準ディストリビューションには含まれないので、
+			9legacyのパッチを当てます。</p>
+			<pre><code class="console">% cd /
+% hget http://www.9legacy.org/9legacy/patch/pc-sdvirtio.diff | ape/patch -p1
+% hget http://www.9legacy.org/9legacy/patch/pc-ethervirtio.diff | ape/patch -p1</code></pre>
+			<p>自前のツールですが、9legacy/installを使うと便利です。</p>
+			<pre><code class="console">% 9legacy/init
+% 9legacy/installall &lt;{9legacy/stable}
+% 9legacy/apply</code></pre>
+			<p>次に、カーネルコンフィグへVirtIOドライバを追加します。
+			ここで不要なドライバを削除しておいてもいいかもしれません。</p>
+			<pre><code class="console">% cd /sys/src/9/pc
+% ed pccpuf</code></pre>
+			<p>カーネルコンフィグは、たとえば以下のように。</p>
+			<pre><code>link
+    ethervirtio    pci
+
+misc
+    sdvirtio        pci sdscsi</code></pre>
+			<p>また、9loadにも足しておかないとデバイスが見つからなくて
+			ブートできなくなるので、9loadのコンフィグにもsdvirtioを足します。</p>
+			<pre><code class="console">% cd /sys/src/9/pcboot
+% ed load</code></pre>
+			<p>loadはカーネルをロードするだけなので、sdvirtioがあれば十分だと思います。
+			もし9bootも必要なら、そっちにはethervirtioを追加しましょう。</p>
+		</section>
+		<section>
+			<h3>インストール</h3>
+			<p>カーネルのビルドを行います。</p>
+			<pre><code class="console">% cd /sys/src/9/pc
+% mk &#x27;CONF=pccpuf&#x27;</code></pre>
+			<p>次にローダのビルド。</p>
+			<pre><code class="console">% cd /sys/src/9/pcboot
+% ed load
+% mk 9load</code></pre>
+			<p>9fat領域へカーネルとローダをコピーしたらインストール完了です。</p>
+			<pre><code class="console"># 9fat:
+# cp 9load /n/9fat/9load (きちんとdisk/format使ったほうが良いかも)
+# cp 9pccpuf /n/9fat/9pccpuf</code></pre>
+		</section>
+	</section>
+	<section>
+		<h2>デバイス名を変更</h2>
+		<p>VirtIOを有効にすると、デバイス名が<strong>sdC0</strong>から<strong>sdF0</strong>に変わります。
+		そのため、fossil等、デバイス名の変更が必要です。
+		必ず、新しいカーネルでブートする前に実施しなくてはいけません。</p>
+		<p>まず<strong>plan9.ini</strong>を変更。</p>
+		<pre><code class="ini">bootfile=sdF0!9fat!9pccpuf
+bootargs=local!#S/sdF0/fossil
+bootdisk=local!#S/sdF0/fossil</code></pre>
+		<p>fossilのconfにも設定が入っているので修正します。</p>
+		<pre><code class="console"># fossil/conf /dev/sdC0/fossil &gt;fossil.conf
+# ed fossil.conf
+fsys main config /dev/sdF0/fossil
+# fossil/conf -w /dev/sdC0/fossil fossil.conf</code></pre>
+		<p>ventiを使っている場合は、ventiの設定も修正が必要です。</p>
+		<pre><code class="console">% venti/conf /dev/sdC0/arenas &gt;venti.conf
+% ed venti.conf
+isect /dev/sdF0/isect
+arenas /dev/sdF0/arenas
+% venti/conf -w /dev/sdC0/arenas &lt;venti.conf</code></pre>
+		<p>このあと仮想マシンのVirtIOを有効にするのでシャットダウンさせます。</p>
+	</section>
+	<section>
+		<h2>仮想マシンのVirtIO</h2>
+		<p>シャットダウンし終わったら、カスタムOSインストールを実行するか、
+		ISOイメージインストールでVirtIOを有効にしてインストールを実行します。
+		このとき、あくまで目的はVirtIOを有効にするだけなので、
+		イメージから起動したらすぐに再起動させてしまってください。
+		(VirtIO有効無効の切り替えはOSインストール時しかできないので)</p>
+		<p>これで正しく設定できていればVirtIOドライバを使ったカーネルが動作します。</p>
+	</section>
+	<section>
+		<h2>終わりに</h2>
+		<p>さくらVPSは、OS再インストールをすると
+		仮想マシンのスイッチ設定がリセットされるので、
+		ファイルサーバから/を得ている場合はスイッチの設定も忘れずに。</p>
+	</section>
+	<section>
+		<h2>困ったときの対応</h2>
+		<p>少しはまったことをまとめました。</p>
+		<section>
+			<h3>ブートしなくなった場合</h3>
+			<p>Plan 9のISOイメージからブートさせると、
+			インストールするかCDからブートするかを選べるので、
+			CDからブートして必要なリカバリを行いましょう。</p>
+		</section>
+		<section>
+			<h3>ISOイメージのアップロードができない場合</h3>
+			<p>ISOをアップロードしようとしたら、
+			以下のようなエラーで失敗するときがあります。</p>
+			<pre><code class="console">sftp&gt; put plan9.iso
+Uploading plan9.iso to /iso/plan9.iso
+remote open(&quot;/iso/plan9.iso&quot;): Failure</code></pre>
+			<p><a href="http://randomsoft.com/node/438">さくらの VPS で ISO イメージがアップできない</a>によると、ISOアカウントを削除したうえで、
+			仮想マシンを起動・停止するといいそうです。</p>
+			<p>それでもだめな場合は、起動・停止のかわりに
+			カスタムOSインストール・停止させると解消します。</p>
+		</section>
+	</section>
+</main>
+<aside>
+	<h1>関連情報</h1>
+	<ul>
+	<li><a href="/plan9/doc/inst/9k.html"><a>64bit環境(9kカーネル)を構築する</a></a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/plan9/doc/inst/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003ePlan 9: VirtIOを使う\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/inst/index.html\"\u003eインストール\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/guide/index.html\"\u003eシステムの使い方\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/devel/index.html\"\u003eプログラミング\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/adm/index.html\"\u003eシステム管理\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/man/index.html\"\u003e自作ツール集\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003ch1\u003eVirtIOを使う\u003c/h1\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003eVirtIOのインストール\u003c/h2\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch3\u003eパッチを当てる\u003c/h3\u003e\n\t\t\t\u003cp\u003eVirtIOはPlan 9の標準ディストリビューションには含まれないので、\n\t\t\t9legacyのパッチを当てます。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% cd /\n% hget http://www.9legacy.org/9legacy/patch/pc-sdvirtio.diff | ape/patch -p1\n% hget http://www.9legacy.org/9legacy/patch/pc-ethervirtio.diff | ape/patch -p1\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e自前のツールですが、9legacy/installを使うと便利です。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% 9legacy/init\n% 9legacy/installall \u0026lt;{9legacy/stable}\n% 9legacy/apply\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e次に、カーネルコンフィグへVirtIOドライバを追加します。\n\t\t\tここで不要なドライバを削除しておいてもいいかもしれません。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% cd /sys/src/9/pc\n% ed pccpuf\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eカーネルコンフィグは、たとえば以下のように。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003elink\n    ethervirtio    pci\n\nmisc\n    sdvirtio        pci sdscsi\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eまた、9loadにも足しておかないとデバイスが見つからなくて\n\t\t\tブートできなくなるので、9loadのコンフィグにもsdvirtioを足します。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% cd /sys/src/9/pcboot\n% ed load\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eloadはカーネルをロードするだけなので、sdvirtioがあれば十分だと思います。\n\t\t\tもし9bootも必要なら、そっちにはethervirtioを追加しましょう。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch3\u003eインストール\u003c/h3\u003e\n\t\t\t\u003cp\u003eカーネルのビルドを行います。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% cd /sys/src/9/pc\n% mk 'CONF=pccpuf'\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e次にローダのビルド。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% cd /sys/src/9/pcboot\n% ed load\n% mk 9load\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e9fat領域へカーネルとローダをコピーしたらインストール完了です。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e# 9fat:\n# cp 9load /n/9fat/9load (きちんとdisk/format使ったほうが良いかも)\n# cp 9pccpuf /n/9fat/9pccpuf\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003eデバイス名を変更\u003c/h2\u003e\n\t\t\u003cp\u003eVirtIOを有効にすると、デバイス名が\u003cstrong\u003esdC0\u003c/strong\u003eから\u003cstrong\u003esdF0\u003c/strong\u003eに変わります。\n\t\tそのため、fossil等、デバイス名の変更が必要です。\n\t\t必ず、新しいカーネルでブートする前に実施しなくてはいけません。\u003c/p\u003e\n\t\t\u003cp\u003eまず\u003cstrong\u003eplan9.ini\u003c/strong\u003eを変更。\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode class=\"ini\"\u003ebootfile=sdF0!9fat!9pccpuf\nbootargs=local!#S/sdF0/fossil\nbootdisk=local!#S/sdF0/fossil\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003cp\u003efossilのconfにも設定が入っているので修正します。\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e# fossil/conf /dev/sdC0/fossil \u0026gt;fossil.conf\n# ed fossil.conf\nfsys main config /dev/sdF0/fossil\n# fossil/conf -w /dev/sdC0/fossil fossil.conf\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003cp\u003eventiを使っている場合は、ventiの設定も修正が必要です。\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003e% venti/conf /dev/sdC0/arenas \u0026gt;venti.conf\n% ed venti.conf\nisect /dev/sdF0/isect\narenas /dev/sdF0/arenas\n% venti/conf -w /dev/sdC0/arenas \u0026lt;venti.conf\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003cp\u003eこのあと仮想マシンのVirtIOを有効にするのでシャットダウンさせます。\u003c/p\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003e仮想マシンのVirtIO\u003c/h2\u003e\n\t\t\u003cp\u003eシャットダウンし終わったら、カスタムOSインストールを実行するか、\n\t\tISOイメージインストールでVirtIOを有効にしてインストールを実行します。\n\t\tこのとき、あくまで目的はVirtIOを有効にするだけなので、\n\t\tイメージから起動したらすぐに再起動させてしまってください。\n\t\t(VirtIO有効無効の切り替えはOSインストール時しかできないので)\u003c/p\u003e\n\t\t\u003cp\u003eこれで正しく設定できていればVirtIOドライバを使ったカーネルが動作します。\u003c/p\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003e終わりに\u003c/h2\u003e\n\t\t\u003cp\u003eさくらVPSは、OS再インストールをすると\n\t\t仮想マシンのスイッチ設定がリセットされるので、\n\t\tファイルサーバから/を得ている場合はスイッチの設定も忘れずに。\u003c/p\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003e困ったときの対応\u003c/h2\u003e\n\t\t\u003cp\u003e少しはまったことをまとめました。\u003c/p\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch3\u003eブートしなくなった場合\u003c/h3\u003e\n\t\t\t\u003cp\u003ePlan 9のISOイメージからブートさせると、\n\t\t\tインストールするかCDからブートするかを選べるので、\n\t\t\tCDからブートして必要なリカバリを行いましょう。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch3\u003eISOイメージのアップロードができない場合\u003c/h3\u003e\n\t\t\t\u003cp\u003eISOをアップロードしようとしたら、\n\t\t\t以下のようなエラーで失敗するときがあります。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003esftp\u0026gt; put plan9.iso\nUploading plan9.iso to /iso/plan9.iso\nremote open(\u0026quot;/iso/plan9.iso\u0026quot;): Failure\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e\u003ca href=\"http://randomsoft.com/node/438\"\u003eさくらの VPS で ISO イメージがアップできない\u003c/a\u003eによると、ISOアカウントを削除したうえで、\n\t\t\t仮想マシンを起動・停止するといいそうです。\u003c/p\u003e\n\t\t\t\u003cp\u003eそれでもだめな場合は、起動・停止のかわりに\n\t\t\tカスタムOSインストール・停止させると解消します。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003e関連情報\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"9k.html\"\u003e64bit環境(9kカーネル)を構築する\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["plan9","doc","inst","virtio"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: Accessメモ</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2010年5月12日更新</p>
+	<section>
+		<h1>Accessメモ</h1>
+		<section>
+			<h2>イベントの発生順序</h2>
+			<ol>
+			<li>BeforeInsert</li>
+			<li>BeforeUpdate</li>
+			<li>AfterUpdate</li>
+			<li>AfterInsert</li>
+			</ol>
+			<p>印象と違っていたのでメモ。
+			AfterInsertのほうがAfterUpdateより先だと思ってました。</p>
+		</section>
+		<section>
+			<h2>OldValueを参照するとエラー</h2>
+			<p>TextBox.OldValueプロパティを参照するとエラーになって割と困りました。
+			現象としては、値がNullとかではなく、プロパティが参照できません。
+			これは、1対多リレーションシップのとき、
+			1側のデータについてOldValueを調べると発生します。</p>
+			<p>解決策は、Currentで値を残しておいて、あとからそれを調べるようにします。</p>
+		</section>
+		<section>
+			<h2>OldValueの疑問</h2>
+			<p>たとえばTextBox.Valueを&quot;テスト&quot;から&quot;test&quot;に書き換えた場合。
+			BeforeUpdateではOldValue=&quot;テスト&quot;でしたが、
+			AfterUpdateになるとOldValue=&quot;test&quot;になっていました。
+			これは何か他の要因？それともそういう仕様？</p>
+		</section>
+		<section>
+			<h2>BeforeInsertイベントが発生しない</h2>
+			<p>ヘルプによると、プログラムから値を挿入した場合は発生しない、とあります。
+			でも、たぶん。最初にどこをキックしたかによって変ってくるのではないかなあ。</p>
+			<ul>
+			<li>ヘルプの通り、プログラムから挿入した場合は基本的には発生しない</li>
+			<li>最初に入力があったものがコントロールを介しての場合、プログラムからでも発生する</li>
+			<li>新しい行の最初に値が入ったとき、がBeforeInsertのタイミング</li>
+			<li>なので、それ以降はコントロールを介していようが発生しない</li>
+			</ul>
+			<p>まとめると、プログラムから扱う場合、Me!Itemがフィールドの場合は発生しないで、
+			フィールドをバインドしたコントロールの場合は発生ということ？</p>
+		</section>
+		<section>
+			<h2>NotInListイベント</h2>
+			<p>ComboBox.NotInListイベントは、入力チェックが有効になっていないと反応しない。</p>
+		</section>
+		<section>
+			<h2>オートナンバーを持つテーブルをコピーする方法</h2>
+			<p>オートナンバーをキーにしている場合、
+			番号がずれるとリレーションも切れてしまうので調べた。</p>
+			<p>クエリを使ってinsertすればコピーできる。
+			その際は、元のテーブルが記録していた次の番号のほうが大きければそれ。
+			挿入したデータのほうが大きければその次の番号となる。</p>
+			<p>リレーションがあってもコピーできるが、順番には注意。</p>
+		</section>
+		<section>
+			<h2>オートナンバーのリセット</h2>
+			<pre><code>CurrentProject.Connection.Execute _
+	CommandText:=&quot;Alter Table テーブル名 &quot; _
+		&amp; &quot;Alter Column フィールド名 Identity( 1, 1 );&quot;</code></pre>
+			<p>または、</p>
+			<pre><code>DoCmd.RunSQL &quot;alter table tablename alter column columnname counter(1)&quot;</code></pre>
+			<p>ただし、リレーションシップが張られている場合はエラーになる</p>
+		</section>
+	</section>
+</main>
+<aside>
+	<h1>関連情報</h1>
+	<ul>
+	<li><a href="/notes/2011/0805.html"><a>SQL Serverのメモ</a></a></li>
+	</ul>
+</aside>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2010/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: Accessメモ\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2010年5月12日更新\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eAccessメモ\u003c/h1\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eイベントの発生順序\u003c/h2\u003e\n\t\t\t\u003col\u003e\n\t\t\t\u003cli\u003eBeforeInsert\u003c/li\u003e\n\t\t\t\u003cli\u003eBeforeUpdate\u003c/li\u003e\n\t\t\t\u003cli\u003eAfterUpdate\u003c/li\u003e\n\t\t\t\u003cli\u003eAfterInsert\u003c/li\u003e\n\t\t\t\u003c/ol\u003e\n\t\t\t\u003cp\u003e印象と違っていたのでメモ。\n\t\t\tAfterInsertのほうがAfterUpdateより先だと思ってました。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eOldValueを参照するとエラー\u003c/h2\u003e\n\t\t\t\u003cp\u003eTextBox.OldValueプロパティを参照するとエラーになって割と困りました。\n\t\t\t現象としては、値がNullとかではなく、プロパティが参照できません。\n\t\t\tこれは、1対多リレーションシップのとき、\n\t\t\t1側のデータについてOldValueを調べると発生します。\u003c/p\u003e\n\t\t\t\u003cp\u003e解決策は、Currentで値を残しておいて、あとからそれを調べるようにします。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eOldValueの疑問\u003c/h2\u003e\n\t\t\t\u003cp\u003eたとえばTextBox.Valueを\u0026quot;テスト\u0026quot;から\u0026quot;test\u0026quot;に書き換えた場合。\n\t\t\tBeforeUpdateではOldValue=\u0026quot;テスト\u0026quot;でしたが、\n\t\t\tAfterUpdateになるとOldValue=\u0026quot;test\u0026quot;になっていました。\n\t\t\tこれは何か他の要因？それともそういう仕様？\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eBeforeInsertイベントが発生しない\u003c/h2\u003e\n\t\t\t\u003cp\u003eヘルプによると、プログラムから値を挿入した場合は発生しない、とあります。\n\t\t\tでも、たぶん。最初にどこをキックしたかによって変ってくるのではないかなあ。\u003c/p\u003e\n\t\t\t\u003cul\u003e\n\t\t\t\u003cli\u003eヘルプの通り、プログラムから挿入した場合は基本的には発生しない\u003c/li\u003e\n\t\t\t\u003cli\u003e最初に入力があったものがコントロールを介しての場合、プログラムからでも発生する\u003c/li\u003e\n\t\t\t\u003cli\u003e新しい行の最初に値が入ったとき、がBeforeInsertのタイミング\u003c/li\u003e\n\t\t\t\u003cli\u003eなので、それ以降はコントロールを介していようが発生しない\u003c/li\u003e\n\t\t\t\u003c/ul\u003e\n\t\t\t\u003cp\u003eまとめると、プログラムから扱う場合、Me!Itemがフィールドの場合は発生しないで、\n\t\t\tフィールドをバインドしたコントロールの場合は発生ということ？\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eNotInListイベント\u003c/h2\u003e\n\t\t\t\u003cp\u003eComboBox.NotInListイベントは、入力チェックが有効になっていないと反応しない。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eオートナンバーを持つテーブルをコピーする方法\u003c/h2\u003e\n\t\t\t\u003cp\u003eオートナンバーをキーにしている場合、\n\t\t\t番号がずれるとリレーションも切れてしまうので調べた。\u003c/p\u003e\n\t\t\t\u003cp\u003eクエリを使ってinsertすればコピーできる。\n\t\t\tその際は、元のテーブルが記録していた次の番号のほうが大きければそれ。\n\t\t\t挿入したデータのほうが大きければその次の番号となる。\u003c/p\u003e\n\t\t\t\u003cp\u003eリレーションがあってもコピーできるが、順番には注意。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eオートナンバーのリセット\u003c/h2\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003eCurrentProject.Connection.Execute _\n\tCommandText:=\u0026quot;Alter Table テーブル名 \u0026quot; _\n\t\t\u0026amp; \u0026quot;Alter Column フィールド名 Identity( 1, 1 );\u0026quot;\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eまたは、\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003eDoCmd.RunSQL \u0026quot;alter table tablename alter column columnname counter(1)\u0026quot;\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eただし、リレーションシップが張られている場合はエラーになる\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003e関連情報\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"../2011/0805.html\"\u003eSQL Serverのメモ\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2010","0217"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

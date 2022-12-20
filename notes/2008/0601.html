@@ -1,0 +1,50 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: week of month</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2009年6月28日更新</p>
+	<section>
+		<h1>week of month</h1>
+		<p>いま作ってるプログラムで週計算する機能が必要になったため、
+		英語でweek of monthと検索。
+		日本語では一般的に、何て呼ぶんでしょうね。</p>
+		<blockquote>ISOでは、ISO8601で定義されていますが
+		「月曜を第一日として4日以上含む週」を第一週とみなします。
+		<a href="http://www.microsoft.com/japan/msdn/community/gdn/ShowPost-17973.htm">WeekOfMonth</a></blockquote>
+		<p>うわあ、、めんどくさい。。</p>
+		<p>カレンダーの行で、1行目が第1週、2行目が第2週、と思っていました。
+		まあでも、今作ではISO仕様だと使いにくいので、無視してもいいかなあ。
+		calendar(1)のthe nth weekもISO仕様じゃないし、ね。</p>
+		<p>そういえば、<a href="http://cm.bell-labs.com/sources/plan9/sys/src/cmd/calendar.c">/sys/src/cmd/calendar.c</a>で
+		使われている式はこちら。</p>
+		<pre><code>nth[tm-&gt;mday/7]</code></pre>
+		<p>でもこれ、</p>
+		<pre><code>nth[(tm-&gt;mday-1)/7]</code></pre>
+		<p>じゃないのかなあ。これもカルチャー?</p>
+		<section>
+			<h2>2009/06/28追記</h2>
+			<p>パッチを投げたら採用されました。
+			パッチの送り方については<a href="/plan9/doc/prog/patch.html"><a>patchを送る</a></a>に書きました。</p>
+		</section>
+	</section>
+</main>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2008/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: week of month\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2009年6月28日更新\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eweek of month\u003c/h1\u003e\n\t\t\u003cp\u003eいま作ってるプログラムで週計算する機能が必要になったため、\n\t\t英語でweek of monthと検索。\n\t\t日本語では一般的に、何て呼ぶんでしょうね。\u003c/p\u003e\n\t\t\u003cblockquote\u003eISOでは、ISO8601で定義されていますが\n\t\t「月曜を第一日として4日以上含む週」を第一週とみなします。\n\t\t\u003ca href=\"http://www.microsoft.com/japan/msdn/community/gdn/ShowPost-17973.htm\"\u003eWeekOfMonth\u003c/a\u003e\u003c/blockquote\u003e\n\t\t\u003cp\u003eうわあ、、めんどくさい。。\u003c/p\u003e\n\t\t\u003cp\u003eカレンダーの行で、1行目が第1週、2行目が第2週、と思っていました。\n\t\tまあでも、今作ではISO仕様だと使いにくいので、無視してもいいかなあ。\n\t\tcalendar(1)のthe nth weekもISO仕様じゃないし、ね。\u003c/p\u003e\n\t\t\u003cp\u003eそういえば、\u003ca href=\"http://cm.bell-labs.com/sources/plan9/sys/src/cmd/calendar.c\"\u003e/sys/src/cmd/calendar.c\u003c/a\u003eで\n\t\t使われている式はこちら。\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode\u003enth[tm-\u0026gt;mday/7]\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003cp\u003eでもこれ、\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode\u003enth[(tm-\u0026gt;mday-1)/7]\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003cp\u003eじゃないのかなあ。これもカルチャー?\u003c/p\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e2009/06/28追記\u003c/h2\u003e\n\t\t\t\u003cp\u003eパッチを投げたら採用されました。\n\t\t\tパッチの送り方については\u003ca href=\"/plan9/doc/prog/patch.html\"\u003epatchを送る\u003c/a\u003eに書きました。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2008","0601"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

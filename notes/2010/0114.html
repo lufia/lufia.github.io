@@ -1,0 +1,143 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: Ciscoメモ</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2010年1月14日作成</p>
+	<section>
+		<h1>Ciscoメモ</h1>
+		<p>まず接続できなくて詰まった。
+		最初はipが割り当てられていないので、付属のケーブルをAuxポートに接続。</p>
+		<p class="note">Vistaはハイパーターミナルが無いので、TeraTermからシリアル接続。</p>
+		<pre><code>Would you like to enter the initial configuration dialog? [yes/no]: no</code></pre>
+		<p>yesを選んでも分からないためnoを選んだ。
+		初期化の方法は<a href="http://www.cisco.com/JP/support/public/ht/tac/100/1007902/factory-default-j.shtml">ルータの工場出荷時のデフォルト設定へのリセット</a>。</p>
+		<section>
+			<h2>VLANを作成できない</h2>
+			<p>851Wは1つしかVLANを扱えません。</p>
+		</section>
+		<section>
+			<h2>HTTP通信が途中で止まる</h2>
+			<p>フラグメントパケットを拒否している場合、
+			ip tcp adjust-mssでパケットサイズを指示する。
+			たぶんインターフェイスごとにしないといけない。</p>
+			<pre><code>ip tcp adjust-mss 1454</code></pre>
+			<section>
+				<h5>参考リンク</h5>
+			</section>
+			<ul>
+			<li><a href="http://www.ne.jp/asahi/welcome/netland/newpage0840.htm">MTUの謎</a></li>
+			</ul>
+		</section>
+		<section>
+			<h2>DNS引けない問題</h2>
+			<p>Windowsでは.を含まないホスト名は名前解決しない。
+			含まない場合、name.とするといける。</p>
+		</section>
+		<section>
+			<h2>ドメイン名問題</h2>
+			<ul>
+			<li><a href="http://www.aconus.com/~oyaji/faq/apache_html3.htm">家庭内クライアントからドメイン名やグローバルIPアドレスでアクセスできない</a></li>
+			</ul>
+			<p>うーん、Plan 9でDNSサーバ立てるかな？
+			DNS自動取得など、ルータでやったほうが便利な気がするけど。</p>
+			<div class="note">
+				<pre><code>ip name-server xx.xx.xx.xx</code></pre>
+				<p>これを、以下に置き換え。</p>
+				<pre><code>ppp ipcp dns request</code></pre>
+			</div>
+		</section>
+		<section>
+			<h2>SSIDステルス</h2>
+			<blockquote>アクセスポイントに指定できるゲストモードSSIDは1つ、またはゼロです。
+			ゲストモードSSIDは、ビーコンフレームと、
+			空のSSIDまたはワイルドカードSSIDを指定した要求をプローブする応答フレームで使用されます。
+			ゲストモードSSIDが存在しない場合、ビーコンにはSSIDが含まれず、
+			ワイルドカードSSIDが含まれるプローブ要求は無視されます。</blockquote>
+			<blockquote>ゲストモードを無効にすると、
+			ネットワークのセキュリティが多少向上します。</blockquote>
+			<blockquote>ゲストモードを有効にすると、
+			パッシブスキャン(送信しない)を実行するクライアントが
+			アクセスポイントにアソシエートしやすくなります。
+			また設定時にSSIDが指定されていないクライアントも
+			アクセスポイントにアソシエートできるようになります。</blockquote>
+			<pre><code>guest-mode</code></pre>
+		</section>
+		<section>
+			<h2>CBAC</h2>
+			<section>
+				<h3>CBACとUDP</h3>
+				<p>UDPは、セッションは存在しないが、
+				擬似的にセッションがあるものとして扱う。</p>
+			</section>
+			<section>
+				<h3>CBACの適用順序</h3>
+				<ol>
+				<li>通常のACL</li>
+				<li>CBAC</li>
+				</ol>
+				<p>この順で評価される。
+				このため、ACLで拒否されているものはCBACの対象とならない。</p>
+			</section>
+		</section>
+	</section>
+</main>
+<aside>
+	<section>
+		<h1>Cisco日本語マニュアル</h1>
+		<ul>
+		<li><a href="http://www.cisco.com/japanese/warp/public/3/jp/service/manual_j/index_rt_800.shtml">Cisco 800シリーズ</a></li>
+		<li><a href="http://www.cisco.com/JP/support/public/mt/tac/100/1000528/acl_wp.shtml">ACLとIPフラグメント</a></li>
+		<li><a href="http://www.cisco.com/JP/support/public/nav/lll_268435930_10_236.shtml">IPアドレッシングサービス</a></li>
+		<li><a href="http://www.cisco.com/JP/support/public/ht/tac/100/1007842/56-j.shtml">GREトンネルを使用しているときにインターネットをブラウズできない理由</a></li>
+		</ul>
+	</section>
+	<section>
+		<h1>PPPoE</h1>
+		<ul>
+		<li><a href="http://www.infraexpert.com/study/rp8gre2.htm">GREの設定</a></li>
+		<li><a href="http://www.syns.net/7/4/">Cisco IOSによるルータ設定</a></li>
+		</ul>
+	</section>
+	<section>
+		<h1>よさげな情報</h1>
+		<ul>
+		<li><a href="http://kumo.chicappa.jp/wiki.cgi?page=Cisco1812J%A4%C7%B9%D4%A4%B3%A4%A6%A1%AA">Cisco1812Jで行こう！</a></li>
+		<li><a href="http://ripo726.blog41.fc2.com/blog-entry-258.html">Cisco 1712 Auto Secure 設定</a></li>
+		</ul>
+	</section>
+	<section>
+		<h1>メモ</h1>
+		<dl>
+		<div>
+			<dt><a href="http://www.kaztan.com/network/archives/2008/03/29-234543.php">Ciscoルータでフレッツ光プレミアムに接続できない事象</a></dt>
+			<dd>MRUを設定する場合はip mtuではなくmtuを使う</dd>
+		</div>
+		</dl>
+	</section>
+	<section>
+		<h1>関連情報</h1>
+		<ul>
+		<li><a href="/notes/2009/1019.html"><a>無線LANのセキュリティ</a></a></li>
+		</ul>
+	</section>
+</aside>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2010/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: Ciscoメモ\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2010年1月14日作成\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eCiscoメモ\u003c/h1\u003e\n\t\t\u003cp\u003eまず接続できなくて詰まった。\n\t\t最初はipが割り当てられていないので、付属のケーブルをAuxポートに接続。\u003c/p\u003e\n\t\t\u003cp class=\"note\"\u003eVistaはハイパーターミナルが無いので、TeraTermからシリアル接続。\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode\u003eWould you like to enter the initial configuration dialog? [yes/no]: no\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003cp\u003eyesを選んでも分からないためnoを選んだ。\n\t\t初期化の方法は\u003ca href=\"http://www.cisco.com/JP/support/public/ht/tac/100/1007902/factory-default-j.shtml\"\u003eルータの工場出荷時のデフォルト設定へのリセット\u003c/a\u003e。\u003c/p\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eVLANを作成できない\u003c/h2\u003e\n\t\t\t\u003cp\u003e851Wは1つしかVLANを扱えません。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eHTTP通信が途中で止まる\u003c/h2\u003e\n\t\t\t\u003cp\u003eフラグメントパケットを拒否している場合、\n\t\t\tip tcp adjust-mssでパケットサイズを指示する。\n\t\t\tたぶんインターフェイスごとにしないといけない。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003eip tcp adjust-mss 1454\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch5\u003e参考リンク\u003c/h5\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003cul\u003e\n\t\t\t\u003cli\u003e\u003ca href=\"http://www.ne.jp/asahi/welcome/netland/newpage0840.htm\"\u003eMTUの謎\u003c/a\u003e\u003c/li\u003e\n\t\t\t\u003c/ul\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eDNS引けない問題\u003c/h2\u003e\n\t\t\t\u003cp\u003eWindowsでは.を含まないホスト名は名前解決しない。\n\t\t\t含まない場合、name.とするといける。\u003c/p\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eドメイン名問題\u003c/h2\u003e\n\t\t\t\u003cul\u003e\n\t\t\t\u003cli\u003e\u003ca href=\"http://www.aconus.com/~oyaji/faq/apache_html3.htm\"\u003e家庭内クライアントからドメイン名やグローバルIPアドレスでアクセスできない\u003c/a\u003e\u003c/li\u003e\n\t\t\t\u003c/ul\u003e\n\t\t\t\u003cp\u003eうーん、Plan 9でDNSサーバ立てるかな？\n\t\t\tDNS自動取得など、ルータでやったほうが便利な気がするけど。\u003c/p\u003e\n\t\t\t\u003cdiv class=\"note\"\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode\u003eip name-server xx.xx.xx.xx\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003eこれを、以下に置き換え。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode\u003eppp ipcp dns request\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003c/div\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eSSIDステルス\u003c/h2\u003e\n\t\t\t\u003cblockquote\u003eアクセスポイントに指定できるゲストモードSSIDは1つ、またはゼロです。\n\t\t\tゲストモードSSIDは、ビーコンフレームと、\n\t\t\t空のSSIDまたはワイルドカードSSIDを指定した要求をプローブする応答フレームで使用されます。\n\t\t\tゲストモードSSIDが存在しない場合、ビーコンにはSSIDが含まれず、\n\t\t\tワイルドカードSSIDが含まれるプローブ要求は無視されます。\u003c/blockquote\u003e\n\t\t\t\u003cblockquote\u003eゲストモードを無効にすると、\n\t\t\tネットワークのセキュリティが多少向上します。\u003c/blockquote\u003e\n\t\t\t\u003cblockquote\u003eゲストモードを有効にすると、\n\t\t\tパッシブスキャン(送信しない)を実行するクライアントが\n\t\t\tアクセスポイントにアソシエートしやすくなります。\n\t\t\tまた設定時にSSIDが指定されていないクライアントも\n\t\t\tアクセスポイントにアソシエートできるようになります。\u003c/blockquote\u003e\n\t\t\t\u003cpre\u003e\u003ccode\u003eguest-mode\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eCBAC\u003c/h2\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eCBACとUDP\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eUDPは、セッションは存在しないが、\n\t\t\t\t擬似的にセッションがあるものとして扱う。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eCBACの適用順序\u003c/h3\u003e\n\t\t\t\t\u003col\u003e\n\t\t\t\t\u003cli\u003e通常のACL\u003c/li\u003e\n\t\t\t\t\u003cli\u003eCBAC\u003c/li\u003e\n\t\t\t\t\u003c/ol\u003e\n\t\t\t\t\u003cp\u003eこの順で評価される。\n\t\t\t\tこのため、ACLで拒否されているものはCBACの対象とならない。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eCisco日本語マニュアル\u003c/h1\u003e\n\t\t\u003cul\u003e\n\t\t\u003cli\u003e\u003ca href=\"http://www.cisco.com/japanese/warp/public/3/jp/service/manual_j/index_rt_800.shtml\"\u003eCisco 800シリーズ\u003c/a\u003e\u003c/li\u003e\n\t\t\u003cli\u003e\u003ca href=\"http://www.cisco.com/JP/support/public/mt/tac/100/1000528/acl_wp.shtml\"\u003eACLとIPフラグメント\u003c/a\u003e\u003c/li\u003e\n\t\t\u003cli\u003e\u003ca href=\"http://www.cisco.com/JP/support/public/nav/lll_268435930_10_236.shtml\"\u003eIPアドレッシングサービス\u003c/a\u003e\u003c/li\u003e\n\t\t\u003cli\u003e\u003ca href=\"http://www.cisco.com/JP/support/public/ht/tac/100/1007842/56-j.shtml\"\u003eGREトンネルを使用しているときにインターネットをブラウズできない理由\u003c/a\u003e\u003c/li\u003e\n\t\t\u003c/ul\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003ePPPoE\u003c/h1\u003e\n\t\t\u003cul\u003e\n\t\t\u003cli\u003e\u003ca href=\"http://www.infraexpert.com/study/rp8gre2.htm\"\u003eGREの設定\u003c/a\u003e\u003c/li\u003e\n\t\t\u003cli\u003e\u003ca href=\"http://www.syns.net/7/4/\"\u003eCisco IOSによるルータ設定\u003c/a\u003e\u003c/li\u003e\n\t\t\u003c/ul\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eよさげな情報\u003c/h1\u003e\n\t\t\u003cul\u003e\n\t\t\u003cli\u003e\u003ca href=\"http://kumo.chicappa.jp/wiki.cgi?page=Cisco1812J%A4%C7%B9%D4%A4%B3%A4%A6%A1%AA\"\u003eCisco1812Jで行こう！\u003c/a\u003e\u003c/li\u003e\n\t\t\u003cli\u003e\u003ca href=\"http://ripo726.blog41.fc2.com/blog-entry-258.html\"\u003eCisco 1712 Auto Secure 設定\u003c/a\u003e\u003c/li\u003e\n\t\t\u003c/ul\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eメモ\u003c/h1\u003e\n\t\t\u003cdl\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003e\u003ca href=\"http://www.kaztan.com/network/archives/2008/03/29-234543.php\"\u003eCiscoルータでフレッツ光プレミアムに接続できない事象\u003c/a\u003e\u003c/dt\u003e\n\t\t\t\u003cdd\u003eMRUを設定する場合はip mtuではなくmtuを使う\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003c/dl\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003e関連情報\u003c/h1\u003e\n\t\t\u003cul\u003e\n\t\t\u003cli\u003e\u003ca href=\"../../notes/2009/1019.html\"\u003e無線LANのセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\t\u003c/ul\u003e\n\t\u003c/section\u003e\n\u003c/aside\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2010","0114"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

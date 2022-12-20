@@ -1,0 +1,104 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: fsオープンファイルの管理</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2011年5月16日作成</p>
+	<section>
+		<h1>fsオープンファイルの管理</h1>
+		<p>ファイルサーバは、いま開いているファイルについて、
+		チャネル(chan)とFIDにもとづいたリストを持っています。
+		ここで開いているというのは、9pのattach、cloneからclunkまでのことです。
+		ファイルサーバはいろいろな処理(dumpとか)で読み書きしていますが、
+		それらとオープンファイルは関係ありません。</p>
+		<p class="note">ファイルサーバコンソールからのcreateなどは9p扱いになりますので、
+		それはまた別。</p>
+		<p>各オープンファイルはFile構造体で表します。
+		Fileはファイルツリーを遡るために、Wpathのリストを持っています。
+		Wpathには自分自身を含めません。
+		なので、/のWpathはnilですし、/adm/usersのWpathは/とadmのリストです。
+		また、Wpathは9pでcloneしたとき、もとのオープンファイルが持っていた
+		Wpathの参照カウントを増やし、それを共有します。</p>
+		<p class="note">FIDは9pクライアントが管理しているIDなので、
+		チャネルごとに同じファイルは開けないといったことは起こりません。
+		ファイルサーバ内でユニークなファイルのIDはqidのほうです。</p>
+		<p>Dentryなど他のデータと異なり、File.slotとWpath.slotは、
+		ブロック内でのインデックスではありません。
+		ファイル全体を通してのインデックスです。
+		ここで、なぜブロックアドレスを使わないのかというと、
+		dumpのときに変更のあったブロックアドレスが変わります。
+		で、そのときのオープンファイルについても
+		ブロックアドレスを新しいものに更新するのですが、
+		アドレスをそのまま持たせていると、
+		新しいアドレスを探索するのが大変になるのですね。
+		なので、オープンファイルのDentryが保存されている
+		ブロックアドレスを、そのDentryが親Dentryブロックの中で
+		直接+間接ブロックを通していくつめのブロックにあるか(off)と置き換えて、
+		off*DIRPERBUF+slotのように、ひとつにまとめているわけですね。
+		これにより、</p>
+		<pre><code class="c">p = getbuf(target-&gt;parent-&gt;addr)
+d = getdir(p, target-&gt;parent-&gt;slot%DIRPERBUF)
+p1 = dnodebuf(p, d, target-&gt;slot/DIRPERBUF)</code></pre>
+		<p>こんなふうに使えます。</p>
+		<p>いつものように/adm/usersを開いたときの動作予測。</p>
+		<pre><code>DIRPERBUF = 10
+[cw root] = 106
+
+# f_attachで
+File = {
+	wpath = nil,
+	addr = 106,		# /のDentryがあるブロック
+	slot = 0,		# /のスロット
+	open = 0
+}
+
+# f_walk(&quot;adm&quot;)すると
+File = {
+	wpath = {addr = 106, slot = 0} :: nil,
+	addr = 6,				# admのDentryがあるブロック
+	slot = off(0)*DIRPERBUF+slot(0) = 0,	# admのスロット
+}
+
+# 続いてf_walk(&quot;users&quot;)
+File = {
+	wpath = {addr = 6, slot =  0} :: {addr = 106, slot = 0} :: nil,
+	addr = 7,				# usersのDentryがあるブロック
+	slot = off(1)*DIRPERBUF+slot(1)=11,	# usersのスロット
+}</code></pre>
+		<div class="note">
+			<p>f_openのときに、
+			open = OREAD|OWRITE|OTRUNCをFREAD/FWRITEに加工して設定</p>
+			<p>f_clunkまたはf_removeでfree</p>
+		</div>
+		<p>概要図。</p>
+		<figure>
+			<img src="0516.png" alt="FileとWpathの動き"/>
+			<figcaption>FileとWpathの動き</figcaption>
+		</figure>
+	</section>
+</main>
+<aside>
+	<h1>参考サイト</h1>
+	<ul>
+	<li><a href="http://plan9.aichi-u.ac.jp/cwfs/">cwfsの研究</a></li>
+	</ul>
+</aside>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2011/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: fsオープンファイルの管理\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2011年5月16日作成\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003efsオープンファイルの管理\u003c/h1\u003e\n\t\t\u003cp\u003eファイルサーバは、いま開いているファイルについて、\n\t\tチャネル(chan)とFIDにもとづいたリストを持っています。\n\t\tここで開いているというのは、9pのattach、cloneからclunkまでのことです。\n\t\tファイルサーバはいろいろな処理(dumpとか)で読み書きしていますが、\n\t\tそれらとオープンファイルは関係ありません。\u003c/p\u003e\n\t\t\u003cp class=\"note\"\u003eファイルサーバコンソールからのcreateなどは9p扱いになりますので、\n\t\tそれはまた別。\u003c/p\u003e\n\t\t\u003cp\u003e各オープンファイルはFile構造体で表します。\n\t\tFileはファイルツリーを遡るために、Wpathのリストを持っています。\n\t\tWpathには自分自身を含めません。\n\t\tなので、/のWpathはnilですし、/adm/usersのWpathは/とadmのリストです。\n\t\tまた、Wpathは9pでcloneしたとき、もとのオープンファイルが持っていた\n\t\tWpathの参照カウントを増やし、それを共有します。\u003c/p\u003e\n\t\t\u003cp class=\"note\"\u003eFIDは9pクライアントが管理しているIDなので、\n\t\tチャネルごとに同じファイルは開けないといったことは起こりません。\n\t\tファイルサーバ内でユニークなファイルのIDはqidのほうです。\u003c/p\u003e\n\t\t\u003cp\u003eDentryなど他のデータと異なり、File.slotとWpath.slotは、\n\t\tブロック内でのインデックスではありません。\n\t\tファイル全体を通してのインデックスです。\n\t\tここで、なぜブロックアドレスを使わないのかというと、\n\t\tdumpのときに変更のあったブロックアドレスが変わります。\n\t\tで、そのときのオープンファイルについても\n\t\tブロックアドレスを新しいものに更新するのですが、\n\t\tアドレスをそのまま持たせていると、\n\t\t新しいアドレスを探索するのが大変になるのですね。\n\t\tなので、オープンファイルのDentryが保存されている\n\t\tブロックアドレスを、そのDentryが親Dentryブロックの中で\n\t\t直接+間接ブロックを通していくつめのブロックにあるか(off)と置き換えて、\n\t\toff*DIRPERBUF+slotのように、ひとつにまとめているわけですね。\n\t\tこれにより、\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode class=\"c\"\u003ep = getbuf(target-\u0026gt;parent-\u0026gt;addr)\nd = getdir(p, target-\u0026gt;parent-\u0026gt;slot%DIRPERBUF)\np1 = dnodebuf(p, d, target-\u0026gt;slot/DIRPERBUF)\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003cp\u003eこんなふうに使えます。\u003c/p\u003e\n\t\t\u003cp\u003eいつものように/adm/usersを開いたときの動作予測。\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode\u003eDIRPERBUF = 10\n[cw root] = 106\n\n# f_attachで\nFile = {\n\twpath = nil,\n\taddr = 106,\t\t# /のDentryがあるブロック\n\tslot = 0,\t\t# /のスロット\n\topen = 0\n}\n\n# f_walk(\u0026quot;adm\u0026quot;)すると\nFile = {\n\twpath = {addr = 106, slot = 0} :: nil,\n\taddr = 6,\t\t\t\t# admのDentryがあるブロック\n\tslot = off(0)*DIRPERBUF+slot(0) = 0,\t# admのスロット\n}\n\n# 続いてf_walk(\u0026quot;users\u0026quot;)\nFile = {\n\twpath = {addr = 6, slot =  0} :: {addr = 106, slot = 0} :: nil,\n\taddr = 7,\t\t\t\t# usersのDentryがあるブロック\n\tslot = off(1)*DIRPERBUF+slot(1)=11,\t# usersのスロット\n}\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003cdiv class=\"note\"\u003e\n\t\t\t\u003cp\u003ef_openのときに、\n\t\t\topen = OREAD|OWRITE|OTRUNCをFREAD/FWRITEに加工して設定\u003c/p\u003e\n\t\t\t\u003cp\u003ef_clunkまたはf_removeでfree\u003c/p\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cp\u003e概要図。\u003c/p\u003e\n\t\t\u003cfigure\u003e\n\t\t\t\u003cimg src=\"0516.png\" alt=\"FileとWpathの動き\"\u003e\n\t\t\t\u003cfigcaption\u003eFileとWpathの動き\u003c/figcaption\u003e\n\t\t\u003c/figure\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003e参考サイト\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"http://plan9.aichi-u.ac.jp/cwfs/\"\u003ecwfsの研究\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2011","0516"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

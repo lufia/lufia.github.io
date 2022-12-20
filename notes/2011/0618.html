@@ -1,0 +1,629 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>orange/note: il.cを読む</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/notes/index.html"><a>orange/note</a></a></li>
+	<li><a href="/notes/pc.html"><a>PC関連</a></a></li>
+	<li><a href="/notes/web.html"><a>web製作</a></a></li>
+	<li><a href="/notes/sec.html"><a>セキュリティ</a></a></li>
+	<li><a href="/notes/hobby.html"><a>本・ゲーム</a></a></li>
+	<li><a href="/notes/junk.html"><a>ジャンク</a></a></li>
+	</ul>
+</nav>
+<main>
+	<p class="revision">2011年6月18日作成</p>
+	<section>
+		<h1>il.cを読む</h1>
+		<div class="note">
+			<p>TCPの場合は、受信側がSeqを加算してAckに設定するが、
+			ILでは送信側がSeqを加算しているようにみえる。
+			Ackは最後に受信した相手側のSeqをそのまま送り返す？</p>
+		</div>
+		<section>
+			<h2>定数</h2>
+			<dl>
+			<div>
+				<dt>Nqt</dt>
+				<dd>8</dd>
+			</div>
+			<div>
+				<dt>IL_IPSIZE</dt>
+				<dd>IPヘッダのサイズ</dd>
+				<dd>20</dd>
+			</div>
+			<div>
+				<dt>IL_HDRSIZE</dt>
+				<dd>ILヘッダのサイズ; IP部分は含まない</dd>
+				<dd>18</dd>
+			</div>
+			<div>
+				<dt>IL_LISTEN</dt>
+				<dt>IL_CONNECT</dt>
+				<dd>ilstartに渡す引数</dd>
+			</div>
+			<div>
+				<dt>IP_ILPROTO</dt>
+				<dd>IPプロトコル番号</dd>
+				<dd>40</dd>
+			</div>
+			</dl>
+			<section>
+				<h3>パケットタイプ</h3>
+				<dl>
+				<div>
+					<dt>sync</dt>
+					<dt>data</dt>
+					<dt>dataquery</dt>
+					<dt>ack</dt>
+					<dt>query</dt>
+					<dt>state</dt>
+					<dt>close</dt>
+					<dd>xxx</dd>
+				</div>
+				</dl>
+			</section>
+			<section>
+				<h3>接続状態</h3>
+				<dl>
+				<div>
+					<dt>Closed</dt>
+					<dd>初期値または閉じた後</dd>
+				</div>
+				<div>
+					<dt>Syncer</dt>
+					<dd>ilconnect(argv, argc)したとき</dd>
+					<dd>connect側</dd>
+				</div>
+				<div>
+					<dt>Syncee</dt>
+					<dd>listen側</dd>
+					<dd>Listenを経てこれになる</dd>
+				</div>
+				<div>
+					<dt>Established</dt>
+					<dd>接続中</dd>
+				</div>
+				<div>
+					<dt>Listen</dt>
+					<dd>ilannounce()のとき</dd>
+				</div>
+				<div>
+					<dt>Closing</dt>
+					<dd>閉じる処理中</dd>
+				</div>
+				<div>
+					<dt>Opening</dt>
+					<dd>fileserverだけ?</dd>
+				</div>
+				</dl>
+			</section>
+		</section>
+		<section>
+			<h2>データ構造</h2>
+			<section>
+				<h3>Conv</h3>
+				<p>conversation = 会話, 対話。コネクションにつき1つ割り当て。</p>
+				<dl>
+				<div>
+					<dt>raddr</dt>
+					<dd>リモートアドレス(IP)</dd>
+				</div>
+				<div>
+					<dt>rport</dt>
+					<dd>リモートポート</dd>
+				</div>
+				<div>
+					<dt>laddr</dt>
+					<dd>ローカルアドレス(IP)</dd>
+				</div>
+				<div>
+					<dt>lport</dt>
+					<dd>ローカルポート</dd>
+				</div>
+				<div>
+					<dt>pctl</dt>
+					<dd>Ilcb, Udpcb, Tcp等が設定されるのでキャストして使う</dd>
+				</div>
+				<div>
+					<dt>p</dt>
+					<dd>Proto</dd>
+				</div>
+				<div>
+					<dt>rq</dt>
+					<dd>read queue</dd>
+				</div>
+				<div>
+					<dt>wq</dt>
+					<dd>write queue</dd>
+				</div>
+				<div>
+					<dt>eq</dt>
+					<dd>?</dd>
+				</div>
+				</dl>
+			</section>
+			<section>
+				<h3>Block</h3>
+				<p>データブロックのリスト。
+				データ本体はrpからwpの間に配置される。</p>
+				<dl>
+				<div>
+					<dt>rp</dt>
+					<dd>データの開始ポインタ</dd>
+				</div>
+				<div>
+					<dt>wp</dt>
+					<dd>データの末尾ポインタ</dd>
+					<dd>書いたらwpが増えて、それを読んだらrpが増える</dd>
+					<dd>wp += IL4_IPSIZE+IL_HDRSIZE</dd>
+				</div>
+				<div>
+					<dt>next</dt>
+					<dd>blocklenで使っているリスト用</dd>
+					<dd>次のデータブロック</dd>
+				</div>
+				<div>
+					<dt>link</dt>
+					<dd>outoforderとかunackedで使っているリスト用</dd>
+				</div>
+				</dl>
+			</section>
+			<section>
+				<h3>Ilcb</h3>
+				<p>コントロールブロック。
+				/net/il/$id/statusを読むと見れる。</p>
+				<dl>
+				<div>
+					<dt>state</dt>
+					<dd>ILコネクションの状態</dd>
+				</div>
+				<div>
+					<dt>conv</dt>
+					<dd>Convへの逆参照</dd>
+					<dd>c-&gt;pctl-&gt;conv == cが成り立つ</dd>
+				</div>
+				<div>
+					<dt>ackq</dt>
+					<dd>unacknowledge queue(ロック)</dd>
+				</div>
+				<div>
+					<dt>unacked</dt>
+					<dd>list of ref Block</dd>
+					<dd>まだackを受けていないブロックのリスト(早いものが先頭)</dd>
+				</div>
+				<div>
+					<dt>unackedtail</dt>
+					<dd>unackedの末尾; 追加するとき使っている</dd>
+				</div>
+				<div>
+					<dt>unackedbytes</dt>
+					<dd>unackedに残っているブロックの合計バイト数</dd>
+				</div>
+				<div>
+					<dt>outo</dt>
+					<dd>out of order acket queue(ロック)</dd>
+				</div>
+				<div>
+					<dt>outoforder</dt>
+					<dd>list of ref Block</dd>
+					<dd>iloutoforderで追加+ソートして、ilpullupで取得</dd>
+				</div>
+				<div>
+					<dt>next</dt>
+					<dd>次のデータメッセージで設定するID</dd>
+				</div>
+				<div>
+					<dt>recvd</dt>
+					<dd>受信した最後のリモート側ilid</dd>
+				</div>
+				<div>
+					<dt>acksent</dt>
+					<dd>確認のとれた最大ID(ローカル側)</dd>
+				</div>
+				<div>
+					<dt>start</dt>
+					<dd>idの初期値(ローカル側; ランダム)</dd>
+				</div>
+				<div>
+					<dt>rstart</dt>
+					<dd>idの初期値(リモート側; ランダム)</dd>
+				</div>
+				<div>
+					<dt>window</dt>
+					<dd>ilidはrecvd &lt; ilid &lt;= recvd+window</dd>
+				</div>
+				<div>
+					<dt>rxquery</dt>
+					<dt>rxtot</dt>
+					<dt>rexmit</dt>
+					<dd>タイムアウト用っぽい</dd>
+				</div>
+				<div>
+					<dt>qtx</dt>
+					<dd>ilnextqt()を呼び出す度に、1..Nqt(8)でループ</dd>
+				</div>
+				<div>
+					<dt>qt</dt>
+					<dd>ilnextqt()のときに、qt[qtx] = next-1</dd>
+					<dd>旧バージョンと互換のため、qt[0]は常にnext-1</dd>
+				</div>
+				<div>
+					<dt>fasttimeout</dt>
+					<dd>ilstartのとき、fasttimeoutが1ならこれも1</dd>
+				</div>
+				</dl>
+			</section>
+			<section>
+				<h3>Ilhdr</h3>
+				<p>実際に送るIP+ILヘッダ。</p>
+				<dl>
+				<div>
+					<dt>vihl</dt>
+					<dt>tos</dt>
+					<dt>length</dt>
+					<dt>id</dt>
+					<dt>frag</dt>
+					<dt>ttl</dt>
+					<dt>proto</dt>
+					<dt>cksum</dt>
+					<dt>src</dt>
+					<dt>dst</dt>
+					<dd>ここまでIPv4ヘッダ</dd>
+				</div>
+				<div>
+					<dt>ilsum</dt>
+					<dd>チェックサム</dd>
+				</div>
+				<div>
+					<dt>illen</dt>
+					<dd>パケット長(ILヘッダ+データ長)</dd>
+				</div>
+				<div>
+					<dt>iltype</dt>
+					<dd>ILパケットタイプ</dd>
+				</div>
+				<div>
+					<dt>ilspec</dt>
+					<dd>予約</dd>
+					<dd>実際は再送カウントのような扱い</dd>
+				</div>
+				<div>
+					<dt>ilsrc</dt>
+					<dd>送信元ポート番号</dd>
+				</div>
+				<div>
+					<dt>ildst</dt>
+					<dd>送信先ポート番号</dd>
+				</div>
+				<div>
+					<dt>ilid</dt>
+					<dd>シーケンス番号</dd>
+				</div>
+				<div>
+					<dt>ilack</dt>
+					<dd>ACK</dd>
+				</div>
+				</dl>
+			</section>
+			<section>
+				<h3>Ilpriv</h3>
+				<p>ILコネクション全体で共有するデータ。</p>
+				<dl>
+				<div>
+					<dt>ht</dt>
+					<dd>map of ref Conv</dd>
+					<dd>ハッシュテーブル</dd>
+				</div>
+				<div>
+					<dt>stats</dt>
+					<dd>array of oolong</dd>
+				</div>
+				<div>
+					<dt>csumerr</dt>
+					<dt>hlenerr</dt>
+					<dt>lenerr</dt>
+					<dd>各種エラー</dd>
+				</div>
+				<div>
+					<dt>order</dt>
+					<dt>rexmit</dt>
+					<dt>dup</dt>
+					<dt>dupb</dt>
+					<dd>このあたりもエラー？</dd>
+				</div>
+				<div>
+					<dt>ackprocstarted</dt>
+					<dd>ilstartでプロセスが起こっていれば1、まだなら0</dd>
+				</div>
+				<div>
+					<dt>apl</dt>
+					<dd>プロセス生成のときに使うロック</dd>
+				</div>
+				</dl>
+			</section>
+			<section>
+				<h3>Proto</h3>
+				<dl>
+				<div>
+					<dt>conv</dt>
+					<dd>array of conversations</dd>
+					<dd>いま発生しているコネクションの配列</dd>
+				</div>
+				<div>
+					<dt>nc</dt>
+					<dd>conv数?</dd>
+				</div>
+				<div>
+					<dt>ac</dt>
+					<dd>?</dd>
+				</div>
+				<div>
+					<dt>np</dt>
+					<dd>?</dd>
+				</div>
+				<div>
+					<dt>f</dt>
+					<dd>ilinit等で受けたFsポインタ</dd>
+				</div>
+				<div>
+					<dt>ipproto</dt>
+					<dd>IPプロトコル番号</dd>
+					<dd>ILの場合は40</dd>
+				</div>
+				<div>
+					<dt>priv</dt>
+					<dd>Ilpriv, Udppriv, Tcpprivといったデータ</dd>
+				</div>
+				</dl>
+			</section>
+			<section>
+				<h3>Fs</h3>
+				<p>9Pファイルサーバ構造体っぽい。</p>
+			</section>
+		</section>
+		<section>
+			<h2>関数</h2>
+			<section>
+				<h3>char *ilconnect(Conv *c, char **argv, int argc)</h3>
+				<p>argv, argcを使ってc-&gt;raddr, c-&gt;laddrを設定する。</p>
+				<p>ここで、argv[1]はリモートアドレスを文字列で持つ。
+				argv[1]に!fasttimeoutを含んでいれば、fastモードに切り替わる。
+				オプションでargv[2]にローカルアドレス。
+				argv[0]は使わない。</p>
+				<p>未開始ならilstartでプロセスを生成する。
+				アドレスの指定が間違っていればエラー文字列を返す。</p>
+			</section>
+			<section>
+				<h3>int ilinuse(Conv *c)</h3>
+				<p>cが使用中なら1を返す。
+				具体的には、接続状態がClosed以外。</p>
+			</section>
+			<section>
+				<h3>char *ilannounce(Conv *c, char **argv, int argc)</h3>
+				<p>ilconnectと同じように処理する。
+				ただし、!fasttimeoutは認識せず、
+				待ち受け状態(Syncee)になる。</p>
+			</section>
+			<section>
+				<h3>void illocalclose(Conv *c)</h3>
+				<p>ローカル側の接続を閉じる。
+				接続状態はClosedになり、laddrとlportもリセットされる。</p>
+			</section>
+			<section>
+				<h3>void ilclose(Conv *c)</h3>
+				<p>c-&gt;[rwe]qを閉じ、接続を閉じる。
+				cがEstablished, Syncee, Syncerなら状態をClosingに変えて、
+				closeコマンドを送る。また、Listenならillocalcloseする。</p>
+				<p>閉じるだけ、freeはしない。</p>
+			</section>
+			<section>
+				<h3>void ilkick(void *x, Block *bp)</h3>
+				<p>ilcreateで、wq = qbypass(ilkick, c)されるもの。
+				おそらくデータの送信に使われるのだろう。</p>
+				<p>xはConv*なので、それをもとにbpをdataメッセージに加工、
+				構築して投げる。と同時に、ack待ちリストにもコピーを追加。
+				ちなみに、これが呼ばれた時点で、bpにはデータしかない。
+				なのでpadblockで先頭にヘッダ分を確保して、
+				そこにILヘッダを組み立てている。</p>
+			</section>
+			<section>
+				<h3>void ilcreate(Conv *c)</h3>
+				<p>c-&gt;rq, c-&gt;wqの初期化。</p>
+			</section>
+			<section>
+				<h3>void ilackq(Ilcb *ic, Block *bp)</h3>
+				<p>bpをひとつの大きなブロックにコピーして、
+				ic-&gt;unackedの末尾に追加する。</p>
+			</section>
+			<section>
+				<h3>Block *copyblock(Block *bp, int count)</h3>
+				<p>ブロックのリスト(bp)を、
+				新しいブロックにcountバイトだけコピーして返す。</p>
+			</section>
+			<section>
+				<h3>void ilackto(Ilcb *ic, ulong ackto, Block *bp)</h3>
+				<p>unackedなリストから、
+				acktoまで(含む)のパケットを承認されたものとする。
+				結果的にunackedから消え、unackedbytesも減る。</p>
+			</section>
+			<section>
+				<h3>Conv *iphtlook(Ipht *ht, uchar *sa, ushort sp, uchar *da, ushort dp)</h3>
+				<p>送信元/送信先のIPアドレス+ポートでテーブルを検索。
+				一致の条件は、Listenの場合はいろいろ省略されたりする。</p>
+			</section>
+			<section>
+				<h3>void iliput(Proto *il, Ipifc*, Block *bp)</h3>
+				<p>パケットを受信したとき呼ばれる関数。</p>
+				<dl>
+				<div>
+					<dt>dp</dt>
+					<dd>bpの送信元ポート</dd>
+				</div>
+				<div>
+					<dt>sp</dt>
+					<dd>bpの送信先ポート</dd>
+				</div>
+				<div>
+					<dt>raddr</dt>
+					<dd>bpの送信元IPアドレス</dd>
+				</div>
+				<div>
+					<dt>laddr</dt>
+					<dd>bpの送信先IPアドレス</dd>
+				</div>
+				</dl>
+				<p>で、コネクションテーブルからこの条件で検索して、
+				見つかったものがListenな接続なら、
+				新しい接続(Conv)を作って対象をそれと置き換える。
+				元のListen接続はそのままで、新しいほうはSynceeとなる。
+				リモート側のシーケンス番号もここで設定。</p>
+				<p>最後にilprocess()を呼び出している。</p>
+			</section>
+			<section>
+				<h3>void ilprocess(Conv *s, Ilhdr *h, Block *bp)</h3>
+				<p>パケットを受信したときのメイン処理。
+				基本的にはbp-&gt;rp == sだが、Listenした場合は違う。</p>
+				<section>
+					<h4>Syncer(connect側)の場合</h4>
+					<p>syncメッセージを受信したならackを返してEstablishへ移行、
+					その後にilpullupする。</p>
+					<p>closeメッセージの場合はfreeblist。</p>
+				</section>
+				<section>
+					<h4>Syncee(listen側)の場合</h4>
+					<p>syncを受けてrecvdをそのidに設定、
+					syncメッセージをid=start, ack=recvdとして投げ返す。</p>
+					<p>ackを受信するとEstablishへ移行、ilpullupする。</p>
+					<p>dataを受信した場合もEstablishへ移行するが、
+					pullupしないでそのまま処理する。</p>
+				</section>
+				<section>
+					<h4>Establishの場合</h4>
+					<p>sendを受信したらすぐack(id=next, ack=rstart)。</p>
+					<p>dataの場合は、それに含まれるackまでを承認して、
+					受信したデータをoutoforderへ追加、ilpullupする。</p>
+					<p>dataqueryならdataと同じ処理をして、
+					最後にstate(id=next, ack=recvd)を投げる。</p>
+					<p>ackなら承認するだけ。</p>
+					<p>queryはdataqueryと似ているが、
+					こちらはデータが無いのでiloutoforderもilpullupもない。</p>
+					<p>stateを受信したら、ack承認した後、
+					ilrexmitとilsettimeoutしている。
+					なんだか普通にIlhdr.ilspecが使われているけど、
+					これはどういうことだろう。</p>
+					<p>closeを受ければそのままclose(id=next, ack=recvd)。
+					状態はClosingになる。</p>
+				</section>
+				<section>
+					<h4>Closingの場合</h4>
+					<p>closeメッセージ受信でclose(id=next, ack=recvd)を返信。
+					recvdはこのとき受信したidです。</p>
+				</section>
+			</section>
+			<section>
+				<h3>void ilrexmit(Ilcb *ic)</h3>
+				<p>unackedの先頭にあるメッセージをコピーして再送する。
+				このときの型はdataqueryで、ackは再送時のrecvdに変わるが、
+				idは最初に送ったものから変化しない。</p>
+				<p>それよりも送るデータのilspecを
+				ilnextqt(ic)の値に設定しているのが気になる。</p>
+			</section>
+			<section>
+				<h3>void ilhangup(Conv *s, char *msg)</h3>
+				<p>いろいろなものを終了している。illocalclose(s)とか。</p>
+			</section>
+			<section>
+				<h3>void ilpullup(Conv *s)</h3>
+				<p>Ilestablished以外なら何もしない。</p>
+				<p>正しい順番でs-&gt;outoforderなリストをs-&gt;rqへ渡す。
+				ここで、分割されたブロックならひとつにまとめる。</p>
+				<p>もし先にうしろのデータが届いたら、
+				貯めておいてあとからまとめて処理する。</p>
+			</section>
+			<section>
+				<h3>void iloutoforder(Conv *s, Ilhdr *h, Block *bp)</h3>
+				<p>s-&gt;outoforderへ(h+bp)を追加する。
+				このとき、ilid(シーケンス番号)順になるよう調整する。
+				同じIDが現れたときは後のものを優先っぽい？</p>
+			</section>
+			<section>
+				<h3>void ilsendctl(Conv *ipc, Ilhdr *inih, int type, ulong id, ulong ack, int ilspec)</h3>
+				<p>ipcのアドレスとポートをもとにBlockを作り、
+				それをipoput4に渡して送信する。
+				Blockの後ろ(Block.rpからwpの範囲)にはIlhdrが続く。
+				このIlhdrを構成するとき、type, id, ilspecが使われる。</p>
+				<p>または、inihがnilでなければ、上記の代わりにこれが使われる。</p>
+				<p>ipoput4に渡されるIlhdrは、
+				inihの送信元/送信先IP+ポートとは逆になる。</p>
+			</section>
+			<section>
+				<h3>Block *allocb(int size)</h3>
+				<p>sizeof(Block)+size+Hdrspcな領域を確保して返す。
+				rpとwpは多少ずれる可能性があるが、
+				基本的にBlockのうしろを指す。</p>
+			</section>
+			<section>
+				<h3>void ilackproc(void *x)</h3>
+				<p>ilstartで開始されるプロセスの中身。
+				主にいま残っているコネクションをみて、
+				それらのタイムアウトを処理している。</p>
+			</section>
+			<section>
+				<h3>char *ilstart(Conv *c, int type, int fasttimeout)</h3>
+				<p>まだなければilackprocを処理するプロセスを立てる。
+				プロトコルにつき1プロセス。</p>
+				<p>その後、typeフラグにより2通りに別れる。</p>
+				<section>
+					<h4>IL_LISTEN</h4>
+					<p>状態をListenにして、
+					c-&gt;p-&gt;priv(Ilpriv)のhtテーブルへcを登録。</p>
+				</section>
+				<section>
+					<h4>IL_CONNECT</h4>
+					<p>Syncer状態でIlpriv.htへcを登録し、
+					ilsendctl(ilsync)を呼び出す。
+					これによりsyncメッセージを投げる。</p>
+				</section>
+			</section>
+			<section>
+				<h3>void ilfreeq(Ilcb *ic)</h3>
+				<p>icから、unackedとoutoforderリストを解放する。
+				ic自体は残る。</p>
+			</section>
+			<section>
+				<h3>void iladvise(Proto *il, Block *bp, char *msg)</h3>
+				<p>il.convから送信元IP, 送信先IP, 送信元ポート番号が
+				bpと一致するものを調べて、それがIlsyncerならhangupさせる。
+				最後に、一致していてもしなくてもbpを解放。</p>
+			</section>
+			<section>
+				<h3>int ilnextqt(Ilcb *ic)</h3>
+				<p>icの、qtxとqtを設定。1..8でループ。</p>
+			</section>
+			<section>
+				<h3>void ilinit(Fs *f)</h3>
+				<p>connect, announce, rcv等の関数をfに設定して、
+				それをfにil用ルーチンとして登録。</p>
+			</section>
+		</section>
+	</section>
+</main>
+<aside>
+	<h1>関連情報</h1>
+	<ul>
+	<li><a href="/notes/2011/0704.html"><a>IL/IPv6対応</a></a></li>
+	<li><a href="/plan9/doc/guide/il.html"><a>ILプロトコル</a></a></li>
+	<li><a href="/plan9/doc/inst/il.html"><a>カーネルにilを組み込む</a></a></li>
+	</ul>
+</aside>
+<aside>
+	<h1>やっていること</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="http://web.me.com/lufia/alefcompiler/alef/">Alefコンパイラを読む</a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/notes/2011/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eorange/note: il.cを読む\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/index.html\"\u003eorange/note\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/pc.html\"\u003ePC関連\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/web.html\"\u003eweb製作\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/sec.html\"\u003eセキュリティ\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/hobby.html\"\u003e本・ゲーム\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/notes/junk.html\"\u003eジャンク\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003cp class=\"revision\"\u003e2011年6月18日作成\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch1\u003eil.cを読む\u003c/h1\u003e\n\t\t\u003cdiv class=\"note\"\u003e\n\t\t\t\u003cp\u003eTCPの場合は、受信側がSeqを加算してAckに設定するが、\n\t\t\tILでは送信側がSeqを加算しているようにみえる。\n\t\t\tAckは最後に受信した相手側のSeqをそのまま送り返す？\u003c/p\u003e\n\t\t\u003c/div\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e定数\u003c/h2\u003e\n\t\t\t\u003cdl\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eNqt\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003e8\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eIL_IPSIZE\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eIPヘッダのサイズ\u003c/dd\u003e\n\t\t\t\t\u003cdd\u003e20\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eIL_HDRSIZE\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eILヘッダのサイズ; IP部分は含まない\u003c/dd\u003e\n\t\t\t\t\u003cdd\u003e18\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eIL_LISTEN\u003c/dt\u003e\n\t\t\t\t\u003cdt\u003eIL_CONNECT\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eilstartに渡す引数\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003cdiv\u003e\n\t\t\t\t\u003cdt\u003eIP_ILPROTO\u003c/dt\u003e\n\t\t\t\t\u003cdd\u003eIPプロトコル番号\u003c/dd\u003e\n\t\t\t\t\u003cdd\u003e40\u003c/dd\u003e\n\t\t\t\u003c/div\u003e\n\t\t\t\u003c/dl\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eパケットタイプ\u003c/h3\u003e\n\t\t\t\t\u003cdl\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003esync\u003c/dt\u003e\n\t\t\t\t\t\u003cdt\u003edata\u003c/dt\u003e\n\t\t\t\t\t\u003cdt\u003edataquery\u003c/dt\u003e\n\t\t\t\t\t\u003cdt\u003eack\u003c/dt\u003e\n\t\t\t\t\t\u003cdt\u003equery\u003c/dt\u003e\n\t\t\t\t\t\u003cdt\u003estate\u003c/dt\u003e\n\t\t\t\t\t\u003cdt\u003eclose\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003exxx\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003c/dl\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003e接続状態\u003c/h3\u003e\n\t\t\t\t\u003cdl\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eClosed\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e初期値または閉じた後\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eSyncer\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eilconnect(argv, argc)したとき\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003econnect側\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eSyncee\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003elisten側\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003eListenを経てこれになる\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eEstablished\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e接続中\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eListen\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eilannounce()のとき\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eClosing\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e閉じる処理中\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eOpening\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003efileserverだけ?\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003c/dl\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003eデータ構造\u003c/h2\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eConv\u003c/h3\u003e\n\t\t\t\t\u003cp\u003econversation = 会話, 対話。コネクションにつき1つ割り当て。\u003c/p\u003e\n\t\t\t\t\u003cdl\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eraddr\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eリモートアドレス(IP)\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003erport\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eリモートポート\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eladdr\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eローカルアドレス(IP)\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003elport\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eローカルポート\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003epctl\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eIlcb, Udpcb, Tcp等が設定されるのでキャストして使う\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003ep\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eProto\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003erq\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eread queue\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003ewq\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003ewrite queue\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eeq\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e?\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003c/dl\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eBlock\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eデータブロックのリスト。\n\t\t\t\tデータ本体はrpからwpの間に配置される。\u003c/p\u003e\n\t\t\t\t\u003cdl\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003erp\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eデータの開始ポインタ\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003ewp\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eデータの末尾ポインタ\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003e書いたらwpが増えて、それを読んだらrpが増える\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003ewp += IL4_IPSIZE+IL_HDRSIZE\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003enext\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eblocklenで使っているリスト用\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003e次のデータブロック\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003elink\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eoutoforderとかunackedで使っているリスト用\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003c/dl\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eIlcb\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eコントロールブロック。\n\t\t\t\t/net/il/$id/statusを読むと見れる。\u003c/p\u003e\n\t\t\t\t\u003cdl\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003estate\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eILコネクションの状態\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003econv\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eConvへの逆参照\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003ec-\u0026gt;pctl-\u0026gt;conv == cが成り立つ\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eackq\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eunacknowledge queue(ロック)\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eunacked\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003elist of ref Block\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003eまだackを受けていないブロックのリスト(早いものが先頭)\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eunackedtail\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eunackedの末尾; 追加するとき使っている\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eunackedbytes\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eunackedに残っているブロックの合計バイト数\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eouto\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eout of order acket queue(ロック)\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eoutoforder\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003elist of ref Block\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003eiloutoforderで追加+ソートして、ilpullupで取得\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003enext\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e次のデータメッセージで設定するID\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003erecvd\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e受信した最後のリモート側ilid\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eacksent\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e確認のとれた最大ID(ローカル側)\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003estart\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eidの初期値(ローカル側; ランダム)\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003erstart\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eidの初期値(リモート側; ランダム)\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003ewindow\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eilidはrecvd \u0026lt; ilid \u0026lt;= recvd+window\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003erxquery\u003c/dt\u003e\n\t\t\t\t\t\u003cdt\u003erxtot\u003c/dt\u003e\n\t\t\t\t\t\u003cdt\u003erexmit\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eタイムアウト用っぽい\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eqtx\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eilnextqt()を呼び出す度に、1..Nqt(8)でループ\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eqt\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eilnextqt()のときに、qt[qtx] = next-1\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003e旧バージョンと互換のため、qt[0]は常にnext-1\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003efasttimeout\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eilstartのとき、fasttimeoutが1ならこれも1\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003c/dl\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eIlhdr\u003c/h3\u003e\n\t\t\t\t\u003cp\u003e実際に送るIP+ILヘッダ。\u003c/p\u003e\n\t\t\t\t\u003cdl\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003evihl\u003c/dt\u003e\n\t\t\t\t\t\u003cdt\u003etos\u003c/dt\u003e\n\t\t\t\t\t\u003cdt\u003elength\u003c/dt\u003e\n\t\t\t\t\t\u003cdt\u003eid\u003c/dt\u003e\n\t\t\t\t\t\u003cdt\u003efrag\u003c/dt\u003e\n\t\t\t\t\t\u003cdt\u003ettl\u003c/dt\u003e\n\t\t\t\t\t\u003cdt\u003eproto\u003c/dt\u003e\n\t\t\t\t\t\u003cdt\u003ecksum\u003c/dt\u003e\n\t\t\t\t\t\u003cdt\u003esrc\u003c/dt\u003e\n\t\t\t\t\t\u003cdt\u003edst\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eここまでIPv4ヘッダ\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eilsum\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eチェックサム\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eillen\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eパケット長(ILヘッダ+データ長)\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eiltype\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eILパケットタイプ\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eilspec\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e予約\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003e実際は再送カウントのような扱い\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eilsrc\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e送信元ポート番号\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eildst\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e送信先ポート番号\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eilid\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eシーケンス番号\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eilack\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eACK\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003c/dl\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eIlpriv\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eILコネクション全体で共有するデータ。\u003c/p\u003e\n\t\t\t\t\u003cdl\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eht\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003emap of ref Conv\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003eハッシュテーブル\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003estats\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003earray of oolong\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003ecsumerr\u003c/dt\u003e\n\t\t\t\t\t\u003cdt\u003ehlenerr\u003c/dt\u003e\n\t\t\t\t\t\u003cdt\u003elenerr\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e各種エラー\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eorder\u003c/dt\u003e\n\t\t\t\t\t\u003cdt\u003erexmit\u003c/dt\u003e\n\t\t\t\t\t\u003cdt\u003edup\u003c/dt\u003e\n\t\t\t\t\t\u003cdt\u003edupb\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eこのあたりもエラー？\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eackprocstarted\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eilstartでプロセスが起こっていれば1、まだなら0\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eapl\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eプロセス生成のときに使うロック\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003c/dl\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eProto\u003c/h3\u003e\n\t\t\t\t\u003cdl\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003econv\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003earray of conversations\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003eいま発生しているコネクションの配列\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003enc\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003econv数?\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eac\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e?\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003enp\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003e?\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003ef\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eilinit等で受けたFsポインタ\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eipproto\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eIPプロトコル番号\u003c/dd\u003e\n\t\t\t\t\t\u003cdd\u003eILの場合は40\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003epriv\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003eIlpriv, Udppriv, Tcpprivといったデータ\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003c/dl\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eFs\u003c/h3\u003e\n\t\t\t\t\u003cp\u003e9Pファイルサーバ構造体っぽい。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch2\u003e関数\u003c/h2\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003echar *ilconnect(Conv *c, char **argv, int argc)\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eargv, argcを使ってc-\u0026gt;raddr, c-\u0026gt;laddrを設定する。\u003c/p\u003e\n\t\t\t\t\u003cp\u003eここで、argv[1]はリモートアドレスを文字列で持つ。\n\t\t\t\targv[1]に!fasttimeoutを含んでいれば、fastモードに切り替わる。\n\t\t\t\tオプションでargv[2]にローカルアドレス。\n\t\t\t\targv[0]は使わない。\u003c/p\u003e\n\t\t\t\t\u003cp\u003e未開始ならilstartでプロセスを生成する。\n\t\t\t\tアドレスの指定が間違っていればエラー文字列を返す。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eint ilinuse(Conv *c)\u003c/h3\u003e\n\t\t\t\t\u003cp\u003ecが使用中なら1を返す。\n\t\t\t\t具体的には、接続状態がClosed以外。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003echar *ilannounce(Conv *c, char **argv, int argc)\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eilconnectと同じように処理する。\n\t\t\t\tただし、!fasttimeoutは認識せず、\n\t\t\t\t待ち受け状態(Syncee)になる。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003evoid illocalclose(Conv *c)\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eローカル側の接続を閉じる。\n\t\t\t\t接続状態はClosedになり、laddrとlportもリセットされる。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003evoid ilclose(Conv *c)\u003c/h3\u003e\n\t\t\t\t\u003cp\u003ec-\u0026gt;[rwe]qを閉じ、接続を閉じる。\n\t\t\t\tcがEstablished, Syncee, Syncerなら状態をClosingに変えて、\n\t\t\t\tcloseコマンドを送る。また、Listenならillocalcloseする。\u003c/p\u003e\n\t\t\t\t\u003cp\u003e閉じるだけ、freeはしない。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003evoid ilkick(void *x, Block *bp)\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eilcreateで、wq = qbypass(ilkick, c)されるもの。\n\t\t\t\tおそらくデータの送信に使われるのだろう。\u003c/p\u003e\n\t\t\t\t\u003cp\u003exはConv*なので、それをもとにbpをdataメッセージに加工、\n\t\t\t\t構築して投げる。と同時に、ack待ちリストにもコピーを追加。\n\t\t\t\tちなみに、これが呼ばれた時点で、bpにはデータしかない。\n\t\t\t\tなのでpadblockで先頭にヘッダ分を確保して、\n\t\t\t\tそこにILヘッダを組み立てている。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003evoid ilcreate(Conv *c)\u003c/h3\u003e\n\t\t\t\t\u003cp\u003ec-\u0026gt;rq, c-\u0026gt;wqの初期化。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003evoid ilackq(Ilcb *ic, Block *bp)\u003c/h3\u003e\n\t\t\t\t\u003cp\u003ebpをひとつの大きなブロックにコピーして、\n\t\t\t\tic-\u0026gt;unackedの末尾に追加する。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eBlock *copyblock(Block *bp, int count)\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eブロックのリスト(bp)を、\n\t\t\t\t新しいブロックにcountバイトだけコピーして返す。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003evoid ilackto(Ilcb *ic, ulong ackto, Block *bp)\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eunackedなリストから、\n\t\t\t\tacktoまで(含む)のパケットを承認されたものとする。\n\t\t\t\t結果的にunackedから消え、unackedbytesも減る。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eConv *iphtlook(Ipht *ht, uchar *sa, ushort sp, uchar *da, ushort dp)\u003c/h3\u003e\n\t\t\t\t\u003cp\u003e送信元/送信先のIPアドレス+ポートでテーブルを検索。\n\t\t\t\t一致の条件は、Listenの場合はいろいろ省略されたりする。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003evoid iliput(Proto *il, Ipifc*, Block *bp)\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eパケットを受信したとき呼ばれる関数。\u003c/p\u003e\n\t\t\t\t\u003cdl\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003edp\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003ebpの送信元ポート\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003esp\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003ebpの送信先ポート\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eraddr\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003ebpの送信元IPアドレス\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003cdiv\u003e\n\t\t\t\t\t\u003cdt\u003eladdr\u003c/dt\u003e\n\t\t\t\t\t\u003cdd\u003ebpの送信先IPアドレス\u003c/dd\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\t\u003c/dl\u003e\n\t\t\t\t\u003cp\u003eで、コネクションテーブルからこの条件で検索して、\n\t\t\t\t見つかったものがListenな接続なら、\n\t\t\t\t新しい接続(Conv)を作って対象をそれと置き換える。\n\t\t\t\t元のListen接続はそのままで、新しいほうはSynceeとなる。\n\t\t\t\tリモート側のシーケンス番号もここで設定。\u003c/p\u003e\n\t\t\t\t\u003cp\u003e最後にilprocess()を呼び出している。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003evoid ilprocess(Conv *s, Ilhdr *h, Block *bp)\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eパケットを受信したときのメイン処理。\n\t\t\t\t基本的にはbp-\u0026gt;rp == sだが、Listenした場合は違う。\u003c/p\u003e\n\t\t\t\t\u003csection\u003e\n\t\t\t\t\t\u003ch4\u003eSyncer(connect側)の場合\u003c/h4\u003e\n\t\t\t\t\t\u003cp\u003esyncメッセージを受信したならackを返してEstablishへ移行、\n\t\t\t\t\tその後にilpullupする。\u003c/p\u003e\n\t\t\t\t\t\u003cp\u003ecloseメッセージの場合はfreeblist。\u003c/p\u003e\n\t\t\t\t\u003c/section\u003e\n\t\t\t\t\u003csection\u003e\n\t\t\t\t\t\u003ch4\u003eSyncee(listen側)の場合\u003c/h4\u003e\n\t\t\t\t\t\u003cp\u003esyncを受けてrecvdをそのidに設定、\n\t\t\t\t\tsyncメッセージをid=start, ack=recvdとして投げ返す。\u003c/p\u003e\n\t\t\t\t\t\u003cp\u003eackを受信するとEstablishへ移行、ilpullupする。\u003c/p\u003e\n\t\t\t\t\t\u003cp\u003edataを受信した場合もEstablishへ移行するが、\n\t\t\t\t\tpullupしないでそのまま処理する。\u003c/p\u003e\n\t\t\t\t\u003c/section\u003e\n\t\t\t\t\u003csection\u003e\n\t\t\t\t\t\u003ch4\u003eEstablishの場合\u003c/h4\u003e\n\t\t\t\t\t\u003cp\u003esendを受信したらすぐack(id=next, ack=rstart)。\u003c/p\u003e\n\t\t\t\t\t\u003cp\u003edataの場合は、それに含まれるackまでを承認して、\n\t\t\t\t\t受信したデータをoutoforderへ追加、ilpullupする。\u003c/p\u003e\n\t\t\t\t\t\u003cp\u003edataqueryならdataと同じ処理をして、\n\t\t\t\t\t最後にstate(id=next, ack=recvd)を投げる。\u003c/p\u003e\n\t\t\t\t\t\u003cp\u003eackなら承認するだけ。\u003c/p\u003e\n\t\t\t\t\t\u003cp\u003equeryはdataqueryと似ているが、\n\t\t\t\t\tこちらはデータが無いのでiloutoforderもilpullupもない。\u003c/p\u003e\n\t\t\t\t\t\u003cp\u003estateを受信したら、ack承認した後、\n\t\t\t\t\tilrexmitとilsettimeoutしている。\n\t\t\t\t\tなんだか普通にIlhdr.ilspecが使われているけど、\n\t\t\t\t\tこれはどういうことだろう。\u003c/p\u003e\n\t\t\t\t\t\u003cp\u003ecloseを受ければそのままclose(id=next, ack=recvd)。\n\t\t\t\t\t状態はClosingになる。\u003c/p\u003e\n\t\t\t\t\u003c/section\u003e\n\t\t\t\t\u003csection\u003e\n\t\t\t\t\t\u003ch4\u003eClosingの場合\u003c/h4\u003e\n\t\t\t\t\t\u003cp\u003ecloseメッセージ受信でclose(id=next, ack=recvd)を返信。\n\t\t\t\t\trecvdはこのとき受信したidです。\u003c/p\u003e\n\t\t\t\t\u003c/section\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003evoid ilrexmit(Ilcb *ic)\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eunackedの先頭にあるメッセージをコピーして再送する。\n\t\t\t\tこのときの型はdataqueryで、ackは再送時のrecvdに変わるが、\n\t\t\t\tidは最初に送ったものから変化しない。\u003c/p\u003e\n\t\t\t\t\u003cp\u003eそれよりも送るデータのilspecを\n\t\t\t\tilnextqt(ic)の値に設定しているのが気になる。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003evoid ilhangup(Conv *s, char *msg)\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eいろいろなものを終了している。illocalclose(s)とか。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003evoid ilpullup(Conv *s)\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eIlestablished以外なら何もしない。\u003c/p\u003e\n\t\t\t\t\u003cp\u003e正しい順番でs-\u0026gt;outoforderなリストをs-\u0026gt;rqへ渡す。\n\t\t\t\tここで、分割されたブロックならひとつにまとめる。\u003c/p\u003e\n\t\t\t\t\u003cp\u003eもし先にうしろのデータが届いたら、\n\t\t\t\t貯めておいてあとからまとめて処理する。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003evoid iloutoforder(Conv *s, Ilhdr *h, Block *bp)\u003c/h3\u003e\n\t\t\t\t\u003cp\u003es-\u0026gt;outoforderへ(h+bp)を追加する。\n\t\t\t\tこのとき、ilid(シーケンス番号)順になるよう調整する。\n\t\t\t\t同じIDが現れたときは後のものを優先っぽい？\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003evoid ilsendctl(Conv *ipc, Ilhdr *inih, int type, ulong id, ulong ack, int ilspec)\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eipcのアドレスとポートをもとにBlockを作り、\n\t\t\t\tそれをipoput4に渡して送信する。\n\t\t\t\tBlockの後ろ(Block.rpからwpの範囲)にはIlhdrが続く。\n\t\t\t\tこのIlhdrを構成するとき、type, id, ilspecが使われる。\u003c/p\u003e\n\t\t\t\t\u003cp\u003eまたは、inihがnilでなければ、上記の代わりにこれが使われる。\u003c/p\u003e\n\t\t\t\t\u003cp\u003eipoput4に渡されるIlhdrは、\n\t\t\t\tinihの送信元/送信先IP+ポートとは逆になる。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eBlock *allocb(int size)\u003c/h3\u003e\n\t\t\t\t\u003cp\u003esizeof(Block)+size+Hdrspcな領域を確保して返す。\n\t\t\t\trpとwpは多少ずれる可能性があるが、\n\t\t\t\t基本的にBlockのうしろを指す。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003evoid ilackproc(void *x)\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eilstartで開始されるプロセスの中身。\n\t\t\t\t主にいま残っているコネクションをみて、\n\t\t\t\tそれらのタイムアウトを処理している。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003echar *ilstart(Conv *c, int type, int fasttimeout)\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eまだなければilackprocを処理するプロセスを立てる。\n\t\t\t\tプロトコルにつき1プロセス。\u003c/p\u003e\n\t\t\t\t\u003cp\u003eその後、typeフラグにより2通りに別れる。\u003c/p\u003e\n\t\t\t\t\u003csection\u003e\n\t\t\t\t\t\u003ch4\u003eIL_LISTEN\u003c/h4\u003e\n\t\t\t\t\t\u003cp\u003e状態をListenにして、\n\t\t\t\t\tc-\u0026gt;p-\u0026gt;priv(Ilpriv)のhtテーブルへcを登録。\u003c/p\u003e\n\t\t\t\t\u003c/section\u003e\n\t\t\t\t\u003csection\u003e\n\t\t\t\t\t\u003ch4\u003eIL_CONNECT\u003c/h4\u003e\n\t\t\t\t\t\u003cp\u003eSyncer状態でIlpriv.htへcを登録し、\n\t\t\t\t\tilsendctl(ilsync)を呼び出す。\n\t\t\t\t\tこれによりsyncメッセージを投げる。\u003c/p\u003e\n\t\t\t\t\u003c/section\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003evoid ilfreeq(Ilcb *ic)\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eicから、unackedとoutoforderリストを解放する。\n\t\t\t\tic自体は残る。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003evoid iladvise(Proto *il, Block *bp, char *msg)\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eil.convから送信元IP, 送信先IP, 送信元ポート番号が\n\t\t\t\tbpと一致するものを調べて、それがIlsyncerならhangupさせる。\n\t\t\t\t最後に、一致していてもしなくてもbpを解放。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003eint ilnextqt(Ilcb *ic)\u003c/h3\u003e\n\t\t\t\t\u003cp\u003eicの、qtxとqtを設定。1..8でループ。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch3\u003evoid ilinit(Fs *f)\u003c/h3\u003e\n\t\t\t\t\u003cp\u003econnect, announce, rcv等の関数をfに設定して、\n\t\t\t\tそれをfにil用ルーチンとして登録。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003e関連情報\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"0704.html\"\u003eIL/IPv6対応\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"../../plan9/doc/guide/il.html\"\u003eILプロトコル\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"../../plan9/doc/inst/il.html\"\u003eカーネルにilを組み込む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003caside\u003e\n\t\u003ch1\u003eやっていること\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"http://web.me.com/lufia/alefcompiler/alef/\"\u003eAlefコンパイラを読む\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["notes","2011","0618"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

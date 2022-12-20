@@ -1,0 +1,229 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>Plan 9: ファイルサーバの管理</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="/plan9/doc/inst/index.html"><a>インストール</a></a></li>
+	<li><a href="/plan9/doc/guide/index.html"><a>システムの使い方</a></a></li>
+	<li><a href="/plan9/doc/devel/index.html"><a>プログラミング</a></a></li>
+	<li><a href="/plan9/doc/adm/index.html"><a>システム管理</a></a></li>
+	<li><a href="/plan9/man/index.html"><a>自作ツール集</a></a></li>
+	</ul>
+</nav>
+<main>
+	<h1>ファイルサーバの管理</h1>
+	<p class="revision">2010年11月12日更新</p>
+	<p>調べながら書いてます。
+	未整理のものは<a href="/notes/fs.html"><a>日記のほう</a></a>にもありますよ。</p>
+	<section>
+		<h2>filesコマンド</h2>
+		<pre><code>N out of M files used
+  A:     B
+O out of M files used</code></pre>
+		<dl>
+		<div>
+			<dt>N</dt>
+			<dd>開いているファイル数</dd>
+		</div>
+		<div>
+			<dt>M</dt>
+			<dd>conf.nfile</dd>
+		</div>
+		<div>
+			<dt>A</dt>
+			<dd>コネクションのチャネルナンバー</dd>
+			<dd>whoのものと同じ</dd>
+		</div>
+		<div>
+			<dt>B</dt>
+			<dd>Aが開いているファイル数</dd>
+		</div>
+		<div>
+			<dt>O</dt>
+			<dd>Bの合計</dd>
+		</div>
+		</dl>
+	</section>
+	<section>
+		<h2>checkコマンド</h2>
+		<dl>
+		<div>
+			<dt>nfiles</dt>
+			<dd>総ファイル数</dd>
+		</div>
+		<div>
+			<dt>fsize</dt>
+			<dd>sb-&gt;fsize</dd>
+		</div>
+		<div>
+			<dt>nused</dt>
+			<dd>有効ブロック総数</dd>
+		</div>
+		<div>
+			<dt>ndup</dt>
+			<dd>重複したブロック数(amark)..有効ブロック</dd>
+		</div>
+		<div>
+			<dt>nfree</dt>
+			<dd>フリーリスト中の総ブロック数</dd>
+		</div>
+		<div>
+			<dt>tfree</dt>
+			<dd>たぶん、排他ロックなファイルを開いている数</dd>
+		</div>
+		<div>
+			<dt>nfdup</dt>
+			<dd>重複したブロック数(fmark)..フリーリスト</dd>
+		</div>
+		<div>
+			<dt>nmiss</dt>
+			<dd>fsize-fstart-nused-nfree</dd>
+		</div>
+		<div>
+			<dt>nbad</dt>
+			<dd>fstart..fsizeに収まらないブロックアドレス数</dd>
+		</div>
+		<div>
+			<dt>nqbad</dt>
+			<dd>0..sizqbitsに収まらないqid.pathの数</dd>
+		</div>
+		<div>
+			<dt>maxq</dt>
+			<dd>最大のqid.path</dd>
+		</div>
+		</dl>
+	</section>
+	<section>
+		<h2>statw</h2>
+		<pre><code>cwstats main
+	filesys main
+	nio   =      1      1      2
+		maddr  =        3
+		msize  =   267049
+		caddr  =    26708
+		csize  = 17892283
+		sbaddr =   423710
+		craddr =   423938   423938
+		roaddr =   423941   423941
+		fsize  =   423943   423943  0+ 1%
+		slast  =            423409
+		snext  =            423942
+		wmax   =   423941           0+ 1%
+		wsize  = 30524356           1+ 0%
+		17804952 none
+		    60 dirty
+		     0 dump
+		 86888 read
+		   383 write
+		     0 dump1
+		cache  1% full</code></pre>
+	</section>
+	<section>
+		<h2>statd</h2>
+		<pre><code>	0.0 work =      1      1      1 xfrs
+	    rate =   7334   9050   8725 tBps
+	1.14 work =      0      0      0 xfrs
+	    rate =      0      0     88 tBps
+	1.15 work =      0      0      0 xfrs
+	    rate =      0      0     48 tBps</code></pre>
+	</section>
+	<section>
+		<h2>コンソールのログを取る方法</h2>
+		<p>9fansより。</p>
+		<blockquote>You have to set up console logging yourself on a cpu server, like this:</blockquote>
+		<pre><code class="sh">aux/clog /mnt/consoles/fileserver /sys/log/fileserver &amp;</code></pre>
+		<blockquote>where &quot;fileserver&quot; is the name of your file server.
+		This assumes you&#x27;ve already got <a href="https://9p.io/magic/man2html/4/consolefs">consolefs(4)</a>configured,
+		running and mounted, and that
+		you&#x27;ve got the file server&#x27;s serial console configured
+		and wired up to a serial port on the cpu server doing the logging.
+		Add this to your file server&#x27;s plan9.ini:</blockquote>
+		<pre><code class="ini">console=0 baud=9600</code></pre>
+		<blockquote>It&#x27;s a bit of work to set up, but very handy.
+		Not only do you get a console log,
+		but you can access the console from any of your Plan 9 machines with:</blockquote>
+		<pre><code class="sh">C fileserver</code></pre>
+		<section>
+			<h3>ファイルサーバ側の設定</h3>
+			<p>ファイルサーバの<strong>plan9.ini</strong>に、consoleの設定を追加します。
+			このconsoleは0または1を設定でき、ポート0またはポート1から
+			データを流す、という意味になります。
+			baudはデフォルトで9600なので省略してもいいです。</p>
+			<pre><code class="ini">console=0</code></pre>
+			<p>ログの受け皿も用意しておきます。</p>
+			<pre><code class="console">fs: create /sys/log/fileserver sys sys 666 a</code></pre>
+		</section>
+		<section>
+			<h3>ログを受け取る側の設定</h3>
+			<p>まず、<strong>/lib/ndb/consoledb</strong>を編集します。</p>
+			<pre><code class="ini"># see consolefs(4)
+group=sys
+	uid=bootes
+console=fileserver dev=/dev/eia0 openondemand=1
+	gid=sys</code></pre>
+			<p>次に<strong>/cfg/$sysname/namespace</strong>。
+			シリアルポートを<strong>/dev</strong>にbindします。
+			このファイルはシェルスクリプトのように見えますが、
+			限られたコマンドしか受け付けません。
+			詳細は<a href="https://9p.io/magic/man2html/6/namespace">namespace(6)</a>。</p>
+			<pre><code class="sh">bind -a #t /dev</code></pre>
+			<p>最後に、/cfg/$sysname/cpustartあたりに以下を追加。</p>
+			<pre><code class="sh">aux/consolefs
+aux/clog /mnt/consoles/fileserver /sys/log/fileserver &amp;</code></pre>
+		</section>
+		<section>
+			<h3>トラブルシューティング</h3>
+			<section>
+				<h4>/dev/eia0等が無い</h4>
+				<p>カーネルデバイス#tから見えますので、
+				<strong>/cfg/$sysname/namespace</strong>あたりからbindします。</p>
+			</section>
+			<section>
+				<h4>/cfg/$sysname/namespaceが実行されない</h4>
+				<p><strong>/cfg/$sysname/namespace</strong>にbindを書いているのに
+				<strong>/dev/eia0</strong>が見つからない場合。
+				環境変数sysnameが設定されていないかもしれません。</p>
+				<p>受信側のplan9.iniに、sysnameを追加します。</p>
+				<pre><code class="ini">sysname=wisp</code></pre>
+				<p>または、consolefsを実行する直前にbindするとか。</p>
+				<div class="note">
+					<p>おそらく、namespaceの後にcpurcとなるので、
+					<strong>/lib/namespace</strong>の最後にある$sysnameを使った行は
+					<strong>plan9.ini</strong>で設定しない限り実行されないのでしょう。。
+					手で設定したものとndb/csの結果が
+					違ったらどうするのだろうというのは置いておいて。</p>
+					<p>と思ってたら、起動順について<a href="http://9fans.net/archive/2010/09/346">9fansで話題に上がりました</a>。</p>
+					<ol>
+					<li>init</li>
+					<li>newns</li>
+					<li>/lib/namespace</li>
+					<li>/cfg/$sysname/namespace(あれば)</li>
+					<li>/rc/bin/cpurc</li>
+					</ol>
+					<p>ここで、$sysnameは設定されていないので読みません。
+					では何のためにあるのかというと、ブート後、
+					名前空間を変更する場合に使うらしいです。
+					auth/noneとか、listen(8)の<strong>/rc/bin/service</strong>とか。
+					service.authのほうは、呼び出し元と同じ名前空間みたい。</p>
+				</div>
+			</section>
+			<section>
+				<h4>データを受信しない</h4>
+				<p>デバッグなどのため、ふつうのユーザで動かしている場合は、
+				bootesで試してみてください。
+				bootes以外ではなぜかうまくいかなかった記憶がやんわりと。</p>
+			</section>
+		</section>
+	</section>
+</main>
+<aside>
+	<h1>関連情報</h1>
+	<ul>
+	<li><a href="https://9p.io/magic/man2html/8/fs">fs(8)</a></li>
+	<li><a href="/plan9/doc/adm/listen.html"><a>listenについて</a></a></li>
+	</ul>
+</aside>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/plan9/doc/adm/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003ePlan 9: ファイルサーバの管理\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/inst/index.html\"\u003eインストール\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/guide/index.html\"\u003eシステムの使い方\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/devel/index.html\"\u003eプログラミング\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/adm/index.html\"\u003eシステム管理\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/man/index.html\"\u003e自作ツール集\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003ch1\u003eファイルサーバの管理\u003c/h1\u003e\n\t\u003cp class=\"revision\"\u003e2010年11月12日更新\u003c/p\u003e\n\t\u003cp\u003e調べながら書いてます。\n\t未整理のものは\u003ca href=\"/notes/fs.html\"\u003e日記のほう\u003c/a\u003eにもありますよ。\u003c/p\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003efilesコマンド\u003c/h2\u003e\n\t\t\u003cpre\u003e\u003ccode\u003eN out of M files used\n  A:     B\nO out of M files used\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003cdl\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003eN\u003c/dt\u003e\n\t\t\t\u003cdd\u003e開いているファイル数\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003eM\u003c/dt\u003e\n\t\t\t\u003cdd\u003econf.nfile\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003eA\u003c/dt\u003e\n\t\t\t\u003cdd\u003eコネクションのチャネルナンバー\u003c/dd\u003e\n\t\t\t\u003cdd\u003ewhoのものと同じ\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003eB\u003c/dt\u003e\n\t\t\t\u003cdd\u003eAが開いているファイル数\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003eO\u003c/dt\u003e\n\t\t\t\u003cdd\u003eBの合計\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003c/dl\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003echeckコマンド\u003c/h2\u003e\n\t\t\u003cdl\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003enfiles\u003c/dt\u003e\n\t\t\t\u003cdd\u003e総ファイル数\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003efsize\u003c/dt\u003e\n\t\t\t\u003cdd\u003esb-\u0026gt;fsize\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003enused\u003c/dt\u003e\n\t\t\t\u003cdd\u003e有効ブロック総数\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003endup\u003c/dt\u003e\n\t\t\t\u003cdd\u003e重複したブロック数(amark)..有効ブロック\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003enfree\u003c/dt\u003e\n\t\t\t\u003cdd\u003eフリーリスト中の総ブロック数\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003etfree\u003c/dt\u003e\n\t\t\t\u003cdd\u003eたぶん、排他ロックなファイルを開いている数\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003enfdup\u003c/dt\u003e\n\t\t\t\u003cdd\u003e重複したブロック数(fmark)..フリーリスト\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003enmiss\u003c/dt\u003e\n\t\t\t\u003cdd\u003efsize-fstart-nused-nfree\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003enbad\u003c/dt\u003e\n\t\t\t\u003cdd\u003efstart..fsizeに収まらないブロックアドレス数\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003enqbad\u003c/dt\u003e\n\t\t\t\u003cdd\u003e0..sizqbitsに収まらないqid.pathの数\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003emaxq\u003c/dt\u003e\n\t\t\t\u003cdd\u003e最大のqid.path\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003c/dl\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003estatw\u003c/h2\u003e\n\t\t\u003cpre\u003e\u003ccode\u003ecwstats main\n\tfilesys main\n\tnio   =      1      1      2\n\t\tmaddr  =        3\n\t\tmsize  =   267049\n\t\tcaddr  =    26708\n\t\tcsize  = 17892283\n\t\tsbaddr =   423710\n\t\tcraddr =   423938   423938\n\t\troaddr =   423941   423941\n\t\tfsize  =   423943   423943  0+ 1%\n\t\tslast  =            423409\n\t\tsnext  =            423942\n\t\twmax   =   423941           0+ 1%\n\t\twsize  = 30524356           1+ 0%\n\t\t17804952 none\n\t\t    60 dirty\n\t\t     0 dump\n\t\t 86888 read\n\t\t   383 write\n\t\t     0 dump1\n\t\tcache  1% full\u003c/code\u003e\u003c/pre\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003estatd\u003c/h2\u003e\n\t\t\u003cpre\u003e\u003ccode\u003e\t0.0 work =      1      1      1 xfrs\n\t    rate =   7334   9050   8725 tBps\n\t1.14 work =      0      0      0 xfrs\n\t    rate =      0      0     88 tBps\n\t1.15 work =      0      0      0 xfrs\n\t    rate =      0      0     48 tBps\u003c/code\u003e\u003c/pre\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003eコンソールのログを取る方法\u003c/h2\u003e\n\t\t\u003cp\u003e9fansより。\u003c/p\u003e\n\t\t\u003cblockquote\u003eYou have to set up console logging yourself on a cpu server, like this:\u003c/blockquote\u003e\n\t\t\u003cpre\u003e\u003ccode class=\"sh\"\u003eaux/clog /mnt/consoles/fileserver /sys/log/fileserver \u0026amp;\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003cblockquote\u003ewhere \u0026quot;fileserver\u0026quot; is the name of your file server.\n\t\tThis assumes you've already got \u003ca href=\"https://9p.io/magic/man2html/4/consolefs\"\u003econsolefs(4)\u003c/a\u003econfigured,\n\t\trunning and mounted, and that\n\t\tyou've got the file server's serial console configured\n\t\tand wired up to a serial port on the cpu server doing the logging.\n\t\tAdd this to your file server's plan9.ini:\u003c/blockquote\u003e\n\t\t\u003cpre\u003e\u003ccode class=\"ini\"\u003econsole=0 baud=9600\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003cblockquote\u003eIt's a bit of work to set up, but very handy.\n\t\tNot only do you get a console log,\n\t\tbut you can access the console from any of your Plan 9 machines with:\u003c/blockquote\u003e\n\t\t\u003cpre\u003e\u003ccode class=\"sh\"\u003eC fileserver\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch3\u003eファイルサーバ側の設定\u003c/h3\u003e\n\t\t\t\u003cp\u003eファイルサーバの\u003cstrong\u003eplan9.ini\u003c/strong\u003eに、consoleの設定を追加します。\n\t\t\tこのconsoleは0または1を設定でき、ポート0またはポート1から\n\t\t\tデータを流す、という意味になります。\n\t\t\tbaudはデフォルトで9600なので省略してもいいです。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"ini\"\u003econsole=0\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003eログの受け皿も用意しておきます。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"console\"\u003efs: create /sys/log/fileserver sys sys 666 a\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch3\u003eログを受け取る側の設定\u003c/h3\u003e\n\t\t\t\u003cp\u003eまず、\u003cstrong\u003e/lib/ndb/consoledb\u003c/strong\u003eを編集します。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"ini\"\u003e# see consolefs(4)\ngroup=sys\n\tuid=bootes\nconsole=fileserver dev=/dev/eia0 openondemand=1\n\tgid=sys\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e次に\u003cstrong\u003e/cfg/$sysname/namespace\u003c/strong\u003e。\n\t\t\tシリアルポートを\u003cstrong\u003e/dev\u003c/strong\u003eにbindします。\n\t\t\tこのファイルはシェルスクリプトのように見えますが、\n\t\t\t限られたコマンドしか受け付けません。\n\t\t\t詳細は\u003ca href=\"https://9p.io/magic/man2html/6/namespace\"\u003enamespace(6)\u003c/a\u003e。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"sh\"\u003ebind -a #t /dev\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\u003cp\u003e最後に、/cfg/$sysname/cpustartあたりに以下を追加。\u003c/p\u003e\n\t\t\t\u003cpre\u003e\u003ccode class=\"sh\"\u003eaux/consolefs\naux/clog /mnt/consoles/fileserver /sys/log/fileserver \u0026amp;\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003c/section\u003e\n\t\t\u003csection\u003e\n\t\t\t\u003ch3\u003eトラブルシューティング\u003c/h3\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch4\u003e/dev/eia0等が無い\u003c/h4\u003e\n\t\t\t\t\u003cp\u003eカーネルデバイス#tから見えますので、\n\t\t\t\t\u003cstrong\u003e/cfg/$sysname/namespace\u003c/strong\u003eあたりからbindします。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch4\u003e/cfg/$sysname/namespaceが実行されない\u003c/h4\u003e\n\t\t\t\t\u003cp\u003e\u003cstrong\u003e/cfg/$sysname/namespace\u003c/strong\u003eにbindを書いているのに\n\t\t\t\t\u003cstrong\u003e/dev/eia0\u003c/strong\u003eが見つからない場合。\n\t\t\t\t環境変数sysnameが設定されていないかもしれません。\u003c/p\u003e\n\t\t\t\t\u003cp\u003e受信側のplan9.iniに、sysnameを追加します。\u003c/p\u003e\n\t\t\t\t\u003cpre\u003e\u003ccode class=\"ini\"\u003esysname=wisp\u003c/code\u003e\u003c/pre\u003e\n\t\t\t\t\u003cp\u003eまたは、consolefsを実行する直前にbindするとか。\u003c/p\u003e\n\t\t\t\t\u003cdiv class=\"note\"\u003e\n\t\t\t\t\t\u003cp\u003eおそらく、namespaceの後にcpurcとなるので、\n\t\t\t\t\t\u003cstrong\u003e/lib/namespace\u003c/strong\u003eの最後にある$sysnameを使った行は\n\t\t\t\t\t\u003cstrong\u003eplan9.ini\u003c/strong\u003eで設定しない限り実行されないのでしょう。。\n\t\t\t\t\t手で設定したものとndb/csの結果が\n\t\t\t\t\t違ったらどうするのだろうというのは置いておいて。\u003c/p\u003e\n\t\t\t\t\t\u003cp\u003eと思ってたら、起動順について\u003ca href=\"http://9fans.net/archive/2010/09/346\"\u003e9fansで話題に上がりました\u003c/a\u003e。\u003c/p\u003e\n\t\t\t\t\t\u003col\u003e\n\t\t\t\t\t\u003cli\u003einit\u003c/li\u003e\n\t\t\t\t\t\u003cli\u003enewns\u003c/li\u003e\n\t\t\t\t\t\u003cli\u003e/lib/namespace\u003c/li\u003e\n\t\t\t\t\t\u003cli\u003e/cfg/$sysname/namespace(あれば)\u003c/li\u003e\n\t\t\t\t\t\u003cli\u003e/rc/bin/cpurc\u003c/li\u003e\n\t\t\t\t\t\u003c/ol\u003e\n\t\t\t\t\t\u003cp\u003eここで、$sysnameは設定されていないので読みません。\n\t\t\t\t\tでは何のためにあるのかというと、ブート後、\n\t\t\t\t\t名前空間を変更する場合に使うらしいです。\n\t\t\t\t\tauth/noneとか、listen(8)の\u003cstrong\u003e/rc/bin/service\u003c/strong\u003eとか。\n\t\t\t\t\tservice.authのほうは、呼び出し元と同じ名前空間みたい。\u003c/p\u003e\n\t\t\t\t\u003c/div\u003e\n\t\t\t\u003c/section\u003e\n\t\t\t\u003csection\u003e\n\t\t\t\t\u003ch4\u003eデータを受信しない\u003c/h4\u003e\n\t\t\t\t\u003cp\u003eデバッグなどのため、ふつうのユーザで動かしている場合は、\n\t\t\t\tbootesで試してみてください。\n\t\t\t\tbootes以外ではなぜかうまくいかなかった記憶がやんわりと。\u003c/p\u003e\n\t\t\t\u003c/section\u003e\n\t\t\u003c/section\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003caside\u003e\n\t\u003ch1\u003e関連情報\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"https://9p.io/magic/man2html/8/fs\"\u003efs(8)\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"listen.html\"\u003elistenについて\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/aside\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["plan9","doc","adm","fs"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

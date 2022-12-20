@@ -1,0 +1,213 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><title>Plan 9: html5 generator</title><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="author" content="http://www.hatena.ne.jp/lufiabb/"/><meta name="next-head-count" content="4"/><link rel="preload" href="/_next/static/css/1b15737708df434c.css" as="style"/><link rel="stylesheet" href="/_next/static/css/1b15737708df434c.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-59c5c889f52620d6.js" defer=""></script><script src="/_next/static/chunks/framework-c2e8b39087850489.js" defer=""></script><script src="/_next/static/chunks/main-7715c9ce3e92f40f.js" defer=""></script><script src="/_next/static/chunks/pages/_app-8e84d751e7e95936.js" defer=""></script><script src="/_next/static/chunks/245-02c6405e66663b10.js" defer=""></script><script src="/_next/static/chunks/pages/%5B%5B...slug%5D%5D-663c09fbf665935a.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_buildManifest.js" defer=""></script><script src="/_next/static/uudkrhSA2meQW-38gm1fk/_ssgManifest.js" defer=""></script></head><body><div id="__next">
+<nav>
+	<h1>メニュー</h1>
+	<ul>
+	<li><a href="/plan9/index.html"><a>Plan 9</a></a></li>
+	<li><a href="/plan9/doc/inst/index.html"><a>インストール</a></a></li>
+	<li><a href="/plan9/doc/guide/index.html"><a>システムの使い方</a></a></li>
+	<li><a href="/plan9/doc/devel/index.html"><a>プログラミング</a></a></li>
+	<li><a href="/plan9/doc/adm/index.html"><a>システム管理</a></a></li>
+	<li><a href="/plan9/man/index.html"><a>自作ツール集</a></a></li>
+	</ul>
+</nav>
+<main>
+	<h1>wf</h1>
+	<section>
+		<h2>SYNOPSIS</h2>
+		<pre><code>wf [-dp] [-l lang] [-x x1 x2] [file]</code></pre>
+	</section>
+	<section>
+		<h2>DESCRIPTION</h2>
+		<p>wikiのような記述から、HTMLを生成します。
+		使用できる文字は以下の通り。</p>
+		<dl>
+		<div>
+			<dt>= item</dt>
+			<dd>hN</dd>
+		</div>
+		<div>
+			<dt>+ item</dt>
+			<dd>ol</dd>
+		</div>
+		<div>
+			<dt>* item</dt>
+			<dd>ul</dd>
+		</div>
+		<div>
+			<dt>: item</dt>
+			<dd>dt</dd>
+		</div>
+		<div>
+			<dt>- item</dt>
+			<dd>dd</dd>
+		</div>
+		<div>
+			<dt>&gt; item</dt>
+			<dd>blockquote</dd>
+		</div>
+		<div>
+			<dt>! string</dt>
+			<dd>pre</dd>
+		</div>
+		<div>
+			<dt>\ item</dt>
+			<dd>p</dd>
+		</div>
+		<div>
+			<dt>| item item ...</dt>
+			<dd>table</dd>
+		</div>
+		</dl>
+		<p>上記以外であればpになります。
+		また、itemでは、以下の文字が使えます。</p>
+		<dl>
+		<div>
+			<dt>* item *</dt>
+			<dd>strong</dd>
+		</div>
+		<div>
+			<dt>[ url ]</dt>
+			<dt>[ item | url ]</dt>
+			<dd>a</dd>
+		</div>
+		<div>
+			<dt>&lt; url &gt;</dt>
+			<dt>&lt; item | url &gt;</dt>
+			<dd>img</dd>
+		</div>
+		</dl>
+		<p>これらをただの文字として扱う場合は、**のように2つ続けて書きます。</p>
+		<p>urlについては、acmeで使いやすくするために、
+		変なプリフィックスルールがあります。
+		オプションで</p>
+		<pre><code>wf -x w html</code></pre>
+		<p>とすると、urlの末尾が.wであれば.htmlに書き換えて出力します。
+		これは複数あってもかまわないので、</p>
+		<pre><code>wf -x w html -x pic png</code></pre>
+		<p>のようにできます。</p>
+	</section>
+	<section>
+		<h2>テーブル</h2>
+		<p>テーブルは、タブで区切ったセルをtdとして生成します。
+		タブは1つ以上であってもまとめて扱うので、
+		表が見やすいように整形してもかまいません。
+		また、thを使いたい場合は、セル全体を*(strong)でくくってください。
+		例えば以下の場合、1行目はすべてthセルになります。</p>
+		<pre><code>|*name*		*value*
+|maxht		20
+|width		70</code></pre>
+	</section>
+	<section>
+		<h2>ヘッダ</h2>
+		<p>ヘッダは、%で開始します。
+		これはファイルの先頭にのみ可能です。</p>
+		<pre><code>% name string</code></pre>
+		<p>nameは、title, tag, script, style, feed, urlが組み込まれており、
+		title, styleなど、必要な要素を生成します。
+		上記以外の名前は&lt;meta name=&quot;$name&quot; content=&quot;$string&quot;&gt;と
+		なります。</p>
+		<p>同じ名前が複数回あらわれた場合、
+		それらは連結して1つの要素となります。</p>
+		<p>このうち、urlは特殊な扱いになっていて、
+		これだけではHTMLを生成することはありませんが、
+		[ url ]タイプのリンクについて、
+		正規表現置換を行いURLを設定します。
+		たとえばurlを使い、簡易な表記でPlan 9マニュアルに
+		リンクを張る場合は以下のように書きます。</p>
+		<pre><code>%url s|^([a-z0-9]+)\(([1-9])\)$|/magic/man2html/\2/\1|
+*[man(1)]
+*[regexp(2)]
+*[fsconfig(4)|http://www.domain.dom]</code></pre>
+		<p>この3つ目のリンクは、正規表現置換を行いません。
+		また、xオプションのルールで変換したものに対して適用します。</p>
+		<p>urlが複数現れた場合、書かれた順に評価していき、
+		マッチするものがあればそこで終了します。</p>
+	</section>
+	<section>
+		<h2>ブロック化</h2>
+		<p>同じ行頭文字が続いた場合は、
+		以前の行とまとめて1つのブロック(block)となります。
+		途中で区切りたい場合は、空行を置いてください。</p>
+		<p>ブロックも、同じレベルに属するブロックをまとめようとします。
+		セクションの項も参照。</p>
+		<p>また、明示的にブロックを作成する場合は、
+		以下の方法があります。</p>
+		<pre><code>{
+	blocks
+}</code></pre>
+		<p>これは、blocksをdivで囲みます。
+		{}の中ではインデントが1つ増えますが、
+		新しいセクションが開始されるわけではありません。
+		セクションも含む場合は2つ以上インデントしてください。</p>
+	</section>
+	<section>
+		<h2>IDとクラス</h2>
+		<p>ブロックの前に、置くことができます。
+		続くブロックを生成するときに、必要な属性を追加します。</p>
+		<dl>
+		<div>
+			<dt>. name</dt>
+			<dd>class</dd>
+		</div>
+		<div>
+			<dt># name</dt>
+			<dd>id</dd>
+		</div>
+		</dl>
+		<p>classは、複数並べることが可能です。</p>
+		<pre><code>.name1
+.name2
+aaa
+bbb</code></pre>
+		<p>その場合、class=&quot;name1 name2&quot;のようになります。</p>
+	</section>
+	<section>
+		<h2>クラスの要素化</h2>
+		<p>特別なルールとして、class=&quot;nav&quot;をもつブロックは、
+		親セクションのnav要素として書き出します。
+		要素化されたクラス属性は取り除かれます。</p>
+		<p>navの他に、header, footer, asideもあります。
+		特別なクラスが同時に設定された場合、
+		優先順位は高い順にnav, header, footer, asideです。</p>
+	</section>
+	<section>
+		<h2>セクション</h2>
+		<p>インデントすれば、その部分をsectionで囲みます。
+		もちろんhNは、sectionに追従して、h1, h2 ...と増加します。</p>
+		<pre><code>block
+	blocks2</code></pre>
+	</section>
+	<section>
+		<h2>EXAMPLE</h2>
+		<pre><code>%title Plan 9
+%url s|^([a-z0-9]+)\(([1-9])\)$|http://plan9.bell-labs.com/magic/man2html/\2/\1|
+%url s|^(contrib/[^ 	]+)$|http://plan9.bell-labs.com/sources/\1|
+%title html5 generator
+
+=wf
+
+	=SYNOPSIS
+	!wf [-dp] [-l lang] [-x x1 x2] [file]
+
+	=DESCRIPTION
+
+	wikiのような記述から、HTMLを生成します。
+	使用できる文字は以下の通り。
+
+	:= item
+	-hN
+	:+ item
+	-ol
+	:** item
+	-ul</code></pre>
+	</section>
+	<section>
+		<h2>BUGS</h2>
+		<p>クラスやIDは、セクションや=(Hn)には適用できません。
+		明示的に{}を書いてください。</p>
+	</section>
+</main>
+<footer>
+	<p>見れない、表示がおかしい場合は、動作環境を添えて<a href="/plan9/man/mailto:webmaster@lufia.org"><a>webmaster@lufia.org</a></a>まで連絡ください。</p>
+</footer>
+</div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"html":"\u003c!doctype html\u003e\n\u003chtml lang=\"ja\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003ePlan 9: html5 generator\u003c/title\u003e\n\u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\"\u003e\n\u003cmeta name=\"author\" content=\"http://www.hatena.ne.jp/lufiabb/\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cnav\u003e\n\t\u003ch1\u003eメニュー\u003c/h1\u003e\n\t\u003cul\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/index.html\"\u003ePlan 9\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/inst/index.html\"\u003eインストール\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/guide/index.html\"\u003eシステムの使い方\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/devel/index.html\"\u003eプログラミング\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/doc/adm/index.html\"\u003eシステム管理\u003c/a\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ca href=\"/plan9/man/index.html\"\u003e自作ツール集\u003c/a\u003e\u003c/li\u003e\n\t\u003c/ul\u003e\n\u003c/nav\u003e\n\u003cmain\u003e\n\t\u003ch1\u003ewf\u003c/h1\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003eSYNOPSIS\u003c/h2\u003e\n\t\t\u003cpre\u003e\u003ccode\u003ewf [-dp] [-l lang] [-x x1 x2] [file]\u003c/code\u003e\u003c/pre\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003eDESCRIPTION\u003c/h2\u003e\n\t\t\u003cp\u003ewikiのような記述から、HTMLを生成します。\n\t\t使用できる文字は以下の通り。\u003c/p\u003e\n\t\t\u003cdl\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003e= item\u003c/dt\u003e\n\t\t\t\u003cdd\u003ehN\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003e+ item\u003c/dt\u003e\n\t\t\t\u003cdd\u003eol\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003e* item\u003c/dt\u003e\n\t\t\t\u003cdd\u003eul\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003e: item\u003c/dt\u003e\n\t\t\t\u003cdd\u003edt\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003e- item\u003c/dt\u003e\n\t\t\t\u003cdd\u003edd\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003e\u0026gt; item\u003c/dt\u003e\n\t\t\t\u003cdd\u003eblockquote\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003e! string\u003c/dt\u003e\n\t\t\t\u003cdd\u003epre\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003e\\ item\u003c/dt\u003e\n\t\t\t\u003cdd\u003ep\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003e| item item ...\u003c/dt\u003e\n\t\t\t\u003cdd\u003etable\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003c/dl\u003e\n\t\t\u003cp\u003e上記以外であればpになります。\n\t\tまた、itemでは、以下の文字が使えます。\u003c/p\u003e\n\t\t\u003cdl\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003e* item *\u003c/dt\u003e\n\t\t\t\u003cdd\u003estrong\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003e[ url ]\u003c/dt\u003e\n\t\t\t\u003cdt\u003e[ item | url ]\u003c/dt\u003e\n\t\t\t\u003cdd\u003ea\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003e\u0026lt; url \u0026gt;\u003c/dt\u003e\n\t\t\t\u003cdt\u003e\u0026lt; item | url \u0026gt;\u003c/dt\u003e\n\t\t\t\u003cdd\u003eimg\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003c/dl\u003e\n\t\t\u003cp\u003eこれらをただの文字として扱う場合は、**のように2つ続けて書きます。\u003c/p\u003e\n\t\t\u003cp\u003eurlについては、acmeで使いやすくするために、\n\t\t変なプリフィックスルールがあります。\n\t\tオプションで\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode\u003ewf -x w html\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003cp\u003eとすると、urlの末尾が.wであれば.htmlに書き換えて出力します。\n\t\tこれは複数あってもかまわないので、\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode\u003ewf -x w html -x pic png\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003cp\u003eのようにできます。\u003c/p\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003eテーブル\u003c/h2\u003e\n\t\t\u003cp\u003eテーブルは、タブで区切ったセルをtdとして生成します。\n\t\tタブは1つ以上であってもまとめて扱うので、\n\t\t表が見やすいように整形してもかまいません。\n\t\tまた、thを使いたい場合は、セル全体を*(strong)でくくってください。\n\t\t例えば以下の場合、1行目はすべてthセルになります。\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode\u003e|*name*\t\t*value*\n|maxht\t\t20\n|width\t\t70\u003c/code\u003e\u003c/pre\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003eヘッダ\u003c/h2\u003e\n\t\t\u003cp\u003eヘッダは、%で開始します。\n\t\tこれはファイルの先頭にのみ可能です。\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode\u003e% name string\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003cp\u003enameは、title, tag, script, style, feed, urlが組み込まれており、\n\t\ttitle, styleなど、必要な要素を生成します。\n\t\t上記以外の名前は\u0026lt;meta name=\u0026quot;$name\u0026quot; content=\u0026quot;$string\u0026quot;\u0026gt;と\n\t\tなります。\u003c/p\u003e\n\t\t\u003cp\u003e同じ名前が複数回あらわれた場合、\n\t\tそれらは連結して1つの要素となります。\u003c/p\u003e\n\t\t\u003cp\u003eこのうち、urlは特殊な扱いになっていて、\n\t\tこれだけではHTMLを生成することはありませんが、\n\t\t[ url ]タイプのリンクについて、\n\t\t正規表現置換を行いURLを設定します。\n\t\tたとえばurlを使い、簡易な表記でPlan 9マニュアルに\n\t\tリンクを張る場合は以下のように書きます。\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode\u003e%url s|^([a-z0-9]+)\\(([1-9])\\)$|/magic/man2html/\\2/\\1|\n*[man(1)]\n*[regexp(2)]\n*[fsconfig(4)|http://www.domain.dom]\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003cp\u003eこの3つ目のリンクは、正規表現置換を行いません。\n\t\tまた、xオプションのルールで変換したものに対して適用します。\u003c/p\u003e\n\t\t\u003cp\u003eurlが複数現れた場合、書かれた順に評価していき、\n\t\tマッチするものがあればそこで終了します。\u003c/p\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003eブロック化\u003c/h2\u003e\n\t\t\u003cp\u003e同じ行頭文字が続いた場合は、\n\t\t以前の行とまとめて1つのブロック(block)となります。\n\t\t途中で区切りたい場合は、空行を置いてください。\u003c/p\u003e\n\t\t\u003cp\u003eブロックも、同じレベルに属するブロックをまとめようとします。\n\t\tセクションの項も参照。\u003c/p\u003e\n\t\t\u003cp\u003eまた、明示的にブロックを作成する場合は、\n\t\t以下の方法があります。\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode\u003e{\n\tblocks\n}\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003cp\u003eこれは、blocksをdivで囲みます。\n\t\t{}の中ではインデントが1つ増えますが、\n\t\t新しいセクションが開始されるわけではありません。\n\t\tセクションも含む場合は2つ以上インデントしてください。\u003c/p\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003eIDとクラス\u003c/h2\u003e\n\t\t\u003cp\u003eブロックの前に、置くことができます。\n\t\t続くブロックを生成するときに、必要な属性を追加します。\u003c/p\u003e\n\t\t\u003cdl\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003e. name\u003c/dt\u003e\n\t\t\t\u003cdd\u003eclass\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003cdiv\u003e\n\t\t\t\u003cdt\u003e# name\u003c/dt\u003e\n\t\t\t\u003cdd\u003eid\u003c/dd\u003e\n\t\t\u003c/div\u003e\n\t\t\u003c/dl\u003e\n\t\t\u003cp\u003eclassは、複数並べることが可能です。\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode\u003e.name1\n.name2\naaa\nbbb\u003c/code\u003e\u003c/pre\u003e\n\t\t\u003cp\u003eその場合、class=\u0026quot;name1 name2\u0026quot;のようになります。\u003c/p\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003eクラスの要素化\u003c/h2\u003e\n\t\t\u003cp\u003e特別なルールとして、class=\u0026quot;nav\u0026quot;をもつブロックは、\n\t\t親セクションのnav要素として書き出します。\n\t\t要素化されたクラス属性は取り除かれます。\u003c/p\u003e\n\t\t\u003cp\u003enavの他に、header, footer, asideもあります。\n\t\t特別なクラスが同時に設定された場合、\n\t\t優先順位は高い順にnav, header, footer, asideです。\u003c/p\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003eセクション\u003c/h2\u003e\n\t\t\u003cp\u003eインデントすれば、その部分をsectionで囲みます。\n\t\tもちろんhNは、sectionに追従して、h1, h2 ...と増加します。\u003c/p\u003e\n\t\t\u003cpre\u003e\u003ccode\u003eblock\n\tblocks2\u003c/code\u003e\u003c/pre\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003eEXAMPLE\u003c/h2\u003e\n\t\t\u003cpre\u003e\u003ccode\u003e%title Plan 9\n%url s|^([a-z0-9]+)\\(([1-9])\\)$|http://plan9.bell-labs.com/magic/man2html/\\2/\\1|\n%url s|^(contrib/[^ \t]+)$|http://plan9.bell-labs.com/sources/\\1|\n%title html5 generator\n\n=wf\n\n\t=SYNOPSIS\n\t!wf [-dp] [-l lang] [-x x1 x2] [file]\n\n\t=DESCRIPTION\n\n\twikiのような記述から、HTMLを生成します。\n\t使用できる文字は以下の通り。\n\n\t:= item\n\t-hN\n\t:+ item\n\t-ol\n\t:** item\n\t-ul\u003c/code\u003e\u003c/pre\u003e\n\t\u003c/section\u003e\n\t\u003csection\u003e\n\t\t\u003ch2\u003eBUGS\u003c/h2\u003e\n\t\t\u003cp\u003eクラスやIDは、セクションや=(Hn)には適用できません。\n\t\t明示的に{}を書いてください。\u003c/p\u003e\n\t\u003c/section\u003e\n\u003c/main\u003e\n\u003cfooter\u003e\n\t\u003cp\u003e見れない、表示がおかしい場合は、動作環境を添えて\u003ca href=\"mailto:webmaster@lufia.org\"\u003ewebmaster@lufia.org\u003c/a\u003eまで連絡ください。\u003c/p\u003e\n\u003c/footer\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"},"__N_SSG":true},"page":"/[[...slug]]","query":{"slug":["plan9","man","wf"]},"buildId":"uudkrhSA2meQW-38gm1fk","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>
