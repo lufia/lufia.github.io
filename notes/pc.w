@@ -2,6 +2,9 @@
 %title PC関連
 
 =PC関連
+	=2023年
+	*[PostgreSQLのメジャーバージョンアップグレード|2023/0130.w]
+
 	=2022年
 	*[Linuxデスクトップのメンテナンス|2022/0203.w]
 	*[ArchLinuxのPythonでpkg_resourcesモジュールが見つからない|2022/0209.w]
