@@ -35,7 +35,12 @@
 
 	孤児パッケージの削除。
 
-	!$ sudo pacman -Rs $(pacman -Qdt)
+	!$ sudo pacman -Rns $(pacman -Qdtq)
+
+	孤立したパッケージで必要なものを明示的にする、または依存にする。
+
+	!$ sudo pacman -D --asexplicit <pkg>
+	!$ sudo pacman -D --asdeps <pkg>
 
 	Flatpakを利用している場合は不要になったランタイムも削除。
 
