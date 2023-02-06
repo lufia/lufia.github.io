@@ -7,12 +7,14 @@
 
 これまでも以下のように書けばタスクリストを作成できていた。
 
+.markdown
 !- [x] task1
 !- [ ] task2
 
 もう少しリッチなタスクリストが追加されていた。
 これはMarkdownのコードとしてタスクを表現する。
 
+.markdown
 !```[tasklist]
 !# Section
 !- [x] task1

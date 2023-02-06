@@ -23,6 +23,8 @@ import json from "highlight.js/lib/languages/json";
 // @ts-ignore
 import makefile from "highlight.js/lib/languages/makefile";
 // @ts-ignore
+import markdown from "highlight.js/lib/languages/markdown";
+// @ts-ignore
 import shell from "highlight.js/lib/languages/shell";
 // @ts-ignore
 import typescript from "highlight.js/lib/languages/typescript";
@@ -44,6 +46,7 @@ hljs.registerLanguage("js", javascript);
 hljs.registerLanguage("json", json);
 hljs.registerLanguage("ts", typescript);
 hljs.registerLanguage("makefile", makefile);
+hljs.registerLanguage("markdown", markdown);
 hljs.registerLanguage("console", shell);
 hljs.registerLanguage("sh-session", shell);
 hljs.registerLanguage("xml", xml);
