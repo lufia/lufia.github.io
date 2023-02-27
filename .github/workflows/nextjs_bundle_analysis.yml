@@ -28,7 +28,7 @@ jobs:
         uses: bahmutov/npm-install@v1
 
       - name: Set up plan9port
-        uses: lufia/setup-plan9port@v1
+        uses: lufia/setup-plan9port@v2
         with:
           environment: ubuntu-20.04
 
