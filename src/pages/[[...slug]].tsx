@@ -11,7 +11,6 @@ import {
 } from "next";
 import path from "path";
 import { pipeline } from "stream/promises";
-import { promisify } from "util";
 import {
 	convertToHtml,
 	include,
@@ -20,8 +19,6 @@ import {
 import { findUp, getProjectDir, stat } from "../path";
 import { Link, RenderHtml } from "../components";
 
-const globAsync = promisify(glob);
-
 type Params = Readonly<{
 	// BUG?: pass {slug:[]} then getStaticProps receives undefined from context.
 	slug: string[] | undefined;
@@ -29,7 +26,7 @@ type Params = Readonly<{
 
 export const getStaticPaths: GetStaticPaths<Params> = async () => {
 	const projectDir = await getProjectDir(fs);
-	const files = await globAsync("**/*.w", {
+	const files = await glob("**/*.w", {
 		cwd: projectDir,
 	});
 	const paths = files.map(s => {
