@@ -36,6 +36,9 @@
 	.console
 	!$ sudo dpkg --remove-architecture arm64
 
+	*[Debian管理者ハンドブック/dpkg を用いたパッケージの操作|
+	https://debian-handbook.info/browse/ja-JP/stable/sect.manipulating-packages-with-dpkg.html]
+
 	=Armアーキテクチャの名前
 
 		OSやコンパイラなど、状況によって色々な名前がある。
