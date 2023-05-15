@@ -25,7 +25,7 @@
     "glob": "^9.3.2",
     "highlight.js": "^11.6.0",
     "html-to-react": "^1.5.0",
-    "next": "^13.1.2",
+    "next": "^13.4.2",
     "react": "^18.2.0",
     "react-children-utilities": "^2.8.0",
     "react-dom": "^18.2.0"
