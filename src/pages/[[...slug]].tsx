@@ -2,7 +2,7 @@ import {
 	promises as fs,
 	createReadStream,
 } from "fs";
-import glob from "glob";
+import { glob } from "glob";
 import {
 	GetStaticPaths,
 	GetStaticPropsContext,
