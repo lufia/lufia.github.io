@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/lufia/lufia.github.io#readme",
   "dependencies": {
-    "glob": "^10.2.7",
+    "glob": "^10.3.0",
     "highlight.js": "^11.6.0",
     "html-to-react": "^1.6.0",
     "next": "^13.4.6",
