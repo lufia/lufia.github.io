@@ -4,6 +4,23 @@ updates:
     directory: '/'
     schedule:
       interval: 'weekly'
+    groups:
+      glob:
+        patterns:
+          - 'glob'
+          - '@types/glob'
+      highlight:
+        patterns:
+          - 'highlight.js'
+          - '@types/highlight.js'
+      react:
+        patterns:
+          - 'react'
+          - '@types/react'
+      next:
+        patterns:
+          - 'next'
+          - 'eslint-config-next'
   - package-ecosystem: 'github-actions'
     directory: '/'
     schedule:
