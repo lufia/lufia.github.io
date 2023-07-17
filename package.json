@@ -35,7 +35,7 @@
     "@types/highlight.js": "^10.1.0",
     "@types/react": "^18.2.14",
     "autoprefixer": "^10.4.13",
-    "eslint": "^8.44.0",
+    "eslint": "^8.45.0",
     "eslint-config-next": "^13.4.9",
     "postcss-flexbugs-fixes": "^5.0.2",
     "postcss-mixins": "^9.0.4",
