@@ -23,6 +23,10 @@
 	*[SPF(Sender Policy Framework): 迷惑メール対策委員会|
 	https://salt.iajapan.org/wpmu/anti_spam/admin/tech/explanation/spf/]
 
+	過去に記事も書いた。
+
+	*[ドメイン移管とSPF|../2009/0210.w]
+
 	=DKIM(DomainKeys Identified Mail)
 
 	以下のヘルプによると、設定していない場合はデフォルトのDKIMが使われるらしい。

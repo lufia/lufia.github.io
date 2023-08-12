@@ -2,7 +2,7 @@
 %title ドメイン移管とSPF
 
 .revision
-2009年2月10日作成
+2023年8月12日更新
 =ドメイン移管とSPF
 
 	=ドメイン移管
@@ -67,6 +67,11 @@
 	他はなんだかめんどくさそうですし。
 
 	ホスト名をSPFとして使うには、a:host.domain.domとするようです。
+
+	=DKIM/DMARC
+	DKIM/DMARCの記事も書きました。
+
+	*[Google WorkspaceのGmailでDMARC|../2021/1208.w]
 
 .aside
 {
