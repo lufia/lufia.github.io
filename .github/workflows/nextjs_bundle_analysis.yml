@@ -17,7 +17,7 @@ jobs:
     permissions:
       pull-requests: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up node
         uses: actions/setup-node@v3
@@ -32,7 +32,7 @@ jobs:
         with:
           environment: ubuntu-20.04
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           repository: lufia/contrib
           path: .contrib
