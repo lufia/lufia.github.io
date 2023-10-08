@@ -19,5 +19,3 @@
 -ソースコードなど
 :[Speaker Deck|https://speakerdeck.com/lufia/]
 -過去に発表したスライドなど
-:[Medium|https://medium.com/@lufia]
--プログラミング以外の色々
