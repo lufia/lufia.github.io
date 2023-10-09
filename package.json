@@ -40,7 +40,7 @@
     "postcss-flexbugs-fixes": "^5.0.2",
     "postcss-mixins": "^9.0.4",
     "postcss-preset-env": "^9.1.4",
-    "ts-loader": "^9.4.4"
+    "ts-loader": "^9.5.0"
   },
   "nextBundleAnalysis": {
     "budget": 358400,
