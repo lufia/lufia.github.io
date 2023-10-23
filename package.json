@@ -25,7 +25,7 @@
     "glob": "^10.3.10",
     "highlight.js": "^11.9.0",
     "html-to-react": "^1.7.0",
-    "next": "^13.5.4",
+    "next": "^13.5.6",
     "react": "^18.2.0",
     "react-children-utilities": "^2.8.0",
     "react-dom": "^18.2.0"
@@ -36,7 +36,7 @@
     "@types/react": "^18.2.28",
     "autoprefixer": "^10.4.16",
     "eslint": "^8.51.0",
-    "eslint-config-next": "^13.5.4",
+    "eslint-config-next": "^13.5.6",
     "postcss-flexbugs-fixes": "^5.0.2",
     "postcss-mixins": "^9.0.4",
     "postcss-preset-env": "^9.2.0",
