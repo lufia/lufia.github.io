@@ -5,10 +5,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "next",
-    "lint": "next lint",
-    "build": "next build && next export",
-    "start": "next start"
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
   },
   "repository": {
     "type": "git",
@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/lufia/lufia.github.io#readme",
   "dependencies": {
+    "astro": "^3.4.3",
     "glob": "^10.3.10",
     "highlight.js": "^11.9.0",
     "html-to-react": "^1.7.0",
