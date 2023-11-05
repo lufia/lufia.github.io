@@ -1,6 +1,4 @@
-%author	http://www.hatena.ne.jp/lufiabb/
 %title	lufia.org
-%viewport width=device-width,initial-scale=1
 
 =lufia.org
 
