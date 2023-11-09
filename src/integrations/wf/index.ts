@@ -13,7 +13,7 @@ import {
     convertToHtml,
     include,
     WritableMemoryStream,
-} from "../../html-generator";
+} from '../../html-generator';
 import { getFileInfo, parseFrontmatter } from './utils.ts';
 
 type SetupHookParams = HookParameters<'astro:config:setup'> & {
@@ -81,14 +81,14 @@ export default function wf(): AstroIntegration {
 }
 
 async function convert(data: string) {
-	//const f = createReadStream(file, "utf-8");
+	//const f = createReadStream(file, 'utf-8');
 	const f = Readable.from([data]);
 	const w = new WritableMemoryStream();
-	await pipeline(f, include("."), convertToHtml({
-		lang: "ja",
+	await pipeline(f, include('.'), convertToHtml({
+		lang: 'ja',
 		extensions: {
-			"map": "svg",
-			"w": "html",
+			map: 'svg',
+			w: 'html',
 		},
 	}), w);
 	return w.toString()
