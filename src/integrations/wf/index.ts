@@ -5,7 +5,6 @@ import type {
 	HookParameters,
 } from 'astro';
 import fs from 'node:fs/promises';
-import matter from 'gray-matter';
 import type { Plugin as VitePlugin } from 'vite';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
@@ -66,10 +65,7 @@ export default function wf(): AstroIntegration {
 										content: pageContent,
 									} = parseFrontmatter(code, id);
 									const html = await convert(pageContent);
-									const output = `export default function render() {
-										return String.raw\`${rawString(html)}\`;
-									}; render["astro:html"] = true;`;
-									return { code: output,  map: null };
+									return { code: generateCode(html),  map: null };
 								},
 							},
 						] as VitePlugin[],
@@ -92,6 +88,15 @@ async function convert(data: string) {
 		},
 	}), w);
 	return w.toString()
+}
+
+function generateCode(html: string): string {
+	const code = `export default function render() {\n
+		return String.raw\`${rawString(html)}\`\n
+	}\n
+	render['astro:html'] = true\n
+	render[Symbol.for("astro.needsHeadRendering")] = false\n`;
+	return code;
 }
 
 function rawString(s: string): string {
