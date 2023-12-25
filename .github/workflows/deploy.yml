@@ -50,7 +50,7 @@ jobs:
         touch out/.nojekyll
         npm install
         npm run build
-    - uses: actions/upload-pages-artifact@v2
+    - uses: actions/upload-pages-artifact@v3
       with:
         path: out
 
