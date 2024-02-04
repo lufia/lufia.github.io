@@ -13,7 +13,6 @@ import path from "path";
 import { pipeline } from "stream/promises";
 import {
 	convertToHtml,
-	include,
 	WritableMemoryStream,
 } from "../html-generator";
 import { findUp, getProjectDir, stat } from "../path";
@@ -58,7 +57,7 @@ export const getStaticProps = async (context: GetStaticPropsContext<Params>) => 
 	const includeDir = await lookupIncludeDir(file);
 	const f = createReadStream(file, "utf-8");
 	const w = new WritableMemoryStream();
-	await pipeline(f, include(includeDir), convertToHtml({
+	await pipeline(f, convertToHtml({
 		lang: "ja",
 		extensions: {
 			"map": "svg",

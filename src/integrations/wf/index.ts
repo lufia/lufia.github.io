@@ -5,12 +5,12 @@ import type {
 	HookParameters,
 } from 'astro';
 import fs from 'node:fs/promises';
+import path from "path";
 import type { Plugin as VitePlugin } from 'vite';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
 import {
     convertToHtml,
-    include,
     WritableMemoryStream,
 } from '../../html-generator';
 import { getFileInfo, parseFrontmatter } from './utils.ts';
@@ -64,7 +64,8 @@ export default function wf(): AstroIntegration {
 										data: frontmatter,
 										content: pageContent,
 									} = parseFrontmatter(code, id);
-									const html = await convert(pageContent);
+									const data = layout(id, pageContent, frontmatter);
+									const html = await convert(data);
 									return { code: generateCode(html),  map: null };
 								},
 							},
@@ -76,11 +77,44 @@ export default function wf(): AstroIntegration {
 	};
 }
 
-async function convert(data: string) {
+type Frontmatter = Readonly<{
+	title: string | undefined;
+	pre: string | undefined;
+	post: string | undefined;
+}>;
+
+async function layout(file: string, pageContent: string, frontmatter: Frontmatter): string {
+	const dir = path.dirname(file);
+	let s = '';
+	if(frontmatter.pre !== undefined){
+		try{
+			const pre = await fs.readFile(path.join(dir, frontmatter.pre));
+			s += pre;
+		}catch(err: Error){
+			if(err.code !== 'ENOENT')
+				throw err;
+		}
+	}
+	if(frontmatter.title !== undefined)
+		s += '%title '+frontmatter.title+'\n';
+	s += pageContent;
+	if(frontmatter.post !== undefined){
+		try{
+			const post = await fs.readFile(path.join(dir, frontmatter.post));
+			s += post;
+		}catch(err: Error){
+			if(err.code !== 'ENOENT')
+				throw err;
+		}
+	}
+	return s;
+}
+
+async function convert(data: string): string {
 	//const f = createReadStream(file, 'utf-8');
 	const f = Readable.from([data]);
 	const w = new WritableMemoryStream();
-	await pipeline(f, include('.'), convertToHtml({
+	await pipeline(f, convertToHtml({
 		lang: 'ja',
 		extensions: {
 			map: 'svg',

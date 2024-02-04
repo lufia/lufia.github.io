@@ -1,14 +1,6 @@
 import { ChildProcess, spawn } from "child_process";
 import { Transform, Writable } from "stream";
 
-export function include(dir?: string): Transform {
-	const args = dir ? ["-a", dir] : [];
-	const p = spawn("include", args, {
-		stdio: ["pipe", "pipe", "inherit"],
-	});
-	return createTransform(p);
-}
-
 type ConverterOptions = Readonly<{
 	lang: string;
 	extensions?: { [key: string]: string };
