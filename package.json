@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/lufia/lufia.github.io#readme",
   "dependencies": {
-    "astro": "^3.4.3",
+    "astro": "^4.3.2",
     "glob": "^10.3.10",
     "gray-matter": "^4.0.3",
     "highlight.js": "^11.9.0",
