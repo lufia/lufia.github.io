@@ -1,5 +1,8 @@
-@include u.i
-%title アイテムリスト
+---
+title: アイテムリスト
+pre: ../include/u.i
+post: ../include/db.i
+---
 
 .revision
 2009年11月15日作成
@@ -95,6 +98,3 @@
 	|[かいぞくのカギ|pirateskey.w]	非売品	使えない	アイセン島の海賊塔の牢を開けるカギ
 	|[パワーオイル|poweroil.w]	非売品	使えない	船を飛べるようにする燃料
 	|[グラスダールキー|glasdarkey.w]	非売品	使えない	グラスダールの塔へのドアのカギ
-
-@include db.i
-@include nav.i

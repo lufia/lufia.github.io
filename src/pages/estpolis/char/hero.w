@@ -1,5 +1,8 @@
-@include	u.i
-%title	主人公
+---
+title: 主人公
+pre: ../include/u.i
+post: ../include/db.i
+---
 
 .revision
 2009年11月16日更新
@@ -107,6 +110,3 @@
 	|97	6	1	-	1	-	-	6751724	-
 	|98	2	3	-	-	-	-	6857436	-
 	|99	3	-	-	3	-	-	-		-
-
-@include db.i
-@include nav.i

@@ -1,5 +1,8 @@
-@include u.i
-%title アレキア〜トレック北の洞窟
+---
+title: アレキア〜トレック北の洞窟
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年12月11日更新
@@ -113,5 +116,3 @@
 	=関連情報
 	*[定期船|../doc/ship.w]
 }
-
-@include nav.i

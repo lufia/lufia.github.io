@@ -1,5 +1,8 @@
-@include u.i
-%title シェラン
+---
+title: シェラン
+pre: ../../include/u.i
+post: ../../include/db.i
+---
 
 .revision
 2009年12月6日作成
@@ -103,6 +106,3 @@
 	=関連情報
 	*[マップ一覧|../index.w]
 }
-
-@include db.i
-@include nav.i

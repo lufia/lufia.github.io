@@ -1,5 +1,8 @@
-@include u.i
-%title このサイトについて
+---
+title: このサイトについて
+pre: include/u.i
+post: include/nav.i
+---
 
 .revision
 2009年12月11日更新
@@ -29,5 +32,3 @@
 
 		=アルファベット小文字
 		スイッチだったりイベントだったり。いろいろです。
-
-@include nav.i

@@ -1,5 +1,8 @@
-@include u.i
-%title ロルベニア
+---
+title: ロルベニア
+pre: ../../include/u.i
+post: ../../include/db.i
+---
 
 .revision
 2009年12月12日作成
@@ -87,6 +90,3 @@
 	=関連情報
 	*[マップ一覧|../index.w]
 }
-
-@include db.i
-@include nav.i

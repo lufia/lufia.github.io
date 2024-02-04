@@ -1,5 +1,8 @@
-@include	u.i
-%title	ルフィア
+---
+title: ルフィア
+pre: ../include/u.i
+post: ../include/db.i
+---
 
 .revision
 2009年11月16日更新
@@ -107,6 +110,3 @@
 	|97	6	1	1	4	-	-	6911785	-
 	|98	2	-	-	2	-	-	7017992	-
 	|99	1	3	3	-	-	1	-		-
-
-@include db.i
-@include nav.i

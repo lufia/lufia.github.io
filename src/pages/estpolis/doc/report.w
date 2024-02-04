@@ -1,5 +1,8 @@
-@include u.i
-%title エストポリスレポート
+---
+title: エストポリスレポート
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年11月16日更新
@@ -41,5 +44,3 @@
 	=関連情報
 	*[ドラゴンエッグと宝箱|egg.w]
 }
-
-@include nav.i

@@ -1,5 +1,8 @@
-@include u.i
-%title 限界値
+---
+title: 限界値
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年11月16日更新
@@ -30,5 +33,3 @@
 	=レベル
 	レベルが99(最大)の時に、エッグドラゴンに
 	「レベルを2つ上げる」をお願いしても、何も変わりません。
-
-@include nav.i

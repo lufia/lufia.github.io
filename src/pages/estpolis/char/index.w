@@ -1,5 +1,8 @@
-@include u.i
-%title キャラクターリスト
+---
+title: キャラクターリスト
+pre: ../include/u.i
+post: ../include/db.i
+---
 
 .revision
 2009年11月16日作成
@@ -10,6 +13,3 @@
 	*[ルフィア|lufia.w]
 	*[アグロス|aguro.w]
 	*[ジュリナ|jerin.w]
-
-@include db.i
-@include nav.i

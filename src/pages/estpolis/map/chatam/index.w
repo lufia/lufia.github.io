@@ -1,5 +1,8 @@
-@include u.i
-%title チャタム
+---
+title: チャタム
+pre: ../../include/u.i
+post: ../../include/db.i
+---
 
 .revision
 2009年11月26日更新
@@ -50,6 +53,3 @@
 	=関連情報
 	*[マップ一覧|../index.w]
 }
-
-@include db.i
-@include nav.i

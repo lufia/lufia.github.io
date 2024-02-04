@@ -1,5 +1,8 @@
-@include	u.i
-%title	アグロス
+---
+title: アグロス
+pre: ../include/u.i
+post: ../include/db.i
+---
 
 .revision
 2009年11月16日更新
@@ -103,6 +106,3 @@
 	|97	3	-	-	1	-	1	6524424	-
 	|98	6	-	-	-	-	-	6620349	-
 	|99	3	-	2	-	-	-	-		-
-
-@include db.i
-@include nav.i

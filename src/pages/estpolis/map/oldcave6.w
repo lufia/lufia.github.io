@@ -1,5 +1,8 @@
-@include u.i
-%title いにしえの洞窟 地下6階
+---
+title: いにしえの洞窟 地下6階
+pre: ../include/u.i
+post: ../include/db.i
+---
 
 .revision
 2009年11月15日作成
@@ -55,6 +58,3 @@
 	*[いにしえの洞窟|oldcave/index.w]
 	*[マップ一覧|index.w]
 }
-
-@include db.i
-@include nav.i

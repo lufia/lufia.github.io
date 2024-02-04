@@ -1,5 +1,8 @@
-@include u.i
-%title ジェノバ〜なげきの塔
+---
+title: ジェノバ〜なげきの塔
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年11月16日作成
@@ -40,5 +43,3 @@
 :E
 -オーデルの左の大きな島に、入口が3つ並んだ場所です。
 -左から順番にC, D, Eとしています。
-
-@include nav.i

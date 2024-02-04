@@ -1,5 +1,8 @@
-@include u.i
-%title モンスターリスト
+---
+title: モンスターリスト
+pre: ../include/u.i
+post: ../include/db.i
+---
 
 .revision
 2009年11月15日作成
@@ -148,6 +151,3 @@
 	|[だいちのまじん|megaatlas.w]	2929	416
 	|[アークデーモン|actdemon.w]	3666	587
 	|[ゴールドゴーレム|goldgolem.w]	3333	1039
-
-@include db.i
-@include nav.i

@@ -1,5 +1,8 @@
-@include u.i
-%title データベース
+---
+title: データベース
+pre: include/u.i
+post: include/nav.i
+---
 
 .revision
 2009年11月16日更新
@@ -29,5 +32,3 @@
 	*[マップリスト|map/index.w]
 	*[モンスターリスト|monster/index.w]
 	*[ボスリスト|boss/index.w]
-
-@include nav.i

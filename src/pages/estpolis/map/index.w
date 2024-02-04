@@ -1,5 +1,8 @@
-@include u.i
-%title マップリスト
+---
+title: マップリスト
+pre: ../include/u.i
+post: ../include/db.i
+---
 
 .revision
 2009年11月15日作成
@@ -84,6 +87,3 @@
 	|洞窟		[グラスダールの塔への洞窟|glasdarcave.w]
 	|塔		[グラスダールの塔|glasdar.w]
 	|神殿		[虚空島|doom.w]
-
-@include db.i
-@include nav.i

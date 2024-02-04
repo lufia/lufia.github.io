@@ -1,5 +1,8 @@
-@include u.i
-%title オイルの洞窟への海路
+---
+title: オイルの洞窟への海路
+pre: ../include/u.i
+post: ../include/db.i
+---
 
 .revision
 2009年11月15日作成
@@ -39,6 +42,3 @@
 	=関連情報
 	*[マップ一覧|index.w]
 }
-
-@include db.i
-@include nav.i

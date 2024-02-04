@@ -1,5 +1,8 @@
-@include u.i
-%title エッグドラゴン
+---
+title: エッグドラゴン
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年11月16日更新
@@ -18,5 +21,3 @@
 	*[たいこのたて|../stuff/mightshield.w]
 	*みなもとセット
 	*全員のレベル2UP
-
-@include	nav.i

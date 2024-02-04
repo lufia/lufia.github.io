@@ -1,5 +1,8 @@
-@include u.i
-%title ルフィアノート
+---
+title: ルフィアノート
+pre: include/u.i
+post: include/nav.i
+---
 
 =エストポリス伝記 攻略ノート
 
@@ -63,5 +66,3 @@
 	*[Estpolis DS|https://www.jp.squeare-enix.co.jp/game/detail/est/]
 	*[エストポリス 攻略Wiki|http://www39.atwiki.jp/estpolis/]
 }
-
-@include nav.i

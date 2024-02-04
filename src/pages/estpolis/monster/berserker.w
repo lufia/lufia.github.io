@@ -1,5 +1,8 @@
-@include u.i
-%title バーサーカー
+---
+title: バーサーカー
+pre: ../include/u.i
+post: ../include/db.i
+---
 
 .revision
 2009年11月15日作成
@@ -30,6 +33,3 @@
 	=関連情報
 	*[モンスター一覧|index.w]
 }
-
-@include db.i
-@include nav.i

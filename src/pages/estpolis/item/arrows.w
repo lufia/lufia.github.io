@@ -1,5 +1,8 @@
-@include u.i
-%title アローズ
+---
+title: アローズ
+pre: ../include/u.i
+post: ../include/db.i
+---
 
 .revision
 2009年12月11日更新
@@ -31,6 +34,3 @@
 	=関連情報
 	*[アイテム一覧|index.w]
 }
-
-@include db.i
-@include nav.i

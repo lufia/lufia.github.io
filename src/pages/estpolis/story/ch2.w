@@ -1,5 +1,8 @@
-@include u.i
-%title ロルベニア〜迷いの森
+---
+title: ロルベニア〜迷いの森
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年12月13日更新
@@ -65,5 +68,3 @@
 	=次の章
 	*[ジェノバ〜なげきの塔|ch3.w]
 }
-
-@include nav.i

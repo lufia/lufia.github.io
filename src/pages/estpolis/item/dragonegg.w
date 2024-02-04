@@ -1,5 +1,8 @@
-@include u.i
-%title ドラゴンエッグ
+---
+title: ドラゴンエッグ
+pre: ../include/u.i
+post: ../include/db.i
+---
 
 .revision
 2009年11月15日作成
@@ -36,6 +39,3 @@
 	*[ドラゴンエッグの再配置|../doc/eggpos.w]
 	*[アイテム一覧|index.w]
 }
-
-@include db.i
-@include nav.i

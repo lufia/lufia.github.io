@@ -1,5 +1,8 @@
-@include	u.i
-%title	ジュリナ
+---
+title: ジュリナ
+pre: ../include/u.i
+post: ../include/db.i
+---
 
 .revision
 2009年11月16日更新
@@ -94,6 +97,3 @@
 	|97	3	2	-	-	1	1	7023918	-
 	|98	4	6	-	3	-	1	7124086	-
 	|99	6	1	-	-	-	-	-		-
-
-@include db.i
-@include nav.i

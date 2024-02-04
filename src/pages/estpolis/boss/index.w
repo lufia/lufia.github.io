@@ -1,5 +1,8 @@
-@include u.i
-%title ボスリスト
+---
+title: ボスリスト
+pre: ../include/u.i
+post: ../include/db.i
+---
 
 .revision
 2009年11月15日作成
@@ -25,6 +28,3 @@
 	|[エリーヌ|erim.w]	-	-
 	|[ディオス|daos.w]	65000	0
 	|[ガルディオス|guarddaos.w]	0	0
-
-@include db.i
-@include nav.i

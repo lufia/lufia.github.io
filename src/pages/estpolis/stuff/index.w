@@ -1,5 +1,8 @@
-@include u.i
-%title 装備品リスト
+---
+title: 装備品リスト
+pre: ../include/u.i
+post: ../include/db.i
+---
 
 .revision
 2009年11月15日作成
@@ -186,6 +189,3 @@
 	|[ブラックリング|blackring.w]	非売品	10	8	-
 	|[ウエーブリング|wavering.w]	非売品	30	22	-
 	|[デス・リング|gloomring.w]	非売品	-	-	-
-
-@include db.i
-@include nav.i

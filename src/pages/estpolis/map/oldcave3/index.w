@@ -1,5 +1,8 @@
-@include u.i
-%title いにしえの洞窟 地下3階
+---
+title: いにしえの洞窟 地下3階
+pre: ../../include/u.i
+post: ../../include/db.i
+---
 
 .revision
 2010年1月31日更新
@@ -111,6 +114,3 @@
 	*[いにしえの洞窟|../oldcave/index.w]
 	*[マップ一覧|../index.w]
 }
-
-@include db.i
-@include nav.i

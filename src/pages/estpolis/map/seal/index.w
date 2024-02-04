@@ -1,5 +1,8 @@
-@include u.i
-%title トレック東の洞窟
+---
+title: トレック東の洞窟
+pre: ../../include/u.i
+post: ../../include/db.i
+---
 
 .revision
 2009年12月11日作成
@@ -46,6 +49,3 @@
 	=関連情報
 	*[マップ一覧|../index.w]
 }
-
-@include db.i
-@include nav.i

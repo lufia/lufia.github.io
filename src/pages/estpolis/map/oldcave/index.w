@@ -1,5 +1,8 @@
-@include u.i
-%title いにしえの洞窟
+---
+title: いにしえの洞窟
+pre: ../../include/u.i
+post: ../../include/db.i
+---
 
 .revision
 2010年1月31日更新
@@ -47,5 +50,3 @@
 
 	=メモ
 	古の洞窟は依頼を受けた階までしか降りれません。
-
-@include nav.i

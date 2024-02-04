@@ -1,5 +1,8 @@
-@include u.i
-%title エルフレア
+---
+title: エルフレア
+pre: ../include/u.i
+post: ../include/db.i
+---
 
 .revision
 2009年11月15日作成
@@ -55,6 +58,3 @@
 	=関連情報
 	*[マップ一覧|index.w]
 }
-
-@include db.i
-@include nav.i

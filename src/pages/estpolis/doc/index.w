@@ -1,5 +1,8 @@
-@include u.i
-%title 攻略のヒント
+---
+title: 攻略のヒント
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年11月16日作成
@@ -13,5 +16,3 @@
 	*[限界値|limit.w]
 	*[エストポリスレポート|report.w]
 	*[定期船|ship.w]
-
-@include nav.i

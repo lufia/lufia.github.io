@@ -1,5 +1,8 @@
-@include u.i
-%title グルノーブル北西の塔
+---
+title: グルノーブル北西の塔
+pre: ../../include/u.i
+post: ../../include/db.i
+---
 
 .revision
 2009年12月13日更新
@@ -114,6 +117,3 @@
 	=関連情報
 	*[マップ一覧|../index.w]
 }
-
-@include db.i
-@include nav.i

@@ -1,5 +1,8 @@
-@include u.i
-%title 魔法リスト
+---
+title: 魔法リスト
+pre: ../include/u.i
+post: ../include/db.i
+---
 
 .revision
 2009年11月15日作成
@@ -69,6 +72,3 @@
 	|[スイング|warp.w]	8	全体	一瞬で街へ戻る魔法です
 	|[アテレート|elf.w]	1	全体	エルフレアへ移動する魔法です
 	|[デザー|escape.w]	8	全体	迷宮から地上へ脱出する魔法です
-
-@include db.i
-@include nav.i

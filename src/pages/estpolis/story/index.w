@@ -1,5 +1,8 @@
-@include u.i
-%title 攻略チャート
+---
+title: 攻略チャート
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年11月16日作成
@@ -11,5 +14,3 @@
 	*[ジェノバ〜なげきの塔|ch3.w]
 	*[シャイア第1研究所〜海底の虚空島|ch4.w]
 	*[エプロ〜虚空島|ch5.w]
-
-@include nav.i
