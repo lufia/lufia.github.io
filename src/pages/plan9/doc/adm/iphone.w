@@ -1,5 +1,8 @@
-@include u.i
-%title iPhoneまとめ
+---
+title: iPhoneまとめ
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2008年12月26日更新
@@ -52,5 +55,3 @@
 {
 	=参考ページ
 }
-
-@include nav.i

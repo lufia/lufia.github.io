@@ -1,5 +1,8 @@
-@include u.i
-%title Cコンパイラ
+---
+title: Cコンパイラ
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2004年11月17日更新
@@ -52,5 +55,3 @@
 	*[2006-04-30 Plan9日記|
 	https://oraccha.hatenadiary.org/archive/2006/04/30]
 }
-
-@include nav.i

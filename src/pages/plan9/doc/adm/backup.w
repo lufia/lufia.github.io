@@ -1,5 +1,8 @@
-@include u.i
-%title バックアップ
+---
+title: バックアップ
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2009年9月5日更新
@@ -82,5 +85,3 @@
 	*[mkfs(8)]
 	*[mk9660(8)]
 }
-
-@include nav.i

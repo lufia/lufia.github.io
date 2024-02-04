@@ -1,5 +1,8 @@
-@include u.i
-%title メールサーバの設定
+---
+title: メールサーバの設定
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2009年10月20日更新
@@ -200,5 +203,3 @@
 	*[OP25Bは迷惑メール行為を防げるのか?|
 	http://suzuki.tdiary.net/20080305.html#p01]
 }
-
-@include nav.i

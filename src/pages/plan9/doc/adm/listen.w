@@ -1,5 +1,8 @@
-@include u.i
-%title listenについて
+---
+title: listenについて
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2009年9月28日更新
@@ -59,5 +62,3 @@
 		http://unixluser.org/techmemo/ident/]
 	*[ファイルサーバの管理|fs.w]
 }
-
-@include nav.i

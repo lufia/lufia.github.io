@@ -1,5 +1,8 @@
-@include u.i
-%title secstoreの使い方
+---
+title: secstoreの使い方
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2009年10月20日更新
@@ -50,5 +53,3 @@
 	*[secstore(1)]
 	*[secstore(8)]
 }
-
-@include nav.i

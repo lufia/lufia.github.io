@@ -1,5 +1,8 @@
-@include u.i
-%title Plan 9のアップデート
+---
+title: Plan 9のアップデート
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2011年12月3日更新
@@ -97,5 +100,3 @@ pullに-vオプションを与えると詳細が表示されます。
 	=参考ページ
 	*[配布ファイルの更新|http://p9.nyx.link/replica/]
 }
-
-@include nav.i

@@ -1,5 +1,8 @@
-@include u.i
-%title 64bit環境(9kカーネル)を構築する
+---
+title: 64bit環境(9kカーネル)を構築する
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2016年5月6日作成
@@ -189,5 +192,3 @@
 	!% 9fat:
 	!% cp 9k10cpu /n/9fat
 	!% mk 'CONF=k10cpu' nuke
-
-@include nav.i

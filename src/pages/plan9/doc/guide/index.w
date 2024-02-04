@@ -1,5 +1,8 @@
-@include u.i
-%title システムの使い方
+---
+title: システムの使い方
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2012年10月7日更新
@@ -41,5 +44,3 @@
 	=参考ページ
 	*[Plan9 Programming Environment|http://c.p9c.info/plan9/prog.html]
 }
-
-@include nav.i

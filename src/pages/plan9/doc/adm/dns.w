@@ -1,5 +1,8 @@
-@include u.i
-%title DNSの設定
+---
+title: DNSの設定
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2010年9月4日更新
@@ -91,5 +94,3 @@
 	*[ndb(8)]
 	*[ネットワークの設定|ndb.w]
 }
-
-@include nav.i

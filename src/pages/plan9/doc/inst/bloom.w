@@ -1,5 +1,8 @@
-@include u.i
-%title bloomフィルタ付きventiを作る
+---
+title: bloomフィルタ付きventiを作る
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2015年5月4日更新
@@ -52,5 +55,3 @@
 	!(isectとarenasの間あたりに追加)
 	!bloom /dev/sdC0/bloom
 	!% venti/conf -w /dev/sdC0/arenas /venti.conf
-
-@include nav.i

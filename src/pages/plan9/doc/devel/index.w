@@ -1,5 +1,8 @@
-@include u.i
-%title プログラミング
+---
+title: プログラミング
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2009年10月20日更新
@@ -34,5 +37,3 @@
 	=参考ページ
 	*[Plan9 Programming Environment|http://c.p9c.info/plan9/prog.html]
 }
-
-@include nav.i

@@ -1,5 +1,8 @@
-@include u.i
-%title aux/getflagsの使い方
+---
+title: aux/getflagsの使い方
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2009年9月4日更新
@@ -31,5 +34,3 @@ sedを例にとれば、以下のようになる。
 	=関連情報
 	*[getflags(8)]
 }
-
-@include nav.i

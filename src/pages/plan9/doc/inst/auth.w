@@ -1,5 +1,8 @@
-@include u.i
-%title 認証サーバのインストール
+---
+title: 認証サーバのインストール
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2006年11月12日更新
@@ -187,5 +190,3 @@
 	*[ADSLでお気軽自宅サーバ|
 	http://www.geocities.co.jp/SiliconValley/6131/plan9/easyserver.html]
 }
-
-@include nav.i

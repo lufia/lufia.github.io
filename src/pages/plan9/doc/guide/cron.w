@@ -1,5 +1,8 @@
-@include u.i
-%title cronの使い方
+---
+title: cronの使い方
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2009年12月23日更新
@@ -18,5 +21,3 @@
 	=関連情報
 	*[メールサーバの設定|../adm/smtpd.w]
 }
-
-@include nav.i

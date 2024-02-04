@@ -1,5 +1,8 @@
-@include u.i
-%title html5 generator
+---
+title: html5 generator
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 =wf
 
@@ -182,5 +185,3 @@
 	=BUGS
 	クラスやIDは、セクションや=(Hn)には適用できません。
 	明示的に{}を書いてください。
-
-@include nav.i

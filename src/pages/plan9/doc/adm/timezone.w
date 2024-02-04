@@ -1,5 +1,8 @@
-@include u.i
-%title 時計合わせ
+---
+title: 時計合わせ
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2006年9月4日更新
@@ -147,5 +150,3 @@
 	=参考ページ
 	*[時刻合わせ|http://p9.nyx.link/admin/timezone.html]
 }
-
-@include nav.i

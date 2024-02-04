@@ -1,5 +1,8 @@
-@include u.i
-%title dryad
+---
+title: dryad
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 =dryad
 	Cのライブラリまたは関数をテストするためのコードを自動生成します。
@@ -77,5 +80,3 @@
 	=SEE ALSO
 	*[awk(1)]
 	*[regexp(6)]
-
-@include nav.i

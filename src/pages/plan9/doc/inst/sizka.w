@@ -1,5 +1,8 @@
-@include u.i
-%title Sizka BASICへのインストール
+---
+title: Sizka BASICへのインストール
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2006年9月23日更新
@@ -110,5 +113,3 @@
 	*[Installation instructions|
 	https://9p.io/wiki/plan9/Installation_instructions/index.html]
 }
-
-@include nav.i

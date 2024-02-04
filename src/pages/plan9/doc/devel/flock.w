@@ -1,5 +1,8 @@
-@include u.i
-%title ファイルのロック
+---
+title: ファイルのロック
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2004年11月8日更新
@@ -16,5 +19,3 @@ openやcreateを呼び出す時、明示的にDMEXCLビットを立てるか、
 	*[chmod(1)]
 	*[open(2)]
 }
-
-@include nav.i

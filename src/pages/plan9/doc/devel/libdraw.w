@@ -1,5 +1,8 @@
-@include u.i
-%title libdraw tips
+---
+title: libdraw tips
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2004年11月10日更新
@@ -16,5 +19,3 @@
 	=関連情報
 	*[event(2)]
 }
-
-@include nav.i

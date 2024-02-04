@@ -1,5 +1,8 @@
-@include u.i
-%title drawterm
+---
+title: drawterm
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2009年11月4日更新
@@ -74,5 +77,3 @@
 	*[Plan 9初心者ガイド - Plan9日記|
 	https://oraccha.hatenadiary.org/entry/20090211/1234354600]
 }
-
-@include nav.i

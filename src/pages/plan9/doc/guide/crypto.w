@@ -1,5 +1,8 @@
-@include u.i
-%title ファイルの暗号化と複合
+---
+title: ファイルの暗号化と複合
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2006年10月2日更新
@@ -26,5 +29,3 @@
 	=マニュアル
 	*[secstore(1)]
 }
-
-@include nav.i

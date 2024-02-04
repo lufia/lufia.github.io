@@ -1,5 +1,8 @@
-@include u.i
-%title dryad
+---
+title: games/map
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 =games/map
 	=SYNOPSIS
@@ -84,5 +87,3 @@
 	mapeditは、map言語のmove命令に対応していません。
 	また、mark命令のstringをダブルクォートで括らなければ
 	エラーになります。
-
-@include nav.i

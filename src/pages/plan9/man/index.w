@@ -1,5 +1,8 @@
-@include u.i
-%title 自作ツール集
+---
+title: 自作ツール集
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 =自作ツール集
 .revision
@@ -68,5 +71,3 @@
 	:[win9p|/plan9/src/win9p.zip]
 	-Pythonで書いた、9P用Windowsシェル名前空間拡張
 	-ドライブレター割り当てが不可能のため機能の実装が不可能と分かり、廃棄
-
-@include nav.i

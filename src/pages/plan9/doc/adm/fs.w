@@ -1,5 +1,8 @@
-@include u.i
-%title ファイルサーバの管理
+---
+title: ファイルサーバの管理
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 =ファイルサーバの管理
 .revision
@@ -201,5 +204,3 @@
 	*[fs(8)]
 	*[listenについて|listen.w]
 }
-
-@include nav.i

@@ -1,5 +1,8 @@
-@include u.i
-%title さくらVPSでPlan 9ネットワークを構成してみた
+---
+title: さくらVPSでPlan 9ネットワークを構成してみた
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2014年5月5日作成
@@ -158,5 +161,3 @@
 
 		コントロールパネルから再起動して、bootesを登録したら終わりです。
 		これでdrawtermからアクセスすれば動作するはず。
-
-@include nav.i

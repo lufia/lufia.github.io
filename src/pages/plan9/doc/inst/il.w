@@ -1,5 +1,8 @@
-@include u.i
-%title カーネルにilを組み込む
+---
+title: カーネルにilを組み込む
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2011年7月1日更新
@@ -198,5 +201,3 @@
 	*[Re: 9fans: Kernel and IL|http://9fans.net/archive/2007/10/35]
 	*[IL: 失われたプロトコル|http://www.slideshare.net/oraccha/il-4020522]
 }
-
-@include nav.i

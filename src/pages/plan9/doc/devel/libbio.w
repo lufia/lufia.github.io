@@ -1,5 +1,8 @@
-@include u.i
-%title libbio tips
+---
+title: libbio tips
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2009年9月5日更新
@@ -23,5 +26,3 @@
 	=関連情報
 	*[bio(2)]
 }
-
-@include nav.i

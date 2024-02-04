@@ -1,5 +1,8 @@
-@include u.i
-%title TLS1.2に対応させる
+---
+title: TLS1.2に対応させる
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2015年11月8日更新
@@ -71,5 +74,3 @@
 	=参考ページ
 	*[Apple iOS9 (ATS)への対応|http://www.slideshare.net/tech_jstream/iosats]
 }
-
-@include nav.i

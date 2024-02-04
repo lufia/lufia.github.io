@@ -1,5 +1,8 @@
-@include u.i
-%title 便利そうなコマンド
+---
+title: 便利そうなコマンド
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2012年10月7日作成
@@ -22,5 +25,3 @@ manを読んでいたら便利そうなコマンドがあったのでメモ。
 	=関連情報
 	*[aux/getflagsの使い方|getflags.w]
 }
-
-@include nav.i

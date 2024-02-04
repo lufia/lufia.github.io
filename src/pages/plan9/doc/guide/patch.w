@@ -1,5 +1,8 @@
-@include u.i
-%title patchを送る
+---
+title: patchを送る
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2022年1月15日更新
@@ -46,5 +49,3 @@
 	=マニュアル
 	*[patch(1)]
 }
-
-@include nav.i

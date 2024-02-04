@@ -1,5 +1,8 @@
-@include u.i
-%title CDの取り扱い
+---
+title: CDの取り扱い
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2009年9月5日更新
@@ -38,5 +41,3 @@
 	=マニュアル
 	*[cdfs(4)]
 }
-
-@include nav.i

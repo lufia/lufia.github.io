@@ -1,5 +1,8 @@
-@include u.i
-%title シェル
+---
+title: シェル
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2004年11月29日更新
@@ -31,5 +34,3 @@
 	*[rc - the Plan9 shell|http://p9.nyx.link/rc/index.html]
 	*[rc - the Plan9 shell(2)|http://p9.nyx.link/rc/rc2.html]
 }
-
-@include nav.i

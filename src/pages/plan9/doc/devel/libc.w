@@ -1,5 +1,8 @@
-@include u.i
-%title libc tips
+---
+title: libc tips
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2009年6月29日更新
@@ -16,5 +19,3 @@
 	=関連情報
 	*[atof(2)]
 }
-
-@include nav.i

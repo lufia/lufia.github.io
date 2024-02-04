@@ -1,5 +1,8 @@
-@include u.i
-%title カーネルコンフィグの種類
+---
+title: カーネルコンフィグの種類
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2014年2月22日作成
@@ -34,5 +37,3 @@ fsカーネルに近い運用形態になるのではないでしょうか。
 	*[Compiling kernels|
 	https://9p.io/wiki/plan9/compiling_kernels/index.html]
 }
-
-@include nav.i

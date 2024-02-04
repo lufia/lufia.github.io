@@ -1,5 +1,8 @@
-@include u.i
-%title Infernoメモ
+---
+title: Infernoメモ
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2011年2月14日更新
@@ -82,5 +85,3 @@
 	=参考ページ
 	*[Inferno log|http://c.p9c.info/inferno/ilog.html]
 }
-
-@include nav.i

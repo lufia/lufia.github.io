@@ -1,5 +1,8 @@
-@include u.i
-%title ハードウェア
+---
+title: ハードウェア
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2009年9月6日更新
@@ -44,5 +47,3 @@
 	*[Supported PC Hardware|
 	https://9p.io/wiki/plan9/Supported_PC_hardware/index.html]
 }
-
-@include nav.i

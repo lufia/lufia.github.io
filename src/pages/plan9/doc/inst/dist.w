@@ -1,5 +1,8 @@
-@include u.i
-%title 分散システムのインストール
+---
+title: 分散システムのインストール
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2006年10月30日更新
@@ -206,5 +209,3 @@
 	https://9p.io/wiki/plan9/Installing_a_Plan_9_File_Server/index.html]
 	*[分散システムの構築|http://p9.nyx.link/install/distrib.html]
 }
-
-@include nav.i

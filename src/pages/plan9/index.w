@@ -1,4 +1,7 @@
-@include u.i
+---
+pre: include/u.i
+post: include/nav.i
+---
 
 =Plan 9 archive
 
@@ -30,5 +33,3 @@
 	https://sites.google.com/site/plan9jp/]
 	*[Abaco: A Web Browser for Plan 9|http://lab-fgb.com/abaco/]
 }
-
-@include nav.i

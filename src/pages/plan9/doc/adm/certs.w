@@ -1,5 +1,8 @@
-@include u.i
-%title 正当な証明書を扱う
+---
+title: 正当な証明書を扱う
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2014年5月2日更新
@@ -101,5 +104,3 @@
 	*[RSA 秘密鍵/公開鍵ファイルのフォーマット|http://bearmini.hatenablog.com/entry/2014/02/05/143510]
 	*[legoを使った証明書更新|lego.w]
 }
-
-@include nav.i

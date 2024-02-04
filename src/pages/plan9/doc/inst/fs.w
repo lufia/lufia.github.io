@@ -1,5 +1,8 @@
-@include u.i
-%title ファイルサーバのインストール
+---
+title: ファイルサーバのインストール
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2011年7月23日更新
@@ -240,5 +243,3 @@
 	*[Installing a Plan 9 File Server|
 	https://9p.io/wiki/plan9/Installing_a_Plan_9_File_Server/index.html]
 }
-
-@include nav.i

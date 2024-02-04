@@ -1,5 +1,8 @@
-@include u.i
-%title httpdの立ち上げ
+---
+title: httpdの立ち上げ
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2011年6月2日更新
@@ -47,5 +50,3 @@ securemail.w]の最初をそのまま。
 {
 	=参考ページ
 }
-
-@include nav.i

@@ -1,5 +1,8 @@
-@include u.i
-%title Python
+---
+title: Python
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2009年11月2日更新
@@ -26,5 +29,3 @@
 
 	.console
 	!% @{cd sys/lib && tar c python} | @{cd /sys/lib && tar xT}
-
-@include nav.i

@@ -1,5 +1,8 @@
-@include u.i
-%title IMAP4サービス
+---
+title: IMAP4サービス
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2008年9月21日更新
@@ -53,5 +56,3 @@
 	=参考ページ
 	*[Plan 9 System Management|http://c.p9c.info/plan9/root.html]
 }
-
-@include nav.i

@@ -1,5 +1,8 @@
-@include u.i
-%title 2chファイルサーバ
+---
+title: 2chファイルサーバ
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 =monafs
 	=SYNOPSIS
@@ -176,5 +179,3 @@
 	=関連リンク
 	*[9ch(acme用2chブラウザ)|http://c.p9c.info/plan9/]
 }
-
-@include nav.i

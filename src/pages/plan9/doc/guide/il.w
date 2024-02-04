@@ -1,5 +1,8 @@
-@include u.i
-%title ILプロトコル
+---
+title: ILプロトコル
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 ILの論文をおおよそ意訳でやってみました。
 それと、いろいろコメントやらリンクやらを張っていますが、
@@ -344,5 +347,3 @@ ILの論文をおおよそ意訳でやってみました。
 	*[il.cを読む|../../../notes/2011/0618.w]
 	*[カーネルにilを組み込む|../inst/il.w]
 }
-
-@include nav.i

@@ -1,5 +1,8 @@
-@include u.i
-%title ネットワークの設定
+---
+title: ネットワークの設定
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2009年9月5日更新
@@ -77,5 +80,3 @@
 	*[カーネルにilを組み込む|../inst/il.w]
 	*[DNSの設定|dns.w]
 }
-
-@include nav.i

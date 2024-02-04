@@ -1,5 +1,8 @@
-@include u.i
-%title さくらVPSでPlan 9ネットワークを構成してみた
+---
+title: さくらVPSでPlan 9ネットワークを構成してみた
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2014年5月4日作成
@@ -192,5 +195,3 @@
 		.console
 		!fs# netstat | grep Listen
 		!fs# netstat /net.alt | grep Listen
-
-@include nav.i

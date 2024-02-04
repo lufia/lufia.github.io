@@ -1,5 +1,8 @@
-@include u.i
-%title さくらVPSにPlan 9をインストール
+---
+title: さくらVPSにPlan 9をインストール
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2014年2月22日作成
@@ -137,5 +140,3 @@
 	*[VirtIOを使う|virtio.w]
 	*[Sizka BASICへのインストール|sizka.w]
 }
-
-@include nav.i

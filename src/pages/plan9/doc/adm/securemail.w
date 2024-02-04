@@ -1,5 +1,8 @@
-@include u.i
-%title メール環境の暗号化
+---
+title: メール環境の暗号化
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2009年10月20日更新
@@ -170,5 +173,3 @@
 	-暗号全般についての入門書です。[旧版|
 	http://www.hyuki.com/cr/cr1st.html]を読みました。
 }
-
-@include nav.i

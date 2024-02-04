@@ -1,5 +1,8 @@
-@include u.i
-%title legoを使った証明書更新
+---
+title: legoを使った証明書更新
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2019年6月24日更新
@@ -79,5 +82,3 @@
 	=参考ページ
 	*[正当な証明書を扱う|certs.w]
 }
-
-@include nav.i

@@ -1,5 +1,8 @@
-@include u.i
-%title 関連リソースなど
+---
+title: 関連リソースなど
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2021年9月4日作成
@@ -52,5 +55,3 @@
 	=関連情報
 	*[今から始めるPlan 9|https://blog.lufia.org/entry/2019/12/02/135810]
 }
-
-@include nav.i

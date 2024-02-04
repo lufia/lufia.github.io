@@ -1,5 +1,8 @@
-@include u.i
-%title lufia.orgのサーバ
+---
+title: lufia.orgのサーバ
+pre: include/u.i
+post: include/nav.i
+---
 
 =lufia.orgのサーバ
 
@@ -68,5 +71,3 @@
 	http://www.pinon-pc.co.jp/products/sizka/classic/index.html]
 	:memory
 	-256MB
-
-@include nav.i

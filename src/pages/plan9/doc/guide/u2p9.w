@@ -1,5 +1,8 @@
-@include u.i
-%title UNIXとPlan 9コマンドの違い
+---
+title: UNIXとPlan 9コマンドの違い
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2004年11月7日更新
@@ -16,5 +19,3 @@
 	*[10のPlan9小技|
 	https://oraccha.hatenadiary.org/entry/20070114/1168785476]
 }
-
-@include nav.i

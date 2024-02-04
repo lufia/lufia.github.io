@@ -1,5 +1,8 @@
-@include u.i
-%title lib9p tips
+---
+title: lib9p tips
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2004年11月7日更新
@@ -45,5 +48,3 @@
 	=関連情報
 	*[9p(2)]
 }
-
-@include nav.i

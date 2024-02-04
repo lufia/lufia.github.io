@@ -1,5 +1,8 @@
-@include u.i
-%title hget
+---
+title: hget
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2009年12月11日更新
@@ -20,5 +23,3 @@
 	=参考ページ
 	*[hget(1)]
 }
-
-@include nav.i

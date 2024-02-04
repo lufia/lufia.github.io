@@ -1,5 +1,8 @@
-@include u.i
-%title ハードウェアとインストール
+---
+title: ハードウェアとインストール
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2016年5月7日更新
@@ -50,5 +53,3 @@
 	=参考ページ
 	*[Plan 9運用ノート|http://c.p9c.info/plan9/opr.html]
 }
-
-@include nav.i

@@ -1,5 +1,8 @@
-@include u.i
-%title VirtIOを使う
+---
+title: VirtIOを使う
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 =VirtIOを使う
 
@@ -149,5 +152,3 @@
 	=関連情報
 	*[64bit環境(9kカーネル)を構築する|9k.w]
 }
-
-@include nav.i

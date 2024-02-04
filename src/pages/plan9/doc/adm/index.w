@@ -1,5 +1,8 @@
-@include u.i
-%title システム管理
+---
+title: システム管理
+pre: ../../include/u.i
+post: ../../include/nav.i
+---
 
 .revision
 2019年6月24日更新
@@ -45,5 +48,3 @@
 	=参考ページ
 	*[Plan 9運用ノート|http://c.p9c.info/plan9/opr.html]
 }
-
-@include nav.i
