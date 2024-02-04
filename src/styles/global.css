@@ -72,7 +72,7 @@ h3:before {
 	margin-right: 10px;
 }
 
-body > div#__next > nav {
+body > nav {
 	font-family: "SF Pro JP", "SF Pro Text", "Apple TP", "Myriad Set Pro", "SF Pro Icons", "Hiragino Kaku Gothic Pro", "ヒラギノ角ゴ Pro W3", "メイリオ", "Meiryo", "ＭＳ Ｐゴシック", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
 	background-color: var(--header-background-color);
 	& h1 {
@@ -102,7 +102,7 @@ body > div#__next > nav {
 		}
 	}
 }
-body > div#__next > main {
+body > main {
 	& p.revision {
 		color: var(--revision-color);
 		text-align: right;
@@ -194,7 +194,7 @@ body > div#__next > main {
 		color: var(--note-color);
 	}
 }
-body > div#__next > aside {
+body > aside {
 	padding: 5px var(--card-padding);
 	background-color: var(--footer-background-color);
 	& h1 {
@@ -224,7 +224,7 @@ body > div#__next > aside {
 		}
 	}
 }
-body > div#__next > footer {
+body > footer {
 	padding: 5px var(--card-padding);
 	background-color: var(--footer-background-color);
 	& > p {
@@ -234,7 +234,7 @@ body > div#__next > footer {
 }
 
 @media screen and (min-width: 1024px) {
-	body > div#__next > main {
+	body > main {
 		margin: 0 var(--main-margin);
 		& ul > li {
 			margin-bottom: 0.5em;
@@ -243,23 +243,23 @@ body > div#__next > footer {
 }
 
 @media screen and (max-width: 480px) {
-	body > div#__next > nav ul {
+	body > nav ul {
 		flex-wrap: wrap;
 	}
-	body > div#__next > main {
+	body > main {
 		margin: 0 var(--main-margin--mobile);
 	}
-	body > div#__next > main dl.main-cards,
-	body > div#__next > main ul.main-cards {
+	body > main dl.main-cards,
+	body > main ul.main-cards {
 		display: block;
 		padding: 0;
 	}
-	body > div#__next > main table {
+	body > main table {
 		& th, & td {
 			border: solid 1px var(--table-border-color);
 		}
 	}
-	body > div#__next > aside ul {
+	body > aside ul {
 		display: block;
 		padding: 0;
 		& > li {
