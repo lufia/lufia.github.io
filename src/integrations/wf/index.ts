@@ -126,7 +126,7 @@ async function convert(data: string): string {
 
 function generateCode(html: string): string {
 	const code = `export default function render() {\n
-		return String.raw\`${rawString(html)}\`\n
+		return \`${rawString(html)}\`\n
 	}\n
 	render['astro:html'] = true\n
 	render[Symbol.for("astro.needsHeadRendering")] = false\n`;
@@ -134,5 +134,5 @@ function generateCode(html: string): string {
 }
 
 function rawString(s: string): string {
-	return s.replace(/[\`\$]/, '\\$&');
+	return s.replace(/[\`\$\\]/g, '\\$&');
 }
