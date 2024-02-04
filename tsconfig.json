@@ -6,11 +6,6 @@
       "dom.iterable",
       "esnext"
     ],
-    "paths": {
-      "html-to-react": [
-        "./types/html-to-react"
-      ]
-    },
     "strict": false,
     "noImplicitAny": true,
     "jsx": "preserve",
