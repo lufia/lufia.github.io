@@ -1,4 +1,6 @@
-%title	lufia.org
+---
+title: lufia.org
+---
 
 =lufia.org
 
