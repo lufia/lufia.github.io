@@ -15,12 +15,12 @@ import {
 } from '../../html-generator';
 import { getFileInfo, parseFrontmatter } from './utils.ts';
 
-type SetupHookParams = HookParameters<'astro:config:setup'> & {
+type SetupHookParams = HookParameters<'astro:config:setup'> & Readonly<{
 	// `addPageExtension` and `contentEntryType` are not a public APIs
 	// Add type defs here
 	addPageExtension: (extension: string) => void;
 	addContentEntryType: (contentEntryType: ContentEntryType) => void;
-};
+}>;
 
 export default function wf(): AstroIntegration {
 	return {
