@@ -1,5 +1,8 @@
-@include u.i
-%title セキュリティ
+---
+title: セキュリティ
+pre: include/u.i
+post: include/nav.i
+---
 
 =セキュリティ
 
@@ -27,5 +30,3 @@
 
 	=2007年
 	*[Windows Vista User Access Controlメモ|2007/1101.w]
-
-@include nav.i

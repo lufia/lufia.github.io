@@ -1,5 +1,8 @@
-@include u.i
-%title Alef compilerを移動
+---
+title: Alef compilerを移動
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2010年5月16日作成
@@ -47,5 +50,3 @@ iDisk/Web/Sites以下に置けば、http://web.me.com/user/以下から
 	[zsh/filesで引数の最大バイト数を回避する|
 	http://d.hatena.ne.jp/lurker/20061128/1164722109]
 }
-
-@include nav.i

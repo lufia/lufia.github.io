@@ -1,5 +1,8 @@
-@include u.i
-%title iPhoneの電源が入らない
+---
+title: iPhoneの電源が入らない
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年9月29日作成
@@ -13,5 +16,3 @@ http://support.apple.com/kb/HT1650?viewlocale=ja_JP#faq1]から、
 
 これを試してみたら動き始めました。
 リセットというのは、フリーズしたので電源落とす的なものなんですかね。
-
-@include nav.i

@@ -1,5 +1,8 @@
-@include u.i
-%title 名古屋から帰宅
+---
+title: 名古屋から帰宅
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2007年6月3日作成
@@ -9,5 +12,3 @@
 
 『コンテンツ循環における権利継承の自動化』という論文が、
 情報処理学会の論文誌に出てた。あとで読む。
-
-@include nav.i

@@ -1,5 +1,8 @@
-@include u.i
-%title ちゃっぴー
+---
+title: ちゃっぴー
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2011年4月28日作成
@@ -11,5 +14,3 @@
 *[写真2|0428-1.jpg]
 *[写真3|0428-2.jpg]
 *[写真4|0428-3.jpg]
-
-@include nav.i

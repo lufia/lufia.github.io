@@ -1,5 +1,8 @@
-@include u.i
-%title Plan 9カーネルのブートまわり自分用まとめ
+---
+title: Plan 9カーネルのブートまわり自分用まとめ
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2012年10月14日作成
@@ -140,5 +143,3 @@
 	-bootが実行するfactotumに渡すオプション
 	:debugboot
 	-1なら、デバッグ出力を有効にする
-
-@include nav.i

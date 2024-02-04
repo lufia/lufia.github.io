@@ -1,5 +1,8 @@
-@include u.i
-%title ハードウェアメンテナンス
+---
+title: ハードウェアメンテナンス
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2007年1月10日作成
@@ -9,5 +12,3 @@
 ファイルサーバに使っているPCへ増設しました。計512M。
 
 あと、ついでにCPUファンもリテールのものから交換しました。
-
-@include nav.i

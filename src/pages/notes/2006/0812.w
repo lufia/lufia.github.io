@@ -1,5 +1,8 @@
-@include u.i
-%title 誕生日です
+---
+title: 誕生日です
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2006年8月12日作成
@@ -11,5 +14,3 @@
 まあいろいろやってくれたけど、小学3年からだから、もうずいぶん長いよね。
 
 さてさて、今年は何があるのかなあ。
-
-@include nav.i

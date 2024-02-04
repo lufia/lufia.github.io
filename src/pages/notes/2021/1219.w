@@ -1,5 +1,8 @@
-@include u.i
-%title 設定ファイルやキャッシュの保存先を変更する
+---
+title: 設定ファイルやキャッシュの保存先を変更する
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2021年12月19日作成
@@ -108,5 +111,3 @@
 	*[lufia/til: 環境構築|https://github.com/lufia/til/blob/master/setup.rst]
 	*[XDG Base Directory - ArchWiki|https://wiki.archlinux.org/title/XDG_Base_Directory]
 }
-
-@include nav.i

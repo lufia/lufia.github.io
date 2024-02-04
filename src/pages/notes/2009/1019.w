@@ -1,5 +1,8 @@
-@include u.i
-%title 無線LANのセキュリティ
+---
+title: 無線LANのセキュリティ
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年10月19日作成
@@ -185,5 +188,3 @@
 	=関連情報
 	*[無線LANのセキュリティ2|../2011/0712.w]
 }
-
-@include nav.i

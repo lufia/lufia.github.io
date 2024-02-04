@@ -1,5 +1,8 @@
-@include u.i
-%title Xbox LIVEに繋がらない
+---
+title: Xbox LIVEに繋がらない
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年6月9日作成
@@ -43,5 +46,3 @@
 	http://support.microsoft.com/kb/908874/ja]
 	*[Xbox360でXbox Liveに繋がらなくなった|http://alectrope.ddo.jp/mt/archives/2006/11/22/xbox360_xbox_live_mtu_icmp]
 }
-
-@include nav.i

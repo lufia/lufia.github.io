@@ -1,5 +1,8 @@
-@include u.i
-%title ZWEI IIクリア
+---
+title: ZWEI IIクリア
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年3月26日作成
@@ -46,5 +49,3 @@
 	=見た目を変えて遊ぶサイト
 	*[ZWEI II ツヴァイ 2 こーでぃねーと！|http://zwei2.maplewitch.com/]
 }
-
-@include nav.i

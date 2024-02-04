@@ -1,5 +1,8 @@
-@include u.i
-%title Programming Language Go
+---
+title: Programming Language Go
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年11月11日作成
@@ -25,5 +28,3 @@ http://www.atmarkit.co.jp/news/200911/11/go.html]がありました。
 そんなことより。
 この記者、Linuxに勝てなかったPlan 9の人なのですが、
 この言語についてはどう考えているのでしょう。
-
-@include nav.i

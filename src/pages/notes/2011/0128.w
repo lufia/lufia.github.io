@@ -1,5 +1,8 @@
-@include u.i
-%title SproutCoreのいろいろ
+---
+title: SproutCoreのいろいろ
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2011年1月28日作成
@@ -60,5 +63,3 @@
 
 	SC.Enumerable.reduceMaxは数値比較(<<)なので、
 	DateTime型の比較には使えません。
-
-@include nav.i

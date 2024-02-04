@@ -1,5 +1,8 @@
-@include u.i
-%title target="_blank"
+---
+title: target="_blank"
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2008年9月14日作成
@@ -31,5 +34,3 @@ IE7以降はリンクを中クリックすると別タブで開くのですよ?
 http://blog.blueblack.net/item_18]
 *[IE7自動更新記念に「もっと中クリック使おうぜ」と言ってみる|
 http://blog.naggg.jp/2008/02/middle-click.html]
-
-@include nav.i

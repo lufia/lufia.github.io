@@ -1,5 +1,8 @@
-@include u.i
-%title コロナ禍でお取り寄せしたもの
+---
+title: コロナ禍でお取り寄せしたもの
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2021年12月22日更新
@@ -26,5 +29,3 @@
 :[nonpi foodbox|https://nonpi-foodbox.com/]
 -これも会社のイベントで食べた
 -笹寿司みたいなものがあった記憶がある
-
-@include nav.i

@@ -1,5 +1,8 @@
-@include u.i
-%title Vistaのドキュメントプロパティから[[場所]]タブが消えた
+---
+title: Vistaのドキュメントプロパティから[[場所]]タブが消えた
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2008年8月8日作成
@@ -50,5 +53,3 @@
 	=参考
 	*[Windows Vista のユーザーフォルダの初期値|
 	http://pasofaq.jp/windows/mycomputer/vistausershellfolders.htm]
-
-@include nav.i

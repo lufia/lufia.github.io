@@ -1,5 +1,8 @@
-@include u.i
-%title ファイルサーバSCSI化(2)
+---
+title: ファイルサーバSCSI化(2)
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2007年6月3日作成
@@ -34,5 +37,3 @@
 	!ipmask xxx.xxx.xxx.xxx
 	!filsys main cw0f{w14w15}
 	!filsys dump o
-
-@include nav.i

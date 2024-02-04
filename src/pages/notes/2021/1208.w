@@ -1,5 +1,8 @@
-@include u.i
-%title Google WorkspaceのGmailでDMARC
+---
+title: Google WorkspaceのGmailでDMARC
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2021年12月8日作成
@@ -79,5 +82,3 @@
 
 	*[TXTレコードの値 - Google Workspace管理者ヘルプ|
 	https://support.google.com/a/answer/2716802]
-
-@include nav.i

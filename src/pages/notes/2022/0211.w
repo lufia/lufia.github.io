@@ -1,5 +1,8 @@
-@include u.i
-%title Linuxのパッケージ管理システム
+---
+title: Linuxのパッケージ管理システム
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2022年2月11日作成
@@ -34,5 +37,3 @@
 	https://www.virment.com/how-to-use-appimage-linux/]によると、
 	AppImage形式のファイルに権限を与えて実行するだけで使えるようだけど、
 	配布されているものを見たことがないので、手元で試してはいない。
-
-@include nav.i

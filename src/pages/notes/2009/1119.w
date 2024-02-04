@@ -1,5 +1,8 @@
-@include u.i
-%title エストポリスの新作情報
+---
+title: エストポリスの新作情報
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年11月19日作成
@@ -33,5 +36,3 @@ http://japan.gamespot.com/news/story/0,3800076565,20396967,00.htm]
 ので、まだの人は遊んでみてください。
 
 公式サイトは11月25日公開のようなので、まだないっぽい。
-
-@include nav.i

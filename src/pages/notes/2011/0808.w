@@ -1,5 +1,8 @@
-@include u.i
-%title IPv6の実装を読むよ(途中)
+---
+title: IPv6の実装を読むよ(途中)
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2011年8月8日作成
@@ -193,5 +196,3 @@
 	=icmp6.c
 
 	途中
-
-@include nav.i

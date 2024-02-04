@@ -1,4 +1,7 @@
-@include u.i
+---
+pre: include/u.i
+post: include/nav.i
+---
 
 =orange/note
 
@@ -15,5 +18,3 @@
 	:[ジャンク|junk.w]
 	-どうでもいいもの
 	-自分用メモとか
-
-@include nav.i

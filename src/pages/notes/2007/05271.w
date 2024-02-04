@@ -1,5 +1,8 @@
-@include u.i
-%title 相変わらず、まあ
+---
+title: 相変わらず、まあ
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2007年5月27日作成
@@ -12,5 +15,3 @@ http://gigazine.net/index.php?/news/comments/20070526_music_storage_illegal/]
 
 このまま、行き着くところまで行ってしまうのもありなんじゃないかなあ。
 愉快だと思うよ？
-
-@include nav.i

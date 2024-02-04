@@ -1,5 +1,8 @@
-@include u.i
-%title Vistaの画像タグ保存場所
+---
+title: Vistaの画像タグ保存場所
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年5月26日作成
@@ -50,5 +53,3 @@ XMPの枠組み自体は、依然としてJPEGファイルに埋め込まれた�
 気になる場合は[JPEG Cleaner|
 http://internet.watch.impress.co.jp/cda/biz_tool/2008/06/17/19953.html]
 を使えば、枠組みから他にもいろいろ消してくれます。
-
-@include nav.i

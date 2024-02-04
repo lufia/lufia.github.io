@@ -1,5 +1,8 @@
-@include u.i
-%title iDiskをWindowsエクスプローラから使う
+---
+title: iDiskをWindowsエクスプローラから使う
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年5月24日作成
@@ -19,5 +22,3 @@ http://idisk.me.com/*ja*/$membernameとありますが、jaは不要です。
 \[iDiskを使ってファイルを共有する|
 http://support.apple.com/kb/HT1774?viewlocale=ja_JP]
 というのがあります。こちらのほうが正しいです。
-
-@include nav.i

@@ -1,5 +1,8 @@
-@include u.i
-%title fsバックアップメモ
+---
+title: fsバックアップメモ
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2010年7月5日作成
@@ -166,5 +169,3 @@
 	=参照ページ
 	*[ファイルシステム|http://plan9.aichi-u.ac.jp/fs/]
 }
-
-@include nav.i

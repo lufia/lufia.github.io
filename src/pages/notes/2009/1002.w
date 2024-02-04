@@ -1,5 +1,8 @@
-@include u.i
-%title DISQUS導入テスト
+---
+title: DISQUS導入テスト
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年10月2日作成
@@ -46,5 +49,3 @@ jQueryを使って省略してみたり、divまで動的生成してみたり�
 現状footerの前に置いていますが、うーん。
 かといってfooterにはセクショニングコンテンツは置けないし、
 articleの末尾でもないしなあ。。。
-
-@include nav.i

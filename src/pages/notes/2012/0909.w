@@ -1,5 +1,8 @@
-@include u.i
-%title VMware ESXiの導入
+---
+title: VMware ESXiの導入
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2012年9月9日作成
@@ -169,5 +172,3 @@
 		健全性ステータスをみると、警告が出ていますが、
 		もともと9240-4iはエントリモデルでBBUは付いていないので、
 		そういうものらしいです。
-
-@include nav.i

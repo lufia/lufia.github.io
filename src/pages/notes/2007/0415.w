@@ -1,5 +1,8 @@
-@include u.i
-%title ファイルサーバの再構築
+---
+title: ファイルサーバの再構築
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2007年4月15日作成
@@ -49,5 +52,3 @@ dump中にcacheへアクセスがいくと/adm/usersが読めないようでし�
 +*cannot access /adm/users*
 +プロンプト表示
 +dump終わり
-
-@include nav.i

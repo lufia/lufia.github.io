@@ -1,5 +1,8 @@
-@include u.i
-%title 変数の説明
+---
+title: 変数の説明
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年7月5日作成
@@ -9,5 +12,3 @@
 http://builder.japan.zdnet.com/member/u516876/blog/2009/06/24/entry_27023267/]
 
 うまいなあ。
-
-@include nav.i

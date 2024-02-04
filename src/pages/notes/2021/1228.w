@@ -1,5 +1,8 @@
-@include u.i
-%title コウペンちゃん はなまる日和の思い出
+---
+title: コウペンちゃん はなまる日和の思い出
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2021年12月28日作成
@@ -36,5 +39,3 @@
 {
 	*[コウペンちゃん はなまる日和|https://koupenchan-app.jp/]
 }
-
-@include nav.i

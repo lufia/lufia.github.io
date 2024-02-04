@@ -1,5 +1,8 @@
-@include u.i
-%title Windows Vista User Access Controlメモ
+---
+title: Windows Vista User Access Controlメモ
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2007年11月1日作成
@@ -14,5 +17,3 @@
 	=コマンドを管理者権限で実行する
 	コマンドプロンプトを管理者として実行すれば、
 	子プロセスにも権限が継承される。
-
-@include nav.i

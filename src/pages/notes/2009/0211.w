@@ -1,5 +1,8 @@
-@include u.i
-%title あきらめたらそこで
+---
+title: あきらめたらそこで
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年2月11日作成
@@ -43,5 +46,3 @@ dumpfsは、fossil+ventiへと完全に置き換わりました。
 置き換えなければ失敗というのは、横暴じゃないでしょうか。
 
 少なくとも、ろくに調べもしないこの人に、失敗だったと言われたくはないな。
-
-@include nav.i

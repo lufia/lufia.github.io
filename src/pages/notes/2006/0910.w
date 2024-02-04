@@ -1,5 +1,8 @@
-@include u.i
-%title Flash Player 9の設定
+---
+title: Flash Player 9の設定
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2006年9月10日作成
@@ -13,5 +16,3 @@ http://www.adobe.com/shockwave/download/?P1_Prod_Version=ShockwaveFlash&Lang=Jap
 
 そうすると、*NPSWF32.dll*ファイルが1つだけ展開されるので、
 それを(Syleraをインストールした場所)\plugins\にコピーしてSyleraを再起動。
-
-@include nav.i

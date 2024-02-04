@@ -1,5 +1,8 @@
-@include u.i
-%title SproutCoreのGUIデザイン
+---
+title: SproutCoreのGUIデザイン
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2011年2月26日更新
@@ -570,5 +573,3 @@
 {
 	*[SproutCoreのモデル定義|1203.w]
 }
-
-@include nav.i

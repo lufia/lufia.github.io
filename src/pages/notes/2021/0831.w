@@ -1,5 +1,8 @@
-@include u.i
-%title オリンピック開会式
+---
+title: オリンピック開会式
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2021年8月31日作成
@@ -39,5 +42,3 @@ MIKIKO案から変わってしまった影響とか、時間がなかったな�
 
 *[Twitter: @GraceReason426|https://twitter.com/GraceReason426/status/1418184092726620174]
 *[幻の"MIKIKOチーム版"五輪開会式を完全再現！|https://bunshun.jp/denshiban/articles/b1486]
-
-@include nav.i

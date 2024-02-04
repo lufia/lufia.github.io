@@ -1,5 +1,8 @@
-@include u.i
-%title 無線LANのセキュリティ2
+---
+title: 無線LANのセキュリティ2
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2011年7月12日作成
@@ -122,4 +125,3 @@ openssl rand -base64と(おそらく)似たプログラムを書きました。
 	=関連情報
 	*[無線LANのセキュリティ|../2009/1019.w]
 }
-@include nav.i

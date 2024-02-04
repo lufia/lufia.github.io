@@ -1,5 +1,8 @@
-@include u.i
-%title XPathすごいね
+---
+title: XPathすごいね
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2008年2月14日作成
@@ -54,5 +57,3 @@
 	http://www.doraneko.org/xml/xpath10/19991116/Overview.html]
 	*[JavaScript-XPath|
 	http://d.hatena.ne.jp/amachang/20071112/1194856493]
-
-@include nav.i

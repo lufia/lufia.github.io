@@ -1,5 +1,8 @@
-@include u.i
-%title Geode NX
+---
+title: Geode NX
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2006年12月5日作成
@@ -14,5 +17,3 @@ FSB133に変えた以外は電圧も倍率もいじってないのですが、
 消費電力が落ちてくれるとうれしいなあ。
 
 そろそろPlan 9でサーバ運用しましょうかね。
-
-@include nav.i

@@ -1,5 +1,8 @@
-@include u.i
-%title 2001年宇宙の旅(2001: A Space Odyssey)
+---
+title: "2001年宇宙の旅(2001: A Space Odyssey)"
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年2月1日作成
@@ -18,5 +21,3 @@ LIVE A LIVE - SF偏の元ネタだと聞いたので観てみました。
 で、結局、最後のアレは何だったのでしょう。
 小説版は2010, 2061, 3001年と(映画は2010まで)続くらしいので、
 いつか読んでみようかと思います。
-
-@include nav.i

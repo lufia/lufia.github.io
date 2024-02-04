@@ -1,5 +1,8 @@
-@include u.i
-%title ゴエモンDS
+---
+title: ゴエモンDS
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2010年1月4日作成
@@ -18,5 +21,3 @@
 	=攻略サイト
 	*[がんばれゴエモン東海道中大江戸天狗り返しの巻 支援ページ|
 	http://www.geocities.jp/gannbaregoemonn2005/]
-
-@include nav.i

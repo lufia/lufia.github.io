@@ -1,5 +1,8 @@
-@include u.i
-%title nftablesの導入
+---
+title: nftablesの導入
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2022年8月12日更新
@@ -29,5 +32,3 @@ Dockerを使う場合、*docker0*のパケットがdropされて困る。
 -こちらの方が新しい手法の雰囲気がある
 :[nftablesでdockerを使ってみました|https://ny-a.github.io/blog2/2020-02/nftables-with-docker/]
 -*iptables-nft*を使う方法
-
-@include nav.i

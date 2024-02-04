@@ -1,5 +1,8 @@
-@include u.i
-%title PS4のXMBに突然出てくる広告を停止する
+---
+title: PS4のXMBに突然出てくる広告を停止する
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2022年12月20日作成
@@ -12,5 +15,3 @@ XMBという重要な場所に広告が表示されるのが不快だったの�
 PS4のXMBで*システム*を起動して、*自動ダウンロード*を開き、*おすすめコンテンツ*のチェックを外す。
 
 これで広告を停止できる。
-
-@include nav.i

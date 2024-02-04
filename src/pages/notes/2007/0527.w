@@ -1,5 +1,8 @@
-@include u.i
-%title ファイルサーバSCSI化(1)
+---
+title: ファイルサーバSCSI化(1)
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2007年5月27日作成
@@ -28,5 +31,3 @@ googleで調べてもそれらしい記述は無いし。
 初期不良の可能性もあるとのことなので、
 返送して現在1週間経過。。。
 さてさて、どうなることやら。
-
-@include nav.i

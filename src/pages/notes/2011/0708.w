@@ -1,5 +1,8 @@
-@include u.i
-%title Excelメモ
+---
+title: Excelメモ
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2011年7月8日作成
@@ -89,4 +92,3 @@ Excelからみえるクリップボードが消えているためショートカ
 	*[相対参照と絶対参照を変換する|
 	http://www.officetanaka.net/excel/vba/tips/tips117.htm]
 }
-@include nav.i

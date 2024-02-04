@@ -1,5 +1,8 @@
-@include u.i
-%title SproutCoreモデル定義
+---
+title: SproutCoreモデル定義
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2011年2月14日更新
@@ -427,5 +430,3 @@
 	http://wiki.sproutcore.com/w/page/28716312/Showing-a-relation-as-selection-on-a-list-view]
 	*[DateTime|http://wiki.sproutcore.com/w/page/12412887/DateTime]
 }
-
-@include nav.i

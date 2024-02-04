@@ -1,5 +1,8 @@
-@include u.i
-%title RSSリーダー
+---
+title: RSSリーダー
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2016年9月25日作成
@@ -42,5 +45,3 @@ TwitterやSlackは未読であっても流れてしまうので、個人的な�
 具体的には今まで、*9fans*や*golang-nuts*はメールを読んで、
 RSSはPulseで読むといったことをしていましたが、未読記事が複数のアプリに分散するし、
 ユーザとしてはアプリを使い分ける理由が全くないので、思った以上に快適です。
-
-@include nav.i

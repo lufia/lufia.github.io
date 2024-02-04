@@ -1,5 +1,8 @@
-@include u.i
-%title Win2008 R2でCドライブが肥大化
+---
+title: Win2008 R2でCドライブが肥大化
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2011年6月6日作成
@@ -39,5 +42,3 @@
 {
 	=参考サイト
 }
-
-@include nav.i

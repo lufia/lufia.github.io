@@ -1,5 +1,8 @@
-@include u.i
-%title HHKBを快適に使う
+---
+title: HHKBを快適に使う
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2015年7月18日作成
@@ -120,5 +123,3 @@
 	=関連情報
 	*[Mac移行まとめ|../2009/1223.w]
 }
-
-@include nav.i

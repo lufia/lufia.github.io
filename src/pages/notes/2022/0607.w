@@ -1,5 +1,8 @@
-@include u.i
-%title ffmpegでHTTPリクエストにヘッダを追加する
+---
+title: ffmpegでHTTPリクエストにヘッダを追加する
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2022年6月7日作成
@@ -46,5 +49,3 @@ https://trac.ffmpeg.org/wiki/Concatenate]など、
 	*[Packet corruption during download, then ffmpeg hangs|
 	https://superuser.com/questions/1656570/packet-corruption-during-download-then-ffmpeg-hangs]
 }
-
-@include nav.i

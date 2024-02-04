@@ -1,5 +1,8 @@
-@include u.i
-%title lcコマンドが消えた？
+---
+title: lcコマンドが消えた？
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2007年3月3日作成
@@ -21,5 +24,3 @@ WORMのスーパーブロックが読めないとか出てました。
 確かに単体の認証サーバからfs64をマウントしてみると、
 \*/n/fs/rc/bin/lc*は普通にそこにあったしなあ。。
 WORMディスクの交換ってどうすればいいんだろう。。。
-
-@include nav.i

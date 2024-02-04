@@ -1,5 +1,8 @@
-@include u.i
-%title GitHubの慣習的なリポジトリ名
+---
+title: GitHubの慣習的なリポジトリ名
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2021年9月5日作成
@@ -36,5 +39,3 @@
 	:ama
 	-Ask Me Anything
 	-ユーザーへの質問用リポジトリ
-
-@include nav.i

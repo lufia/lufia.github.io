@@ -1,5 +1,8 @@
-@include u.i
-%title xpathコマンド
+---
+title: xpathコマンド
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年11月2日作成
@@ -89,5 +92,3 @@ http://lab.hde.co.jp/2008/08/pythonunicodeencodeerror.html]が
 	=関連情報
 	*[XPathすごいね|2008/0214.w]
 }
-
-@include nav.i

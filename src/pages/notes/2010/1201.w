@@ -1,5 +1,8 @@
-@include u.i
-%title SproutCore開発環境構築
+---
+title: SproutCore開発環境構築
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2011年1月28日更新
@@ -95,5 +98,3 @@
 	*[モバイルWebアプリケーションフレームワークの比較|
 	http://www.ibm.com/developerworks/jp/web/library/wa-mobilewebapp/]
 }
-
-@include nav.i

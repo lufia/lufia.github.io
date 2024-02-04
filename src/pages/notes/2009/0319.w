@@ -1,5 +1,8 @@
-@include u.i
-%title Win9p
+---
+title: Win9p
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年3月19日作成
@@ -35,5 +38,3 @@ Pythonに限らず、参考になるソースが見つからなかったのが�
 この記事には追記があります。
 *[Win9pその後|0524.w]
 *[Windowsファイルシステム開発|0626.w]
-
-@include nav.i

@@ -1,5 +1,8 @@
-@include u.i
-%title Accessメモ
+---
+title: Accessメモ
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2010年5月12日更新
@@ -70,4 +73,3 @@
 	=関連情報
 	*[SQL Serverのメモ|../2011/0805.w]
 }
-@include nav.i

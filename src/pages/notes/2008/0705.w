@@ -1,5 +1,8 @@
-@include u.i
-%title 空の軌跡
+---
+title: 空の軌跡
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2008年7月5日作成
@@ -17,5 +20,3 @@ SCのレーヴェ戦まで進めました。もうすこしでED。
 ( ﾟдﾟ )
 
 …何あれ…?
-
-@include nav.i

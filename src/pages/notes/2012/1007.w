@@ -1,5 +1,8 @@
-@include u.i
-%title ESXiでfsカーネルのブート
+---
+title: ESXiでfsカーネルのブート
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2012年10月7日作成
@@ -158,5 +161,3 @@
 	!	wakeup()
 	!	launchinit()
 	!	schedinit()
-
-@include nav.i

@@ -1,5 +1,8 @@
-@include u.i
-%title 聖剣伝説DS Children of Manaクリア
+---
+title: 聖剣伝説DS Children of Manaクリア
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年8月5日作成
@@ -24,5 +27,3 @@
 	*[聖剣伝説DSコンプリートガイド|
 	http://www.wa.commufa.jp/~lalut/seikenDS.html]
 }
-
-@include nav.i

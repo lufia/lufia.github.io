@@ -1,5 +1,8 @@
-@include u.i
-%title 読んだ本リスト
+---
+title: 読んだ本リスト
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年4月12日作成
@@ -23,5 +26,3 @@
 
 やろうとしていることは多いけど、先が見えなくて嫌になったので、
 別のことをはじめて現実逃避的な。
-
-@include nav.i

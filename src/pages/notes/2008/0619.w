@@ -1,5 +1,8 @@
-@include u.i
-%title 停電
+---
+title: 停電
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2008年6月19日作成
@@ -32,5 +35,3 @@ http://windowsvista.nomaki.jp/vistacustomize/vistashutdown.html]
 >スリープ状態では、データの保存はメモリ、HDDの両方へ保存します。
 >通常復帰する際はメモリからデータを復帰するため高速に復帰が可能です。
 >万が一電源が切れた場合はHDDから復帰します。
-
-@include nav.i

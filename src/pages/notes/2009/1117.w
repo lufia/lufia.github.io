@@ -1,5 +1,8 @@
-@include u.i
-%title ルフィアノート再構築と/env
+---
+title: ルフィアノート再構築と/env
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年11月17日作成
@@ -156,5 +159,3 @@
 	!n=`{echo $flagP '*' $d + 1 | hoc}
 	!t=`{echo $n + $d - 1 | hoc}
 	!ls $opt $* | sed -n $n,$t^p
-
-@include nav.i

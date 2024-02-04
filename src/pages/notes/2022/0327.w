@@ -1,5 +1,8 @@
-@include u.i
-%title VAIO Z(VJZ1421)を買った
+---
+title: VAIO Z(VJZ1421)を買った
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2022年3月27日作成
@@ -89,5 +92,3 @@
 
 	*[VAIOに入れたLinuxで静音モードやバッテリーケアを有効にする|
 	https://blog.myon.info/entry/2014/01/15/entry/]
-
-@include nav.i

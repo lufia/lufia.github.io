@@ -1,5 +1,8 @@
-@include u.i
-%title GitHubのリッチなタスクリスト
+---
+title: GitHubのリッチなタスクリスト
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2023年2月6日作成
@@ -24,5 +27,3 @@
 この書き方では、表示がリッチになっており、タスクの追加などをUI上からできる。
 
 *[About Tasklists|https://docs.github.com/en/issues/tracking-your-work-with-issues/about-tasklists]
-
-@include nav.i

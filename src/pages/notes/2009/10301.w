@@ -1,5 +1,8 @@
-@include u.i
-%title document.writeのリダイレクト
+---
+title: document.writeのリダイレクト
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年10月30日作成
@@ -38,5 +41,3 @@
 
 誰かが作っていてもおかしくないと思うのですが、
 HTTPのリダイレクトばかり引っかかりやがります。
-
-@include nav.i

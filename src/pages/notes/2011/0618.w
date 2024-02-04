@@ -1,5 +1,8 @@
-@include u.i
-%title il.cを読む
+---
+title: il.cを読む
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2011年6月18日作成
@@ -471,5 +474,3 @@
 	*[ILプロトコル|../../plan9/doc/guide/il.w]
 	*[カーネルにilを組み込む|../../plan9/doc/inst/il.w]
 }
-
-@include nav.i

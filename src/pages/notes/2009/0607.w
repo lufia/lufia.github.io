@@ -1,5 +1,8 @@
-@include u.i
-%title ミステリートひとまずクリア
+---
+title: ミステリートひとまずクリア
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年6月7日作成
@@ -49,5 +52,3 @@
 	*[ミステリートと探偵紳士って何種類あるの?|
 	http://blog.livedoor.jp/abel_/archives/51318214.html]
 }
-
-@include nav.i

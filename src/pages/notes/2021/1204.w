@@ -1,5 +1,8 @@
-@include u.i
-%title GitのCombined Diffフォーマット
+---
+title: GitのCombined Diffフォーマット
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2021年12月4日作成
@@ -108,5 +111,3 @@
 
 	*[Git - 高度なマージ手法|
 	https://git-scm.com/book/ja/v2/Git-%E3%81%AE%E3%81%95%E3%81%BE%E3%81%96%E3%81%BE%E3%81%AA%E3%83%84%E3%83%BC%E3%83%AB-%E9%AB%98%E5%BA%A6%E3%81%AA%E3%83%9E%E3%83%BC%E3%82%B8%E6%89%8B%E6%B3%95#_combined_diff_%E5%BD%A2%E5%BC%8F]
-
-@include nav.i

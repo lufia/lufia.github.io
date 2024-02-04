@@ -1,5 +1,8 @@
-@include u.i
-%title CSSの:where()疑似クラス関数
+---
+title: CSSの:where()疑似クラス関数
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2022年6月30日作成
@@ -10,5 +13,3 @@
 MDNのサンプルで`:is()`と比較されているところがとても分かりやすい。
 
 *[:where() - CSS|https://developer.mozilla.org/ja/docs/Web/CSS/:where]
-
-@include nav.i

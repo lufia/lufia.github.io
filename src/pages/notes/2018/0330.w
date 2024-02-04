@@ -1,5 +1,8 @@
-@include u.i
-%title 大阪北梅田で医者探し
+---
+title: 大阪北梅田で医者探し
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2018年3月30日作成
@@ -28,5 +31,3 @@
 	済生会中津病院の紹介もしているらしい。
 
 	*[江川整形外科|http://www.hgbcc.com/clinic/egawa.html]
-
-@include nav.i

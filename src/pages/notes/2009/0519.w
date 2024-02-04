@@ -1,5 +1,8 @@
-@include u.i
-%title GENOウイルス
+---
+title: GENOウイルス
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年5月19日作成
@@ -60,5 +63,3 @@
 	JavaScriptは、それしか対策が無いなら切りますが、
 	アップデートすれば解決するようなのでそのまま。
 	最新版にしたうえでJavaScriptを切るのは、やりすぎだと思うなあ。
-
-@include nav.i

@@ -1,5 +1,8 @@
-@include u.i
-%title iPhone交換
+---
+title: iPhone交換
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2008年12月23日作成
@@ -56,5 +59,3 @@
 	=参考にしたサイト
 	*[iPhone交換後の復元手順|
 	http://d.hatena.ne.jp/nisoyasu/20081031/1225421344]
-
-@include nav.i

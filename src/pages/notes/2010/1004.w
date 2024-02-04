@@ -1,5 +1,8 @@
-@include u.i
-%title ヘッドフォン検討
+---
+title: ヘッドフォン検討
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2010年10月4日作成
@@ -23,5 +26,3 @@ http://www.princeton.co.jp/product/digitalaudio/ptmbah3.html]
 特に不満はないのですが、もう少し選択肢が欲しいなあ、と思います。
 
 耳に入れるタイプのものは、痛くなるからあまり好みじゃないのですよねえ。。
-
-@include nav.i

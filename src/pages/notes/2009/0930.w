@@ -1,5 +1,8 @@
-@include u.i
-%title Googleも最近じゅうぶんに強引だと思う
+---
+title: Googleも最近じゅうぶんに強引だと思う
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年9月30日作成
@@ -50,5 +53,3 @@
 	Windows Server 2008には、[RemoteApp|
 	http://enterprise.watch.impress.co.jp/cda/special/2007/11/29/11674.html]
 	という機能があるみたいですね。
-
-@include nav.i

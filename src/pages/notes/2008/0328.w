@@ -1,5 +1,8 @@
-@include u.i
-%title 夜麻みゆき先生を応援します
+---
+title: 夜麻みゆき先生を応援します
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2008年3月28日作成
@@ -27,5 +30,3 @@
 	今は再開されたことだけで、じゅうぶんです。
 
 	*[miyuki's blog|http://yaplog.jp/miyuki333/]
-
-@include nav.i

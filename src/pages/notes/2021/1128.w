@@ -1,5 +1,8 @@
-@include u.i
-%title 最近のタスク管理
+---
+title: 最近のタスク管理
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2021年11月28日作成
@@ -66,5 +69,3 @@
 	=便利なこと
 
 	旅行準備チェックリストなどを*.github/ISSUE_TEMPLATE*で作っておくと便利だった。
-
-@include nav.i

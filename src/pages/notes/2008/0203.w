@@ -1,5 +1,8 @@
-@include u.i
-%title AtomとXSLTと名前空間(2)
+---
+title: AtomとXSLTと名前空間(2)
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2008年1月15日作成
@@ -77,5 +80,3 @@
 
 	*[CSSレイアウトの定石 WinIE6バグ回避法|http://mb.blog7.fc2.com/blog-entry-83.html]
 	*[CSSによる段組(マルチカラム)レイアウト講座|http://www.geocities.jp/multi_column/]
-
-@include nav.i

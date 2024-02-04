@@ -1,5 +1,8 @@
-@include u.i
-%title Alefコンパイラの中で出てくる型
+---
+title: Alefコンパイラの中で出てくる型
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年4月21日作成
@@ -76,5 +79,3 @@
 	!		int i;		/* ここでiはブロック外のiとは別の変数 */
 	!	}
 	!}
-
-@include nav.i

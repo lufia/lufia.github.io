@@ -1,5 +1,8 @@
-@include u.i
-%title Goで繰り返しごとにスリープしたい時の書き方
+---
+title: Goで繰り返しごとにスリープしたい時の書き方
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2023年8月12日作成
@@ -19,5 +22,3 @@
 
 このコードはgolang-nutsの[Looping and tail-end code|
 https://groups.google.com/g/golang-nuts/c/aZhtxUv3pdQ]を参照した。
-
-@include nav.i

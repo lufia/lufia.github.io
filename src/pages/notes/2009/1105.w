@@ -1,5 +1,8 @@
-@include u.i
-%title MobileMeでブックマークが同期しない
+---
+title: MobileMeでブックマークが同期しない
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年11月5日作成
@@ -39,5 +42,3 @@ http://discussions.apple.com/thread.jspa?messageID=10246721]より)は
 	*[Push Notificationの実装方法|
 	http://iphone.longearth.net/2009/09/01/]
 }
-
-@include nav.i

@@ -1,5 +1,8 @@
-@include u.i
-%title ランチサンドが好きでした
+---
+title: ランチサンドが好きでした
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2010年3月16日作成
@@ -11,5 +14,3 @@
 
 うーん。へこむ。
 もうコンビニサンドは食べたくないしなあ。。。
-
-@include nav.i

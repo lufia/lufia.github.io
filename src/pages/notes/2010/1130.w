@@ -1,5 +1,8 @@
-@include u.i
-%title WindowsインストーラWiX
+---
+title: WindowsインストーラWiX
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2010年11月30日作成
@@ -174,5 +177,3 @@
 	*[GUIDを生成する|
 	http://cml.s10.xrea.com/ej/WiX/generate_guids.htm]
 }
-
-@include nav.i

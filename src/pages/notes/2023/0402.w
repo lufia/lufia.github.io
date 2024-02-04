@@ -1,5 +1,8 @@
-@include u.i
-%title debパッケージのマルチアーキテクチャ
+---
+title: debパッケージのマルチアーキテクチャ
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2023年4月2日作成
@@ -108,5 +111,3 @@
 	*[サポートするハードウェア|
 	https://www.debian.org/releases/stable/arm64/ch02s01.ja.html]
 }
-
-@include nav.i

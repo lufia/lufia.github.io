@@ -1,5 +1,8 @@
-@include u.i
-%title シンプルライフ
+---
+title: シンプルライフ
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2007年10月24日作成
@@ -7,5 +10,3 @@
 
 なんとなくですが、物を極力減らそうと思います。
 もう遊ばないゲームとか、売ってしまおう。
-
-@include nav.i

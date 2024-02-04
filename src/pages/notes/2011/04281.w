@@ -1,5 +1,8 @@
-@include u.i
-%title ファイルサーバを読む
+---
+title: ファイルサーバを読む
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2011年5月17日更新
@@ -478,5 +481,3 @@
 	=参考サイト
 	*[cwfsの研究|http://plan9.aichi-u.ac.jp/cwfs/]
 }
-
-@include nav.i

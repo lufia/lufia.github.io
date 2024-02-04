@@ -1,5 +1,8 @@
-@include u.i
-%title FATファイルシステム
+---
+title: FATファイルシステム
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2011年5月27日作成
@@ -19,5 +22,3 @@ http://www.geocities.jp/kabavm/fat.html]
 http://support.microsoft.com/kb/140365/ja]
 *[W98:FAT16、FAT32 でディレクトリ内に作成できる最大ファイル数|
 http://support.microsoft.com/kb/436213/ja]
-
-@include nav.i

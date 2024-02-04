@@ -1,5 +1,8 @@
-@include u.i
-%title 家計簿作成メモ
+---
+title: 家計簿作成メモ
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2010年5月9日更新
@@ -154,5 +157,3 @@ webアプリ家計簿を作ったときに調べたことをメモ。
 	*[WebメールのHTTP通信の危険性|
 	http://www.security.gs/magazine/security/2010/04/14/story_2518/]
 }
-
-@include nav.i

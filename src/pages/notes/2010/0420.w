@@ -1,5 +1,8 @@
-@include u.i
-%title Inferno httpdとマルチバイト
+---
+title: Inferno httpdとマルチバイト
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2011年5月14日更新
@@ -97,5 +100,3 @@ httpdを2点ほど修正しました。
 .note
 svc/httpdに-Dオプションを与えると、/services/httpd以下に
 詳細なログを書き出します。問題解決にとても役立ちます。
-
-@include nav.i

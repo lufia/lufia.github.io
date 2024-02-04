@@ -1,5 +1,8 @@
-@include u.i
-%title ファイルサーバカーネルをハックする
+---
+title: ファイルサーバカーネルをハックする
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2007年4月21日作成
@@ -31,5 +34,3 @@
 そろそろめんどくさくなってきたので、適当にハックして今に至る。
 
 パッチは/n/sources/patch/fs-ataに投げました。
-
-@include nav.i

@@ -1,5 +1,8 @@
-@include u.i
-%title ジャンク
+---
+title: ジャンク
+pre: include/u.i
+post: include/nav.i
+---
 
 =ジャンク
 
@@ -52,5 +55,3 @@
 	*[geekとnerd|2006/0724.w]
 	*[誕生日です|2006/0812.w]
 	*[思いついたままに書きなぐってみる|2006/1118.w]
-
-@include nav.i

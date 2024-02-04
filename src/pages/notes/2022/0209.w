@@ -1,5 +1,8 @@
-@include u.i
-%title ArchLinuxのPythonでpkg_resourcesモジュールが見つからない
+---
+title: ArchLinuxのPythonでpkg_resourcesモジュールが見つからない
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2022年2月9日作成
@@ -42,5 +45,3 @@ ArchLinuxで`awslogs`を実行したとき以下のエラーが発生した。
 
 .console
 !$ sudo pacman -S --asdeps python-setuptools
-
-@include nav.i

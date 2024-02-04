@@ -1,5 +1,8 @@
-@include u.i
-%title FF4TAの隠し召喚獣
+---
+title: FF4TAの隠し召喚獣
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2021年9月26日作成
@@ -40,5 +43,3 @@ FF4TAの隠し召喚獣はFF4本編と同じでゴブリン、ボム、コカト
 \<リディア編|0926-3.png>
 
 つらかった。
-
-@include nav.i

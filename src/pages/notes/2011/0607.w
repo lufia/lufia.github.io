@@ -1,5 +1,8 @@
-@include u.i
-%title ASP.NETページ構文とHTMLヘルパ
+---
+title: ASP.NETページ構文とHTMLヘルパ
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2011年6月7日作成
@@ -107,5 +110,3 @@
 	http://support.microsoft.com/kb/976112/en-us]
 	*[HTMLヘルパーを活用|http://d.hatena.ne.jp/shiba-yan/20110327/1301152413]
 }
-
-@include nav.i

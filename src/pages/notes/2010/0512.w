@@ -1,5 +1,8 @@
-@include u.i
-%title Inferno Wiki
+---
+title: Inferno Wiki
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2010年5月12日作成
@@ -46,5 +49,3 @@
 	*[InfernoのHTTPでCGIを書く|
 	http://inferno-hell.blogspot.com/2010/01/infernohttpcgi.html]
 }
-
-@include nav.i

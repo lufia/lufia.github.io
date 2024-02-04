@@ -1,5 +1,8 @@
-@include u.i
-%title geekとnerd
+---
+title: geekとnerd
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2006年7月24日作成
@@ -43,5 +46,3 @@
 	*[goo辞書geek|http://dictionary.goo.ne.jp/leaf/ej2/29010/m0u/geek/]
 	*[goo辞書nerd|http://dictionary.goo.ne.jp/leaf/ej2/48308/m0u/nerd/]
 }
-
-@include nav.i

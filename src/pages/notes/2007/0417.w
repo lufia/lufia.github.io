@@ -1,5 +1,8 @@
-@include u.i
-%title うまくない
+---
+title: うまくない
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2007年4月17日作成
@@ -16,5 +19,3 @@
 
 今度は、マザーボードのIDEに繋がったHDDを、
 SATAカードのほうに移行してみようかと思います。
-
-@include nav.i

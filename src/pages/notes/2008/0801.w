@@ -1,5 +1,8 @@
-@include u.i
-%title Plan 9 to Inferno translation
+---
+title: Plan 9 to Inferno translation
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2010年5月12日更新
@@ -38,5 +41,3 @@
 
 	=他にも
 	気づいたらこの記事に追記します。
-
-@include nav.i

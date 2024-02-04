@@ -1,5 +1,8 @@
-@include u.i
-%title Windows 8.1以降でWi-Fiが「制限あり」になる
+---
+title: Windows 8.1以降でWi-Fiが「制限あり」になる
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2016年9月26日作成
@@ -35,5 +38,3 @@ MacBook AirのBootcampでWindowsを使っていますが、
 	http://blog.kuborn.info/2013/11/macbook-air-13-inch-mid-2011windows81lan.html]
 	*[Boot Camp Support Software 4.1.4586|https://support.apple.com/kb/DL1637?locale=ja_JP]
 }
-
-@include nav.i

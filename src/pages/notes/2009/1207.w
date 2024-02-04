@@ -1,5 +1,8 @@
-@include u.i
-%title picメモ
+---
+title: picメモ
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年12月7日作成
@@ -10,5 +13,3 @@ picの座標は数学座標で、正の数は右上、負数は左下に向か�
 
 貴重なpicの日本語資料。
 *[Pic|http://www.geocities.co.jp/SiliconValley-Oakland/3992/latex/tips/pic.html]
-
-@include nav.i

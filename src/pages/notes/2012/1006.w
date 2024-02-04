@@ -1,5 +1,8 @@
-@include u.i
-%title VMware ESXiにPlan 9を移行したときのトラブルまとめ
+---
+title: VMware ESXiにPlan 9を移行したときのトラブルまとめ
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2012年10月6日作成
@@ -62,5 +65,3 @@
 	結局、[AMD VlanceドライバをPlan 9カーネルからfsへ移植|
 	../../plan9/src/ether79c970.c]しました。
 	こっちは普通に200us程度の速度出ているみたい。
-
-@include nav.i

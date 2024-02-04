@@ -1,5 +1,8 @@
-@include u.i
-%title rewalk
+---
+title: rewalk
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2011年7月19日作成
@@ -96,5 +99,3 @@
 	/mail/grey/tmp/**が怪しいなあと思いましたが、
 	ふつうにOEXCL([open(2)])が立ってた。
 	でもこれ、ファイルがすでにあれば弾くフラグなので関係ないか。
-
-@include nav.i

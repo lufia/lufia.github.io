@@ -1,5 +1,8 @@
-@include u.i
-%title PC関連
+---
+title: PC関連
+pre: include/u.i
+post: include/nav.i
+---
 
 =PC関連
 	=2023年
@@ -152,5 +155,3 @@
 		*[Flash Player 9の設定|2006/0910.w]
 		*[Syleraの設定ファイルを移行する|2006/0915.w]
 		*[Sylera APIで新しくタブを開く|2007/1030.w]
-
-@include nav.i

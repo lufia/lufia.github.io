@@ -1,5 +1,8 @@
-@include u.i
-%title MacBookに付属するUSB Type-Cケーブルは充電ケーブル
+---
+title: MacBookに付属するUSB Type-Cケーブルは充電ケーブル
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2018年4月17日作成
@@ -12,5 +15,3 @@ MacBookに標準で含まれるケーブルは充電のみしか対応してい�
 ディスプレイに繋ぐためには、純正でいうとThunderbolt 3ケーブルを買う。
 純正以外では、USB 3.0対応のものを買えばいいらしい。
 PowerDelivery(PD)対応ならなお良い。
-
-@include nav.i

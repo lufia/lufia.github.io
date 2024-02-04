@@ -1,5 +1,8 @@
-@include u.i
-%title トリフィルファンタジア1
+---
+title: トリフィルファンタジア1
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年1月11日作成
@@ -11,5 +14,3 @@
 線がやんわりとぎこちない感じはあります。
 
 全2巻予定だそうです。面白かった。
-
-@include nav.i

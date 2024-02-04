@@ -1,5 +1,8 @@
-@include u.i
-%title Chrome OS
+---
+title: Chrome OS
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年8月10日作成
@@ -21,5 +24,3 @@ iTunesは、[Spool.fm|http://spool.fm/]というサービスがあるので、
 権利団体としてはGoogleに譲歩する意味は薄いんじゃあないかなあ。
 別のDRMを設計するにしても、QuickTimeにあまり対応されていない状況からみて
 期待は薄いとみていますが、どうなることやら。
-
-@include nav.i

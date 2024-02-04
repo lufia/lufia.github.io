@@ -1,5 +1,8 @@
-@include u.i
-%title Tales of Vesperiaクリア
+---
+title: Tales of Vesperiaクリア
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年11月10日作成
@@ -33,5 +36,3 @@ PS3版で多くの新要素が追加されているのを見ると、
 
 	2つ目のサイトはダンジョンマップもあります。
 }
-
-@include nav.i

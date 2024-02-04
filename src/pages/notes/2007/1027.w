@@ -1,5 +1,8 @@
-@include u.i
-%title お気に入りの整理
+---
+title: お気に入りの整理
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2007年10月27日作成
@@ -39,5 +42,3 @@
 	-[あとで読む|http://atode.cc/]が便利
 
 	このうち日記に落とせそうなのは、目的のための調べものだけかな。
-
-@include nav.i

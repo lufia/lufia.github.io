@@ -1,5 +1,8 @@
-@include u.i
-%title AtomとXSLTと名前空間
+---
+title: AtomとXSLTと名前空間
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2007年12月2日作成
@@ -50,5 +53,3 @@ AtomをXSLTでHTMLに変換しようとして詰まった。
 !...
 
 よくよく考えれば当然なんだけどね。
-
-@include nav.i

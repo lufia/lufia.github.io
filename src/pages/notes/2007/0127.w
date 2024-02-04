@@ -1,5 +1,8 @@
-@include u.i
-%title foreachでノードを削除すると、1つ飛ばしに残る
+---
+title: foreachでノードを削除すると、1つ飛ばしに残る
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2007年1月27日作成
@@ -31,5 +34,3 @@ C#のTreeNodeCollection。
 !		p.Remove(p[nskip]);
 !	else
 !		nskip++;
-
-@include nav.i

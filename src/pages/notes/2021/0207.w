@@ -1,5 +1,8 @@
-@include u.i
-%title ライザのアトリエクリア
+---
+title: ライザのアトリエクリア
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2021年2月7日作成
@@ -23,5 +26,3 @@
 	*[ライザのアトリエ|https://www.gamecity.ne.jp/atelier/ryza/]
 	*[NanoGames|https://ds-can.com/atelier_ryza/]
 }
-
-@include nav.i

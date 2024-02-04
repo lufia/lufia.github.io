@@ -1,5 +1,8 @@
-@include u.i
-%title 自動リンク
+---
+title: 自動リンク
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年8月13日作成
@@ -51,5 +54,3 @@ Safariでしかテストしていません。
 !}
 !
 !})();
-
-@include nav.i

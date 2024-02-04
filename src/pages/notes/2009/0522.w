@@ -1,5 +1,8 @@
-@include u.i
-%title 空の軌跡 the 3rdクリア
+---
+title: 空の軌跡 the 3rdクリア
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年5月22日作成
@@ -58,5 +61,3 @@
 	*[空の軌跡 the 3rd 攻略ヒント|
 	http://homepage1.nifty.com/PC-GAMER/games3/sora3/sk3_h00.htm]
 }
-
-@include nav.i

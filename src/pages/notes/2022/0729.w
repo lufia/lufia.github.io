@@ -1,5 +1,8 @@
-@include u.i
-%title GitHub Projects(classic)を移行した
+---
+title: GitHub Projects(classic)を移行した
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2022年7月29日作成
@@ -25,5 +28,3 @@ https://docs.github.com/issues/planning-and-tracking-with-projects/creating-proj
 *NoteにMarkdownやissueへのリンクなどを書いても認識されない
 
 といった違いはある。
-
-@include nav.i

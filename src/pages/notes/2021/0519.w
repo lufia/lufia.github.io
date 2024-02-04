@@ -1,5 +1,8 @@
-@include u.i
-%title git-split-diffsを使ってみた
+---
+title: git-split-diffsを使ってみた
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2021年5月19日作成
@@ -31,5 +34,3 @@
 見た目はテーマで設定ができる。個人的には*github-light*が好み。
 
 !% git config --global split-diffs.theme-name github-light
-
-@include nav.i

@@ -1,5 +1,8 @@
-@include u.i
-%title fs64のバグ？かな？
+---
+title: fs64のバグ？かな？
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2007年3月19日作成
@@ -18,5 +21,3 @@
 	=変更後
 	.c
 	!sdp->index = i*NCtlrdrv;
-
-@include nav.i

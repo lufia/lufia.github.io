@@ -1,5 +1,8 @@
-@include u.i
-%title 7th Dragon
+---
+title: 7th Dragon
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年3月17日作成
@@ -12,5 +15,3 @@
 前半の役立たずっぷりが嘘のようです。
 
 \[http://dragon.sega.jp/elements/blogparts.js?partyTag=20c4c6c25]
-
-@include nav.i

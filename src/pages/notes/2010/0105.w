@@ -1,5 +1,8 @@
-@include u.i
-%title FFCC EoTクリア
+---
+title: FFCC EoTクリア
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2010年1月5日作成
@@ -20,5 +23,3 @@
 	=攻略サイト
 	*[FINAL FANTASY CRYSTAL CHRONICLES Echoes of Time まとめ Wiki|
 	http://ffcceot.square-enix.info/]
-
-@include nav.i

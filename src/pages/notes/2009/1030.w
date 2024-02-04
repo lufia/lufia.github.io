@@ -1,5 +1,8 @@
-@include u.i
-%title Disqus解除
+---
+title: Disqus解除
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年10月30日作成
@@ -51,5 +54,3 @@ HTMLには一切手を入れず、JavaScriptだけで
 .note
 細かいことを気にすれば、/path/#idstring等も考えられますが、
 使っていませんでしたので気にしていません。
-
-@include nav.i

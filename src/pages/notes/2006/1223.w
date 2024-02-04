@@ -1,5 +1,8 @@
-@include u.i
-%title 聖剣伝説4
+---
+title: 聖剣伝説4
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2006年12月23日作成
@@ -13,5 +16,3 @@
 雰囲気は悪くはないです。これだ、という気もしないけど。
 
 蟹が迫ってくるときがすごく怖い。ハガーのくせに。
-
-@include nav.i

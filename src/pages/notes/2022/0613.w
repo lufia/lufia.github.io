@@ -1,5 +1,8 @@
-@include u.i
-%title Arch Linuxで最新のAWS CLI v2をインストールする
+---
+title: Arch Linuxで最新のAWS CLI v2をインストールする
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2022年6月13日作成
@@ -53,5 +56,3 @@ Cのソースファイルをビルドするところでエラーになったの�
 !
 !# アーカイブの場合はこれ
 !$ python -m pip install https://github.com/aws/aws-cli/archive/v2.tar.gz
-
-@include nav.i

@@ -1,5 +1,8 @@
-@include u.i
-%title 本・ゲーム
+---
+title: 本・ゲーム
+pre: include/u.i
+post: include/nav.i
+---
 
 =本・ゲーム
 
@@ -59,5 +62,3 @@
 
 	=2004年
 	*[聖剣伝説の名前(英語)メモ|2004/1110.w]
-
-@include nav.i

@@ -1,5 +1,8 @@
-@include u.i
-%title Alef言語
+---
+title: Alef言語
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2008年1月28日作成
@@ -47,5 +50,3 @@
 	動いた。当たり前かもしれないけど、ちょっと感動してます。
 	ざっとソースを眺めた限りでは、lint等いくつか見当たらないけど、
 	今日はもうお腹いっぱいなので、そこは後日調べていこうかななんて。
-
-@include nav.i

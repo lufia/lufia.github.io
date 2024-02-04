@@ -1,5 +1,8 @@
-@include u.i
-%title week of month
+---
+title: week of month
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年6月28日更新
@@ -35,5 +38,3 @@
 	パッチを投げたら採用されました。
 	パッチの送り方については[patchを送る|
 	/plan9/doc/prog/patch.w]に書きました。
-
-@include nav.i

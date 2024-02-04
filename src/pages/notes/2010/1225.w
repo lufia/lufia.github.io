@@ -1,5 +1,8 @@
-@include u.i
-%title SproutCoreでデータベースと接続
+---
+title: SproutCoreでデータベースと接続
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2011年2月26日更新
@@ -148,5 +151,3 @@
 	*[Hooking Up to the Backend|
 	http://wiki.sproutcore.com/w/page/12413058/Todos%2007-Hooking%20Up%20to%20the%20Backend]
 }
-
-@include nav.i

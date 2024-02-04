@@ -1,5 +1,8 @@
-@include u.i
-%title gdmに表示されるユーザーリストから特定のユーザーを削除したい
+---
+title: gdmに表示されるユーザーリストから特定のユーザーを削除したい
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2023年3月22日作成
@@ -14,5 +17,3 @@ gdmでログインするとき、過去にログインしたユーザーなら�
 ディレクトリ以下にあるユーザー名と同名のファイルを削除して再起動すればいい。
 
 同様に、アイコンは*/var/lib/AccountService/icons*にある。
-
-@include nav.i

@@ -1,5 +1,8 @@
-@include u.i
-%title 電子書籍雑感
+---
+title: 電子書籍雑感
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2010年9月4日更新
@@ -59,5 +62,3 @@ Keyring PDFと違って、まだ良心的かなあとも思いますし、
 	*[BOOKSCAN|http://www.bookscan.co.jp/]
 	*[DRM嫌い|../2008/0802.w]
 }
-
-@include nav.i

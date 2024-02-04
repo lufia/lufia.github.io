@@ -1,5 +1,8 @@
-@include u.i
-%title 和風香
+---
+title: 和風香
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2008年1月15日作成
@@ -15,5 +18,3 @@ http://www.kobayashi.co.jp/corporate/news/0213/index.html]が、
 本格的に今後どうしようか悩む。。。
 
 買い置きも、あと1個しかない。。困った。。
-
-@include nav.i

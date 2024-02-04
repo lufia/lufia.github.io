@@ -1,5 +1,8 @@
-@include u.i
-%title ドメイン移管とSPF
+---
+title: ドメイン移管とSPF
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2023年8月12日更新
@@ -85,5 +88,3 @@
 	*[メール交換機でのスパム排除|http://hatuka.nezumi.nu/techdoc/Spam-Filtering-for-MX.ja/html/index.html]
 	*[MTA のアクセス制御|http://ya.maya.st/mail/accessctl.html]
 }
-
-@include nav.i

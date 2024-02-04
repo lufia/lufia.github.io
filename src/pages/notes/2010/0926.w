@@ -1,5 +1,8 @@
-@include u.i
-%title 体術最強伝説
+---
+title: 体術最強伝説
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2010年9月26日作成
@@ -22,5 +25,3 @@ http://sagaf2.com/sp/sp1.html]で
 >そこがゲームの中でファンタジーを描く意味合いとして強く推して行きたいところです。
 
 という話をされているのが興味深いところです。
-
-@include nav.i

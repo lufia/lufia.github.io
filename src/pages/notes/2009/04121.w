@@ -1,5 +1,8 @@
-@include u.i
-%title Alefコンパイラのソースを読む(1)
+---
+title: Alefコンパイラのソースを読む(1)
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年1月11日作成
@@ -37,5 +40,3 @@ http://sites.google.com/site/alefcompiler/alef/port/mainc/compile]の、
 	*[ソースコードを読むための技術|
 	http://i.loveruby.net/ja/misc/readingcode.html]
 }
-
-@include nav.i

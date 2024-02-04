@@ -1,5 +1,8 @@
-@include u.i
-%title ファイルサーバSCSI化(3)
+---
+title: ファイルサーバSCSI化(3)
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2007年6月22日作成
@@ -11,5 +14,3 @@ SCSI化(2)の続き。
 IDEは1台までということなんでしょうか。
 もしかしたらCPUが早くなればいけるのかな。
 よくわからないけどめんどくさいのでまあ、いいか。
-
-@include nav.i

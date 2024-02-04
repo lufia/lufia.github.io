@@ -1,5 +1,8 @@
-@include u.i
-%title Windowsファイルシステム開発
+---
+title: Windowsファイルシステム開発
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年6月26日作成
@@ -17,5 +20,3 @@ Dokanの一次配布物はWindows 2000に対応していないのですが、
 ほとんどの問題を解決できそうですね。
 
 そのうち再開するかもしれません。
-
-@include nav.i

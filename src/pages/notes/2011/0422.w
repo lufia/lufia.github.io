@@ -1,5 +1,8 @@
-@include u.i
-%title 不買運動
+---
+title: 不買運動
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2011年4月27日更新
@@ -76,5 +79,3 @@
 
 	風評被害だ安全だ野菜を買えだとか言う前に、
 	汚染の可能性がある食品を流通させないことが先じゃないでしょうか。
-
-@include nav.i

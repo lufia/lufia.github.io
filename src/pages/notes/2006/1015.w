@@ -1,5 +1,8 @@
-@include u.i
-%title InfernoからホストOSをマウントする
+---
+title: InfernoからホストOSをマウントする
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2006年10月15日作成
@@ -19,5 +22,3 @@
 	=マニュアル
 	*[emu/FS((3))|http://www.vitanuova.com/inferno/man/3/fs.html]
 }
-
-@include nav.i

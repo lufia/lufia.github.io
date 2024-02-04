@@ -1,5 +1,8 @@
-@include u.i
-%title HDDエラーのトラブルシューティング
+---
+title: HDDエラーのトラブルシューティング
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2007年11月5日作成
@@ -23,5 +26,3 @@ http://www.linux.or.jp/JF/JFdocs/SCSI-Programming-HOWTO-22.html]
 :[ホストバス関連コラム|
 http://www.newtech.co.jp/topics/column/hba/]
 -LVD/SEは混在してもいいのか、とか。ケーブル長とか。
-
-@include nav.i

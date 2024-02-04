@@ -1,5 +1,8 @@
-@include u.i
-%title ウイルス対策
+---
+title: ウイルス対策
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年10月1日更新
@@ -88,5 +91,3 @@ http://japan.cnet.com/news/sec/story/0,2000056024,20400786,00.htm]。
 	*[DNSポイゾニングに関するメモ|
 	http://motivate.jp/archives/2005/02/dns.html]
 }
-
-@include nav.i

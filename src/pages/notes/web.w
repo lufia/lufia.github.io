@@ -1,5 +1,8 @@
-@include u.i
-%title Web製作
+---
+title: Web製作
+pre: include/u.i
+post: include/nav.i
+---
 
 =Web製作
 	=2022年
@@ -47,5 +50,3 @@
 	=2006年
 	*[XMLをXSLT変換してHTML化する|2006/1211.w]
 	*[CSSをJavaScriptから扱う場合のメモ|2006/1222.w]
-
-@include nav.i

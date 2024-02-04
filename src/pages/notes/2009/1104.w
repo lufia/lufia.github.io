@@ -1,5 +1,8 @@
-@include u.i
-%title 自動ログイン時のセキュリティ
+---
+title: 自動ログイン時のセキュリティ
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年11月4日作成
@@ -18,5 +21,3 @@ http://blog.ohgaki.net/espcs_if_a_fa_ia_a_pa_e_oa_a_sa_da_ca_sa]を
 画面遷移のたびにログイン状態をチェックすることなのかは分かりませんが、
 なるほどなあ、と思う反面、クッキーが更新されるまでは同じ値で
 認証され続けてしまうので、セキュリティリスクは付いてくるのですね。
-
-@include nav.i

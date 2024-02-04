@@ -1,5 +1,8 @@
-@include u.i
-%title IEプラグイン開発
+---
+title: IEプラグイン開発
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2007年11月27日作成
@@ -18,5 +21,3 @@ http://www.codeproject.com/useritems/Attach_BHO_with_C_.asp]
 
 WindowsのC++はめんどくさいという印象なので、
 できれば別の言語がいいなあ。。
-
-@include nav.i

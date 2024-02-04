@@ -1,5 +1,8 @@
-@include u.i
-%title フレッツ光プレミアムの設定
+---
+title: フレッツ光プレミアムの設定
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2011年12月3日作成
@@ -37,5 +40,3 @@
 	http://sakaguch.com/SetCTUandLAN.html]
 	*[BフレッツのMTUサイズ|http://www.infraexpert.com/info/6adsl.htm]
 }
-
-@include nav.i

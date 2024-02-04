@@ -1,5 +1,8 @@
-@include u.i
-%title IL/IPv6対応
+---
+title: IL/IPv6対応
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2011年7月4日作成
@@ -107,4 +110,3 @@
 	=関連情報
 	*[il.cを読む|0618.w]
 }
-@include nav.i

@@ -1,5 +1,8 @@
-@include u.i
-%title 聖剣伝説おもいでばなし
+---
+title: 聖剣伝説おもいでばなし
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2010年1月15日作成
@@ -14,5 +17,3 @@
 	http://mayugege.blogspot.com/2010/01/blog-post_11.html]
 *[ダークキャッスル組|
 	http://mayugege.blogspot.com/2010/01/blog-post_12.html]
-
-@include nav.i

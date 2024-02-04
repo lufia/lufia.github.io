@@ -1,5 +1,8 @@
-@include u.i
-%title 久しぶりに映画館
+---
+title: 久しぶりに映画館
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2010年2月11日作成
@@ -18,5 +21,3 @@ DVDを渡されたのはもうずいぶん前の話。
 ばかにしてゴメンナサイ。とても熱いバトルアニメでした。
 
 タイトルや絵に偏見があって見てない人はぜひぜひ。
-
-@include nav.i

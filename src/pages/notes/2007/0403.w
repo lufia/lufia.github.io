@@ -1,5 +1,8 @@
-@include u.i
-%title どこも変わらないと思いますけどね
+---
+title: どこも変わらないと思いますけどね
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2007年4月3日作成
@@ -23,5 +26,3 @@
 	*[独占企業Microsoft ～時代に取り残される時代の寵児～|
 	http://om-kyoto.jp/2007/03/microsoft.php]
 }
-
-@include nav.i

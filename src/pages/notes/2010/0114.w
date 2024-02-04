@@ -1,5 +1,8 @@
-@include u.i
-%title Ciscoメモ
+---
+title: Ciscoメモ
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2010年1月14日作成
@@ -104,5 +107,3 @@
 	=関連情報
 	*[無線LANのセキュリティ|../../notes/2009/1019.w]
 }
-
-@include nav.i

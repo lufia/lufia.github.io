@@ -1,5 +1,8 @@
-@include u.i
-%title ファイルサーバハードウェア交換
+---
+title: ファイルサーバハードウェア交換
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2010年8月2日作成
@@ -42,5 +45,3 @@ Socket Aのクーラーを探しても、もう見当たらなかったので、
 	=参照ページ
 	*[fsconfig(8)]
 }
-
-@include nav.i

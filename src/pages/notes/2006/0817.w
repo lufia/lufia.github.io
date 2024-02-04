@@ -1,5 +1,8 @@
-@include u.i
-%title コミケに行ってきました
+---
+title: コミケに行ってきました
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2006年8月17日作成
@@ -37,5 +40,3 @@ CDを出されるということで、しかも「天人草奇譚」のほうは
 本当に舞いあがっていたんです。
 
 とりあえずこんなところで。
-
-@include nav.i

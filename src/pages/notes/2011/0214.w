@@ -1,5 +1,8 @@
-@include u.i
-%title 反省
+---
+title: 反省
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2011年2月14日作成
@@ -7,5 +10,3 @@
 
 だいたい10年前、インターネットをはじめた頃をふりかえってみて、
 人間的に何も成長していないことを気づき愕然とする。
-
-@include nav.i

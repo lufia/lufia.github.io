@@ -1,5 +1,8 @@
-@include u.i
-%title ハードディスク
+---
+title: ハードディスク
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2008年2月8日作成
@@ -19,5 +22,3 @@ HDDを初めて分解してみました。
 http://ja.wikipedia.org/wiki/%E3%83%8F%E3%83%BC%E3%83%89%E3%83%87%E3%82%A3%E3%82%B9%E3%82%AF%E3%83%89%E3%83%A9%E3%82%A4%E3%83%96]によると
 ガラスやアルミニウムだと書かれてましたが、
 とてもガラスやアルミとは思えない硬度でしたよ。。
-
-@include nav.i

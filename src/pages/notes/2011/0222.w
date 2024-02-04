@@ -1,5 +1,8 @@
-@include u.i
-%title クレジットカード
+---
+title: クレジットカード
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2011年2月22日作成
@@ -19,5 +22,3 @@
 
 ポイントとかは割とどうでもいいかも。
 30000円が29850円になったところで別に。。。
-
-@include nav.i

@@ -1,5 +1,8 @@
-@include u.i
-%title リフレッシュとか気分転換とか
+---
+title: リフレッシュとか気分転換とか
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2007年11月11日作成
@@ -28,5 +31,3 @@ http://www.shirakawa-go.gr.jp/yado/shirakawagounoyu/shirakawagounoyu.htm]での�
 
 で、だ。ひぐらしは好きな作品ですけどね。
 神社の絵馬はちょっと考えたほうがいいと思うぞ。
-
-@include nav.i

@@ -1,5 +1,8 @@
-@include u.i
-%title LINEに配達状況が突然届いた
+---
+title: LINEに配達状況が突然届いた
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2022年5月27日作成
@@ -40,5 +43,3 @@ LINEでは、電話番号を使った友だち検索機能があり、それは
 
 *[LINEで企業から来る通知メッセージ機能をオン・オフに設定する方法|
 https://maiuma.com/line-noticemessage/]
-
-@include nav.i

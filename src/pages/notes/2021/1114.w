@@ -1,5 +1,8 @@
-@include u.i
-%title Firefox AutoConfig
+---
+title: Firefox AutoConfig
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2021年11月14日作成
@@ -125,5 +128,3 @@
 	!}
 
 	これでFirefoxを再起動すれば、Ctrl+Hを押してもサイドバーは開閉しなくなります。
-
-@include nav.i

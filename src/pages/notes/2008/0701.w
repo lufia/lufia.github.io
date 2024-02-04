@@ -1,5 +1,8 @@
-@include u.i
-%title ほんのり炎上しているアレについて
+---
+title: ほんのり炎上しているアレについて
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2008年7月1日作成
@@ -17,5 +20,3 @@
 やりたいほうだいは、非常にめんどくさいことになるのです。
 
 権力や弱点は分散させましょう。
-
-@include nav.i

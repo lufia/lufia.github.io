@@ -1,5 +1,8 @@
-@include u.i
-%title イクラクン
+---
+title: イクラクン
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年3月27日作成
@@ -12,5 +15,3 @@
 http://www.nicovideo.jp/watch/sm6470087]。
 
 イクラクンかわいいよイクラクン
-
-@include nav.i

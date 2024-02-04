@@ -1,5 +1,8 @@
-@include u.i
-%title キングゲイナー
+---
+title: キングゲイナー
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2006年12月10日作成
@@ -12,5 +15,3 @@
 深緑色した髪の、小さい子がフリフリしてるのがすごくかわいい。
 
 なんだろう。今までのイメージが全部飛んでいった気がする。
-
-@include nav.i

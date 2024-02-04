@@ -1,5 +1,8 @@
-@include u.i
-%title CSSをJavaScriptから扱う場合のメモ
+---
+title: CSSをJavaScriptから扱う場合のメモ
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2006年12月22日作成
@@ -17,5 +20,3 @@ IE7だと問題なく、Sylera(Gecko)だと空文字です。
 なんでも、Geckoエンジンには超厳密モードというのがあり、
 そのモードでは、style.left等は単位をつけないと不正な値とみなされるようです。
 今回はそれに引っかかったみたいでした。pxをつけてやると正しく動きました。
-
-@include nav.i

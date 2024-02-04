@@ -1,5 +1,8 @@
-@include u.i
-%title divの山はどうにもならないんでしょうか
+---
+title: divの山はどうにもならないんでしょうか
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2007年2月13日作成
@@ -27,5 +30,3 @@ XHTML+CSSでデザインされたページではdivとclass属性がよく使わ
 これってどうなんでしょう。HTMLからデザインを切り離すために
 CSSを使っているのに、CSSを使うためにdivを使っているというのはなんだか。
 こうするのがいちばん簡単なのは分かるけど。
-
-@include nav.i

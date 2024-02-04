@@ -1,5 +1,8 @@
-@include u.i
-%title ASP.NET Ajaxのメモ
+---
+title: ASP.NET Ajaxのメモ
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2007年11月8日作成
@@ -51,5 +54,3 @@
 
 	Officeに附属するスクリプトエディタをインストールして、
 	IEでスクリプトのデバッグを有効にすればデバッグできるみたい。
-
-@include nav.i

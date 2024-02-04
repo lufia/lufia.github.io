@@ -1,5 +1,8 @@
-@include u.i
-%title 僕らのサーガ
+---
+title: 僕らのサーガ
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2010年6月2日作成
@@ -36,5 +39,3 @@
 オンラインゲームのいやな部分でがんばらないといけないので、
 今が止め時かなあ、と考えています。
 Macbook Airだとkernel_taskも暴走するしね。。
-
-@include nav.i

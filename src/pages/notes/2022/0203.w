@@ -1,5 +1,8 @@
-@include u.i
-%title Linuxデスクトップのメンテナンス
+---
+title: Linuxデスクトップのメンテナンス
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2022年2月3日作成
@@ -52,5 +55,3 @@
 
 	*[12インチMacBookにArch Linuxをインストールした|
 	https://blog.lufia.org/entry/2021/04/05/170000]
-
-@include nav.i

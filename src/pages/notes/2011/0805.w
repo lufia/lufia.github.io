@@ -1,5 +1,8 @@
-@include u.i
-%title SQL Serverのメモ
+---
+title: SQL Serverのメモ
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2011年8月5日作成
@@ -27,5 +30,3 @@
 	*[SproutCoreとWCF Data Servicesの連携|../2010/1227.w]
 	*[Accessメモ|../2010/0217.w]
 }
-
-@include nav.i

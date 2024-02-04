@@ -1,5 +1,8 @@
-@include u.i
-%title アーマードコア4
+---
+title: アーマードコア4
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年6月12日作成
@@ -24,5 +27,3 @@
 	http://www.nicovideo.jp/mylist/4061543]
 	*[ACfA対人戦攻略ノート|http://foranswer.blog96.fc2.com/]
 }
-
-@include nav.i

@@ -1,5 +1,8 @@
-@include u.i
-%title 空の軌跡SC
+---
+title: 空の軌跡SC
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2008年7月6日作成
@@ -45,5 +48,3 @@
 
 	=どうでもいいですが
 	メイベル市長はかっこいいですね。終盤ほどんど出番がないのが残念です。
-
-@include nav.i

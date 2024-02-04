@@ -1,5 +1,8 @@
-@include u.i
-%title 使ってないサービスの停止
+---
+title: 使ってないサービスの停止
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2008年4月5日作成
@@ -57,5 +60,3 @@
 	=参考
 	*[サバカン 技術情報|http://www.sabakan.info/techinfo/echoping1.html]
 	*[TCP/113 AUTH/IDENT に関して|http://unixluser.org/techmemo/ident/]
-
-@include nav.i

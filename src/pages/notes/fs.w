@@ -1,5 +1,8 @@
-@include u.i
-%title Plan 9ファイルサーバ関連
+---
+title: Plan 9ファイルサーバ関連
+pre: include/u.i
+post: include/nav.i
+---
 
 =Plan 9ファイルサーバ関連
 
@@ -29,5 +32,3 @@
 	=関連情報
 	*[ファイルサーバの管理|/plan9/doc/adm/fs.w]
 }
-
-@include nav.i

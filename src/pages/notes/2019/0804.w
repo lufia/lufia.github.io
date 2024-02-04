@@ -1,5 +1,8 @@
-@include u.i
-%title Android移行メモ
+---
+title: Android移行メモ
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2019年8月4日作成
@@ -96,5 +99,3 @@
 	*気に入った英和辞書アプリがない(物書堂アプリが欲しい)
 	*Thingsアプリがない
 	*汗をかいた場合など指紋認証が反応しなくて困る
-
-@include nav.i

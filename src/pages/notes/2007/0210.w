@@ -1,5 +1,8 @@
-@include u.i
-%title webナビゲーションデザイン
+---
+title: webナビゲーションデザイン
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2007年2月10日作成
@@ -11,5 +14,3 @@
 
 どうせなら全部フラットでカスタマイズ可能にしたほうが
 いいのではないかという気がする。内部の構造はともかく。
-
-@include nav.i

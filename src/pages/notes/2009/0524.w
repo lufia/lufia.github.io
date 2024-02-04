@@ -1,5 +1,8 @@
-@include u.i
-%title Win9pその後
+---
+title: Win9pその後
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年5月24日作成
@@ -16,5 +19,3 @@ Win9pをローカルのWebDAVサーバにすれば、
 それを経由してネットワークドライブ化できたりするのかなあ。
 
 *[Python WebDAV|http://japanese.osstrans.net/software/pywebdav.html]
-
-@include nav.i

@@ -1,5 +1,8 @@
-@include u.i
-%title Syleraの設定ファイルを移行する
+---
+title: Syleraの設定ファイルを移行する
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2006年9月15日作成
@@ -18,5 +21,3 @@ C:\Documents and Settings\ユーザ名\Application Data\sylera(以下$syroot)を
 移行する前にいちどSyleraを立ち上げておかないと、
 新しい環境の(UID2).sltが見つからないかもしれません。
 非常にめんどくさい。
-
-@include nav.i

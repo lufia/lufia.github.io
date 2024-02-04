@@ -1,5 +1,8 @@
-@include u.i
-%title SproutCoreとWCF Data Servicesの連携
+---
+title: SproutCoreとWCF Data Servicesの連携
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2011年2月26日更新
@@ -116,5 +119,3 @@
 	*[WCF Data Servicesメモ|1129.w]
 	*[SQL Serverのメモ|../2011/0805.w]
 }
-
-@include nav.i

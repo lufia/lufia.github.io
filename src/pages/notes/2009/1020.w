@@ -1,5 +1,8 @@
-@include u.i
-%title docomo
+---
+title: docomo
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年10月20日作成
@@ -10,5 +13,3 @@
 *[聖剣伝説 FRIENDS of MANA|http://www.famitsu.com/k_tai/news/1196089_1350.html]
 
 そろそろ買うべきなのかもしれないなあ。
-
-@include nav.i

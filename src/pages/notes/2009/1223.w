@@ -1,5 +1,8 @@
-@include u.i
-%title Mac移行まとめ
+---
+title: Mac移行まとめ
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年12月23日作成
@@ -149,5 +152,3 @@ Macbook Airを買ってからおよそ1年経ったので、
 	=関連情報
 	*[HHKBを快適に使う|../2015/0718.w]
 }
-
-@include nav.i

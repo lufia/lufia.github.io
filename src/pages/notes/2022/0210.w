@@ -1,5 +1,8 @@
-@include u.i
-%title 廃棄前にディスクのデータを消す
+---
+title: 廃棄前にディスクのデータを消す
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2022年2月10日作成
@@ -68,5 +71,3 @@
 
 	*[Is shred bad for erasing SSDs?|
 	https://unix.stackexchange.com/questions/593181/is-shred-bad-for-erasing-ssds]
-
-@include nav.i

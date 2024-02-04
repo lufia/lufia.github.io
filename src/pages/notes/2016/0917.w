@@ -1,5 +1,8 @@
-@include u.i
-%title 文系とか理系とか
+---
+title: 文系とか理系とか
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2016年9月17日作成
@@ -41,5 +44,3 @@ https://ja.wikipedia.org/wiki/%E6%96%87%E7%B3%BB%E3%81%A8%E7%90%86%E7%B3%BB]
 
 お金の都合でできた区別にいつまでも縋っているのはばかばかしいので、
 もう文系と理系で人を区別するのやめませんか？
-
-@include nav.i

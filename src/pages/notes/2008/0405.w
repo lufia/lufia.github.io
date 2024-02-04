@@ -1,5 +1,8 @@
-@include u.i
-%title スパイラル
+---
+title: スパイラル
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2008年4月5日作成
@@ -37,5 +40,3 @@
 とまあ、最終話とその付近は不満いっぱいですが、
 それまでの話は面白かったです。
 機会があれば読んでみてください。
-
-@include nav.i

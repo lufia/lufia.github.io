@@ -1,5 +1,8 @@
-@include u.i
-%title DRM嫌い
+---
+title: DRM嫌い
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2008年8月2日作成
@@ -52,5 +55,3 @@
 	保護するのは不可能なんじゃないかなあ、と思うんですけどね。
 	そういうことが法的に禁止されるのであれば、
 	こんな不便な制限捨てて、最初から法で対処しなよ、と思うし。。
-
-@include nav.i

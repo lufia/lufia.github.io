@@ -1,5 +1,8 @@
-@include u.i
-%title ASP.NET関連のいろいろまとめ
+---
+title: ASP.NET関連のいろいろまとめ
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2011年7月14日更新
@@ -182,5 +185,3 @@
 	*[EditorFor、DisplayForで使用されるカスタムテンプレート|
 	http://d.hatena.ne.jp/freemake/20100907/1283880424]
 }
-
-@include nav.i

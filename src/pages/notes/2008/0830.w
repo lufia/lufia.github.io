@@ -1,5 +1,8 @@
-@include u.i
-%title IE8をオススメします
+---
+title: IE8をオススメします
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2008年8月30日作成
@@ -28,5 +31,3 @@ WebSliceは知りませんが、
 Windows Live Galleryとか、今回のIE8とか。
 Javaのコピーでしかないと思っていたC#にも、LINQなんて出てきたり。
 見直しましたMicrosoft。
-
-@include nav.i

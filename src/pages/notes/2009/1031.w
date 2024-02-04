@@ -1,5 +1,8 @@
-@include u.i
-%title AmaTunesツール
+---
+title: AmaTunesツール
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年10月31日作成
@@ -143,5 +146,3 @@
 		!$ ./configure --disable-shared
 		!$ make
 		!$ mv frontend/faac $dir
-
-@include nav.i

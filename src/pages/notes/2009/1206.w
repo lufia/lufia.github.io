@@ -1,5 +1,8 @@
-@include u.i
-%title Macbook AirでWindows7
+---
+title: Macbook AirでWindows7
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年12月6日作成
@@ -90,5 +93,3 @@
 
 		=WindowsからMacの個人フォルダを見るとファイルが無い
 		フォルダに.XAuthorityがあると、見えなくなるようです。
-
-@include nav.i

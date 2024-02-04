@@ -1,5 +1,8 @@
-@include u.i
-%title Mac OS Xのパッケージ管理
+---
+title: Mac OS Xのパッケージ管理
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2013年8月18日作成
@@ -98,5 +101,3 @@
 	=参考サイト
 	*[Mac OS Xのパッケージファイルを操作する|http://blog.niw.at/post/16690761384]
 }
-
-@include nav.i

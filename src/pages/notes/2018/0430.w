@@ -1,5 +1,8 @@
-@include u.i
-%title 「ローカル項目」キーチェーンはiCloud Keychainのゴミ
+---
+title: 「ローカル項目」キーチェーンはiCloud Keychainのゴミ
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2018年4月30日作成
@@ -28,5 +31,3 @@ https://qiita.com/yukatou/items/05aec5dcc28e3271fd84]
 iCloudを有効にしてしまうと、初回ログイン時に
 デフォルトでiCloud Keychainが有効になるため、
 このデザインはどうなんだろうと思う。
-
-@include nav.i

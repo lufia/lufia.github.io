@@ -1,5 +1,8 @@
-@include u.i
-%title 例のアレ
+---
+title: 例のアレ
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年4月21日作成
@@ -22,5 +25,3 @@
 
 なので、エストファンからは、塩生さんに謝れ、と一言だけ。
 こちら側に対しては、他に何もいらないんじゃないかなと思っています。
-
-@include nav.i

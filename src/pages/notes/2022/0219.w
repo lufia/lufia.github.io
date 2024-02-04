@@ -1,5 +1,8 @@
-@include u.i
-%title Windowsに移植されたplan9port
+---
+title: Windowsに移植されたplan9port
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2022年2月19日作成
@@ -17,5 +20,3 @@ Windows用にplan9portを移植しているプロジェクトがいくつかあ�
 手元では試したことがないので正確なところは分からないが、
 更新停止していたり、ビルドがエラーになるなど、どれも問題を持っているようなので、
 WSL2またはMSYS2(MinGW)などでplan9portそのものをビルドすると良いかもしれない。
-
-@include nav.i

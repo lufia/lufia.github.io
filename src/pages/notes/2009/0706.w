@@ -1,5 +1,8 @@
-@include u.i
-%title AJAXSLTを使ってみた
+---
+title: AJAXSLTを使ってみた
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年7月6日作成
@@ -78,5 +81,3 @@
 	=参考ページ
 	*[Hints for XSLT Troubles|http://www.asahi-net.or.jp/~ps8a-okzk/xml/memo/hint_xslt.html]
 }
-
-@include nav.i

@@ -1,5 +1,8 @@
-@include u.i
-%title バンドデータ処理プログラム
+---
+title: バンドデータ処理プログラム
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2009年9月30日更新
@@ -219,5 +222,3 @@
 	*[Limboのパラメトリック多相|
 	http://alohakun.blog7.fc2.com/blog-entry-730.html]
 }
-
-@include nav.i

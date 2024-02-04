@@ -1,5 +1,8 @@
-@include u.i
-%title XMLをXSLT変換してHTML化する
+---
+title: XMLをXSLT変換してHTML化する
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2006年12月11日作成
@@ -17,5 +20,3 @@ XSLTを使って、XMLをHTMLに変換しようとしてます。が。
 なので、サーバのMIMEはapplication/xmlにしておいて、
 xml-stylesheet typeをtext/xslにすればとりあえず両方動く。
 ここまでは分かったけど、なんでこんなところで苦労しないといけないんだろう。
-
-@include nav.i

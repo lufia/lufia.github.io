@@ -1,5 +1,8 @@
-@include u.i
-%title PostgreSQLのメジャーバージョンアップグレード
+---
+title: PostgreSQLのメジャーバージョンアップグレード
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2023年1月30日作成
@@ -80,5 +83,3 @@
 	!$ sudo systemctl start postgresql.service
 	!$ sudo rm -rf /var/lib/postgresql/{olddata,tmp}
 	!postgres$ vacuumdb --all --analyze-in-stages [-U lufia]
-
-@include nav.i

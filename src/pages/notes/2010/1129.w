@@ -1,5 +1,8 @@
-@include u.i
-%title WCF Data Servicesメモ
+---
+title: WCF Data Servicesメモ
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2011年6月28日更新
@@ -213,5 +216,3 @@
 	http://msdn.microsoft.com/ja-jp/magazine/ff872392.aspx]
 	*[OData-SDK|http://www.odata.org/developers/odata-sdk]
 }
-
-@include nav.i

@@ -1,5 +1,8 @@
-@include u.i
-%title 聖剣伝説の名前(英語)メモ
+---
+title: 聖剣伝説の名前(英語)メモ
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2004年11月10日作成

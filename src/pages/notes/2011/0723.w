@@ -1,5 +1,8 @@
-@include u.i
-%title VMware Playerにファイルサーバをインストール
+---
+title: VMware Playerにファイルサーバをインストール
+pre: ../include/u.i
+post: ../include/nav.i
+---
 
 .revision
 2011年7月23日作成
@@ -68,5 +71,3 @@ plan9.iniのbootfileエントリだけは、新しい書き方を取るところ
 	=関連情報
 	*[ファイルサーバのインストール|../../plan9/doc/inst/fs.w]
 }
-
-@include nav.i
