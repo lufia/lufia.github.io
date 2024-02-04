@@ -33,9 +33,9 @@ export default function wf(): AstroIntegration {
 					addPageExtension,
 					addContentEntryType,
 				} = params as SetupHookParams;
-				addPageExtension('.wf');
+				addPageExtension('.w');
 				addContentEntryType({
-					extensions: ['.wf'],
+					extensions: ['.w'],
 					async getEntryInfo({ fileUrl, contents }: { fileUrl: URL; contents: string }) {
 						const parsed = parseFrontmatter(contents, fileURLToPath(fileUrl));
 						return {
@@ -56,7 +56,7 @@ export default function wf(): AstroIntegration {
 							{
 								name: 'vite-plugin-wf',
 								async transform(_, id) {
-									if(!id.endsWith('.wf'))
+									if(!id.endsWith('.w'))
 										return;
 									const { fileId } = getFileInfo(id, config);
 									const code = await fs.readFile(fileId, 'utf-8');
