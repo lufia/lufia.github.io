@@ -1,5 +1,6 @@
 ---
 title: git-split-diffsを使ってみた
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

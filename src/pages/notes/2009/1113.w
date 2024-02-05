@@ -1,5 +1,6 @@
 ---
 title: エストポリスの新作が発売決定
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

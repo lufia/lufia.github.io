@@ -1,5 +1,6 @@
 ---
 title: Plan 9カーネルのブートまわり自分用まとめ
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

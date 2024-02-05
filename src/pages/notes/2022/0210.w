@@ -1,5 +1,6 @@
 ---
 title: 廃棄前にディスクのデータを消す
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

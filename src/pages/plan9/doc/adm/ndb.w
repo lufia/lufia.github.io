@@ -1,5 +1,6 @@
 ---
 title: ネットワークの設定
+style: ../../../../styles/global.css
 pre: ../../include/u.i
 post: ../../include/nav.i
 ---

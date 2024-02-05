@@ -1,5 +1,6 @@
 ---
 title: 聖剣伝説おもいでばなし
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

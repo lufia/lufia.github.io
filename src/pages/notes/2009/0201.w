@@ -1,5 +1,6 @@
 ---
 title: "2001年宇宙の旅(2001: A Space Odyssey)"
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

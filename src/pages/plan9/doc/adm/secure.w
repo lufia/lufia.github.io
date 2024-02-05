@@ -1,5 +1,6 @@
 ---
 title: TLS1.2に対応させる
+style: ../../../../styles/global.css
 pre: ../../include/u.i
 post: ../../include/nav.i
 ---

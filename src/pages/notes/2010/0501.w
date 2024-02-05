@@ -1,5 +1,6 @@
 ---
 title: 家計簿作成メモ
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

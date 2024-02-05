@@ -1,5 +1,6 @@
 ---
 title: fs64のバグ？かな？
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

@@ -1,5 +1,6 @@
 ---
 title: VMware ESXiにPlan 9を移行したときのトラブルまとめ
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

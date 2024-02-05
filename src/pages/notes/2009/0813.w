@@ -1,5 +1,6 @@
 ---
 title: 自動リンク
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

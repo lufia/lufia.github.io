@@ -1,5 +1,6 @@
 ---
 title: ファイルの暗号化と複合
+style: ../../../../styles/global.css
 pre: ../../include/u.i
 post: ../../include/nav.i
 ---

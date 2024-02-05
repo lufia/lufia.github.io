@@ -1,5 +1,6 @@
 ---
 title: Programming Language Go
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

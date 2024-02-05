@@ -1,5 +1,6 @@
 ---
 title: 魔法リスト
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/db.i
 ---

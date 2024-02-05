@@ -1,5 +1,6 @@
 ---
 title: 関連リソースなど
+style: ../../../../styles/global.css
 pre: ../../include/u.i
 post: ../../include/nav.i
 ---

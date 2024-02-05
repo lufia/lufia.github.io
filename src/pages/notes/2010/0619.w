@@ -1,5 +1,6 @@
 ---
 title: 電子書籍雑感
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

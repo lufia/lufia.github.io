@@ -1,5 +1,6 @@
 ---
 title: 久しぶりに映画館
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

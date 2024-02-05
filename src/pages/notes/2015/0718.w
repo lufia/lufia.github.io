@@ -1,5 +1,6 @@
 ---
 title: HHKBを快適に使う
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

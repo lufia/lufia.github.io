@@ -1,5 +1,6 @@
 ---
 title: Googleも最近じゅうぶんに強引だと思う
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

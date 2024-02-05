@@ -1,5 +1,6 @@
 ---
 title: 64bit環境(9kカーネル)を構築する
+style: ../../../../styles/global.css
 pre: ../../include/u.i
 post: ../../include/nav.i
 ---

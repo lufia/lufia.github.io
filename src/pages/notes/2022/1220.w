@@ -1,5 +1,6 @@
 ---
 title: PS4のXMBに突然出てくる広告を停止する
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

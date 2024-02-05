@@ -1,5 +1,6 @@
 ---
 title: Goで繰り返しごとにスリープしたい時の書き方
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

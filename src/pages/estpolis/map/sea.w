@@ -1,5 +1,6 @@
 ---
 title: 海底の虚空島への海路
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/db.i
 ---

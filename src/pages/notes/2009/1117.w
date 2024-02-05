@@ -1,5 +1,6 @@
 ---
 title: ルフィアノート再構築と/env
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

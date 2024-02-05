@@ -1,5 +1,6 @@
 ---
 title: Google WorkspaceのGmailでDMARC
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

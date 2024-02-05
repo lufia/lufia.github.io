@@ -1,5 +1,6 @@
 ---
 title: コロナ禍でお取り寄せしたもの
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

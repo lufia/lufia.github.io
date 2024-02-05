@@ -1,5 +1,6 @@
 ---
 title: 無線LANのセキュリティ2
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

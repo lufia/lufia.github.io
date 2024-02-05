@@ -1,5 +1,6 @@
 ---
 title: Sizka BASICへのインストール
+style: ../../../../styles/global.css
 pre: ../../include/u.i
 post: ../../include/nav.i
 ---

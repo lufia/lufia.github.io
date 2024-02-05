@@ -1,5 +1,6 @@
 ---
 title: Safariのブックマーク同期が壊れた症状と対応
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

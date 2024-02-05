@@ -1,5 +1,6 @@
 ---
 title: 設定ファイルやキャッシュの保存先を変更する
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

@@ -1,5 +1,6 @@
 ---
 title: 時計合わせ
+style: ../../../../styles/global.css
 pre: ../../include/u.i
 post: ../../include/nav.i
 ---

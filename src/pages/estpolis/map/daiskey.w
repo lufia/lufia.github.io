@@ -1,5 +1,6 @@
 ---
 title: 祭壇の鍵の洞窟
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/db.i
 ---

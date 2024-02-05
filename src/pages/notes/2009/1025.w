@@ -1,5 +1,6 @@
 ---
 title: およそ3ヶ月と15日後にて
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

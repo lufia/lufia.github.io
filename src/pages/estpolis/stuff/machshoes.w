@@ -1,5 +1,6 @@
 ---
 title: マッハシューズ
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/db.i
 ---

@@ -1,5 +1,6 @@
 ---
 title: Windowsファイルシステム開発
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

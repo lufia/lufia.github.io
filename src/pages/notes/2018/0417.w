@@ -1,5 +1,6 @@
 ---
 title: MacBookに付属するUSB Type-Cケーブルは充電ケーブル
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

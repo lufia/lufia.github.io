@@ -1,5 +1,6 @@
 ---
 title: ランチサンドが好きでした
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

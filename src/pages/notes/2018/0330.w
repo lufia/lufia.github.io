@@ -1,5 +1,6 @@
 ---
 title: 大阪北梅田で医者探し
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

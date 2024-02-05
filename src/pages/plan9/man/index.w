@@ -1,5 +1,6 @@
 ---
 title: 自作ツール集
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

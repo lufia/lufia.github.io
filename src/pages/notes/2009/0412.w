@@ -1,5 +1,6 @@
 ---
 title: 読んだ本リスト
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

@@ -1,5 +1,6 @@
 ---
 title: FF4TAの隠し召喚獣
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

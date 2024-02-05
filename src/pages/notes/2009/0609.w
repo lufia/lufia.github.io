@@ -1,5 +1,6 @@
 ---
 title: Xbox LIVEに繋がらない
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

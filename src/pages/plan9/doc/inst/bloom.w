@@ -1,5 +1,6 @@
 ---
 title: bloomフィルタ付きventiを作る
+style: ../../../../styles/global.css
 pre: ../../include/u.i
 post: ../../include/nav.i
 ---

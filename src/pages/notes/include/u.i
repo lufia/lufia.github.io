@@ -1,6 +1,5 @@
 %title	orange/note
 %author	http://www.hatena.ne.jp/lufiabb/
 %viewport	width=device-width,initial-scale=1
-%style /global.css
 %url s|^([a-z0-9]+)\(([1-9])\)$|https://9p.io/magic/man2html/\2/\1|
 %url s|^(contrib/[^ 	]+)$|https://9p.io/sources/\1|

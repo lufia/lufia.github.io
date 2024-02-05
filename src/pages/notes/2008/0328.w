@@ -1,5 +1,6 @@
 ---
 title: 夜麻みゆき先生を応援します
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

@@ -1,5 +1,6 @@
 ---
 title: 誕生日です
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

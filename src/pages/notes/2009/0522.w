@@ -1,5 +1,6 @@
 ---
 title: 空の軌跡 the 3rdクリア
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

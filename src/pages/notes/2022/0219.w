@@ -1,5 +1,6 @@
 ---
 title: Windowsに移植されたplan9port
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

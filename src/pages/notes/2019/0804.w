@@ -1,5 +1,6 @@
 ---
 title: Android移行メモ
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

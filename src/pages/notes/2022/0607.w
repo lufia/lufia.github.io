@@ -1,5 +1,6 @@
 ---
 title: ffmpegでHTTPリクエストにヘッダを追加する
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

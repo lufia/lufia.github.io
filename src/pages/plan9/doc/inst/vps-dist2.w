@@ -1,5 +1,6 @@
 ---
 title: さくらVPSでPlan 9ネットワークを構成してみた
+style: ../../../../styles/global.css
 pre: ../../include/u.i
 post: ../../include/nav.i
 ---

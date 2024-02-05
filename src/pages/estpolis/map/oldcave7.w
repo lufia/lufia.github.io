@@ -1,5 +1,6 @@
 ---
 title: いにしえの洞窟 地下7階
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/db.i
 ---

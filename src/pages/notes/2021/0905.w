@@ -1,5 +1,6 @@
 ---
 title: GitHubの慣習的なリポジトリ名
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

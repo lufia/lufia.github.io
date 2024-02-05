@@ -1,5 +1,6 @@
 ---
 title: Syleraの設定ファイルを移行する
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

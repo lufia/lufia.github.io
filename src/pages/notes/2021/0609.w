@@ -1,5 +1,6 @@
 ---
 title: 緊急事態宣言下の自粛
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

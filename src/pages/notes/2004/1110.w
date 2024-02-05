@@ -1,5 +1,6 @@
 ---
 title: 聖剣伝説の名前(英語)メモ
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

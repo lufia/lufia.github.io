@@ -1,5 +1,6 @@
 ---
 title: 胃カメラ
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

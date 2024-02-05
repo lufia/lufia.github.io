@@ -1,5 +1,6 @@
 ---
 title: html5 generator
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

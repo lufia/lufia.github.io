@@ -1,5 +1,6 @@
 ---
 title: Plan 9 to Inferno translation
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

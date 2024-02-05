@@ -1,5 +1,6 @@
 ---
 title: 腰痛になった時に困ること
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

@@ -1,5 +1,6 @@
 ---
 title: Alefコンパイラの中で出てくる型
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

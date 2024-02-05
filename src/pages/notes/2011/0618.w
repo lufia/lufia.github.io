@@ -1,5 +1,6 @@
 ---
 title: il.cを読む
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

@@ -1,5 +1,6 @@
 ---
 title: シャイア第1研究所
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/db.i
 ---

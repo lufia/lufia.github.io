@@ -1,5 +1,6 @@
 ---
 title: 7th Dragon
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

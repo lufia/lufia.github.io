@@ -1,5 +1,6 @@
 ---
 title: 「ローカル項目」キーチェーンはiCloud Keychainのゴミ
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

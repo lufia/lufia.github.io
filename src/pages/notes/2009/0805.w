@@ -1,5 +1,6 @@
 ---
 title: 聖剣伝説DS Children of Manaクリア
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

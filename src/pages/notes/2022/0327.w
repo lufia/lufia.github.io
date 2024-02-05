@@ -1,5 +1,6 @@
 ---
 title: VAIO Z(VJZ1421)を買った
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

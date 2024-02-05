@@ -1,5 +1,6 @@
 ---
 title: ゲーム攻略サイトまとめ
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

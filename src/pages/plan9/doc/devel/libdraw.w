@@ -1,5 +1,6 @@
 ---
 title: libdraw tips
+style: ../../../../styles/global.css
 pre: ../../include/u.i
 post: ../../include/nav.i
 ---

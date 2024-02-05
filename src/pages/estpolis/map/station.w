@@ -1,5 +1,6 @@
 ---
 title: 迷いの森の案内所
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/db.i
 ---

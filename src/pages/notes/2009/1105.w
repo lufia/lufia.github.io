@@ -1,5 +1,6 @@
 ---
 title: MobileMeでブックマークが同期しない
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

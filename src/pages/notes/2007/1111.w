@@ -1,5 +1,6 @@
 ---
 title: リフレッシュとか気分転換とか
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

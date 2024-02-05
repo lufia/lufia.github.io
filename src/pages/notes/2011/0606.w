@@ -1,5 +1,6 @@
 ---
 title: Win2008 R2でCドライブが肥大化
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

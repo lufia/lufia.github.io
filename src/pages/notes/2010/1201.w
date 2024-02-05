@@ -1,5 +1,6 @@
 ---
 title: SproutCore開発環境構築
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

@@ -1,5 +1,6 @@
 ---
 title: GitHub Projects(classic)を移行した
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

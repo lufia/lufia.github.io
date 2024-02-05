@@ -1,5 +1,6 @@
 ---
 title: お気に入りの整理
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

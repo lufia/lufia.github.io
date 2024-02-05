@@ -1,5 +1,6 @@
 ---
 title: 自動ログイン時のセキュリティ
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

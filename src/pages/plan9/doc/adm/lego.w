@@ -1,5 +1,6 @@
 ---
 title: legoを使った証明書更新
+style: ../../../../styles/global.css
 pre: ../../include/u.i
 post: ../../include/nav.i
 ---

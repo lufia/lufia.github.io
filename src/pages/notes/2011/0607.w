@@ -1,5 +1,6 @@
 ---
 title: ASP.NETページ構文とHTMLヘルパ
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

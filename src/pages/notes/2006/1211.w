@@ -1,5 +1,6 @@
 ---
 title: XMLをXSLT変換してHTML化する
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

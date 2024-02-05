@@ -1,5 +1,6 @@
 ---
 title: 文系とか理系とか
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

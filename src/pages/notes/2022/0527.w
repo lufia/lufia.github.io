@@ -1,5 +1,6 @@
 ---
 title: LINEに配達状況が突然届いた
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

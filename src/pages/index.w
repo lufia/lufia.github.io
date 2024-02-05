@@ -1,5 +1,6 @@
 ---
 title: lufia.org
+style: ../styles/global.css
 ---
 
 =lufia.org

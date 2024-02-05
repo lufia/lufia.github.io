@@ -1,5 +1,6 @@
 ---
 title: 不買運動
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

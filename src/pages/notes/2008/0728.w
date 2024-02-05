@@ -1,5 +1,6 @@
 ---
 title: エンタープライズに根付くSerial Attached SCSI
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

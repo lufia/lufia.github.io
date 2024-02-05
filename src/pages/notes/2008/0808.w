@@ -1,5 +1,6 @@
 ---
 title: Vistaのドキュメントプロパティから[[場所]]タブが消えた
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

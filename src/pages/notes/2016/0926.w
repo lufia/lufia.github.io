@@ -1,5 +1,6 @@
 ---
 title: Windows 8.1以降でWi-Fiが「制限あり」になる
+style: ../../../styles/global.css
 pre: ../include/u.i
 post: ../include/nav.i
 ---

@@ -1,5 +1,6 @@
 ---
 title: 正当な証明書を扱う
+style: ../../../../styles/global.css
 pre: ../../include/u.i
 post: ../../include/nav.i
 ---
