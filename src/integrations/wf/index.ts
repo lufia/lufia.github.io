@@ -66,7 +66,10 @@ export default function wf(): AstroIntegration {
 									} = parseFrontmatter(code, id);
 									const data = layout(id, pageContent, frontmatter);
 									const html = await convert(data);
-									return { code: generateCode(html),  map: null };
+									return {
+										code: generateCode(html, frontmatter.style),
+										map: null
+									};
 								},
 							},
 						] as VitePlugin[],
@@ -81,6 +84,7 @@ type Frontmatter = Readonly<{
 	title: string | undefined;
 	pre: string | undefined;
 	post: string | undefined;
+	style: string;
 }>;
 
 async function layout(file: string, pageContent: string, frontmatter: Frontmatter): string {
@@ -121,15 +125,20 @@ async function convert(data: string): string {
 			w: 'html',
 		},
 	}), w);
-	return w.toString()
+	return w.toString();
 }
 
-function generateCode(html: string): string {
-	const code = `export default function render() {\n
-		return \`${rawString(html)}\`\n
+function generateCode(html: string, style: string): string {
+	const code = `
+	import css from '${style}'\n
+	const html = \`${rawString(html)}\`\n
+	const content = html.replace('</head>', '<style>\\n'+css+'</style>\\n</head>')\n
+	export default function render() {\n
+		return content\n
 	}\n
 	render['astro:html'] = true\n
-	render[Symbol.for("astro.needsHeadRendering")] = false\n`;
+	render[Symbol.for("astro.needsHeadRendering")] = false\n
+	`;
 	return code;
 }
 
