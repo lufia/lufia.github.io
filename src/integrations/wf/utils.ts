@@ -1,3 +1,4 @@
+import type { AstroConfig, SSRError } from 'astro';
 import matter from 'gray-matter';
 
 /*

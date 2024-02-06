@@ -1,11 +1,11 @@
 import type {
-	AstroConfig,
 	AstroIntegration,
 	ContentEntryType,
 	HookParameters,
 } from 'astro';
 import fs from 'node:fs/promises';
-import path from "path";
+import { fileURLToPath } from 'node:url';
+import path from 'path';
 import type { Plugin as VitePlugin } from 'vite';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
@@ -61,10 +61,16 @@ export default function wf(): AstroIntegration {
 									const { fileId } = getFileInfo(id, config);
 									const code = await fs.readFile(fileId, 'utf-8');
 									const {
-										data: frontmatter,
+										data: params,
 										content: pageContent,
 									} = parseFrontmatter(code, id);
-									const data = layout(id, pageContent, frontmatter);
+									const frontmatter: Frontmatter = {
+										title: params.title,
+										style: params.style!,
+										pre: params.pre,
+										post: params.post,
+									}
+									const data = await layout(id, pageContent, frontmatter);
 									const html = await convert(data);
 									return {
 										code: generateCode(html, frontmatter.style),
@@ -82,19 +88,19 @@ export default function wf(): AstroIntegration {
 
 type Frontmatter = Readonly<{
 	title: string | undefined;
+	style: string;
 	pre: string | undefined;
 	post: string | undefined;
-	style: string;
 }>;
 
-async function layout(file: string, pageContent: string, frontmatter: Frontmatter): string {
+async function layout(file: string, pageContent: string, frontmatter: Frontmatter): Promise<string> {
 	const dir = path.dirname(file);
 	let s = '';
 	if(frontmatter.pre !== undefined){
 		try{
 			const pre = await fs.readFile(path.join(dir, frontmatter.pre));
 			s += pre;
-		}catch(err: Error){
+		}catch(err: any){
 			if(err.code !== 'ENOENT')
 				throw err;
 		}
@@ -106,7 +112,7 @@ async function layout(file: string, pageContent: string, frontmatter: Frontmatte
 		try{
 			const post = await fs.readFile(path.join(dir, frontmatter.post));
 			s += post;
-		}catch(err: Error){
+		}catch(err: any){
 			if(err.code !== 'ENOENT')
 				throw err;
 		}
@@ -114,7 +120,7 @@ async function layout(file: string, pageContent: string, frontmatter: Frontmatte
 	return s;
 }
 
-async function convert(data: string): string {
+async function convert(data: string): Promise<string> {
 	//const f = createReadStream(file, 'utf-8');
 	const f = Readable.from([data]);
 	const w = new WritableMemoryStream();

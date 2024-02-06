@@ -35,7 +35,7 @@ function createTransform(p: ChildProcess): Transform {
 		},
 		final: async (callback): Promise<void> => {
 			p.stdin.end();
-			const status = await new Promise((resolve, reject) => {
+			const status = await new Promise(resolve => {
 				p.on("close", resolve);
 			});
 			if(status !== 0){
