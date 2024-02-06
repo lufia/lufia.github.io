@@ -136,9 +136,9 @@ async function convert(data: string): Promise<string> {
 
 function generateCode(html: string, style: string): string {
 	const code = `
-	import css from '${style}'\n
+	import css from '${style}?inline'\n
 	const html = \`${rawString(html)}\`\n
-	const content = html.replace('</head>', '<style>\\n'+css+'</style>\\n</head>')\n
+	const content = html.replace('</head>', '<style>\\n'+css+'\\n</style>\\n</head>')\n
 	export default function render() {\n
 		return content\n
 	}\n
