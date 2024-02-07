@@ -1,8 +1,8 @@
 ---
 title: 期間限定イベント
 style: ../../../styles/global.css
-pre: ../include/u.i
-post: ../include/nav.i
+pre: ../../../layouts/estpolis/u.i
+post: ../../../layouts/estpolis/nav.i
 ---
 
 .revision

@@ -1,8 +1,8 @@
 ---
 title: 電子書籍雑感
 style: ../../../styles/global.css
-pre: ../include/u.i
-post: ../include/nav.i
+pre: ../../../layouts/notes/u.i
+post: ../../../layouts/notes/nav.i
 ---
 
 .revision

@@ -1,8 +1,8 @@
 ---
 title: foreachでノードを削除すると、1つ飛ばしに残る
 style: ../../../styles/global.css
-pre: ../include/u.i
-post: ../include/nav.i
+pre: ../../../layouts/notes/u.i
+post: ../../../layouts/notes/nav.i
 ---
 
 .revision

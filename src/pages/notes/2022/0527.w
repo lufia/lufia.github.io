@@ -1,8 +1,8 @@
 ---
 title: LINEに配達状況が突然届いた
 style: ../../../styles/global.css
-pre: ../include/u.i
-post: ../include/nav.i
+pre: ../../../layouts/notes/u.i
+post: ../../../layouts/notes/nav.i
 ---
 
 .revision

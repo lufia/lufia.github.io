@@ -1,7 +1,7 @@
 ---
 style: ../../styles/global.css
-pre: include/u.i
-post: include/nav.i
+pre: ../../layouts/plan9/u.i
+post: ../../layouts/plan9/nav.i
 ---
 
 =Plan 9 archive

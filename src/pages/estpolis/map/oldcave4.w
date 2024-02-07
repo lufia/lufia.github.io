@@ -1,8 +1,8 @@
 ---
 title: いにしえの洞窟 地下4階
 style: ../../../styles/global.css
-pre: ../include/u.i
-post: ../include/db.i
+pre: ../../../layouts/estpolis/u.i
+post: ../../../layouts/estpolis/db.i
 ---
 
 .revision

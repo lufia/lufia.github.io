@@ -1,8 +1,8 @@
 ---
 title: Googleも最近じゅうぶんに強引だと思う
 style: ../../../styles/global.css
-pre: ../include/u.i
-post: ../include/nav.i
+pre: ../../../layouts/notes/u.i
+post: ../../../layouts/notes/nav.i
 ---
 
 .revision

@@ -1,8 +1,8 @@
 ---
 title: 過去の虚空島
 style: ../../../../styles/global.css
-pre: ../../include/u.i
-post: ../../include/db.i
+pre: ../../../../layouts/estpolis/u.i
+post: ../../../../layouts/estpolis/db.i
 ---
 
 .revision

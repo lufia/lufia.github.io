@@ -1,8 +1,8 @@
 ---
 title: Arch Linuxで最新のAWS CLI v2をインストールする
 style: ../../../styles/global.css
-pre: ../include/u.i
-post: ../include/nav.i
+pre: ../../../layouts/notes/u.i
+post: ../../../layouts/notes/nav.i
 ---
 
 .revision

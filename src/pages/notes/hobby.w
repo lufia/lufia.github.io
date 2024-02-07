@@ -1,8 +1,8 @@
 ---
 title: 本・ゲーム
 style: ../../styles/global.css
-pre: include/u.i
-post: include/nav.i
+pre: ../../layouts/notes/u.i
+post: ../../layouts/notes/nav.i
 ---
 
 =本・ゲーム

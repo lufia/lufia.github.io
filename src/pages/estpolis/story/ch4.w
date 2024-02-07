@@ -1,8 +1,8 @@
 ---
 title: シャイア第1研究所〜海底の虚空島
 style: ../../../styles/global.css
-pre: ../include/u.i
-post: ../include/nav.i
+pre: ../../../layouts/estpolis/u.i
+post: ../../../layouts/estpolis/nav.i
 ---
 
 .revision

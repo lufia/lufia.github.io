@@ -1,8 +1,8 @@
 ---
 title: ルフィアノート
 style: ../../styles/global.css
-pre: include/u.i
-post: include/nav.i
+pre: ../../layouts/estpolis/u.i
+post: ../../layouts/estpolis/nav.i
 ---
 
 =エストポリス伝記 攻略ノート
