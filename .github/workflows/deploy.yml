@@ -19,10 +19,16 @@ jobs:
       with:
         repository: lufia/contrib
         path: .contrib
-    - name: install contrib
+    - name: install wf
       run: |
         cd .contrib/src/cmd/wf
         mk -f mkfile.unix install
+      shell: rc {0}
+    - name: install mapsvg
+      run: |
+        cd .contrib/src/games
+        install -m 755 mapsvg $PLAN9/bin
+        sed -i '1c #!'^$PLAN9^'/bin/rc' $PLAN9/bin/mapsvg
       shell: rc {0}
 
     - uses: actions/setup-node@v4

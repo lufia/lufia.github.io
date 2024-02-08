@@ -8,15 +8,13 @@ PNGFILES=`{cd src/pages && ls */*/*.png}
 
 #`{cd src/pages && ls */*/*.df */*/*.pic}\
 
-JSFILES=`{ls lib/*.js}
-XSDFILES=`{ls lib/*.xsd}
+#JSFILES=`{ls lib/*.js}
+#XSDFILES=`{ls lib/*.xsd}
 
 TARG=\
 	${MAPFILES:%.map=public/%.svg}\
-	${JSFILES:%.js=public/%.js}\
 	${JPEGFILES:%.jpg=public/%.jpg}\
 	${PNGFILES:%.png=public/%.png}\
-	${XSDFILES:%.xsd=public/%.xsd}\
 
 all:V: $TARG
 	npm run build
@@ -44,10 +42,6 @@ public/(.+)/([^/]*)\.png:RD: src/pages/\1/\2.pic
 	crop -c 255 255 255 |
 	topng >$target
 
-public/(.+)/([^/]*)\.jpg:RD: src/pages/\1/\2.jpg
-	mkdir -p public/$stem1
-	cp $prereq $target
-
-public/(.+)/([^/]*)\.png:RD: src/pages/\1/\2.png
+public/(.+)/([^/]*):RD: src/pages/\1/\2
 	mkdir -p public/$stem1
 	cp $prereq $target
