@@ -36,7 +36,7 @@ jobs:
         mkdir -p dist
         touch dist/.nojekyll
         npm install
-        npm run build
+        mk
     - uses: actions/upload-pages-artifact@v3
       with:
         path: dist
