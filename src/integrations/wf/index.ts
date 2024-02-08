@@ -3,9 +3,11 @@ import type {
 	ContentEntryType,
 	HookParameters,
 } from 'astro';
+import { JSDOM } from 'jsdom';
 import fs from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'path';
+import { codeToHtml } from 'shiki';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
 import type { Plugin as VitePlugin } from 'vite';
@@ -73,7 +75,7 @@ export default function wf(): AstroIntegration {
 									const data = await layout(id, pageContent, frontmatter);
 									const html = await convert(data);
 									return {
-										code: generateCode(html, frontmatter.style),
+										code: await generateCode(html, frontmatter.style),
 										map: null
 									};
 								},
@@ -133,10 +135,10 @@ async function convert(data: string): Promise<string> {
 	return w.toString();
 }
 
-function generateCode(html: string, style: string): string {
+async function generateCode(html: string, style: string): Promise<string> {
 	const code = `
 	import css from '${style}?inline'\n
-	const html = ${JSON.stringify(html)}\n
+	const html = ${JSON.stringify(await highlight(html))}\n
 	const content = html.replace('</head>', '<style>\\n'+css+'\\n</style>\\n</head>')\n
 	export default function render() {\n
 		return content\n
@@ -145,4 +147,18 @@ function generateCode(html: string, style: string): string {
 	render[Symbol.for("astro.needsHeadRendering")] = false\n
 	`;
 	return code;
+}
+
+async function highlight(html: string): Promise<string> {
+	const document = new JSDOM(html).window.document;
+	const codes = Array.from(document.querySelectorAll('code'));
+	for(const c of codes){
+		if(c.className === undefined)
+			continue;
+		c.parentNode.outerHTML = await codeToHtml(c.innerHTML, {
+			lang: c.className,
+			theme: 'github-light',
+		});
+	}
+	return document.documentElement.outerHTML;
 }

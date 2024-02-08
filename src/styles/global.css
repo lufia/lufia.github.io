@@ -151,6 +151,11 @@ body > main {
 		line-height: 1.75;
 		letter-spacing: 0.05rem;
 	}
+	& pre {
+		margin: 0.2rem;
+		padding: 0.2rem;
+		border: solid 1px #e2e2e2;
+	}
 	& code {
 		font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
 		font-size: 12px;
