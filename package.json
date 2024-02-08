@@ -23,8 +23,7 @@
   "homepage": "https://github.com/lufia/lufia.github.io#readme",
   "dependencies": {
     "astro": "^4.3.2",
-    "gray-matter": "^4.0.3",
-    "highlight.js": "^11.9.0"
+    "gray-matter": "^4.0.3"
   },
   "devDependencies": {
     "@types/highlight.js": "^10.1.0",
