@@ -1,6 +1,4 @@
 /node_modules
-/docs
 
 /public
-/out
-/.next
+/dist

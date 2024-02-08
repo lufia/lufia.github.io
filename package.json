@@ -5,10 +5,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "next",
-    "lint": "next lint",
-    "build": "next build && next export",
-    "start": "next start"
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
   },
   "repository": {
     "type": "git",
@@ -22,29 +22,20 @@
   },
   "homepage": "https://github.com/lufia/lufia.github.io#readme",
   "dependencies": {
-    "glob": "^10.3.10",
-    "highlight.js": "^11.9.0",
-    "html-to-react": "^1.7.0",
-    "next": "^14.0.0",
-    "react": "^18.2.0",
-    "react-children-utilities": "^2.8.0",
-    "react-dom": "^18.2.0"
+    "astro": "^4.3.2",
+    "gray-matter": "^4.0.3",
+    "highlight.js": "^11.9.0"
   },
   "devDependencies": {
-    "@types/glob": "^8.1.0",
     "@types/highlight.js": "^10.1.0",
-    "@types/react": "^18.2.33",
+    "@types/jsdom": "^21.1.6",
     "autoprefixer": "^10.4.16",
     "eslint": "^8.52.0",
-    "eslint-config-next": "^14.0.0",
+    "jsdom": "^24.0.0",
     "postcss-flexbugs-fixes": "^5.0.2",
     "postcss-mixins": "^9.0.4",
     "postcss-preset-env": "^9.2.0",
+    "shiki": "^1.0.0",
     "ts-loader": "^9.5.0"
-  },
-  "nextBundleAnalysis": {
-    "budget": 358400,
-    "budgetPercentIncreaseRed": 20,
-    "showDetails": true
   }
 }

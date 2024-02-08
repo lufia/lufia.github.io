@@ -1,14 +1,6 @@
 import { ChildProcess, spawn } from "child_process";
 import { Transform, Writable } from "stream";
 
-export function include(dir?: string): Transform {
-	const args = dir ? ["-a", dir] : [];
-	const p = spawn("include", args, {
-		stdio: ["pipe", "pipe", "inherit"],
-	});
-	return createTransform(p);
-}
-
 type ConverterOptions = Readonly<{
 	lang: string;
 	extensions?: { [key: string]: string };
@@ -22,9 +14,13 @@ export function convertToHtml(options: ConverterOptions): Transform {
 	if(options.extensions)
 		for(const [key, value] of Object.entries(options.extensions))
 			args.push("-x", key, value);
-	const p = spawn("wf", args, {
+	return createProcess("wf", args);
+}
+
+export function createProcess(name: string, args: string[]): Transform {
+	const p = spawn(name, args, {
 		stdio: ["pipe", "pipe", "inherit"],
-	});
+	})
 	return createTransform(p);
 }
 
@@ -43,7 +39,7 @@ function createTransform(p: ChildProcess): Transform {
 		},
 		final: async (callback): Promise<void> => {
 			p.stdin.end();
-			const status = await new Promise((resolve, reject) => {
+			const status = await new Promise(resolve => {
 				p.on("close", resolve);
 			});
 			if(status !== 0){
