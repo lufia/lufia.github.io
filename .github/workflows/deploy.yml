@@ -31,24 +31,15 @@ jobs:
     - uses: actions/configure-pages@v4
       with:
         static_site_generator: next
-    - uses: actions/cache@v4
-      env:
-        cache-name: cache-next-build
-      with:
-        path: .next/cache
-        key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**.ts', '**.tsx') }}
-        restore-keys: |
-          ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
-      id: restore-build-cache
     - name: build static files
       run: |
-        mkdir -p out
-        touch out/.nojekyll
+        mkdir -p dist
+        touch dist/.nojekyll
         npm install
         npm run build
     - uses: actions/upload-pages-artifact@v3
       with:
-        path: out
+        path: dist
 
   deploy:
     needs: build
