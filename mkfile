@@ -2,39 +2,30 @@
 MKSHELL=$PLAN9/bin/rc
 
 # resources
-PAGE=\
-	`{ls lib/*.js lib/*.xsd}\
-	`{ls estpolis/*/*/*.map}\
-	`{ls notes/*/*.jpg}\
-	`{ls notes/*/*.png}\
-#	`{ls notes/*/*.jpg notes/*/*.df notes/*/*.pic}\
+MAPFILES=`{cd src/pages && ls */*/*/*.map}
+JPEGFILES=`{cd src/pages && ls */*/*.jpg}
+PNGFILES=`{cd src/pages && ls */*/*.png}
+
+#`{cd src/pages && ls */*/*.df */*/*.pic}\
+
+JSFILES=`{ls lib/*.js}
+XSDFILES=`{ls lib/*.xsd}
 
 TARG=\
-	${PAGE:%.map=public/%.svg}\
-	${PAGE:%.df=public/%.png}\
-	${PAGE:%.pic=public/%.png}\
-	${PAGE:%.js=public/%.js}\
-	${PAGE:%.jpg=public/%.jpg}\
-	${PAGE:%.png=public/%.png}\
-	${PAGE:%.xsd=public/%.xsd}\
+	${MAPFILES:%.map=public/%.svg}\
+	${JSFILES:%.js=public/%.js}\
+	${JPEGFILES:%.jpg=public/%.jpg}\
+	${PNGFILES:%.png=public/%.png}\
+	${XSDFILES:%.xsd=public/%.xsd}\
 
 all:V: $TARG
 	npm run build
 
-release:V: all
-	touch out/.nojekyll
-	git -C out init
-	git -C out remote add origin `{git remote get-url origin}
-	git -C out switch -c gh-pages
-	git -C out add .
-	git -C out commit -m update
-	git -C out push -f origin gh-pages
-
-public/(.+)/([^/]*)\.svg:RD: \1/\2.map
+public/(.+)/([^/]*)\.svg:RD: src/pages/\1/\2.map
 	mkdir -p public/$stem1
 	mapsvg $MAPFLAGS $prereq >$target
 
-public/(.+)/([^/]*)\.png:RD: \1/\2.df
+public/(.+)/([^/]*)\.png:RD: src/pages/\1/\2.df
 	mkdir -p public/$stem1
 	dformat $prereq |
 	pic | eqn | troff -ms |
@@ -44,7 +35,7 @@ public/(.+)/([^/]*)\.png:RD: \1/\2.df
 	crop -c 255 255 255 |
 	topng >$target
 
-public/(.+)/([^/]*)\.png:RD: \1/\2.pic
+public/(.+)/([^/]*)\.png:RD: src/pages/\1/\2.pic
 	mkdir -p public/stem1
 	pic $prereq | troff |
 	lp -dstdout |
@@ -53,6 +44,10 @@ public/(.+)/([^/]*)\.png:RD: \1/\2.pic
 	crop -c 255 255 255 |
 	topng >$target
 
-public/(.+)/([^/]*):RD: \1/\2
+public/(.+)/([^/]*)\.jpg:RD: src/pages/\1/\2.jpg
+	mkdir -p public/$stem1
+	cp $prereq $target
+
+public/(.+)/([^/]*)\.png:RD: src/pages/\1/\2.png
 	mkdir -p public/$stem1
 	cp $prereq $target
