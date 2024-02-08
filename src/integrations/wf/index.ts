@@ -6,9 +6,9 @@ import type {
 import fs from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'path';
-import type { Plugin as VitePlugin } from 'vite';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
+import type { Plugin as VitePlugin } from 'vite';
 import {
     convertToHtml,
     WritableMemoryStream,
@@ -121,7 +121,6 @@ async function layout(file: string, pageContent: string, frontmatter: Frontmatte
 }
 
 async function convert(data: string): Promise<string> {
-	//const f = createReadStream(file, 'utf-8');
 	const f = Readable.from([data]);
 	const w = new WritableMemoryStream();
 	await pipeline(f, convertToHtml({
@@ -137,7 +136,7 @@ async function convert(data: string): Promise<string> {
 function generateCode(html: string, style: string): string {
 	const code = `
 	import css from '${style}?inline'\n
-	const html = \`${rawString(html)}\`\n
+	const html = ${JSON.stringify(html)}\n
 	const content = html.replace('</head>', '<style>\\n'+css+'\\n</style>\\n</head>')\n
 	export default function render() {\n
 		return content\n
@@ -146,8 +145,4 @@ function generateCode(html: string, style: string): string {
 	render[Symbol.for("astro.needsHeadRendering")] = false\n
 	`;
 	return code;
-}
-
-function rawString(s: string): string {
-	return s.replace(/[\`\$\\]/g, '\\$&');
 }

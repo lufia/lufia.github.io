@@ -14,9 +14,13 @@ export function convertToHtml(options: ConverterOptions): Transform {
 	if(options.extensions)
 		for(const [key, value] of Object.entries(options.extensions))
 			args.push("-x", key, value);
-	const p = spawn("wf", args, {
+	return createProcess("wf", args);
+}
+
+export function createProcess(name: string, args: string[]): Transform {
+	const p = spawn(name, args, {
 		stdio: ["pipe", "pipe", "inherit"],
-	});
+	})
 	return createTransform(p);
 }
 
