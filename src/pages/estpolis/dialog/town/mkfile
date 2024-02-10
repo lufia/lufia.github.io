@@ -1,7 +1,0 @@
-<../../mk.def
-
-CLEANFILES=`{ls *.sc | sed 's/..$/m/'}
-TARG=index.html ${CLEANFILES:%.m=%.html}
-
-<../../mk.proc
-<../mk.proc
