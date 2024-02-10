@@ -35,3 +35,9 @@ post: ../../../layouts/notes/nav.i
 見た目はテーマで設定ができる。個人的には*github-light*が好み。
 
 !% git config --global split-diffs.theme-name github-light
+
+.aside
+{
+	=関連記事
+	*[difftasticを使ってみた|../2024/0210.w]
+}
