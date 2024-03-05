@@ -8,6 +8,7 @@ post: ../../layouts/notes/nav.i
 =PC関連
 	=2024年
 	*[difftasticを使ってみた|2024/0210.w]
+	*[Arch Linuxのアップデートでlibblockdevが競合する|2024/0305.w]
 
 	=2023年
 	*[PostgreSQLのメジャーバージョンアップグレード|2023/0130.w]
