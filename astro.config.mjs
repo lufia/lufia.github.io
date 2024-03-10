@@ -12,6 +12,7 @@ export default defineConfig({
 			command({
 				extension: '.map',
 				outputExtension: '.svg',
+				mimeType: 'image/svg+xml',
 				commands: [
 					{ name: 'mapsvg' }
 				]
