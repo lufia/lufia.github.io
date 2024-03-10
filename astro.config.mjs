@@ -17,6 +17,23 @@ export default defineConfig({
 					{ name: 'mapsvg' }
 				]
 			}),
+			command({
+				extension: '.pic',
+				outputExtension: '.svg',
+				mimeType: 'image/svg+xml',
+				commands: [
+					{ name: 'svgpic' }
+				]
+			}),
+			command({
+				extension: '.df',
+				outputExtension: '.svg',
+				mimeType: 'image/svg+xml',
+				commands: [
+					{ name: './bin/dformat' },
+					{ name: 'svgpic' }
+				]
+			}),
 		]
 	},
 	integrations: [wf()]
