@@ -21,7 +21,7 @@ post: ../../../../layouts/estpolis/db.i
 	なし
 
 	=マップ詳細
-	\<house1.map>
+	\<../../../../assets/estpolis/map/house/house1.map>
 	:A
 	-[ショートソード|../../stuff/shortsword.w]
 	:B

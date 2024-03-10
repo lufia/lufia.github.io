@@ -60,22 +60,22 @@ post: ../../../../layouts/estpolis/db.i
 
 	=マップ詳細
 		=ロルベニア
-		\<lorbenia1.map>
+		\<../../../../assets/estpolis/map/lorbenia/lorbenia1.map>
 
 		:A
 		-[ミドルアロー|../../item/midarrow.w]
 		:B
 		-[ちしきのみなもと|../../item/mindpotion.w]
 
-		\<lorbenia2.map>
+		\<../../../../assets/estpolis/map/lorbenia/lorbenia2.map>
 
 		=大店2F
-		\<lorbenia3.map>
+		\<../../../../assets/estpolis/map/lorbenia/lorbenia3.map>
 		:C
 		-[せいすい|../../item/sweetwater.w]
 
 		=大店3F
-		\<lorbenia4.map>
+		\<../../../../assets/estpolis/map/lorbenia/lorbenia4.map>
 
 	=周辺に出現するモンスター
 	*[グレートバット|../../monster/giantbat.w]

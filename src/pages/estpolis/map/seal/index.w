@@ -22,17 +22,17 @@ post: ../../../../layouts/estpolis/db.i
 
 	=マップ詳細
 		=B1
-		\<seal1.map>
+		\<../../../../assets/estpolis/map/seal/seal1.map>
 		:A
 		-[クロスシューズ|../../stuff/clothshoes.w]
 
 		=B2
-		\<seal2.map>
+		\<../../../../assets/estpolis/map/seal/seal2.map>
 
 		.note
 		3の扉は、アイネアがいないと開けません。
 
-		\<seal3.map>
+		\<../../../../assets/estpolis/map/seal/seal3.map>
 		:B
 		-[スイングウイング|../../item/swingwing.w]
 

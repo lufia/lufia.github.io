@@ -20,7 +20,7 @@ post: ../../../../layouts/estpolis/db.i
 	=ショップ
 
 	=マップ詳細
-	\<kirof1.map>
+	\<../../../../assets/estpolis/map/kirof/kirof1.map>
 
 	:A
 	-[ミドルアロー|../../item/midarrow.w]

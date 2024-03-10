@@ -21,13 +21,13 @@ post: ../../../../layouts/estpolis/db.i
 
 	=マップ詳細
 		=シェラン城下町
-		\<sheran1.map>
+		\<../../../../assets/estpolis/map/sheran/sheran1.map>
 
 		=城入口
-		\<sheran2.map>
+		\<../../../../assets/estpolis/map/sheran/sheran2.map>
 
 		=1F
-		\<sheran3.map>
+		\<../../../../assets/estpolis/map/sheran/sheran3.map>
 
 		:A
 		-[ポーション|../../item/potion.w]
@@ -47,7 +47,7 @@ post: ../../../../layouts/estpolis/db.i
 		-[めざめのこえ|../../item/awaken.w]
 
 		=2F
-		\<sheran4.map>
+		\<../../../../assets/estpolis/map/sheran/sheran4.map>
 
 		:I
 		-[せいすい|../../item/sweetwater.w]
@@ -63,10 +63,10 @@ post: ../../../../layouts/estpolis/db.i
 		-[デルデル|../../item/revive.w]
 
 		=3F-1
-		\<sheran5.map>
+		\<../../../../assets/estpolis/map/sheran/sheran5.map>
 
 		=3F-2
-		\<sheran8.map>
+		\<../../../../assets/estpolis/map/sheran/sheran8.map>
 
 		:O
 		-100G
@@ -75,16 +75,16 @@ post: ../../../../layouts/estpolis/db.i
 		-B1の隠し階段が開きます
 
 		=3F-3
-		\<sheran6.map>
+		\<../../../../assets/estpolis/map/sheran/sheran6.map>
 
 		=3F-4
-		\<sheran7.map>
+		\<../../../../assets/estpolis/map/sheran/sheran7.map>
 
 		=B1-1
-		\<sheran9.map>
+		\<../../../../assets/estpolis/map/sheran/sheran9.map>
 
 		=B2
-		\<sheran10.map>
+		\<../../../../assets/estpolis/map/sheran/sheran10.map>
 
 		:P
 		-[ちからのみなもと|../../item/greatpotion.w]

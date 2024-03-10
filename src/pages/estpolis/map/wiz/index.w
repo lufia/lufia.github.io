@@ -22,81 +22,81 @@ post: ../../../../layouts/estpolis/db.i
 
 	=落ちているアイテム
 		=1F
-		\<wiz1.map>
+		\<../../../../assets/estpolis/map/wiz/wiz1.map>
 
-		\<wiz2.map>
+		\<../../../../assets/estpolis/map/wiz/wiz2.map>
 
-		\<wiz3.map>
+		\<../../../../assets/estpolis/map/wiz/wiz3.map>
 		:A
 		-[ハイポーション|../../item/hipotion.w]
 		:B
 		-[ハイマジック|../../item/himagic.w]
 
-		\<wiz4.map>
+		\<../../../../assets/estpolis/map/wiz/wiz4.map>
 
-		\<wiz5.map>
+		\<../../../../assets/estpolis/map/wiz/wiz5.map>
 		:C
 		-[ソニックリング|../../stuff/sonicring.w]
 
 		=2F
-		\<wiz6.map>
+		\<../../../../assets/estpolis/map/wiz/wiz6.map>
 
 		=2F左
-		\<wiz7.map>
+		\<../../../../assets/estpolis/map/wiz/wiz7.map>
 
-		\<wiz8.map>
+		\<../../../../assets/estpolis/map/wiz/wiz8.map>
 		:D
 		-[スモークボール|../../item/smokeball.w]
 
 		=3F左
-		\<wiz9.map>
+		\<../../../../assets/estpolis/map/wiz/wiz9.map>
 
-		\<wiz10.map>
+		\<../../../../assets/estpolis/map/wiz/wiz10.map>
 		:E
 		-[パワードラッグ|../../item/powergourd.w]
 		:F
 		-[インテリドラッグ|../../item/mindgourd.w]
 
-		\<wiz11.map>
+		\<../../../../assets/estpolis/map/wiz/wiz11.map>
 		:G
 		-[ハイポーション|../../item/hipotion.w]
 
-		\<wiz12.map>
+		\<../../../../assets/estpolis/map/wiz/wiz12.map>
 		:H
 		-[デルデル|../../item/revive.w]
 
 		=2F右
-		\<wiz13.map>
+		\<../../../../assets/estpolis/map/wiz/wiz13.map>
 
-		\<wiz14.map>
+		\<../../../../assets/estpolis/map/wiz/wiz14.map>
 		:I
 		-[ちしきのみなもと|../../item/mindpotion.w]
 
-		\<wiz15.map>
+		\<../../../../assets/estpolis/map/wiz/wiz15.map>
 		:J
 		-[ちからのみなもと|../../item/greatpotion.w]
 
-		\<wiz16.map>
+		\<../../../../assets/estpolis/map/wiz/wiz16.map>
 
 		=3F右
-		\<wiz17.map>
+		\<../../../../assets/estpolis/map/wiz/wiz17.map>
 
-		\<wiz18.map>
+		\<../../../../assets/estpolis/map/wiz/wiz18.map>
 
-		\<wiz19.map>
+		\<../../../../assets/estpolis/map/wiz/wiz19.map>
 		:K
 		-[いのちのみなもと|../../item/powerpotion.w]
 		:L
 		-[まほうのみなもと|../../item/spellpotion.w]
 
 		=4F
-		\<wiz20.map>
+		\<../../../../assets/estpolis/map/wiz/wiz20.map>
 		:M
 		-[ミドルアロー|../../item/midarrow.w]
 		:N
 		-[ミドルアロー|../../item/midarrow.w]
 
-		\<wiz21.map>
+		\<../../../../assets/estpolis/map/wiz/wiz21.map>
 		:a
 		-戦闘終了後、[はやさのみなもと|../../item/speedpotion.w]
 
