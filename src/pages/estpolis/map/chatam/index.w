@@ -25,7 +25,7 @@ post: ../../../../layouts/estpolis/db.i
 		*[アロー|../../item/arrow.w]
 
 	=マップ詳細
-	\<chatam1.map>
+	\<../../../../assets/estpolis/map/chatam/chatam1.map>
 
 	:A
 	-[ちからのみなもと|../../item/greatpotion.w]

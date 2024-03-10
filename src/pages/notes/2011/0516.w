@@ -90,7 +90,7 @@ off**DIRPERBUF+slotのように、ひとつにまとめているわけですね�
 
 概要図。
 
-\<FileとWpathの動き|0516.png>
+\<FileとWpathの動き|../../../assets/notes/2011/0516.pic>
 
 .aside
 {

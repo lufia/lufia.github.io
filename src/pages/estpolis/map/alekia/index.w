@@ -37,7 +37,7 @@ post: ../../../../layouts/estpolis/db.i
 
 	=マップ詳細
 		=Alekia town 1
-		\<alekia1.map>
+		\<../../../../assets/estpolis/map/alekia/alekia1.map>
 
 		:A
 		-[ポーション|../../item/potion.w]
@@ -51,19 +51,19 @@ post: ../../../../layouts/estpolis/db.i
 		-[せいすい|../../item/sweetwater.w]
 
 		=Alekia town 2
-		\<alekia2.map>
+		\<../../../../assets/estpolis/map/alekia/alekia2.map>
 
 		=Alekia town 3
-		\<alekia3.map>
+		\<../../../../assets/estpolis/map/alekia/alekia3.map>
 
 		:F
 		-[ワンピース|../../stuff/dress.w]
 
 		=Alekia front
-		\<alekia4.map>
+		\<../../../../assets/estpolis/map/alekia/alekia4.map>
 
 		=Alekia 1F-1
-		\<alekia5.map>
+		\<../../../../assets/estpolis/map/alekia/alekia5.map>
 
 		:G
 		-[デルデル|../../item/revive.w]
@@ -81,7 +81,7 @@ post: ../../../../layouts/estpolis/db.i
 		-[せいすい|../../item/sweetwater.w]
 
 		=Alekia 2F-1
-		\<alekia6.map>
+		\<../../../../assets/estpolis/map/alekia/alekia6.map>
 
 		:K
 		-[ポーション|../../item/potion.w]
@@ -89,10 +89,10 @@ post: ../../../../layouts/estpolis/db.i
 		-[ポーション|../../item/potion.w]
 
 		=Alekia 3F-1
-		\<alekia7.map>
+		\<../../../../assets/estpolis/map/alekia/alekia7.map>
 
 		=Alekia 3F-2
-		\<alekia8.map>
+		\<../../../../assets/estpolis/map/alekia/alekia8.map>
 
 		:M
 		-[クマのぬいぐるみ|../../item/stuffedbear.w]
@@ -100,11 +100,11 @@ post: ../../../../layouts/estpolis/db.i
 		-[ブレスレット|../../stuff/bracelet.w]
 
 		=Alekia 4F-1
-		\<alekia9.map>
+		\<../../../../assets/estpolis/map/alekia/alekia9.map>
 
 	=イベント
 		=姫からの依頼
-		シェランに向かう前、[城3F|alekia7.map]の(17, 23)あたりを歩く
+		シェランに向かう前、城3Fの(17, 23)あたりを歩く
 		姫と会話すると100Gもらえる。
 
 	=周辺に出現するモンスター

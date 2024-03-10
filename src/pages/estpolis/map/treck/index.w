@@ -53,19 +53,19 @@ post: ../../../../layouts/estpolis/db.i
 
 	=マップ詳細
 		=トレック
-		\<treck1.map>
+		\<../../../../assets/estpolis/map/treck/treck1.map>
 		:A
 		-[カチューシャ|../../stuff/ribbon.w]
 		:C
 		-[パワードラッグ|../../item/powergourd.w]
 
-		\<treck2.map>
+		\<../../../../assets/estpolis/map/treck/treck2.map>
 		:B
 		-[ワンピース|../../stuff/dress.w]
 
-		\<treck3.map>
+		\<../../../../assets/estpolis/map/treck/treck3.map>
 
-		\<treck4.map>
+		\<../../../../assets/estpolis/map/treck/treck4.map>
 		:D
 		-[スモークボール|../../item/smokeball.w]
 		:E

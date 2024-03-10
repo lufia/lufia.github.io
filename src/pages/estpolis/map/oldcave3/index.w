@@ -21,7 +21,7 @@ post: ../../../../layouts/estpolis/db.i
 	なし
 
 	=マップ詳細
-	\<oldcave31.map>
+	\<../../../../assets/estpolis/map/oldcave3/oldcave31.map>
 
 	:A
 	-[ハイポーション|../../item/hipotion.w]
@@ -34,7 +34,7 @@ post: ../../../../layouts/estpolis/db.i
 	:E
 	-[マジックガード|../../item/magicguard.w]
 
-	\<oldcave32.map>
+	\<../../../../assets/estpolis/map/oldcave3/oldcave32.map>
 
 	:F
 	-空箱
@@ -45,14 +45,14 @@ post: ../../../../layouts/estpolis/db.i
 	:K
 	-空箱
 
-	\<oldcave33.map>
+	\<../../../../assets/estpolis/map/oldcave3/oldcave33.map>
 
 	:H
 	-[デルデル|../../item/revive.w]
 	:I
 	-空箱
 
-	\<oldcave34.map>
+	\<../../../../assets/estpolis/map/oldcave3/oldcave34.map>
 
 	:L
 	-空箱
@@ -73,7 +73,7 @@ post: ../../../../layouts/estpolis/db.i
 	:T
 	-[ハイポーション|../../item/hipotion.w]
 
-	\<oldcave35.map>
+	\<../../../../assets/estpolis/map/oldcave3/oldcave35.map>
 
 	:U
 	-[ブロンズブレスト|../../stuff/bronebrest.w]
@@ -88,7 +88,7 @@ post: ../../../../layouts/estpolis/db.i
 	:Z
 	-[ブロンズヘルム|../../stuff/bronehelm.w]
 
-	\<oldcave36.map>
+	\<../../../../assets/estpolis/map/oldcave3/oldcave36.map>
 
 	:AA
 	-空箱

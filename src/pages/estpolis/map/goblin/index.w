@@ -21,12 +21,12 @@ post: ../../../../layouts/estpolis/db.i
 
 	=マップ詳細
 		=B1
-		\<goblin1.map>
+		\<../../../../assets/estpolis/map/goblin/goblin1.map>
 		:A
 		-[ポーション|../../item/potion.w]
 
 		=B2
-		\<goblin2.map>
+		\<../../../../assets/estpolis/map/goblin/goblin2.map>
 		:B
 		-[ポーション|../../item/potion.w]
 		:C
@@ -34,11 +34,11 @@ post: ../../../../layouts/estpolis/db.i
 		:D
 		-[ミラクロース|../../item/miracle.w]
 
-		\<goblin3.map>
+		\<../../../../assets/estpolis/map/goblin/goblin3.map>
 
-		\<goblin4.map>
+		\<../../../../assets/estpolis/map/goblin/goblin4.map>
 
-		\<goblin5.map>
+		\<../../../../assets/estpolis/map/goblin/goblin5.map>
 		:E
 		-[ディフリング|../../stuff/dazering.w]
 

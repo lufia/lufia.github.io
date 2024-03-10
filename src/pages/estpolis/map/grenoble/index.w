@@ -45,7 +45,7 @@ post: ../../../../layouts/estpolis/db.i
 		*[クロスシューズ|../../stuff/clothshoes.w]
 
 	=マップ詳細
-	\<grenoble1.map>
+	\<../../../../assets/estpolis/map/grenoble/grenoble1.map>
 	:A
 	-[ポーション|../../item/potion.w]
 	:B
@@ -53,11 +53,11 @@ post: ../../../../layouts/estpolis/db.i
 	:C
 	-[まほうのみなもと|../../item/spellpotion.w]
 
-	\<grenoble2.map>
+	\<../../../../assets/estpolis/map/grenoble/grenoble2.map>
 
-	\<grenoble3.map>
+	\<../../../../assets/estpolis/map/grenoble/grenoble3.map>
 
-	\<grenoble4.map>
+	\<../../../../assets/estpolis/map/grenoble/grenoble4.map>
 
 	=周辺に出現するモンスター
 	*[グレートバット|../../monster/giantbat.w]

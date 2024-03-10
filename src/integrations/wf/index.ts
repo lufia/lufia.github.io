@@ -129,16 +129,22 @@ async function convert(data: string): Promise<string> {
 	await pipeline(f, convertToHtml({
 		lang: 'ja',
 		extensions: {
-			//map: 'svg',
 			w: 'html',
 		},
 	}), w);
 	return w.toString();
 }
 
+const imageExtensions = [
+	'.df',
+	'.map',
+	'.pic',
+];
+
 async function generateCode(dir: string, html: string, style: string): Promise<string> {
 	const { document } = new JSDOM(html).window;
-	const nodes = document.querySelectorAll('img[src$=".map"]');
+	const imageQuery = imageExtensions.map(s => `img[src$="${s}"]`).join(',');
+	const nodes = document.querySelectorAll(imageQuery);
 	const images = Array.from(nodes).map((p, i) => ({
 		varname: `image${i+1}`,
 		src: p.src,
@@ -161,7 +167,7 @@ async function generateCode(dir: string, html: string, style: string): Promise<s
 		import ${s.varname} from ${JSON.stringify(s.file)}
 		imageMap.set(${JSON.stringify(s.src)}, ${s.varname})
 	`).join('')}
-	document.querySelectorAll('img[src$=".map"]').forEach(p => {
+	document.querySelectorAll(${JSON.stringify(imageQuery)}).forEach(p => {
 		p.src = imageMap.get(p.src)
 	})
 	export default function render() {

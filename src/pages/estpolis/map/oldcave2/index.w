@@ -21,7 +21,7 @@ post: ../../../../layouts/estpolis/db.i
 	なし
 
 	=マップ詳細
-	\<oldcave21.map>
+	\<../../../../assets/estpolis/map/oldcave2/oldcave21.map>
 
 	:A
 	-空箱
@@ -57,14 +57,14 @@ post: ../../../../layouts/estpolis/db.i
 	-[クロスシューズ|../../stuff/clothshoes.w]
 
 
-	\<oldcave22.map>
+	\<../../../../assets/estpolis/map/oldcave2/oldcave22.map>
 
 	:J
 	-[パワーリング|../../stuff/powerring.w]
 	:K
 	-[ひほうのちず|../../item/secretmap.w]
 
-	\<oldcave23.map>
+	\<../../../../assets/estpolis/map/oldcave2/oldcave23.map>
 
 	:S
 	-[ワンピース|../../stuff/dress.w]

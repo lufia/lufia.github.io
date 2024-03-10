@@ -33,10 +33,10 @@ post: ../../../../layouts/estpolis/db.i
 
 	=マップ詳細
 		=受け付け
-		\<oldcave1.map>
+		\<../../../../assets/estpolis/map/oldcave/oldcave1.map>
 
 		=エレベータ
-		\<oldcave2.map>
+		\<../../../../assets/estpolis/map/oldcave/oldcave2.map>
 
 	=メモ
 	いにしえの洞窟は、主人公のLVによって

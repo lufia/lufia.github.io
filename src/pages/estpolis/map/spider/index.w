@@ -25,19 +25,19 @@ post: ../../../../layouts/estpolis/db.i
 		3はチャタムから北西の入り口になります。
 
 		=B1-1
-		\<spider1.map>
+		\<../../../../assets/estpolis/map/spider/spider1.map>
 		:C
 		-[デルデル|../../item/revive.w]
 
 		=B1-2
-		\<spider2.map>
+		\<../../../../assets/estpolis/map/spider/spider2.map>
 		:A
 		-[ポーション|../../item/potion.w]
 		:B
 		-200G
 
 		=B1-3
-		\<spider3.map>
+		\<../../../../assets/estpolis/map/spider/spider3.map>
 
 	=出現するモンスター
 	*[ジェリー|../../monster/jellyfish.w]
