@@ -6,10 +6,10 @@ import type {
 import { JSDOM } from 'jsdom';
 import fs from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
-import path from 'path';
+import path from 'node:path';
 import { codeToHtml } from 'shiki';
-import { Readable } from 'stream';
-import { pipeline } from 'stream/promises';
+import { Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
 import type { Plugin as VitePlugin } from 'vite';
 import {
     convertToHtml,
@@ -65,17 +65,18 @@ export default function wf(): AstroIntegration {
 									const {
 										data: params,
 										content: pageContent,
-									} = parseFrontmatter(code, id);
+									} = parseFrontmatter(code, fileId);
 									const frontmatter: Frontmatter = {
 										title: params.title,
 										style: params.style!,
 										pre: params.pre,
 										post: params.post,
 									}
-									const data = await layout(id, pageContent, frontmatter);
+									const data = await layout(fileId, pageContent, frontmatter);
 									const html = await convert(data);
+									const dir = path.dirname(fileId);
 									return {
-										code: await generateCode(html, frontmatter.style),
+										code: await generateCode(dir, html, frontmatter.style),
 										map: null
 									};
 								},
@@ -128,29 +129,54 @@ async function convert(data: string): Promise<string> {
 	await pipeline(f, convertToHtml({
 		lang: 'ja',
 		extensions: {
-			map: 'svg',
+			//map: 'svg',
 			w: 'html',
 		},
 	}), w);
 	return w.toString();
 }
 
-async function generateCode(html: string, style: string): Promise<string> {
+async function generateCode(dir: string, html: string, style: string): Promise<string> {
+	const { document } = new JSDOM(html).window;
+	const nodes = document.querySelectorAll('img[src$=".map"]');
+	const images = Array.from(nodes).map((p, i) => ({
+		varname: `image${i+1}`,
+		src: p.src,
+		file: path.resolve(dir, p.src),
+	}));
+
 	const code = `
-	import css from '${style}?inline'\n
-	const html = ${JSON.stringify(await highlight(html))}\n
-	const content = html.replace('</head>', '<style>\\n'+css+'\\n</style>\\n</head>')\n
-	export default function render() {\n
-		return content\n
-	}\n
-	render['astro:html'] = true\n
-	render[Symbol.for("astro.needsHeadRendering")] = false\n
+	import { JSDOM } from 'jsdom'
+	import css from '${style}?inline'
+	const html = ${JSON.stringify(await highlight(html))}
+
+	const dom = new JSDOM(html)
+	const { document } = dom.window
+	const style = document.createElement('style')
+	style.appendChild(document.createTextNode(css))
+	document.head.appendChild(style)
+
+	const imageMap = new Map()
+	${images.map(s => `
+		import ${s.varname} from ${JSON.stringify(s.file)}
+		imageMap.set(${JSON.stringify(s.src)}, ${s.varname})
+	`).join('')}
+	document.querySelectorAll('img[src$=".map"]').forEach(p => {
+		p.src = imageMap.get(p.src)
+	})
+	export default function render() {
+		return dom.serialize()
+	}
+	render['astro:html'] = true
+	render[Symbol.for("astro.needsHeadRendering")] = false
 	`;
+
 	return code;
 }
 
 async function highlight(html: string): Promise<string> {
-	const document = new JSDOM(html).window.document;
+	const dom = new JSDOM(html);
+	const { document } = dom.window;
 	const codes = Array.from(document.querySelectorAll('code'));
 	for(const c of codes){
 		if(c.className === undefined)
@@ -160,5 +186,5 @@ async function highlight(html: string): Promise<string> {
 			theme: 'github-light',
 		});
 	}
-	return document.documentElement.outerHTML;
+	return dom.serialize();
 }
