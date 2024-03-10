@@ -9,6 +9,7 @@ post: ../../layouts/notes/nav.i
 	=2024年
 	*[difftasticを使ってみた|2024/0210.w]
 	*[Arch Linuxのアップデートでlibblockdevが競合する|2024/0305.w]
+	*[Btrfsのskipping scrub of block group x due to active swapfile|2024/0310.w]
 
 	=2023年
 	*[PostgreSQLのメジャーバージョンアップグレード|2023/0130.w]
