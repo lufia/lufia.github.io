@@ -6,10 +6,10 @@ import type {
 import { JSDOM } from 'jsdom';
 import fs from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
-import path from 'path';
+import path from 'node:path';
 import { codeToHtml } from 'shiki';
-import { Readable } from 'stream';
-import { pipeline } from 'stream/promises';
+import { Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
 import type { Plugin as VitePlugin } from 'vite';
 import {
     convertToHtml,

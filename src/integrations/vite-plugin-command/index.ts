@@ -1,10 +1,11 @@
-import { spawn } from 'child_process';
+import { Buffer } from 'node:buffer';
+import { spawn } from 'node:child_process';
 import fs from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
-import path from 'path';
-import { Readable } from 'stream';
-import { pipeline } from 'stream/promises';
-import type { Plugin } from 'vite';
+import path from 'node:path';
+import { Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
+import type { Plugin, ResolvedConfig } from 'vite';
 import {
     createProcess,
     WritableMemoryStream,
