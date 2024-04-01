@@ -1,27 +1,22 @@
 version: 2
 updates:
-  - package-ecosystem: 'npm'
-    directory: '/'
+  - package-ecosystem: npm
+    directory: /
     schedule:
-      interval: 'weekly'
+      interval: weekly
     groups:
-      glob:
+      security-fix:
+        applies-to: security-updates
         patterns:
-          - 'glob'
-          - '@types/glob'
-      highlight:
+          - '*'
+      minors:
+        applies-to: version-updates
         patterns:
-          - 'highlight.js'
-          - '@types/highlight.js'
-      react:
-        patterns:
-          - 'react'
-          - '@types/react'
-      next:
-        patterns:
-          - 'next'
-          - 'eslint-config-next'
-  - package-ecosystem: 'github-actions'
-    directory: '/'
+          - '*'
+        update-types:
+          - minor
+          - patch
+  - package-ecosystem: github-actions
+    directory: /
     schedule:
-      interval: 'weekly'
+      interval: weekly
