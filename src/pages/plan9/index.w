@@ -31,6 +31,6 @@ post: ../../layouts/plan9/nav.i
 	*[Plan 9(愛知大)|http://p9.nyx.link/]
 	*[Plan9メモ|http://www.geocities.co.jp/SiliconValley/6131/plan9/]
 	*[Plan 9 from Bell Labs翻訳プロジェクト|
-	https://sites.google.com/site/plan9jp/]
+	https://ja.osdn.net/projects/plan9jp/]
 	*[Abaco: A Web Browser for Plan 9|http://lab-fgb.com/abaco/]
 }
