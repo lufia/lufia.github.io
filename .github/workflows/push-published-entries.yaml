@@ -1,0 +1,17 @@
+name: push published entries
+
+
+on:
+  pull_request:
+    paths:
+      - "blog/entries/**"
+
+defaults:
+  run:
+    working-directory: blog
+
+jobs:
+  push-published-entries:
+    uses: hatena/hatenablog-workflows/.github/workflows/push-published-entries.yaml@v1
+    secrets:
+      OWNER_API_KEY: ${{ secrets.OWNER_API_KEY }}

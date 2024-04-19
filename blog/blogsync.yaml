@@ -1,3 +1,5 @@
 lufia.hateblo.jp:
-  local_root: .
-  omit_domain: true
+  username: lufiabb
+
+default:
+  local_root: entries
