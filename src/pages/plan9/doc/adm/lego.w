@@ -40,10 +40,10 @@ post: ../../../../layouts/plan9/nav.i
 	Plan 9で使う証明書を発行するために必須のオプションは上記の通りです。
 	legoには他にもオプションがあり、--path <<dir>>とすると証明書や鍵ファイルを
 	<<dir>>以下で管理します。また、ip/httpd/httpdが既に動作している場合、
-	\--webroot /usr/webのようにするとhttpdを経由してドメインの確認を行います。
+	\--http.webrootを使うとhttpdを経由してドメインの確認を行います。
 
 	.console
-	!% lego -a -m info@example.com -d example.com -k rsa2048 --webroot /usr/web run
+	!% lego -a -m info@example.com -d example.com -k rsa2048 --http --http.webroot /usr/web run
 	!% rm /usr/web/.well-known/acme-challenge
 	!% rm /usr/web/.well-known
 
