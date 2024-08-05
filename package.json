@@ -22,19 +22,19 @@
   },
   "homepage": "https://github.com/lufia/lufia.github.io#readme",
   "dependencies": {
-    "astro": "^4.12.2",
+    "astro": "^4.13.1",
     "gray-matter": "^4.0.3"
   },
   "devDependencies": {
     "@types/highlight.js": "^10.1.0",
     "@types/jsdom": "^21.1.7",
-    "autoprefixer": "^10.4.19",
+    "autoprefixer": "^10.4.20",
     "eslint": "^9.8.0",
     "jsdom": "^24.1.1",
     "postcss-flexbugs-fixes": "^5.0.2",
     "postcss-mixins": "^10.0.1",
     "postcss-preset-env": "^10.0.0",
-    "shiki": "^1.12.0",
+    "shiki": "^1.12.1",
     "ts-loader": "^9.5.0"
   }
 }
