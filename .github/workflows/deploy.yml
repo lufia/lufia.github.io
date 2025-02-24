@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - uses: lufia/setup-plan9port@v2
+    - uses: lufia/setup-plan9port@v3
       with:
         environment: ubuntu-latest
     - uses: actions/checkout@v4
