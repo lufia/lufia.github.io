@@ -26,7 +26,6 @@
     "gray-matter": "^4.0.3"
   },
   "devDependencies": {
-    "@types/highlight.js": "^10.1.0",
     "@types/jsdom": "^21.1.7",
     "autoprefixer": "^10.4.20",
     "eslint": "^9.21.0",
