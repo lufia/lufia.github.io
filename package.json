@@ -22,13 +22,13 @@
   },
   "homepage": "https://github.com/lufia/lufia.github.io#readme",
   "dependencies": {
-    "astro": "^5.5.2",
+    "astro": "^5.5.4",
     "gray-matter": "^4.0.3"
   },
   "devDependencies": {
     "@types/jsdom": "^21.1.7",
     "autoprefixer": "^10.4.21",
-    "eslint": "^9.22.0",
+    "eslint": "^9.23.0",
     "jsdom": "^26.0.0",
     "postcss-flexbugs-fixes": "^5.0.2",
     "postcss-mixins": "^11.0.3",
