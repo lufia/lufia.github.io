@@ -58,6 +58,7 @@ post: ../../layouts/notes/nav.i
 
 	=2013年
 	*[Mac OS Xのパッケージ管理|2013/0818.w]
+	*[fs64からfossil+ventiへの移行|2013/08181.w]
 
 	=2012年
 	*[VMware ESXiの導入|2012/0909.w]
