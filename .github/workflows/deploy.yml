@@ -11,11 +11,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v5
-    - uses: lufia/setup-plan9port@v3
+    - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+    - uses: lufia/setup-plan9port@151766c60eb37fae334741ced086cdfb107d40cf # v3.0.0
       with:
         environment: ubuntu-latest
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       with:
         repository: lufia/contrib
         path: .contrib
@@ -31,10 +31,10 @@ jobs:
         sed -i '1c #!'^$PLAN9^'/bin/rc' $PLAN9/bin/mapsvg
       shell: rc {0}
 
-    - uses: actions/setup-node@v4
+    - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
       with:
         node-version: '22.x'
-    - uses: actions/configure-pages@v5
+    - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
       with:
         static_site_generator: next
     - name: build static files
@@ -43,7 +43,7 @@ jobs:
         touch dist/.nojekyll
         npm install
         npm run build
-    - uses: actions/upload-pages-artifact@v3
+    - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
       with:
         path: dist
 
@@ -57,5 +57,5 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/deploy-pages@v4
+    - uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
       id: deployment
