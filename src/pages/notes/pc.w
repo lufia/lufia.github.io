@@ -37,6 +37,7 @@ post: ../../layouts/notes/nav.i
 	*[git-split-diffsを使ってみた|2021/0519.w]
 	*[GitHubの慣習的なリポジトリ名|2021/0905.w]
 	*[Firefox AutoConfig|2021/1114.w]
+	*[最近のタスク管理|2021/1128.w]
 	*[GitのCombined Diffフォーマット|2021/1204.w]
 	*[Google WorkspaceのGmailでDMARC|2021/1208.w]
 	*[設定ファイルやキャッシュの保存先を変更する|2021/1219.w]
