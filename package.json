@@ -28,7 +28,7 @@
   "devDependencies": {
     "@types/jsdom": "^21.1.7",
     "autoprefixer": "^10.4.21",
-    "eslint": "^9.34.0",
+    "eslint": "^9.35.0",
     "jsdom": "^26.1.0",
     "postcss-flexbugs-fixes": "^5.0.2",
     "postcss-mixins": "^12.1.2",
