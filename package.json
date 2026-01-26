@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/lufia/lufia.github.io#readme",
   "dependencies": {
-    "astro": "^5.16.11",
+    "astro": "^5.16.15",
     "gray-matter": "^4.0.3"
   },
   "devDependencies": {
@@ -32,7 +32,7 @@
     "jsdom": "^27.4.0",
     "postcss-flexbugs-fixes": "^5.0.2",
     "postcss-mixins": "^12.1.2",
-    "postcss-preset-env": "^11.1.1",
+    "postcss-preset-env": "^11.1.2",
     "shiki": "^3.21.0",
     "ts-loader": "^9.5.4"
   }
