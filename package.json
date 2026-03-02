@@ -33,7 +33,7 @@
     "postcss-flexbugs-fixes": "^5.0.2",
     "postcss-mixins": "^12.1.2",
     "postcss-preset-env": "^11.2.0",
-    "shiki": "^3.22.0",
+    "shiki": "^4.0.1",
     "ts-loader": "^9.5.4"
   }
 }
