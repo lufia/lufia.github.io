@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-    - uses: lufia/setup-plan9port@151766c60eb37fae334741ced086cdfb107d40cf # v3.0.0
+    - uses: lufia/setup-plan9port@3a66af10dc93e741aa78ea3377289a3fd8ad2b5f # v4.0.0
       with:
         environment: ubuntu-latest
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
