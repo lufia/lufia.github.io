@@ -6,21 +6,17 @@ updates:
     interval: monthly
   cooldown:
     default-days: 7
+  groups:
+    monthly-batch:
+      patterns:
+        - '*'
 - package-ecosystem: npm
   directory: /
   schedule:
     interval: monthly
-  groups:
-    security-fix:
-      applies-to: security-updates
-      patterns:
-      - '*'
-    minors:
-      applies-to: version-updates
-      patterns:
-      - '*'
-      update-types:
-      - minor
-      - patch
   cooldown:
     default-days: 7
+  groups:
+    monthly-batch:
+      patterns:
+        - '*'
